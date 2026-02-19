@@ -13,6 +13,11 @@ import time
 from dataclasses import dataclass
 from itertools import permutations, product
 from typing import Any
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+from utils.polya_logger import PolyaLogger
+log = PolyaLogger()
 
 
 def ensure_installed(package: str, import_name: str | None = None) -> None:
@@ -237,11 +242,10 @@ def z3_verify_all_tournaments(n: int) -> bool:
 
 if __name__ == "__main__":
     t0 = time.perf_counter()
-    print("=== Tournament Hamiltonian Path Theorem ===")
-    print()
+    log.header("Tournament Hamiltonian Path Theorem")
 
     # Phase 1: Exhaustive base case verification
-    print("Phase 1: Verify base cases exhaustively")
+    log.section("Phase 1: Verify base cases exhaustively")
     base_cases = {}
     constructive_examples = []
     for n in range(1, 6):
@@ -263,9 +267,8 @@ if __name__ == "__main__":
                 break
 
         suffix = " (sampled {})".format(len(sample)) if len(sample) < count else ""
-        status = "✓" if all_valid else "✗"
-        print("  n={}: {} tournament(s), all have Hamiltonian path {}{}".format(
-            n, count, status, suffix))
+        log.check("n={}: {} tournament(s), all have Hamiltonian path{}".format(
+            n, count, suffix), all_valid, tag="VERIFY")
         base_cases[n] = len(sample)
 
         # Save first example
@@ -275,40 +278,39 @@ if __name__ == "__main__":
             if path:
                 constructive_examples.append((n, path))
 
-    print()
+    log.blank()
 
     # Phase 2: Inductive proof structure
-    print("Phase 2: Inductive proof structure")
-    print("  Base case: n=1 trivially has a Hamiltonian path (single vertex) ✓")
-    print("  Inductive hypothesis: Assume every tournament on k vertices has a Hamiltonian path")
-    print("  Inductive step: Given tournament T on k+1 vertices...")
-    print("    1. Remove vertex v, leaving tournament T' on k vertices")
-    print("    2. By IH, T' has Hamiltonian path P = (u1, u2, ..., uk)")
-    print("    3. Insert v into P:")
-    print("       - If v beats u1: prepend v → (v, u1, u2, ..., uk) ✓")
-    print("       - Otherwise: find first i where u_i→v and v→u_{i+1}")
-    print("         Such i must exist because:")
-    print("         * u1→v (since v doesn't beat u1)")
-    print("         * If v→u_k: i=k-1 works. If u_k→v: append at end.")
-    print("         * The 'beats v' property starts True at i=1 and must")
-    print("           transition to False (or reach the end), giving us i. ✓")
-    print("       - Insert: (u1, ..., u_i, v, u_{i+1}, ..., uk) ✓")
-    print("  Proof complete by strong induction ✓")
-    print()
+    log.section("Phase 2: Inductive proof structure")
+    log.info("Base case: n=1 trivially has a Hamiltonian path (single vertex)", tag="PROOF")
+    log.info("Inductive hypothesis: Assume every tournament on k vertices has a Hamiltonian path", tag="PROOF")
+    log.info("Inductive step: Given tournament T on k+1 vertices...", tag="PROOF")
+    log.info("  1. Remove vertex v, leaving tournament T' on k vertices", tag="PROOF")
+    log.info("  2. By IH, T' has Hamiltonian path P = (u1, u2, ..., uk)", tag="PROOF")
+    log.info("  3. Insert v into P:", tag="PROOF")
+    log.info("     - If v beats u1: prepend v -> (v, u1, u2, ..., uk)", tag="PROOF")
+    log.info("     - Otherwise: find first i where u_i->v and v->u_{i+1}", tag="PROOF")
+    log.info("       Such i must exist because:", tag="PROOF")
+    log.info("       * u1->v (since v doesn't beat u1)", tag="PROOF")
+    log.info("       * If v->u_k: i=k-1 works. If u_k->v: append at end.", tag="PROOF")
+    log.info("       * The 'beats v' property starts True at i=1 and must", tag="PROOF")
+    log.info("         transition to False (or reach the end), giving us i.", tag="PROOF")
+    log.info("     - Insert: (u1, ..., u_i, v, u_{i+1}, ..., uk)", tag="PROOF")
+    log.info("Proof complete by strong induction", tag="PROOF")
+    log.blank()
 
     # Phase 3: Z3 verification
-    print("Phase 3: Z3 verification for n=4")
+    log.section("Phase 3: Z3 verification for n=4")
     z3_result = z3_verify_all_tournaments(4)
-    z3_status = "✓" if z3_result else "✗"
     tournaments_4 = generate_all_tournaments(4)
-    print("  Checked all {} tournaments on 4 vertices".format(len(tournaments_4)))
-    print("  Z3 confirms: Hamiltonian path exists in every case {}".format(z3_status))
-    print()
+    log.info("Checked all {} tournaments on 4 vertices".format(len(tournaments_4)), tag="VERIFY")
+    log.check("Z3 confirms: Hamiltonian path exists in every case", z3_result, tag="VERIFY")
+    log.blank()
 
     elapsed = time.perf_counter() - t0
 
-    print("Theorem verified: Every tournament has a Hamiltonian path ∎")
-    print("  Total time: {:.4f}s".format(elapsed))
+    log.success("Theorem verified: Every tournament has a Hamiltonian path", tag="COMPLETE")
+    log.metric("Total time:", "{:.4f}s".format(elapsed), tag="TIMING")
 
     # Build result
     result = ProofResult(

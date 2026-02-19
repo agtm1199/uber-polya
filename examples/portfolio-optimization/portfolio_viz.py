@@ -10,6 +10,12 @@ from __future__ import annotations
 import json
 import subprocess
 import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+from utils.polya_logger import PolyaLogger
+
+log = PolyaLogger()
 
 
 def ensure_installed(package: str) -> None:
@@ -113,7 +119,7 @@ def plot_efficient_frontier(risks, returns, asset_names):
     ax.grid(True, alpha=0.3)
     plt.tight_layout()
     plt.savefig("viz_efficient_frontier.png", dpi=150, bbox_inches="tight")
-    print("Saved: viz_efficient_frontier.png")
+    log.success("viz_efficient_frontier.png", tag="SAVE")
     plt.close()
 
 
@@ -137,7 +143,7 @@ def plot_allocation_area(risks, weights_list, asset_names):
     ax.grid(True, alpha=0.3, axis="y")
     plt.tight_layout()
     plt.savefig("viz_allocation_area.png", dpi=150, bbox_inches="tight")
-    print("Saved: viz_allocation_area.png")
+    log.success("viz_allocation_area.png", tag="SAVE")
     plt.close()
 
 

@@ -1,5 +1,13 @@
 #!/usr/bin/env python3
 """Visualizations for Food Safety Inspector Assignment interpretation."""
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+from utils.polya_logger import PolyaLogger
+
+log = PolyaLogger()
+
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
@@ -85,7 +93,7 @@ cbar.set_label('Expertise Score', fontsize=10)
 
 plt.tight_layout()
 plt.savefig('viz_assignment_matrix.png', dpi=150, bbox_inches='tight')
-print("Saved: viz_assignment_matrix.png")
+log.success("viz_assignment_matrix.png", tag="SAVE")
 plt.close()
 
 
@@ -130,7 +138,7 @@ ax.legend(handles=legend_elements, loc='lower left', fontsize=9)
 ax.set_xlim(-7, 2)
 plt.tight_layout()
 plt.savefig('viz_sensitivity_tornado.png', dpi=150, bbox_inches='tight')
-print("Saved: viz_sensitivity_tornado.png")
+log.success("viz_sensitivity_tornado.png", tag="SAVE")
 plt.close()
 
 
@@ -173,7 +181,8 @@ for bar, score in zip(bars2, scores):
 
 plt.tight_layout()
 plt.savefig('viz_workload_expertise.png', dpi=150, bbox_inches='tight')
-print("Saved: viz_workload_expertise.png")
+log.success("viz_workload_expertise.png", tag="SAVE")
 plt.close()
 
-print("\nAll 3 visualizations generated successfully.")
+log.blank()
+log.success("All 3 visualizations generated successfully.", tag="COMPLETE")

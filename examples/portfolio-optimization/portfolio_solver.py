@@ -16,6 +16,11 @@ import time
 from dataclasses import dataclass
 
 import numpy as np
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+from utils.polya_logger import PolyaLogger
+log = PolyaLogger()
 
 
 def ensure_installed(package: str, import_name: str | None = None) -> None:
@@ -151,18 +156,18 @@ def verify(instance: Instance, weights: np.ndarray) -> bool:
 
     # Check weights sum to 1
     if abs(np.sum(weights) - 1.0) > tol:
-        print(f"  FAIL: weights sum to {np.sum(weights):.6f}, expected 1.0")
+        log.error(f"weights sum to {np.sum(weights):.6f}, expected 1.0", tag="VERIFY")
         return False
 
     # Check no short selling
     if np.any(weights < -tol):
-        print(f"  FAIL: negative weight found: min = {np.min(weights):.6f}")
+        log.error(f"negative weight found: min = {np.min(weights):.6f}", tag="VERIFY")
         return False
 
     # Check covariance matrix is positive semidefinite
     eigenvalues = np.linalg.eigvalsh(instance.covariance)
     if np.any(eigenvalues < -tol):
-        print(f"  FAIL: covariance matrix not PSD: min eigenvalue = {np.min(eigenvalues):.6f}")
+        log.error(f"covariance matrix not PSD: min eigenvalue = {np.min(eigenvalues):.6f}", tag="VERIFY")
         return False
 
     return True
@@ -187,9 +192,8 @@ if __name__ == "__main__":
         [0.0080, 0.0060, 0.0070, 0.0015, 0.0196],  # Real Estate
     ])
 
-    print("=== Portfolio Optimization ===")
-    print(f"Assets: {', '.join(asset_names)}")
-    print()
+    log.header("Portfolio Optimization")
+    log.info(f"Assets: {', '.join(asset_names)}", tag="DATA")
 
     # Solve for different risk aversion levels
     for gamma, label in [(10.0, "Conservative (gamma=10)"),
@@ -203,18 +207,17 @@ if __name__ == "__main__":
         )
         sol = solve(instance)
 
-        print(f"{label}:")
+        log.step(label)
         for name, w in zip(asset_names, sol.weights):
-            print(f"  {name:15s} {w * 100:6.1f}%")
-        print(f"  Expected return: {sol.expected_return * 100:.2f}%")
-        print(f"  Risk (std dev):  {sol.risk * 100:.2f}%")
-        print(f"  Optimal: {sol.is_optimal}")
-        print(f"  Feasible: {sol.is_feasible}")
-        print(f"  Time: {sol.time_seconds:.4f}s")
-        print()
+            log.table_row(f"{name:15s} {w * 100:6.1f}%", tag="TABLE")
+        log.metric("Expected return", f"{sol.expected_return * 100:.2f}%", tag="RESULT")
+        log.metric("Risk (std dev)", f"{sol.risk * 100:.2f}%", tag="RESULT")
+        log.metric("Optimal", str(sol.is_optimal), tag="VERIFY")
+        log.metric("Feasible", str(sol.is_feasible), tag="VERIFY")
+        log.metric("Time", f"{sol.time_seconds:.4f}s", tag="TIMING")
 
     # Compute efficient frontier
-    print("Computing efficient frontier (50 points)...")
+    log.info("Computing efficient frontier (50 points)...", tag="FRONTIER")
     instance = Instance(
         asset_names=asset_names,
         expected_returns=mu,
@@ -222,9 +225,9 @@ if __name__ == "__main__":
         risk_aversion=1.0,  # placeholder, overridden in sweep
     )
     ef = solve_efficient_frontier(instance)
-    print(f"  {len(ef.risks)} Pareto-optimal portfolios computed")
-    print(f"  Risk range: {min(ef.risks) * 100:.2f}% -- {max(ef.risks) * 100:.2f}%")
-    print(f"  Return range: {min(ef.returns) * 100:.2f}% -- {max(ef.returns) * 100:.2f}%")
+    log.info(f"{len(ef.risks)} Pareto-optimal portfolios computed", tag="FRONTIER")
+    log.info(f"Risk range: {min(ef.risks) * 100:.2f}% -- {max(ef.risks) * 100:.2f}%", tag="FRONTIER")
+    log.info(f"Return range: {min(ef.returns) * 100:.2f}% -- {max(ef.returns) * 100:.2f}%", tag="FRONTIER")
 
     # Save frontier data for visualization
     import json
@@ -235,4 +238,4 @@ if __name__ == "__main__":
     }
     with open("efficient_frontier.json", "w") as f:
         json.dump(frontier_data, f, indent=2)
-    print("  Saved: efficient_frontier.json")
+    log.success("efficient_frontier.json", tag="SAVE")

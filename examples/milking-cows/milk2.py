@@ -11,6 +11,12 @@ from __future__ import annotations
 import time
 from dataclasses import dataclass, field
 
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+from utils.polya_logger import PolyaLogger
+log = PolyaLogger()
+
 
 # --- Data Model ---
 
@@ -212,8 +218,6 @@ def write_usaco(filename: str, sol: Solution) -> None:
 # --- Main ---
 
 if __name__ == "__main__":
-    import sys
-
     # Test with sample input
     sample_instance = Instance(intervals=[
         (300, 1000),
@@ -221,49 +225,43 @@ if __name__ == "__main__":
         (1500, 2100),
     ])
 
-    print("=" * 60)
-    print("  MILKING COWS (USACO milk2) -- Solution Report")
-    print("=" * 60)
-    print()
+    log.header("MILKING COWS (USACO milk2) -- Solution Report")
 
     sol = solve(sample_instance)
 
-    print(f"  Input: {sample_instance.n} intervals")
+    log.info(f"Input: {sample_instance.n} intervals", tag="DATA")
     for s, e in sample_instance.intervals:
-        print(f"    [{s}, {e}] (duration: {e - s}s)")
-    print()
+        log.info(f"  [{s}, {e}] (duration: {e - s}s)", tag="DATA")
+    log.blank()
 
-    print(f"  Merged intervals: {len(sol.merged_intervals)}")
+    log.info(f"Merged intervals: {len(sol.merged_intervals)}", tag="SOLVE")
     for i, (s, e) in enumerate(sol.merged_intervals):
-        print(f"    [{s}, {e}] (duration: {e - s}s)")
-    print()
+        log.info(f"  [{s}, {e}] (duration: {e - s}s)", tag="SOLVE")
+    log.blank()
 
-    print(f"  ANSWER: {sol.longest_milking} {sol.longest_idle}")
-    print(f"    Longest continuous milking: {sol.longest_milking}s")
-    print(f"    Longest idle gap:           {sol.longest_idle}s")
-    print()
+    log.success(f"ANSWER: {sol.longest_milking} {sol.longest_idle}", tag="RESULT")
+    log.success(f"  Longest continuous milking: {sol.longest_milking}s", tag="RESULT")
+    log.success(f"  Longest idle gap:           {sol.longest_idle}s", tag="RESULT")
+    log.blank()
 
-    print(f"  Algorithm:  {sol.algorithm}")
-    print(f"  Optimal:    {sol.is_optimal}")
-    print(f"  Feasible:   {sol.is_feasible}")
-    print(f"  Time:       {sol.time_seconds:.6f}s")
-    print(f"  Certificate: {sol.certificate}")
-    print()
+    log.metric("Algorithm:", sol.algorithm, tag="RESULT")
+    log.metric("Optimal:", str(sol.is_optimal), tag="RESULT")
+    log.metric("Feasible:", str(sol.is_feasible), tag="RESULT")
+    log.metric("Time:", f"{sol.time_seconds:.6f}s", tag="TIMING")
+    log.metric("Certificate:", sol.certificate, tag="RESULT")
+    log.blank()
 
     # Verification
-    print("  INDEPENDENT VERIFICATION (brute-force timeline)")
-    print("  " + "-" * 50)
+    log.step("INDEPENDENT VERIFICATION (brute-force timeline)")
     for check, result in sol.constraint_check.items():
         if isinstance(result, bool):
-            status = "PASS" if result else "FAIL"
+            log.check(check, result, tag="VERIFY")
         else:
-            status = str(result)
-        print(f"  {check:<35} {status}")
-    print()
+            log.check(check, result, tag="CHECK")
+    log.blank()
 
     # Additional test cases
-    print("  ADDITIONAL TEST CASES")
-    print("  " + "-" * 50)
+    log.step("ADDITIONAL TEST CASES")
 
     test_cases = [
         ("Touching intervals [1,10],[11,20]", [(1, 10), (11, 20)], 9, 1),
@@ -279,20 +277,17 @@ if __name__ == "__main__":
         inst = Instance(intervals=intervals)
         s = solve(inst)
         ok = (s.longest_milking == exp_milk and s.longest_idle == exp_idle)
-        status = "PASS" if ok else "FAIL"
         if not ok:
             all_pass = False
-        print(f"  {status} {name}")
-        print(f"       milk={s.longest_milking} (exp {exp_milk}), "
-              f"idle={s.longest_idle} (exp {exp_idle})")
+        log.check(f"{name} milk={s.longest_milking} (exp {exp_milk}), idle={s.longest_idle} (exp {exp_idle})", ok, tag="TEST")
 
-    print()
+    log.blank()
     if all_pass:
-        print("  All test cases PASSED")
+        log.success("All test cases PASSED", tag="TEST")
     else:
-        print("  SOME TEST CASES FAILED")
+        log.error("SOME TEST CASES FAILED", tag="TEST")
 
     # Write USACO format output
     write_usaco("milk2.out", sol)
-    print(f"\n  USACO output written to: milk2.out")
-    print("=" * 60)
+    log.success("USACO output written to: milk2.out", tag="SAVE")
+    log.divider(style="thick")

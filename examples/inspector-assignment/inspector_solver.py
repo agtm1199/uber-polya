@@ -17,6 +17,12 @@ from pulp import (
     LpStatus, value, lpSum, PULP_CBC_CMD
 )
 
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+from utils.polya_logger import PolyaLogger
+log = PolyaLogger()
+
 
 # --- Data Model ---
 
@@ -207,25 +213,20 @@ if __name__ == "__main__":
     sol = solve(instance)
 
     # --- Print Solution Report ---
-    print("=" * 65)
-    print("  SOLUTION REPORT: Food Safety Inspector Assignment")
-    print("=" * 65)
-    print()
-    print(f"  Status:     {sol.solver_status}")
-    print(f"  Optimal:    {sol.is_optimal}")
-    print(f"  Feasible:   {sol.is_feasible}")
-    print(f"  Objective:  {sol.objective:.0f} (total expertise score)")
-    print(f"  LP Bound:   {sol.lp_relaxation:.1f}")
-    print(f"  Gap:        {sol.lp_relaxation - sol.objective:.1f} ({(sol.lp_relaxation - sol.objective) / sol.lp_relaxation * 100:.1f}%)")
-    print(f"  Algorithm:  {sol.algorithm}")
-    print(f"  Time:       {sol.time_seconds:.4f}s")
-    print()
+    log.header("SOLUTION REPORT: Food Safety Inspector Assignment")
+    log.metric("Status:", sol.solver_status, tag="RESULT")
+    log.metric("Optimal:", str(sol.is_optimal), tag="RESULT")
+    log.metric("Feasible:", str(sol.is_feasible), tag="RESULT")
+    log.metric("Objective:", f"{sol.objective:.0f} (total expertise score)", tag="RESULT")
+    log.metric("LP Bound:", f"{sol.lp_relaxation:.1f}", tag="RESULT")
+    log.metric("Gap:", f"{sol.lp_relaxation - sol.objective:.1f} ({(sol.lp_relaxation - sol.objective) / sol.lp_relaxation * 100:.1f}%)", tag="RESULT")
+    log.metric("Algorithm:", sol.algorithm, tag="SOLVE")
+    log.metric("Time:", f"{sol.time_seconds:.4f}s", tag="TIMING")
+    log.blank()
 
     # Assignment table
-    print("  ASSIGNMENT DETAILS")
-    print("  " + "-" * 61)
-    print(f"  {'Inspector':<10} {'Facilities':<30} {'Load':<6} {'Score'}")
-    print("  " + "-" * 61)
+    log.step("ASSIGNMENT DETAILS")
+    log.table_row(f"{'Inspector':<10} {'Facilities':<30} {'Load':<6} {'Score'}", tag="TABLE")
 
     theoretical_max = 0
     for i in instance.inspectors:
@@ -236,15 +237,13 @@ if __name__ == "__main__":
             f"{f}({instance.facility_types[f]}:{instance.score(i, f)})"
             for f in facs
         )
-        print(f"  {i:<10} {fac_details:<30} {load}/3    {score}")
+        log.table_row(f"{i:<10} {fac_details:<30} {load}/3    {score}", tag="ASSIGN")
 
-    print("  " + "-" * 61)
-    print(f"  {'TOTAL':<10} {'':30} {sum(len(v) for v in sol.assignments.values())}/18   {sol.objective:.0f}")
-    print()
+    log.table_row(f"{'TOTAL':<10} {'':30} {sum(len(v) for v in sol.assignments.values())}/18   {sol.objective:.0f}", tag="RESULT")
+    log.blank()
 
     # Theoretical maximum (each facility gets its best inspector)
-    print("  OPTIMALITY ANALYSIS")
-    print("  " + "-" * 61)
+    log.step("OPTIMALITY ANALYSIS")
     for f in instance.facilities:
         ftype = instance.facility_types[f]
         best_inspector = max(instance.inspectors, key=lambda i: instance.expertise[i][ftype])
@@ -254,30 +253,29 @@ if __name__ == "__main__":
         assigned_to = [i for i, facs in sol.assignments.items() if f in facs][0]
         actual_score = instance.score(assigned_to, f)
         gap = best_score - actual_score
-        marker = " *" if gap > 0 else ""
-        print(f"  {f}({ftype:>8}): best={best_inspector}({best_score}), "
-              f"assigned={assigned_to}({actual_score}){' [gap=' + str(gap) + ']' if gap > 0 else ''}")
+        log.table_row(
+            f"{f}({ftype:>8}): best={best_inspector}({best_score}), "
+            f"assigned={assigned_to}({actual_score}){' [gap=' + str(gap) + ']' if gap > 0 else ''}",
+            tag="OPTIMIZE",
+        )
 
-    print()
-    print(f"  Theoretical max (unconstrained): {theoretical_max}")
-    print(f"  Achieved:                        {sol.objective:.0f}")
-    print(f"  Efficiency:                      {sol.objective / theoretical_max * 100:.1f}%")
-    print()
+    log.blank()
+    log.metric("Theoretical max (unconstrained):", str(theoretical_max), tag="OPTIMIZE")
+    log.metric("Achieved:", f"{sol.objective:.0f}", tag="OPTIMIZE")
+    log.metric("Efficiency:", f"{sol.objective / theoretical_max * 100:.1f}%", tag="OPTIMIZE")
+    log.blank()
 
     # Verification
-    print("  INDEPENDENT VERIFICATION")
-    print("  " + "-" * 61)
+    log.step("INDEPENDENT VERIFICATION")
     for check, result in sol.constraint_check.items():
         if isinstance(result, bool):
-            status = "PASS" if result else "FAIL"
-            print(f"  {check:<30} {status}")
+            log.check(check, result, tag="VERIFY")
         else:
-            print(f"  {check:<30} {result}")
-    print()
+            log.check(check, result, tag="VERIFY")
+    log.blank()
 
     # Sensitivity: What if each inspector leaves?
-    print("  SENSITIVITY: What if an inspector leaves?")
-    print("  " + "-" * 61)
+    log.step("SENSITIVITY: What if an inspector leaves?")
     for removed in instance.inspectors:
         reduced_inspectors = tuple(i for i in instance.inspectors if i != removed)
         reduced = Instance(
@@ -293,10 +291,13 @@ if __name__ == "__main__":
         pct = delta / sol.objective * 100
         risk = "HIGH" if pct < -10 else ("MODERATE" if pct < -5 else "LOW")
         facs_lost = ", ".join(sol.assignments[removed])
-        print(f"  Remove {removed:<6}: obj {rsol.objective:.0f} ({delta:+.0f}, {pct:+.1f}%) "
-              f"[{risk} risk] (loses {facs_lost})")
+        log.info(
+            f"Remove {removed:<6}: obj {rsol.objective:.0f} ({delta:+.0f}, {pct:+.1f}%) "
+            f"[{risk} risk] (loses {facs_lost})",
+            tag="SENSITIVITY",
+        )
 
-    print()
+    log.blank()
 
     # Output JSON for dm-interpret
     output = {
@@ -329,5 +330,5 @@ if __name__ == "__main__":
 
     with open("solution.json", "w") as f:
         json.dump(output, f, indent=2)
-    print("  Solution data saved to: solution.json")
-    print("=" * 65)
+    log.success("solution.json", tag="SAVE")
+    log.divider(style="thick")

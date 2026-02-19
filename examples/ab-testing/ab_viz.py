@@ -11,8 +11,14 @@ from __future__ import annotations
 
 import json
 import sys
+from pathlib import Path
 
 import matplotlib
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+from utils.polya_logger import PolyaLogger
+
+log = PolyaLogger()
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
@@ -89,7 +95,7 @@ def plot_conversion_comparison(sol: dict, filename: str = "conversion_comparison
 
     plt.tight_layout()
     plt.savefig(filename, dpi=150, bbox_inches="tight")
-    print("Saved: {}".format(filename))
+    log.success(filename, tag="SAVE")
 
 
 def plot_power_curve(sol: dict, filename: str = "power_curve.png") -> None:
@@ -98,7 +104,7 @@ def plot_power_curve(sol: dict, filename: str = "power_curve.png") -> None:
     power_data = sol.get("sensitivity", {}).get("power_curve", {})
 
     if not power_data:
-        print("No power curve data available. Skipping.")
+        log.warning("No power curve data available. Skipping.", tag="VIZ")
         return
 
     rate_a = inst["conv_a"] / inst["n_a"]
@@ -147,7 +153,7 @@ def plot_power_curve(sol: dict, filename: str = "power_curve.png") -> None:
 
     plt.tight_layout()
     plt.savefig(filename, dpi=150, bbox_inches="tight")
-    print("Saved: {}".format(filename))
+    log.success(filename, tag="SAVE")
 
 
 if __name__ == "__main__":

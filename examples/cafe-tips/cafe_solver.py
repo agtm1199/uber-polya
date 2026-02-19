@@ -26,11 +26,18 @@ Polya Phase 4 (uber-interpret): Look Back
 from __future__ import annotations
 
 import json
+import sys
 import time
 from dataclasses import dataclass, field
+from pathlib import Path
 
 import numpy as np
 from scipy import stats
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+from utils.polya_logger import PolyaLogger
+
+log = PolyaLogger()
 
 
 # --- Phase 1-2: Formal Model (uber-model output) ---
@@ -377,7 +384,7 @@ def generate_visualizations(instance: Instance, sol: Solution) -> None:
                  fontsize=15, fontweight="bold", y=1.02)
     plt.tight_layout()
     plt.savefig("cafe_tips_analysis.png", dpi=150, bbox_inches="tight")
-    print("Saved: cafe_tips_analysis.png")
+    log.success("cafe_tips_analysis.png", tag="SAVE")
 
     # ── Chart 2: Power Curve ──
     fig, ax = plt.subplots(figsize=(8, 5))
@@ -410,7 +417,7 @@ def generate_visualizations(instance: Instance, sol: Solution) -> None:
 
     plt.tight_layout()
     plt.savefig("cafe_power_curve.png", dpi=150, bbox_inches="tight")
-    print("Saved: cafe_power_curve.png")
+    log.success("cafe_power_curve.png", tag="SAVE")
 
 
 # --- Main ---
@@ -435,198 +442,166 @@ if __name__ == "__main__":
     # ═══════════════════════════════════════════════════════
     #  PHASE 1-2: MODEL (uber-model output)
     # ═══════════════════════════════════════════════════════
-    print("=" * 70)
-    print("  UBER-POLYA: Cafe Tips -- Jazz vs. Pop Music")
-    print("=" * 70)
-    print()
-    print("  PHASE 1-2: UNDERSTAND & PLAN (uber-model)")
-    print("  " + "=" * 64)
-    print()
-    print("  Problem Type:  Problem to Find (comparison)")
-    print("  Unknown:       Is there a difference in mean tips?")
-    print("  Data:          25 jazz days, 25 pop days (tip percentages)")
-    print("  Condition:     Independent samples, continuous outcome")
-    print()
-    print("  Formal Model:")
-    print("    H0: mu_jazz = mu_pop  (no difference)")
-    print("    H1: mu_jazz != mu_pop (two-sided)")
-    print("    Structure: Two-sample hypothesis test (structures.md 10.2)")
-    print("    Test: Welch's t-test (algorithms-statistics.md S7)")
-    print("    Verify: Mann-Whitney U (S9), Permutation (S16), Bootstrap (S20)")
-    print()
+    log.header("UBER-POLYA: Cafe Tips -- Jazz vs. Pop Music")
+
+    log.section("PHASE 1-2: UNDERSTAND & PLAN (uber-model)")
+    log.info("Problem to Find (comparison)", tag="MODEL")
+    log.info("Is there a difference in mean tips?", tag="MODEL")
+    log.info("25 jazz days, 25 pop days (tip percentages)", tag="DATA")
+    log.info("Independent samples, continuous outcome", tag="DATA")
+    log.blank()
+    log.info("Formal Model:", tag="HYPOTHESIS")
+    log.info("H0: mu_jazz = mu_pop  (no difference)", tag="HYPOTHESIS")
+    log.info("H1: mu_jazz != mu_pop (two-sided)", tag="HYPOTHESIS")
+    log.info("Structure: Two-sample hypothesis test (structures.md 10.2)", tag="MODEL")
+    log.info("Test: Welch's t-test (algorithms-statistics.md S7)", tag="MODEL")
+    log.info("Verify: Mann-Whitney U (S9), Permutation (S16), Bootstrap (S20)", tag="MODEL")
 
     # ═══════════════════════════════════════════════════════
     #  PHASE 3: SOLVE (uber-solve output)
     # ═══════════════════════════════════════════════════════
-    print("  PHASE 3: EXECUTE (uber-solve)")
-    print("  " + "=" * 64)
-    print()
+    log.section("PHASE 3: EXECUTE (uber-solve)")
 
     # Descriptive stats
-    print("  STEP 1: Descriptive Statistics")
-    print("  " + "-" * 64)
-    print("  {:<12} {:>8} {:>8} {:>8} {:>8} {:>8}".format(
-        "Genre", "n", "Mean", "SD", "Median", "IQR"))
-    print("  " + "-" * 64)
+    log.step("STEP 1: Descriptive Statistics")
+    log.table_row("{:<12} {:>8} {:>8} {:>8} {:>8} {:>8}".format(
+        "Genre", "n", "Mean", "SD", "Median", "IQR"), tag="TABLE")
     for genre, key in [("Jazz", "jazz"), ("Pop", "pop")]:
         d = sol.descriptive[key]
-        print("  {:<12} {:>8} {:>8.1f} {:>8.1f} {:>8.1f} {:>8.1f}".format(
+        log.table_row("{:<12} {:>8} {:>8.1f} {:>8.1f} {:>8.1f} {:>8.1f}".format(
             genre, d["n"], d["mean"], d["std"], d["median"],
-            d["q3"] - d["q1"]))
-    print()
+            d["q3"] - d["q1"]), tag="STATS")
 
     # Assumption checks
-    print("  STEP 2: Assumption Checks")
-    print("  " + "-" * 64)
+    log.step("STEP 2: Assumption Checks")
     for genre, key in [("Jazz", "normality_jazz"), ("Pop", "normality_pop")]:
         a = sol.assumptions[key]
-        status = "PASS (normal)" if a["normal"] else "FAIL (non-normal)"
-        print("  Normality ({}):  Shapiro W={:.3f}, p={:.3f} -> {}".format(
-            genre, a["W"], a["p"], status))
+        log.check(
+            "Normality ({}): Shapiro W={:.3f}, p={:.3f}".format(genre, a["W"], a["p"]),
+            a["normal"], tag="VERIFY")
     ev = sol.assumptions["equal_variance"]
-    print("  Equal variance:  Levene p={:.3f} -> {}".format(
-        ev["levene_p"], "PASS (equal)" if ev["equal"] else "FAIL (unequal)"))
-    print("  Parametric OK:   {}".format(
+    log.check(
+        "Equal variance: Levene p={:.3f}".format(ev["levene_p"]),
+        ev["equal"], tag="VERIFY")
+    log.info("Parametric OK: {}".format(
         "Yes -> Welch's t-test" if sol.assumptions["parametric_ok"]
-        else "No -> will also run nonparametric"))
-    print()
+        else "No -> will also run nonparametric"), tag="VERIFY")
 
     # Primary test
-    print("  STEP 3: Primary Test (Welch's t-test)")
-    print("  " + "-" * 64)
-    print("  t-statistic:    {:.3f}".format(sol.t_statistic))
-    print("  p-value:        {:.6f}".format(sol.p_value))
-    print("  Significant:    {} (alpha={})".format(sol.is_significant, instance.alpha))
-    print("  Mean difference:{:+.2f} percentage points".format(sol.mean_diff))
-    print("  95% CI (diff):  [{:.2f}, {:.2f}]".format(*sol.ci_diff))
-    print("  Cohen's d:      {:.3f} ({})".format(sol.cohens_d, sol.effect_interpretation))
-    print("  Power:          {:.1%}".format(sol.power))
-    print()
+    log.step("STEP 3: Primary Test (Welch's t-test)")
+    log.metric("t-statistic:", "{:.3f}".format(sol.t_statistic), tag="STATS")
+    log.metric("p-value:", "{:.6f}".format(sol.p_value), tag="STATS")
+    log.metric("Significant:", "{} (alpha={})".format(sol.is_significant, instance.alpha), tag="STATS")
+    log.metric("Mean diff:", "{:+.2f} pp".format(sol.mean_diff), tag="STATS")
+    log.metric("95% CI (diff):", "[{:.2f}, {:.2f}]".format(*sol.ci_diff), tag="STATS")
+    log.metric("Cohen's d:", "{:.3f} ({})".format(sol.cohens_d, sol.effect_interpretation), tag="STATS")
+    log.metric("Power:", "{:.1%}".format(sol.power), tag="POWER")
 
     # Verification
-    print("  STEP 4: Independent Verification")
-    print("  " + "-" * 64)
+    log.step("STEP 4: Independent Verification")
     mw = sol.verification["mann_whitney"]
-    print("  Mann-Whitney U: U={:.0f}, p={:.6f} -> {}".format(
-        mw["U"], mw["p"], "AGREES" if mw["agrees"] else "DISAGREES"))
+    log.check(
+        "Mann-Whitney U: U={:.0f}, p={:.6f}".format(mw["U"], mw["p"]),
+        mw["agrees"], tag="VERIFY")
     pm = sol.verification["permutation"]
-    print("  Permutation:    p={:.6f} -> {}".format(
-        pm["p"], "AGREES" if pm["agrees"] else "DISAGREES"))
+    log.check(
+        "Permutation: p={:.6f}".format(pm["p"]),
+        pm["agrees"], tag="VERIFY")
     bs = sol.verification["bootstrap_ci"]
-    print("  Bootstrap CI:   [{:.2f}, {:.2f}] -> {}".format(
+    log.info("Bootstrap CI: [{:.2f}, {:.2f}] -> {}".format(
         bs["ci_2.5"], bs["ci_97.5"],
         "contains 0 (consistent with non-sig)" if bs["contains_zero"]
-        else "excludes 0 (consistent with sig)"))
-    print("  All methods:    {}".format(
-        "AGREE" if sol.verification["all_agree"] else "DISAGREE"))
-    print()
+        else "excludes 0 (consistent with sig)"), tag="VERIFY")
+    log.check("All methods agree",
+              sol.verification["all_agree"], tag="VERIFY")
 
     # Bayesian
-    print("  STEP 5: Bayesian Analysis")
-    print("  " + "-" * 64)
-    print("  P(jazz > pop):  {:.1%}".format(sol.bayesian["prob_jazz_higher"]))
-    print("  Expected diff:  {:+.2f} pp".format(sol.bayesian["expected_diff"]))
-    print("  95% CrI:        [{:.2f}, {:.2f}]".format(
-        *sol.bayesian["credible_interval_95"]))
-    print()
+    log.step("STEP 5: Bayesian Analysis")
+    log.metric("P(jazz > pop):", "{:.1%}".format(sol.bayesian["prob_jazz_higher"]), tag="BAYESIAN")
+    log.metric("Expected diff:", "{:+.2f} pp".format(sol.bayesian["expected_diff"]), tag="BAYESIAN")
+    log.metric("95% CrI:", "[{:.2f}, {:.2f}]".format(
+        *sol.bayesian["credible_interval_95"]), tag="BAYESIAN")
 
     # Power analysis
-    print("  STEP 6: Power Analysis")
-    print("  " + "-" * 64)
-    print("  Current power:  {:.1%} (n=25/group)".format(sol.power))
-    print("  Need for 80%:   {} days per group".format(sol.n_per_group_80pct))
+    log.step("STEP 6: Power Analysis")
+    log.metric("Current power:", "{:.1%} (n=25/group)".format(sol.power), tag="POWER")
+    log.metric("Need for 80%:", "{} days per group".format(sol.n_per_group_80pct), tag="POWER")
     if "power_curve" in sol.sensitivity:
-        print("  Power curve:")
+        log.blank()
         for n, pwr in sol.sensitivity["power_curve"].items():
-            bar = "#" * int(pwr * 30)
             marker = " <-- current" if n == instance.n_jazz else ""
-            print("    n={:>3}: {:.0%} {}{}".format(n, pwr, bar, marker))
-    print()
+            log.bar("n={:>3}:".format(n), pwr, tag="POWER", marker=marker)
 
     # ═══════════════════════════════════════════════════════
     #  PHASE 4: LOOK BACK (uber-interpret output)
     # ═══════════════════════════════════════════════════════
-    print("  PHASE 4: LOOK BACK (uber-interpret)")
-    print("  " + "=" * 64)
-    print()
-    print("  BOTTOM LINE")
-    print("  " + "-" * 64)
-    if sol.is_significant:
-        print("  Jazz music days have {:.1f}% average tips vs {:.1f}% for pop --".format(
-            sol.descriptive["jazz"]["mean"], sol.descriptive["pop"]["mean"]))
-        print("  a {:+.1f} percentage point difference (p={:.4f}).".format(
-            sol.mean_diff, sol.p_value))
-    else:
-        print("  No statistically significant difference detected between")
-        print("  jazz ({:.1f}%) and pop ({:.1f}%) music days (p={:.3f}).".format(
-            sol.descriptive["jazz"]["mean"], sol.descriptive["pop"]["mean"],
-            sol.p_value))
-    print()
+    log.section("PHASE 4: LOOK BACK (uber-interpret)")
 
-    print("  WHAT THIS MEANS FOR YOUR CAFE")
-    print("  " + "-" * 64)
+    log.step("BOTTOM LINE")
+    if sol.is_significant:
+        log.success("Jazz music days have {:.1f}% average tips vs {:.1f}% for pop".format(
+            sol.descriptive["jazz"]["mean"], sol.descriptive["pop"]["mean"]), tag="RESULT")
+        log.success("a {:+.1f} percentage point difference (p={:.4f})".format(
+            sol.mean_diff, sol.p_value), tag="RESULT")
+    else:
+        log.info("No statistically significant difference detected between", tag="RESULT")
+        log.info("jazz ({:.1f}%) and pop ({:.1f}%) music days (p={:.3f})".format(
+            sol.descriptive["jazz"]["mean"], sol.descriptive["pop"]["mean"],
+            sol.p_value), tag="RESULT")
+
+    log.step("WHAT THIS MEANS FOR YOUR CAFE")
     if sol.is_significant and abs(sol.cohens_d) >= 0.5:
-        annual = sol.mean_diff * 365 / 100 * 500  # assume $500 avg daily tips base
-        print("  - The effect is real and meaningful ({} effect size)".format(
-            sol.effect_interpretation))
-        print("  - On a $500 daily tip base, jazz adds ~${:.0f}/year".format(abs(annual)))
-        print("  - All 3 verification methods agree")
-        print("  - Bayesian: {:.0%} probability jazz is genuinely better".format(
-            sol.bayesian["prob_jazz_higher"]))
+        annual = sol.mean_diff * 365 / 100 * 500
+        log.success("The effect is real and meaningful ({} effect size)".format(
+            sol.effect_interpretation), tag="INTERPRET")
+        log.success("On a $500 daily tip base, jazz adds ~${:.0f}/year".format(abs(annual)), tag="INTERPRET")
+        log.success("All 3 verification methods agree", tag="VERIFY")
+        log.success("Bayesian: {:.0%} probability jazz is genuinely better".format(
+            sol.bayesian["prob_jazz_higher"]), tag="BAYESIAN")
     elif sol.is_significant:
-        print("  - Statistically detectable but {} effect".format(
-            sol.effect_interpretation))
-        print("  - May not translate to meaningful revenue difference")
+        log.info("Statistically detectable but {} effect".format(
+            sol.effect_interpretation), tag="INTERPRET")
+        log.warning("May not translate to meaningful revenue difference", tag="INTERPRET")
     else:
         if sol.power < 0.8:
-            print("  - Your test was underpowered ({:.0%} power)".format(sol.power))
-            print("  - This means: a real difference MIGHT exist but you")
-            print("    didn't collect enough data to detect it reliably")
-            print("  - Recommendation: collect {} more days per genre".format(
-                max(0, sol.n_per_group_80pct - instance.n_jazz)))
+            log.warning("Your test was underpowered ({:.0%} power)".format(sol.power), tag="POWER")
+            log.warning("A real difference MIGHT exist but you didn't collect enough data", tag="INTERPRET")
+            log.info("Recommendation: collect {} more days per genre".format(
+                max(0, sol.n_per_group_80pct - instance.n_jazz)), tag="RECOMMEND")
         else:
-            print("  - With {:.0%} power, you had a good chance of".format(sol.power))
-            print("    detecting a meaningful effect -- and didn't find one")
-            print("  - Music genre likely doesn't affect tips much")
-    print()
+            log.info("With {:.0%} power, you had a good chance of detecting an effect".format(sol.power), tag="POWER")
+            log.info("Music genre likely doesn't affect tips much", tag="INTERPRET")
 
-    print("  RECOMMENDATION")
-    print("  " + "-" * 64)
-    print("  {}".format(sol.recommendation))
-    print()
+    log.step("RECOMMENDATION")
+    log.success(sol.recommendation, tag="RECOMMEND")
 
-    print("  SENSITIVITY")
-    print("  " + "-" * 64)
+    log.step("SENSITIVITY")
     strict = sol.sensitivity.get("stricter_alpha", {})
     if strict:
-        print("  At alpha=0.01 (stricter): {}".format(
-            "still significant" if strict["still_significant"] else "no longer significant"))
-    print("  If you want to be more certain, collect {} days/group".format(
-        sol.n_per_group_80pct))
-    print()
+        log.info("At alpha=0.01 (stricter): {}".format(
+            "still significant" if strict["still_significant"] else "no longer significant"), tag="SENSITIVITY")
+    log.info("If you want to be more certain, collect {} days/group".format(
+        sol.n_per_group_80pct), tag="SENSITIVITY")
 
-    print("  LIMITATIONS")
-    print("  " + "-" * 64)
-    print("  - Days were not randomized (possible confounding: weekday, season)")
-    print("  - Tips may depend on staff, weather, events -- not just music")
-    print("  - Self-selected music choice (owner picks) vs controlled experiment")
-    print("  - Small sample (n=25/group); larger sample increases confidence")
-    print()
+    log.step("LIMITATIONS")
+    log.warning("Days were not randomized (possible confounding: weekday, season)", tag="WARNING")
+    log.warning("Tips may depend on staff, weather, events -- not just music", tag="WARNING")
+    log.warning("Self-selected music choice (owner picks) vs controlled experiment", tag="WARNING")
+    log.warning("Small sample (n=25/group); larger sample increases confidence", tag="WARNING")
 
-    print("  TRANSFERABLE PATTERN")
-    print("  " + "-" * 64)
-    print("  Pattern: 'Does X affect Y?' with two groups")
-    print("  Model:   Two-sample hypothesis test (structures.md 10.2)")
-    print("  Solve:   Welch's t-test + nonparametric verification")
-    print("  Reuse:   Any before/after, A/B, treatment/control comparison")
-    print()
+    log.step("TRANSFERABLE PATTERN")
+    log.info("Pattern: 'Does X affect Y?' with two groups", tag="MODEL")
+    log.info("Model:   Two-sample hypothesis test (structures.md 10.2)", tag="MODEL")
+    log.info("Solve:   Welch's t-test + nonparametric verification", tag="SOLVE")
+    log.info("Reuse:   Any before/after, A/B, treatment/control comparison", tag="MODEL")
 
-    print("  Algorithm: {}".format(sol.algorithm))
-    print("  Time:      {:.4f}s".format(sol.time_seconds))
-    print("=" * 70)
+    log.blank()
+    log.info(sol.algorithm, tag="TIMING")
+    log.info("{:.4f}s".format(sol.time_seconds), tag="TIMING")
+    log.divider(style="thick")
 
     # Generate visualizations
-    print()
+    log.blank()
     generate_visualizations(instance, sol)
 
     # Save JSON
@@ -647,4 +622,4 @@ if __name__ == "__main__":
     }
     with open("solution.json", "w") as f:
         json.dump(output, f, indent=2, default=str)
-    print("Saved: solution.json")
+    log.success("solution.json", tag="SAVE")

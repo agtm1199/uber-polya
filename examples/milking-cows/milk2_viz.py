@@ -1,5 +1,13 @@
 #!/usr/bin/env python3
 """Visualizations for Milking Cows interpretation."""
+import sys
+from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+from utils.polya_logger import PolyaLogger
+
+log = PolyaLogger()
+
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
@@ -72,7 +80,7 @@ fig.text(0.5, 0.01, result_text, ha='center', fontsize=12, fontweight='bold',
 
 plt.tight_layout(rect=[0, 0.05, 1, 1])
 plt.savefig('milk2_timeline.png', dpi=150, bbox_inches='tight')
-print("Saved: milk2_timeline.png")
+log.success("milk2_timeline.png", tag="SAVE")
 plt.close()
 
 
@@ -140,7 +148,8 @@ ax.set_xlim(200, 2200)
 ax.set_ylim(-0.7, 0.5)
 
 plt.savefig('milk2_algorithm.png', dpi=150, bbox_inches='tight')
-print("Saved: milk2_algorithm.png")
+log.success("milk2_algorithm.png", tag="SAVE")
 plt.close()
 
-print("\nAll visualizations generated successfully.")
+log.blank()
+log.success("All visualizations generated successfully.", tag="COMPLETE")

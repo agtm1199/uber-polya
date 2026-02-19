@@ -1,39 +1,51 @@
 # uber-polya
 
-**A universal problem-solving engine for Claude Code, inspired by George Polya's "How to Solve It."**
+**Describe your problem. Get a verified solution.**
 
-Four skills that turn any computational problem into a formal model, solve it with the right algorithm, and translate the result into actionable insight -- through Socratic dialogue.
+uber-polya is the universal algorithm for computational problem-solving. It's a free, open-source Claude Code Skill that turns real-world problems -- business or personal -- into mathematically verified solutions.
 
-## The Trilogy
+You describe what you're trying to figure out. uber-polya finds the mathematical structure hiding inside your problem, solves it with the right algorithm, checks the answer, and gives you the result: a schedule, a plan, a decision, a budget, a ranking, a proof -- whatever you need.
+
+One algorithm. Any problem. Verified.
 
 ```
-/uber-polya (orchestrator -- runs the full pipeline automatically)
+/uber-polya Schedule 12 nurses across 3 shifts so nobody works more than 5 days
 
-/uber-model          /uber-solve           /uber-interpret
-"What IS the         "What is the          "What does it
- problem?"            ANSWER?"              MEAN?"
-
- Real-world   -->    Formal Model   -->    Verified      -->   Actionable
- problem             (math)                Solution            Insight
-
- Polya Phase         Polya Phase           Polya Phase
- 1-2: Understand     3: Execute            4: Look Back
- & Plan
+uber-polya:
+  1. Understands  -> "This is a constraint satisfaction problem"
+  2. Models       -> ILP with 252 binary variables, 48 constraints
+  3. Solves       -> Optimal schedule in 0.3 seconds
+  4. Verifies     -> All constraints satisfied, optimality proven
+  5. Delivers     -> A shift schedule you can use today
 ```
 
-Use `/uber-polya` for end-to-end problem solving in a single invocation. Or invoke each skill individually for more control. Each skill's output feeds the next, implementing Polya's complete problem-solving cycle.
+## What Can uber-polya Solve?
 
-## The Vision
+Every problem in this table has a mathematical structure. uber-polya finds it and solves it.
 
-Polya's method is not limited to any single branch of mathematics. It applies to discrete optimization, continuous calculus, statistical inference, machine learning, simulation, and beyond. uber-polya implements this universal methodology as a modular, extensible framework.
+### Business Problems
 
-**Currently shipped**: Discrete mathematics (86 algorithms, 32 structures, 8 solver libraries), continuous optimization (8 algorithms, 5 structures, cvxpy/scipy), and statistical inference (45 algorithms, 6 structures, 6 solver libraries) -- 139 algorithms and 43 structures across 10 domains.
+| Problem | You say... | uber-polya finds... | You get... |
+|---------|-----------|---------------------|-----------|
+| Shift scheduling | "Schedule 12 nurses across 3 shifts" | Constraint satisfaction / ILP | A shift schedule (table) |
+| Project selection | "Pick the best 5 of 20 projects under budget" | Knapsack optimization | Ranked list + ROI analysis |
+| Task assignment | "Assign inspectors to regions, minimize travel" | Bipartite matching | Assignment matrix |
+| Route planning | "Route 4 trucks across 30 delivery stops" | Vehicle routing (TSP variant) | Optimized routes + map |
+| Pricing | "Price this product to maximize revenue" | Optimization with demand model | Recommended price + sensitivity |
+| A/B testing | "Is this test result statistically real?" | Hypothesis testing | Yes/no + confidence + power analysis |
+| Portfolio allocation | "Allocate investments to minimize risk" | Quadratic programming | Efficient frontier + allocation |
+| Build vs. buy | "Should we build or buy this component?" | Decision tree / expected value | Recommendation + break-even |
 
-**Expansion planned**: Each new domain plugs in as additional reference files and protocol sections, without changing the core Polya workflow.
+### Personal Problems
 
-## What Are Claude Code Skills?
-
-Skills are markdown behavior specifications that live in `.claude/skills/` and activate as slash commands. No code to install, no dependencies to manage -- you copy directories and they work. Each skill guides Claude through a structured workflow with phases, verification gates, and reference catalogs.
+| Problem | You say... | uber-polya finds... | You get... |
+|---------|-----------|---------------------|-----------|
+| Meal planning | "Plan meals for the week within budget" | Linear programming | Meal plan + grocery list |
+| Rent splitting | "Split rent fairly among 3 roommates" | Fair division / allocation | Dollar amounts per person |
+| Study schedule | "Schedule study sessions across 5 subjects" | Graph coloring / scheduling | Weekly study timetable |
+| Apartment ranking | "Pick the best apartment from these 10" | Multi-criteria decision analysis | Ranked list + trade-offs |
+| Expense splitting | "Split trip expenses among friends" | Fair allocation | Split table |
+| Refinancing | "Should I refinance my mortgage?" | NPV / break-even analysis | Yes/no + savings timeline |
 
 ## Installation
 
@@ -45,137 +57,171 @@ bash install.sh
 
 The installer asks whether to install globally (`~/.claude/skills/`, available in all projects) or locally (`./.claude/skills/`, current project only).
 
-### Manual installation
-
-```bash
-cp -r skills/uber-polya     ~/.claude/skills/
-cp -r skills/uber-model     ~/.claude/skills/
-cp -r skills/uber-solve     ~/.claude/skills/
-cp -r skills/uber-interpret ~/.claude/skills/
-```
-
 ## Quick Start
 
 Open Claude Code and type:
 
 ```
-/uber-polya I need to schedule 4 exams into time slots so no student
-has two exams at the same time.
+/uber-polya I need to schedule 4 exams into time slots so no student has two exams at the same time.
 ```
 
-Claude guides you through the complete pipeline automatically:
-1. **Model** -- Socratic dialogue, classifies as graph coloring on a conflict graph
-2. **Solve** -- Selects the right algorithm, writes verified solver code, runs it
-3. **Interpret** -- Translates the answer, sensitivity analysis, visualizations, recommendations
+uber-polya guides you through the complete pipeline:
+1. **Understand** -- Socratic dialogue to extract what you really need
+2. **Model** -- Classifies as graph coloring on a conflict graph
+3. **Solve** -- Selects the right algorithm, writes verified solver code, runs it
+4. **Interpret** -- Translates the answer, sensitivity analysis, visualizations, recommendations
 
-Or use individual skills for more control: `/uber-model` (formalize), `/uber-solve` (compute), `/uber-interpret` (explain).
+Or use individual skills for more control:
+- `/uber-model` -- formalize a problem into a mathematical model
+- `/uber-solve` -- solve a mathematical model with the right algorithm
+- `/uber-interpret` -- interpret and visualize a solution for stakeholders
 
-## What's Inside
+## How It Works
 
-### Skills (18 files)
+uber-polya implements George Polya's four-phase problem-solving cycle (from *How to Solve It*, 1945) as an executable meta-algorithm:
 
-| Skill | Files | Purpose |
-|-------|-------|---------|
-| `uber-polya` | SKILL.md | Orchestrator: chains the full Model → Solve → Interpret pipeline |
-| `uber-model` | SKILL.md + 5 references | Socratic modeling guide with 4 Polya phases |
-| `uber-solve` | SKILL.md + 6 references | Algorithm selection + verified solver engineering |
-| `uber-interpret` | SKILL.md + 2 references | Solution interpretation for stakeholders |
+```
+/uber-polya (orchestrator)
 
-### Reference Catalogs
+/uber-model            /uber-solve             /uber-interpret
+"What IS the           "What is the            "What does it
+ problem?"              ANSWER?"                MEAN?"
 
-| Catalog | Skill | Entries |
-|---------|-------|---------|
-| Polya's Heuristics | uber-model | 17 heuristics with Socratic questions |
-| Structure Catalog | uber-model | 43 structures across 10 mathematical domains |
-| Problem Classification | uber-model | Decision tree + quick-lookup table for rapid pattern matching |
-| Common Mistakes | uber-model | 16 anti-patterns across modeling, solving, and interpretation |
-| Model Templates | uber-model | Fill-in-the-blank formal models for 5 common patterns |
-| Algorithm Catalog | uber-solve | 94 discrete math + continuous optimization algorithms |
-| Algorithm Catalog (Statistics) | uber-solve | 45 statistical inference algorithms |
-| Solver Ecosystem | uber-solve | 9 Python solver libraries (NetworkX, PuLP, Z3, SymPy, SciPy, OR-Tools, numpy, itertools, cvxpy) |
-| Solver Ecosystem (Statistics) | uber-solve | 6 statistical solver libraries (scipy.stats, statsmodels, scikit-learn, PyMC, pingouin, lifelines) |
-| Solving Protocols | uber-solve | 9 domain-specific solving workflows |
-| Optimization Hardening | uber-solve | Performance tuning and production hardening guide |
-| Interpretation Patterns | uber-interpret | Domain-specific math-to-reality translation |
-| Visualization Guide | uber-interpret | 20+ chart types with matplotlib templates |
+ Real-world    -->     Formal Model    -->     Verified       -->    Actionable
+ problem               (math)                 Solution              Insight
 
-### Domains Currently Covered
+ Polya Phases          Polya Phase            Polya Phase
+ 1-2: Understand       3: Execute             4: Look Back
+ & Plan
+```
+
+Each skill's output feeds the next. The pipeline is Socratic: uber-polya asks questions, you confirm understanding, and the solution is built collaboratively -- not dictated.
+
+## Supercharge with the MCP Server
+
+uber-polya works great standalone. The optional MCP server makes it dramatically faster and more accurate.
+
+| Capability | Standalone (free) | With MCP Server |
+|-----------|-------------------|-----------------|
+| Problem classification | LLM reads reference catalogs (~30s) | Deterministic classifier (~1s) |
+| Algorithm selection | LLM scans 139 algorithms | Empirical benchmarks, instant match |
+| Solver code | Written from scratch each time | Pre-built, tested templates |
+| Verification | Self-check (Claude verifies Claude) | Independent verification oracle |
+| Community knowledge | Start from zero every time | "847 people solved a similar problem" |
+
+```bash
+# Connect the MCP server (optional)
+claude mcp add --transport http uber-polya https://mcp.uber-polya.dev/mcp \
+  --header "Authorization: Bearer $UBER_POLYA_API_KEY"
+```
+
+See [uber-polya.dev](https://uber-polya.dev) for pricing and setup.
+
+## Worked Examples
+
+### Everyday Problems
+
+| Example | Problem | Algorithm |
+|---------|---------|-----------|
+| [Shift Scheduling](examples/shift-scheduling/) | Schedule 8 nurses across 3 shifts over 7 days | ILP (PuLP/CBC) |
+| [Budget Optimization](examples/budget-optimization/) | Select projects to maximize ROI under budget | 0/1 Knapsack ILP |
+| [Fair Rent](examples/fair-rent/) | Split rent fairly among 3 roommates | Hungarian + envy-free adjustment |
+| [Route Planning](examples/route-planning/) | Shortest delivery route across 8 stops | Held-Karp DP (exact TSP) |
+| [Project Prioritization](examples/project-prioritization/) | Rank 8 features by weighted criteria | MCDA weighted scoring |
+| [Study Schedule](examples/study-schedule/) | Conflict-free study timetable for 6 subjects | Graph coloring (NetworkX) |
+| [Meal Planning](examples/meal-planning/) | Plan 7 dinners minimizing cost, meeting nutrition targets | ILP (PuLP/CBC) |
+| [Team Assignment](examples/team-assignment/) | Assign 6 developers to 6 projects | Hungarian algorithm (SciPy) |
+| [Break-Even Analysis](examples/break-even/) | Find break-even quantity for product launch | Symbolic algebra (SymPy) |
+| [Event Seating](examples/event-seating/) | Seat 12 wedding guests at 3 tables with constraints | ILP (PuLP/CBC) |
+
+### Technical Showcases
+
+| Example | Domain | Algorithm |
+|---------|--------|-----------|
+| [Milking Cows](examples/milking-cows/) | Interval merging | Sort + sweep, O(N log N) |
+| [Inspector Assignment](examples/inspector-assignment/) | Bipartite ILP | PuLP/CBC solver |
+| [Portfolio Optimization](examples/portfolio-optimization/) | Convex QP | cvxpy (Markowitz) |
+| [Tournament Hamiltonian](examples/tournament-hamiltonian/) | Graph proof | Induction + Z3 |
+| [A/B Testing](examples/ab-testing/) | Statistical inference | z-test + Bayesian + bootstrap |
+| [Cafe Tips](examples/cafe-tips/) | Statistical inference | t-test + Mann-Whitney + bootstrap |
+
+## What's Under the Hood
+
+### The Knowledge Base
+
+139 algorithms, 43 structures, 17 heuristics, 15 solver libraries -- curated, cross-referenced, and organized for rapid problem-solving.
+
+| Catalog | Entries |
+|---------|---------|
+| Polya's Heuristics | 17 heuristics with Socratic questions |
+| Structure Catalog | 43 structures across 10 mathematical domains |
+| Problem Classification | Decision tree + pattern table for rapid matching |
+| Algorithm Catalogs | 139 algorithms (discrete math, continuous optimization, statistics) |
+| Solver Ecosystem | 15 Python libraries (NetworkX, PuLP, Z3, SymPy, SciPy, OR-Tools, cvxpy, statsmodels, PyMC, and more) |
+| Interpretation Patterns | Domain-specific math-to-reality translation |
+| Visualization Guide | 20+ chart types with matplotlib templates |
+
+### Domains Covered
 
 Graph Theory, Combinatorics, Set Theory, Logic, Number Theory, Relations & Orders, Optimization, Discrete Probability, Continuous Optimization, Statistical Inference.
 
-## Roadmap
-
-The uber-polya framework is designed for modular expansion. Each domain adds new reference files and protocol sections to the existing skills, without changing the core Polya workflow.
+### Expansion Roadmap
 
 | Domain | Status | What It Adds |
 |--------|--------|--------------|
 | Discrete Mathematics | Shipped | 86 algorithms, 32 structures, 8 solver libraries |
 | Continuous Optimization | Shipped | 8 algorithms, 5 structures, cvxpy/scipy |
-| Statistical Inference | Shipped | 45 algorithms, 6 structures, scipy.stats/statsmodels/PyMC/pingouin/lifelines |
-| Machine Learning | Planned | Classification, clustering, dimensionality reduction, scikit-learn |
-| Differential Equations | Planned | ODE/PDE solvers, numerical integration, scipy.integrate |
-| Simulation | Planned | Monte Carlo, discrete-event, agent-based, SimPy/Mesa |
-| Signal Processing | Planned | FFT, filtering, spectral analysis, scipy.signal |
-| Game Theory | Planned | Nash equilibrium, mechanism design, nashpy |
-| Control Theory | Planned | PID, optimal control, Kalman filtering |
-| Time Series | Planned | ARIMA, forecasting, anomaly detection, statsmodels |
-| Information Theory | Planned | Entropy, mutual information, compression bounds |
+| Statistical Inference | Shipped | 45 algorithms, 6 structures, 6 solver libraries |
+| Game Theory | Planned | Nash equilibrium, fair division, mechanism design |
+| Machine Learning | Planned | Classification, clustering, dimensionality reduction |
+| Simulation | Planned | Monte Carlo, discrete-event, agent-based |
+| Time Series | Planned | ARIMA, forecasting, anomaly detection |
+| Decision Analysis | Planned | Multi-criteria, decision trees, utility theory |
 
-Contributions for any planned domain are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md).
-
-## Examples
-
-Six fully worked examples demonstrate the complete trilogy pipeline:
-
-| Example | Domain | Algorithm | Key Concepts |
-|---------|--------|-----------|--------------|
-| [Milking Cows](examples/milking-cows/) | Interval merging | Sort + sweep, O(N log N) | Greedy algorithms, brute-force verification |
-| [Inspector Assignment](examples/inspector-assignment/) | Bipartite ILP | PuLP/CBC solver | LP relaxation, sensitivity analysis, stakeholder viz |
-| [Portfolio Optimization](examples/portfolio-optimization/) | Convex QP | cvxpy (Markowitz) | Efficient frontier, risk-return trade-off, convex duality |
-| [Tournament Hamiltonian](examples/tournament-hamiltonian/) | Graph proof | Induction + Z3 | Proof by induction, computational verification, constructive proof |
-| [A/B Testing](examples/ab-testing/) | Statistical inference | z-test + Bayesian + bootstrap | Hypothesis testing, power analysis, Bayesian A/B |
-| [Cafe Tips](examples/cafe-tips/) | Statistical inference | t-test + Mann-Whitney + bootstrap | Full Polya cycle, assumption checking, triple verification, effect sizes |
-
-Each example includes the solver script, visualizations, and a tutorial walkthrough.
+New domains plug in as reference files without changing the core Polya workflow. Contributions welcome -- see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Requirements
 
 - **Claude Code** (Anthropic's CLI) -- the runtime for skills
 - **Python 3.10+** -- for running generated solver code
 
-Optional Python packages (installed as needed by `/uber-solve`):
+Optional Python packages (installed as needed):
 
 ```bash
-pip install networkx pulp z3-solver sympy scipy matplotlib numpy
+pip install networkx pulp z3-solver sympy scipy matplotlib numpy cvxpy statsmodels
 ```
-
-## Documentation
-
-- [Architecture](docs/architecture.md) -- How Polya's method maps to the trilogy
-- [Getting Started Tutorial](docs/tutorials/getting-started.md) -- Your first problem
-- [Milking Cows Walkthrough](docs/tutorials/milking-cows-walkthrough.md) -- Interval merging example
-- [Inspector Assignment Walkthrough](docs/tutorials/inspector-assignment-walkthrough.md) -- ILP example
-- [Creating Your Own Skills](docs/creating-skills.md) -- Build on this framework
 
 ## Design Principles
 
-1. **Socratic, not didactic.** Claude asks questions that could have occurred to the user. Never lectures.
-2. **Verify everything.** Every solution includes independent verification -- brute-force cross-check, LP relaxation bounds, or constraint-by-constraint feasibility.
-3. **Right tool for the job.** Algorithm selection based on problem class and instance size, not one-size-fits-all.
-4. **Audience adaptation.** Results presented differently for technical, decision-maker, domain expert, and general audiences.
+1. **Socratic, not didactic.** Asks questions that could have occurred to you. Never lectures.
+2. **Verify everything.** Every solution includes independent verification.
+3. **Right tool for the job.** Algorithm selection based on problem class and instance size.
+4. **Audience adaptation.** Results adapted for technical, decision-maker, or general audiences.
 5. **Knowledge transfer.** Every problem teaches a reusable modeling pattern.
-6. **Modular expansion.** New domains plug in as reference files without changing the core Polya workflow.
+6. **Modular expansion.** New domains plug in without changing the core workflow.
 
-## Contributing
+## Documentation
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for how to:
-- Add heuristics, structures, or algorithms to the reference catalogs
-- Contribute new mathematical domains
-- Submit new worked examples
+- [The Manifesto](docs/manifesto.md) -- Why every problem is a math problem
+- [Architecture](docs/architecture.md) -- How Polya's method maps to the skills
+- [Getting Started](docs/tutorials/getting-started.md) -- Your first problem
+- [Creating Skills](docs/creating-skills.md) -- Build on this framework
+- [Contributing](CONTRIBUTING.md) -- Add algorithms, domains, or examples
+
+## Cross-Platform Compatibility
+
+uber-polya uses the Agent Skills open standard. It works on any platform that supports it:
+
+- Claude Code (Anthropic)
+- OpenAI Codex CLI
+- Cursor
+- GitHub Copilot
+- Mistral Vibe
+- And 25+ more
 
 ## License
 
-[MIT](LICENSE)
+[MIT](LICENSE) -- free to use, modify, and distribute.
 
 ## Acknowledgments
 

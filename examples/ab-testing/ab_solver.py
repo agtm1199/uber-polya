@@ -17,6 +17,12 @@ from dataclasses import dataclass, field
 import numpy as np
 from scipy import stats
 
+import sys
+from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+from utils.polya_logger import PolyaLogger
+log = PolyaLogger()
+
 
 # --- Data Model ---
 
@@ -328,88 +334,76 @@ if __name__ == "__main__":
     sol = solve(instance)
 
     # --- Print Solution Report ---
-    print("=" * 70)
-    print("  A/B TEST SOLUTION REPORT")
-    print("=" * 70)
-    print()
-    print("  INSTANCE")
-    print("  " + "-" * 66)
-    print("  Control (A):   {:,} visitors, {:,} conversions ({:.2%})".format(
-        instance.n_a, instance.conv_a, instance.rate_a))
-    print("  Treatment (B): {:,} visitors, {:,} conversions ({:.2%})".format(
-        instance.n_b, instance.conv_b, instance.rate_b))
-    print()
+    log.header("A/B TEST SOLUTION REPORT")
 
-    print("  FREQUENTIST ANALYSIS")
-    print("  " + "-" * 66)
-    print("  Z-statistic:   {:.3f}".format(sol.z_statistic))
-    print("  P-value:       {:.6f}".format(sol.p_value))
-    print("  Significant:   {} (alpha={})".format(sol.is_significant, instance.alpha))
-    print("  Absolute lift: {:+.2%}".format(sol.absolute_lift))
-    print("  Relative lift: {:+.1%}".format(sol.relative_lift))
-    print("  95% CI (diff): [{:.4f}, {:.4f}]".format(*sol.ci_diff))
-    print("  Cohen's h:     {:.3f} ({})".format(
+    log.step("INSTANCE")
+    log.metric("Control (A)", "{:,} visitors, {:,} conversions ({:.2%})".format(
+        instance.n_a, instance.conv_a, instance.rate_a), tag="DATA")
+    log.metric("Treatment (B)", "{:,} visitors, {:,} conversions ({:.2%})".format(
+        instance.n_b, instance.conv_b, instance.rate_b), tag="DATA")
+    log.blank()
+
+    log.step("FREQUENTIST ANALYSIS")
+    log.metric("Z-statistic", "{:.3f}".format(sol.z_statistic), tag="STATS")
+    log.metric("P-value", "{:.6f}".format(sol.p_value), tag="STATS")
+    log.metric("Significant", "{} (alpha={})".format(sol.is_significant, instance.alpha), tag="HYPOTHESIS")
+    log.metric("Absolute lift", "{:+.2%}".format(sol.absolute_lift), tag="STATS")
+    log.metric("Relative lift", "{:+.1%}".format(sol.relative_lift), tag="STATS")
+    log.metric("95% CI (diff)", "[{:.4f}, {:.4f}]".format(*sol.ci_diff), tag="STATS")
+    log.metric("Cohen's h", "{:.3f} ({})".format(
         sol.effect_size_h,
         "small" if abs(sol.effect_size_h) < 0.3 else "medium" if abs(sol.effect_size_h) < 0.5 else "large"
-    ))
-    print("  Power:         {:.1%}".format(sol.power))
-    print()
+    ), tag="STATS")
+    log.metric("Power", "{:.1%}".format(sol.power), tag="POWER")
+    log.blank()
 
-    print("  BAYESIAN ANALYSIS")
-    print("  " + "-" * 66)
-    print("  P(B > A):      {:.1%}".format(sol.prob_b_better))
-    print("  Expected lift: {:+.4f}".format(sol.expected_lift_bayesian))
-    print("  95% CrI (lift):[{:.4f}, {:.4f}]".format(*sol.bayesian_ci_lift))
-    print("  CrI A:         [{:.4f}, {:.4f}]".format(*sol.credible_interval_a))
-    print("  CrI B:         [{:.4f}, {:.4f}]".format(*sol.credible_interval_b))
-    print()
+    log.step("BAYESIAN ANALYSIS")
+    log.metric("P(B > A)", "{:.1%}".format(sol.prob_b_better), tag="BAYESIAN")
+    log.metric("Expected lift", "{:+.4f}".format(sol.expected_lift_bayesian), tag="BAYESIAN")
+    log.metric("95% CrI (lift)", "[{:.4f}, {:.4f}]".format(*sol.bayesian_ci_lift), tag="BAYESIAN")
+    log.metric("CrI A", "[{:.4f}, {:.4f}]".format(*sol.credible_interval_a), tag="BAYESIAN")
+    log.metric("CrI B", "[{:.4f}, {:.4f}]".format(*sol.credible_interval_b), tag="BAYESIAN")
+    log.blank()
 
-    print("  BOOTSTRAP ANALYSIS")
-    print("  " + "-" * 66)
-    print("  95% CI (diff): [{:.4f}, {:.4f}]".format(*sol.bootstrap_ci_diff))
-    print()
+    log.step("BOOTSTRAP ANALYSIS")
+    log.metric("95% CI (diff)", "[{:.4f}, {:.4f}]".format(*sol.bootstrap_ci_diff), tag="STATS")
+    log.blank()
 
-    print("  POWER ANALYSIS")
-    print("  " + "-" * 66)
-    print("  Observed power: {:.1%}".format(sol.power))
-    print("  N per group for 80% power: {:,}".format(sol.n_per_group_for_80pct))
-    print()
+    log.step("POWER ANALYSIS")
+    log.metric("Observed power", "{:.1%}".format(sol.power), tag="POWER")
+    log.metric("N per group for 80% power", "{:,}".format(sol.n_per_group_for_80pct), tag="POWER")
+    log.blank()
 
-    print("  RECOMMENDATION")
-    print("  " + "-" * 66)
-    print("  {}".format(sol.recommendation))
-    print()
+    log.step("RECOMMENDATION")
+    log.info(sol.recommendation, tag="RECOMMEND")
+    log.blank()
 
-    print("  VERIFICATION (independent methods)")
-    print("  " + "-" * 66)
-    for check, result in sol.verification.items():
+    log.step("VERIFICATION (independent methods)")
+    for check_name, result in sol.verification.items():
         if isinstance(result, bool):
-            status = "PASS" if result else "FAIL"
-            print("  {:<35} {}".format(check, status))
+            log.check(check_name, result, tag="VERIFY")
         else:
-            print("  {:<35} {:.6f}".format(check, result))
-    print()
+            log.check(check_name, float(result), tag="VERIFY")
+    log.blank()
 
-    print("  SENSITIVITY ANALYSIS")
-    print("  " + "-" * 66)
+    log.step("SENSITIVITY ANALYSIS")
     if "double_sample_size" in sol.sensitivity:
         s = sol.sensitivity["double_sample_size"]
-        print("  Double sample size:  p={:.6f}, power={:.1%}, sig={}".format(
-            s["p_value"], s["power"], s["significant"]))
+        log.metric("Double sample size", "p={:.6f}, power={:.1%}, sig={}".format(
+            s["p_value"], s["power"], s["significant"]), tag="SENSITIVITY")
     if "half_effect" in sol.sensitivity:
         s = sol.sensitivity["half_effect"]
-        print("  Half effect size:    need {:,}/group for 80% power".format(
-            s["n_per_group_needed"]))
+        log.metric("Half effect size", "need {:,}/group for 80% power".format(
+            s["n_per_group_needed"]), tag="SENSITIVITY")
     if "power_curve" in sol.sensitivity:
-        print("  Power curve:")
+        log.info("Power curve:", tag="POWER")
         for n, pwr in sol.sensitivity["power_curve"].items():
-            bar = "#" * int(pwr * 30)
-            print("    n={:>6,}: {:.0%} {}".format(n, pwr, bar))
-    print()
+            log.bar("n={:>6,}:".format(n), pwr, tag="POWER")
+    log.blank()
 
-    print("  Algorithm:  {}".format(sol.algorithm))
-    print("  Time:       {:.4f}s".format(sol.time_seconds))
-    print()
+    log.metric("Algorithm", sol.algorithm, tag="SOLVE")
+    log.metric("Time", "{:.4f}s".format(sol.time_seconds), tag="TIMING")
+    log.blank()
 
     # Output JSON
     output = {
@@ -438,5 +432,5 @@ if __name__ == "__main__":
     }
     with open("solution.json", "w") as f:
         json.dump(output, f, indent=2, default=str)
-    print("  Solution data saved to: solution.json")
-    print("=" * 70)
+    log.success("Solution data saved to: solution.json", tag="SAVE")
+    log.divider(style="thick")

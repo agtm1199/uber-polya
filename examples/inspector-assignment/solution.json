@@ -1,0 +1,65 @@
+{
+  "assignments": {
+    "Alice": [
+      "F1",
+      "F2"
+    ],
+    "Bob": [
+      "F3",
+      "F4"
+    ],
+    "Carol": [
+      "F5",
+      "F6"
+    ],
+    "Dave": [
+      "F7",
+      "F8"
+    ],
+    "Eve": [
+      "F9",
+      "F10"
+    ],
+    "Frank": []
+  },
+  "objective": 90.0,
+  "is_optimal": true,
+  "is_feasible": true,
+  "lp_relaxation": 90.0,
+  "theoretical_max": 90,
+  "efficiency": 1.0,
+  "algorithm": "ILP (PuLP/CBC, Branch & Bound)",
+  "time_seconds": 0.008670982002513483,
+  "sensitivity": {
+    "Alice": {
+      "objective": 88.0,
+      "delta": -2.0,
+      "pct": -2.2222222222222223
+    },
+    "Bob": {
+      "objective": 85.0,
+      "delta": -5.0,
+      "pct": -5.555555555555555
+    },
+    "Carol": {
+      "objective": 85.0,
+      "delta": -5.0,
+      "pct": -5.555555555555555
+    },
+    "Dave": {
+      "objective": 86.0,
+      "delta": -4.0,
+      "pct": -4.444444444444445
+    },
+    "Eve": {
+      "objective": 87.0,
+      "delta": -3.0,
+      "pct": -3.3333333333333335
+    },
+    "Frank": {
+      "objective": 90.0,
+      "delta": 0.0,
+      "pct": 0.0
+    }
+  }
+}

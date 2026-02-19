@@ -36,7 +36,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - uber-solve now references 6 files (added solving-protocols.md, optimization-hardening.md, algorithms-statistics.md, solvers-statistics.md)
 - All reference files now carry **Scope** tags for multi-domain awareness
 - heuristics.md and structures.md titles updated from "Discrete Math" to "Mathematical" (universal branding)
-- Updated README: 139 algorithms, 15 solver libraries, 43 structures, 10 domains, 5 examples
+- Updated README: 139 algorithms, 15 solver libraries, 43 structures, 10 domains, 6 examples
 
 ## [0.3.0] - 2026-02-18
 

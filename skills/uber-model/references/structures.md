@@ -1,6 +1,6 @@
 # Mathematical Structure Catalog
 
-**Scope**: Discrete Mathematics (32 structures), Continuous Optimization (5 structures)
+**Scope**: Discrete Mathematics (32 structures), Continuous Optimization (5 structures), Statistical Inference (6 structures)
 
 A catalog of mathematical structures organized by domain. Use this to match real-world problems to mathematical models during Phase 2 of the uber-model skill.
 

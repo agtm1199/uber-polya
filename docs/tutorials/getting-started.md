@@ -10,7 +10,7 @@ A zero-to-hero tutorial. By the end, you will have modeled, solved, and interpre
 Optional Python packages (installed automatically when needed):
 
 ```bash
-pip install networkx pulp z3-solver sympy scipy matplotlib numpy
+pip install networkx pulp z3-solver sympy scipy matplotlib numpy cvxpy statsmodels
 ```
 
 ## Install uber-polya
@@ -21,7 +21,7 @@ cd uber-polya
 bash install.sh
 ```
 
-The installer asks where to put the three skills:
+The installer asks where to put the four skills:
 
 1. **Global** (`~/.claude/skills/`) -- available in every project
 2. **Local** (`./.claude/skills/`) -- current project only
@@ -108,10 +108,14 @@ Each skill's output feeds the next. You can also run them independently -- `/ube
 
 ## Next Steps
 
-**Try the worked examples.** The `examples/` directory contains two fully solved problems with runnable code:
+**Try the worked examples.** The `examples/` directory contains six fully solved problems with runnable code:
 
 - **[Milking Cows](../tutorials/milking-cows-walkthrough.md)** -- Interval merging, O(N log N) sort-and-sweep, brute-force verification. A clean algorithmic problem.
 - **[Inspector Assignment](../tutorials/inspector-assignment-walkthrough.md)** -- Capacitated bipartite ILP, LP relaxation, sensitivity analysis. A real-world optimization problem.
+- **[Portfolio Optimization](../../examples/portfolio-optimization/)** -- Markowitz QP with cvxpy, efficient frontier, risk-return trade-off.
+- **[Tournament Hamiltonian](../../examples/tournament-hamiltonian/)** -- Proof by induction with Z3 computational verification.
+- **[A/B Testing](../../examples/ab-testing/)** -- z-test, Bayesian, bootstrap, power analysis.
+- **[Cafe Tips](../../examples/cafe-tips/)** -- Full Polya cycle: t-test, Mann-Whitney, permutation, bootstrap, Bayesian.
 
 **Try your own problem.** Good candidates for `/uber-model`:
 
@@ -120,5 +124,8 @@ Each skill's output feeds the next. You can also run them independently -- `/ube
 - Routing (deliveries, network paths) -- shortest path, flow, TSP
 - Counting (arrangements, combinations, probabilities) -- combinatorics, inclusion-exclusion
 - Feasibility ("Is it possible to...?") -- SAT, constraint satisfaction
+- Optimization (minimize cost, maximize profit) -- continuous optimization, convex QP
+- Comparing groups ("Is A better than B?") -- hypothesis testing, A/B tests
+- Prediction (forecast outcomes from data) -- regression, Bayesian inference
 
 Start with `/uber-model <describe your problem in plain English>` and let Claude guide you from there.

@@ -75,25 +75,34 @@ A complete skill directory:
     patterns.md         # Application patterns
 ```
 
-For uber-polya, each skill has exactly one SKILL.md and two reference files:
+For uber-polya, each skill has a SKILL.md and reference files:
 
 ```
 skills/
+  uber-polya/
+    SKILL.md                        # Orchestrator: chains Model → Solve → Interpret
   uber-model/
-    SKILL.md                        # 370 lines, 4 phases
+    SKILL.md                        # Modeling engine, 4 phases
     references/
       heuristics.md                 # 17 Polya heuristics
-      structures.md              # 32 DM structures
+      structures.md                 # 43 structures across 10 domains
+      problem-classification.md     # Decision tree + pattern table
+      common-mistakes.md            # 16 anti-patterns
+      model-templates.md            # 5 formal model templates
   uber-solve/
-    SKILL.md                        # 465 lines, 5 phases
+    SKILL.md                        # Solving engine, 5 phases
     references/
-      algorithms.md                 # 86 algorithms
-      solvers.md                    # Python solver ecosystem
+      algorithms.md                 # 94 discrete + continuous algorithms
+      solvers.md                    # Discrete + continuous solvers (9 libraries)
+      algorithms-statistics.md      # 45 statistical algorithms
+      solvers-statistics.md         # 6 statistical solver libraries
+      solving-protocols.md          # 9 domain-specific protocols
+      optimization-hardening.md     # Production hardening guide
   uber-interpret/
-    SKILL.md                        # 490 lines, 6 phases
+    SKILL.md                        # Interpretation engine, 6 phases
     references/
-      interpretation-patterns.md    # Domain translation patterns
-      visualization.md              # Chart templates
+      interpretation-patterns.md    # 8 sections of translation patterns
+      visualization.md              # 20+ chart types
 ```
 
 ## Key Patterns Used in uber-polya

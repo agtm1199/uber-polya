@@ -27,7 +27,7 @@ Use `/uber-polya` for end-to-end problem solving in a single invocation. Or invo
 
 Polya's method is not limited to any single branch of mathematics. It applies to discrete optimization, continuous calculus, statistical inference, machine learning, simulation, and beyond. uber-polya implements this universal methodology as a modular, extensible framework.
 
-**Currently shipped**: Discrete mathematics (86+ algorithms, 32 structures, 8 solver libraries) -- the domain with the most mature solver ecosystem and cleanest complexity theory.
+**Currently shipped**: Discrete mathematics (86 algorithms, 32 structures, 8 solver libraries), continuous optimization (8 algorithms, 5 structures, cvxpy/scipy), and statistical inference (45 algorithms, 6 structures, 6 solver libraries) -- 139 algorithms and 43 structures across 10 domains.
 
 **Expansion planned**: Each new domain plugs in as additional reference files and protocol sections, without changing the core Polya workflow.
 

@@ -1,6 +1,6 @@
 # Architecture
 
-How three Claude Code skills implement George Polya's problem-solving methodology for discrete mathematics.
+How four Claude Code skills implement George Polya's problem-solving methodology as a universal problem-solving engine.
 
 ## The Polya Foundation
 
@@ -40,7 +40,7 @@ This maps to `/uber-interpret` Phases 1-5. Phase 1 translates the mathematical s
 
 ## Trilogy Architecture
 
-The three skills form a pipeline. Each skill's output feeds the next.
+The trilogy skills form a pipeline. Each skill's output feeds the next. The `/uber-polya` orchestrator chains all three automatically.
 
 ```
 /uber-model               /uber-solve               /uber-interpret
@@ -63,7 +63,7 @@ The modeling skill produces a Problem Understanding block and a Formal Model.
 - Figure: ASCII sketch if applicable
 
 **Formal Model** (Phase 3):
-- Domain: one of the 8 mathematical domains
+- Domain: one of the 10 mathematical domains
 - Universe: the set of objects under consideration
 - Variables: symbols with meaning and type/range
 - Structure: the core mathematical object (graph, formula, ILP, etc.)
@@ -83,7 +83,7 @@ The solving skill produces a Problem Classification and a Solution Report.
 - Instance Size: the parameters that determine computational cost
 - Solution Strategy: exact polynomial, ILP solver, approximation, etc.
 - Selected Algorithm: name with time and space complexity
-- Solver Library: NetworkX, PuLP, Z3, SymPy, or OR-Tools
+- Solver Library: NetworkX, PuLP, Z3, SymPy, SciPy, OR-Tools, cvxpy, scipy.stats, statsmodels, or others
 - Correctness Guarantee: optimal, (1+e)-approximate, or heuristic with bound
 
 **Solution Report** (Phase 3):
@@ -106,7 +106,7 @@ The interpretation skill produces five deliverables across its phases.
 
 **Sensitivity Analysis** (Phase 2): parameter sensitivity table (robust/sensitive/critical classification), structural sensitivity, optimality gap analysis, and 2-3 what-if scenarios.
 
-**Visualizations** (Phase 3): 1-3 charts selected by result type -- graph diagrams, heatmaps, Gantt charts, tornado diagrams, distribution charts, flow diagrams, Pareto frontiers, or Hasse diagrams -- each with interpretive annotation.
+**Visualizations** (Phase 3): 1-3 charts selected by result type -- graph diagrams, heatmaps, Gantt charts, tornado diagrams, distribution charts, flow diagrams, Pareto frontiers, Hasse diagrams, group comparison bars, QQ plots, regression plots, forest plots, or posterior distributions -- each with interpretive annotation.
 
 **Recommendations** (Phase 4): primary recommendation, key constraints to monitor, risk factors, quick wins, and limitations. Adapted to the audience: technical, decision-maker, domain expert, or general.
 
@@ -114,31 +114,39 @@ The interpretation skill produces five deliverables across its phases.
 
 ## The Reference Knowledge Base
 
-Six reference files provide the domain knowledge that powers the skills. Each is a curated catalog designed to be read on demand during a specific skill phase.
+Fifteen reference files provide the domain knowledge that powers the skills. Each is a curated catalog designed to be read on demand during a specific skill phase. All reference files carry cross-reference indexes linking entries to counterparts in other files.
 
-### heuristics.md (uber-model)
+### uber-model references (5 files)
 
-Seventeen heuristics drawn from Polya's "How to Solve It," organized by phase. Each heuristic includes trigger conditions, Socratic questions adapted from Polya, and discrete math applications. Phase 1 heuristics (H1-H4) address understanding: separating conditions, introducing notation, drawing figures, checking feasibility. Phase 2 heuristics (H5-H12) address planning: analogy, decomposition, generalization (the Inventor's Paradox), specialization, working backwards, auxiliary elements, restatement, and related problems. Phase 3 heuristics (H13-H14) address execution: step verification and gap detection. Phase 4 heuristics (H15-H17) address reflection: result verification, method generalization, and connection to known results.
+**heuristics.md** -- Seventeen heuristics drawn from Polya's "How to Solve It," organized by phase. Each heuristic includes trigger conditions, Socratic questions adapted from Polya, and mathematical modeling applications. Phase 1 heuristics (H1-H4) address understanding: separating conditions, introducing notation, drawing figures, checking feasibility. Phase 2 heuristics (H5-H12) address planning: analogy, decomposition, generalization (the Inventor's Paradox), specialization, working backwards, auxiliary elements, restatement, and related problems. Phase 3 heuristics (H13-H14) address execution: step verification and gap detection. Phase 4 heuristics (H15-H17) address reflection: result verification, method generalization, and connection to known results.
 
-### structures.md (uber-model)
+**structures.md** -- A catalog of 43 mathematical structures across 10 domains. Each entry provides a one-line formal definition, real-world indicator phrases that suggest the structure, a formal notation template, concrete examples mapping real-world scenarios to math, and the classic named problems associated with it. The 10 domains are Graph Theory (simple graph, digraph, weighted graph, bipartite graph, tree, DAG, hypergraph, multigraph), Combinatorics (permutations, combinations, integer partitions, compositions, Latin squares), Set Theory (sets/multisets, set systems, power set, set partition), Logic (propositional, predicate, modal/deontic, constraint satisfaction), Number Theory (modular arithmetic, divisibility, Diophantine equations), Relations & Orders (partial order, equivalence relation, lattice), Optimization (ILP, search space, scheduling model), Discrete Probability (sample space, random variables), Continuous Optimization (unconstrained optimization, convex program, quadratic program, least-squares, nonlinear constrained), and Statistical Inference (random variable/distribution, statistical hypothesis, regression model, Bayesian model, sample/population, experimental design). A cross-domain pattern table maps 36+ real-world patterns to their primary structure.
 
-A catalog of 32 discrete math structures across 8 domains. Each entry provides a one-line formal definition, real-world indicator phrases that suggest the structure, a formal notation template, concrete examples mapping real-world scenarios to math, and the classic named problems associated with it. The 8 domains are Graph Theory (simple graph, digraph, weighted graph, bipartite graph, tree, DAG, hypergraph, multigraph), Combinatorics (permutations, combinations, integer partitions, compositions, Latin squares), Set Theory (sets/multisets, set systems, power set, set partition), Logic (propositional, predicate, modal/deontic, constraint satisfaction), Number Theory (modular arithmetic, divisibility, Diophantine equations), Relations & Orders (partial order, equivalence relation, lattice), Optimization (ILP, search space, scheduling model), and Discrete Probability (sample space, random variables). A cross-domain pattern table maps 30 real-world patterns to their primary structure.
+**problem-classification.md** -- A quick-reference decision tree and pattern lookup table for rapid problem classification. Routes problems through branching questions (discrete vs. continuous, find vs. prove, optimization vs. counting, etc.) to a named problem class with suggested structures and algorithms.
 
-### algorithms.md (uber-solve)
+**common-mistakes.md** -- Sixteen common anti-patterns across modeling (M1-M10), solving (S1-S6), and interpretation (I1-I6). Each mistake includes symptoms, prevention, and fix. Used as a pre-flight checklist before finalizing a formal model.
 
-A comprehensive catalog of 86 algorithms organized into 20 sections. Each entry specifies time complexity, space complexity, recommended Python library, correctness guarantee (exact, approximation ratio, or heuristic), and implementation guidance with code snippets. Coverage spans graph traversal (BFS, DFS, topological sort, cycle detection, SCC, articulation points), shortest path (Dijkstra, Bellman-Ford, Floyd-Warshall, A*, longest path in DAG), MST (Kruskal, Prim), matching (Hopcroft-Karp, Hungarian, Gale-Shapley, Edmonds' blossom), network flow (max flow, min cost flow), coloring (greedy, exact), independent set/vertex cover/clique, Euler/Hamilton, TSP (Held-Karp, Christofides, 2-opt), LP/ILP, dynamic programming patterns (knapsack, subset sum, LCS, edit distance, coin change, LIS, bitmask DP), greedy algorithms, SAT/SMT/CSP, number theory, combinatorial counting (inclusion-exclusion, Burnside, generating functions, Catalan), order theory (Dilworth, linear extensions, lattice operations), proof techniques (induction, contradiction, construction, pigeonhole), discrete probability (expected value, Bayes, Markov chains, Monte Carlo), and search/backtracking (branch and bound, IDDFS, simulated annealing, genetic algorithms). An algorithm selection matrix maps each problem class to the recommended algorithm by instance size.
+**model-templates.md** -- Fill-in-the-blank formal model templates for the 5 most common problem patterns: assignment/matching, scheduling/coloring, routing/shortest path, selection/knapsack, and dependency ordering. Each template includes a skeleton with placeholders, a fill-in checklist, and a quick variant guide.
 
-### solvers.md (uber-solve)
+### uber-solve references (6 files)
 
-A guide to the Python solver ecosystem: what each library solves, installation, key APIs with code examples, and performance notes. Covers NetworkX (graph algorithms, up to 100K nodes), PuLP (LP/ILP/MIP with CBC solver, up to 10K variables), Z3 (SAT/SMT/optimization, millions of Boolean variables), SymPy (symbolic math, number theory, proof verification), SciPy (Hungarian assignment, LP via HiGHS, sparse graph algorithms), OR-Tools (CP-SAT, vehicle routing, scheduling), itertools (combinatorial generation), and numpy (matrix operations, Markov chains, Monte Carlo). A solver selection guide maps each problem type to primary and fallback solvers.
+**algorithms.md** -- A comprehensive catalog of 94 discrete math and continuous optimization algorithms organized into 21 sections. Each entry specifies time complexity, space complexity, recommended Python library, correctness guarantee (exact, approximation ratio, or heuristic), and implementation guidance with code snippets. Coverage spans graph traversal, shortest path, MST, matching, network flow, coloring, independent set/vertex cover/clique, Euler/Hamilton, TSP, LP/ILP, dynamic programming patterns, greedy algorithms, SAT/SMT/CSP, number theory, combinatorial counting, order theory, proof techniques, discrete probability, search/backtracking, and continuous optimization (BFGS, gradient descent, cvxpy DCP, QP, least squares, Gauss-Newton, SQP, interior point). An algorithm selection matrix maps each problem class to the recommended algorithm by instance size.
 
-### interpretation-patterns.md (uber-interpret)
+**algorithms-statistics.md** -- A catalog of 45 statistical inference algorithms covering hypothesis testing (z-test, t-test, paired t, Mann-Whitney, Wilcoxon, chi-squared, Fisher's exact, ANOVA, Kruskal-Wallis), regression (OLS, logistic, GLM, robust), Bayesian methods (conjugate priors, MCMC, Bayesian A/B), estimation (MLE, CI, bootstrap CI, effect sizes), and resampling (permutation test, bootstrap). Each entry specifies the test conditions, assumptions, Python implementation, and interpretation guidance.
 
-Domain-specific patterns for translating mathematical solutions back into real-world meaning. Covers graph theory results (shortest path, matching, coloring, flow, connectivity), optimization results (LP/ILP with shadow prices and reduced costs, knapsack/selection, scheduling), proof results (existence, impossibility, bounds), counting results (exact and asymptotic), probability results (probability values with audience-adapted presentation, expected value with risk framing), and number theory results. Includes a general sensitivity framework (input, constraint, structural, and model validity perturbation) and a general limitation framework (modeling assumptions, data, computational, scope, and temporal limitations).
+**solvers.md** -- A guide to the discrete math and continuous optimization Python solver ecosystem: what each library solves, installation, key APIs with code examples, and performance notes. Covers NetworkX, PuLP, Z3, SymPy, SciPy, OR-Tools, itertools, numpy, and cvxpy. A solver selection guide maps each problem type to primary and fallback solvers.
 
-### visualization.md (uber-interpret)
+**solvers-statistics.md** -- A guide to the statistical inference Python solver ecosystem. Covers scipy.stats (distribution functions, hypothesis tests), statsmodels (regression, time series, GLMs), scikit-learn (ML-adjacent statistical methods), PyMC (Bayesian MCMC), pingouin (quick statistical tests), and lifelines (survival analysis).
 
-A chart selection matrix mapping 14 result types to primary and secondary chart types. Provides complete matplotlib/seaborn/NetworkX code templates for annotated graph diagrams, assignment matrix heatmaps, Gantt charts, tornado diagrams, scenario comparison bar charts, distribution bar charts, Pareto frontier scatter plots, flow diagrams, Hasse diagrams, and proof step visualizations. Includes a colorblind-friendly palette, typography standards, layout rules (no 3D, no dual y-axes, start bars at zero), and audience adaptation guidelines for technical, decision-maker, and general audiences.
+**solving-protocols.md** -- Nine domain-specific step-by-step solving workflows: Graph, ILP/LP, SAT/SMT, Counting, Proof, Number Theory, Dynamic Programming, Continuous Optimization, and Statistical Inference. Each protocol specifies the phases, checks, and common pitfalls for its domain.
+
+**optimization-hardening.md** -- Performance tuning and production hardening guide for Phase 4. Covers profiling, algorithmic optimization, approximation tiers, memory reduction, and production-grade engineering. Read only when the initial solution is too slow or needs production-grade performance.
+
+### uber-interpret references (2 files)
+
+**interpretation-patterns.md** -- Domain-specific patterns for translating mathematical solutions back into real-world meaning. Covers graph theory results (shortest path, matching, coloring, flow, connectivity), optimization results (LP/ILP with shadow prices and reduced costs, knapsack/selection, scheduling), proof results (existence, impossibility, bounds), counting results (exact and asymptotic), probability results (probability values with audience-adapted presentation, expected value with risk framing), number theory results, convex optimization results (optimal point, dual variables, sensitivity), and statistical inference results (hypothesis test interpretation, regression results, confidence/credible intervals, Bayesian posteriors). Includes a general sensitivity framework and a general limitation framework.
+
+**visualization.md** -- A chart selection matrix mapping 20+ result types to primary and secondary chart types. Provides complete matplotlib/seaborn/NetworkX code templates for annotated graph diagrams, assignment matrix heatmaps, Gantt charts, tornado diagrams, scenario comparison bar charts, distribution bar charts, Pareto frontier scatter plots, flow diagrams, Hasse diagrams, proof step visualizations, group comparison bars with CI, QQ plots, regression plots, residual plots, forest plots, and posterior distribution plots. Includes a colorblind-friendly palette, typography standards, layout rules, and audience adaptation guidelines.
 
 ## Design Principles
 
@@ -189,34 +197,45 @@ The uber-polya framework is designed for modular domain expansion. Each new doma
 New domains add reference files to the existing skill directories:
 
 ```
+skills/uber-model/references/
+├── heuristics.md              # Polya's heuristics (shipped)
+├── structures.md              # 43 structures, 10 domains (shipped)
+├── problem-classification.md  # Decision tree (shipped)
+├── common-mistakes.md         # 16 anti-patterns (shipped)
+└── model-templates.md         # 5 formal model templates (shipped)
+
 skills/uber-solve/references/
-├── algorithms.md              # Discrete math (shipped)
-├── solvers.md                 # Discrete math solvers (shipped)
+├── algorithms.md              # Discrete math + continuous opt (shipped)
+├── solvers.md                 # Discrete math + continuous solvers (shipped)
 ├── algorithms-statistics.md   # Statistical inference (shipped)
 ├── solvers-statistics.md      # Statistical solvers (shipped)
-├── algorithms-continuous.md   # Continuous optimization (planned)
+├── solving-protocols.md       # 9 domain-specific protocols (shipped)
+├── optimization-hardening.md  # Production hardening (shipped)
 ├── algorithms-ml.md           # Machine learning (planned)
-├── solvers-scientific.md      # scipy, cvxpy (planned)
 └── solvers-ml.md              # scikit-learn, PyTorch (planned)
+
+skills/uber-interpret/references/
+├── interpretation-patterns.md # 8 pattern sections (shipped)
+└── visualization.md           # 20+ chart types (shipped)
 ```
 
 ### Level 2: Protocol Sections
 
 Each SKILL.md gains new protocol sections for domain-specific workflows:
 
-- **uber-model**: New structure entries in `structures.md` (e.g., "Convex Set," "Probability Distribution," "Feature Matrix")
-- **uber-solve**: New "Protocol: Continuous Optimization," "Protocol: Statistical Inference," etc.
-- **uber-interpret**: New interpretation patterns (confidence intervals, model performance metrics, convergence diagnostics)
+- **uber-model**: New structure entries in `structures.md` (e.g., "Feature Matrix," "Time Series")
+- **uber-solve**: New solving protocols in `solving-protocols.md` and domain-specific algorithm catalogs
+- **uber-interpret**: New interpretation patterns (model performance metrics, convergence diagnostics)
 
 ### Level 3: Classification Expansion
 
 The Phase 0 classification table in uber-solve grows to recognize new problem types:
 
-| Current (Discrete) | Current (Statistical) | Planned (Continuous) |
-|---|---|---|
-| Graph coloring | Hypothesis testing (t, chi², ANOVA) | Convex optimization |
-| ILP | Regression (OLS, logistic, GLM) | Gradient descent |
-| SAT | Bayesian inference (MCMC, conjugate) | ODE/PDE |
-| Knapsack | Survival analysis (KM, Cox PH) | Quadratic programming |
+| Shipped (Discrete) | Shipped (Continuous) | Shipped (Statistical) | Planned (ML) |
+|---|---|---|---|
+| Graph coloring | Convex optimization | Hypothesis testing (t, chi², ANOVA) | Classification |
+| ILP | Quadratic programming | Regression (OLS, logistic, GLM) | Clustering |
+| SAT | Gradient descent / BFGS | Bayesian inference (MCMC, conjugate) | Dimensionality reduction |
+| Knapsack | Interior point / SQP | Survival analysis (KM, Cox PH) | Feature selection |
 
-The classification tree branches on "Is this discrete or continuous?" as the first decision, then routes to domain-specific protocols.
+The classification tree branches on "Is this discrete or continuous?" and "Is this inferential?" as the first decisions, then routes to domain-specific protocols.

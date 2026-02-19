@@ -9,9 +9,10 @@ echo ""
 echo "  uber-polya installer"
 echo "  ===================="
 echo ""
-echo "  Three skills will be installed:"
-echo "    /uber-model     -- Model a problem (Polya phases 1-2)"
-echo "    /uber-solve     -- Solve a model   (Polya phase 3)"
+echo "  Four skills will be installed:"
+echo "    /uber-polya     -- Full pipeline    (orchestrates all three)"
+echo "    /uber-model     -- Model a problem  (Polya phases 1-2)"
+echo "    /uber-solve     -- Solve a model    (Polya phase 3)"
 echo "    /uber-interpret -- Interpret results (Polya phase 4)"
 echo ""
 echo "  Where would you like to install?"
@@ -32,7 +33,7 @@ esac
 mkdir -p "$TARGET"
 
 installed=0
-for skill in uber-model uber-solve uber-interpret; do
+for skill in uber-polya uber-model uber-solve uber-interpret; do
   if [ -d "$TARGET/$skill" ]; then
     read -p "  $TARGET/$skill already exists. Overwrite? [y/N]: " overwrite
     if [ "$overwrite" != "y" ] && [ "$overwrite" != "Y" ]; then
@@ -50,7 +51,8 @@ echo ""
 echo "  Done! $installed skill(s) installed to: $TARGET"
 echo ""
 echo "  Usage in Claude Code:"
-echo "    /uber-model <describe your problem>"
-echo "    /uber-solve"
-echo "    /uber-interpret"
+echo "    /uber-polya <describe your problem>   (full pipeline)"
+echo "    /uber-model <describe your problem>   (model only)"
+echo "    /uber-solve                           (solve a model)"
+echo "    /uber-interpret                       (interpret results)"
 echo ""

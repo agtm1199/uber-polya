@@ -1,4 +1,6 @@
-# Polya's Heuristics for Discrete Math Modeling
+# Polya's Heuristics for Mathematical Modeling
+
+**Scope**: Universal (heuristics apply to all domains; DM application examples currently provided for Discrete Mathematics)
 
 Seventeen heuristics drawn from George Polya's "How to Solve It," organized by the phase in which they are most useful. Each heuristic includes:
 - **When to use**: Conditions that trigger this heuristic
@@ -364,3 +366,18 @@ Use ASCII art when producing figures. Example:
 - Finding open problems and active research
 - Communicating the model to others using shared vocabulary
 - Leveraging existing software implementations
+
+---
+
+## Cross-Reference Index
+
+| Heuristic | Most Relevant References |
+|---|---|
+| H1 Separate the Condition | **common-mistakes.md** M4 (over-constraining), M5 (under-constraining) |
+| H3 Draw a Figure | **structures.md** Cross-Domain Pattern Table (match diagram to structure) |
+| H5 Analogy | **problem-classification.md** Quick Pattern Table (natural language → structure) |
+| H8 Specialization | **common-mistakes.md** S5 (missing edge cases) |
+| H10 Auxiliary Elements | **structures.md** §7.1 ILP (slack/indicator variables), §1 Graph Theory (dummy nodes) |
+| H11 Restate / H12 Related | **problem-classification.md** Disambiguation Tips, **structures.md** Cross-Domain Pattern Table |
+| H13 Step Verification | **common-mistakes.md** M1-M10 (all modeling mistakes) |
+| H17 Known Results | **algorithms.md** Algorithm Selection Matrix, **solvers.md** Solver Selection Guide |

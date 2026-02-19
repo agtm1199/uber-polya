@@ -1,6 +1,8 @@
 # Visualization Guide
 
-Which chart for which result type. matplotlib/seaborn/NetworkX templates for every common discrete math output. Audience adaptation rules.
+**Scope**: Universal (chart types apply to all domains)
+
+Which chart for which result type. matplotlib/seaborn/NetworkX templates for common mathematical outputs. Audience adaptation rules.
 
 **Libraries**: `matplotlib`, `seaborn`, `networkx` (drawing), `numpy`
 **Output**: Always save to PNG at dpi=150 with `bbox_inches='tight'`
@@ -26,6 +28,12 @@ Which chart for which result type. matplotlib/seaborn/NetworkX templates for eve
 | Partial order / lattice | Hasse diagram | Few elements (≤20) | Matrix heatmap |
 | Partition / clustering | Colored scatter or group diagram | Many clusters | Bar chart of cluster sizes |
 | Proof steps | Numbered text or flow diagram | Complex branching | Decision tree diagram |
+| Hypothesis test / group comparison | Bar chart with CI error bars | Multiple groups | Box plot / violin plot |
+| Distribution comparison | Histogram + KDE overlay | Normality check | QQ plot |
+| Regression fit | Scatter + regression line + CI band | Diagnostics needed | Residual plot (fitted vs. residuals) |
+| Multiple effect sizes | Forest plot | Single study context | Bar chart with CI |
+| Bayesian posterior | Posterior density plot | Prior comparison | Prior vs. posterior overlay |
+| Survival curves | Kaplan-Meier step plot | Group comparison | Hazard ratio forest plot |
 
 ---
 
@@ -564,3 +572,294 @@ DIVERGING_POS = '#4caf50'
 - Add descriptive subtitle explaining what to look at
 - Use familiar analogies in annotations
 - Round numbers to 2 significant figures
+
+---
+
+## Cross-Reference Index
+
+| Chart Type | Best For (interpretation-patterns.md) | Typical Algorithms (algorithms.md) |
+|---|---|---|
+| §1 Graph Diagram | §1.1 Shortest Path, §1.3 Coloring, §1.4 Flow, §1.5 Connectivity | §1-§9 Graph algorithms |
+| §2 Assignment Heatmap | §1.2 Matching Results | §4 Matching (A15-A18) |
+| §3 Gantt Chart | §2.3 Scheduling Results | §10 ILP (A32), §1 Topo Sort (A3) |
+| §4 Tornado Diagram | §2.1 LP/ILP sensitivity, §7.1 Convex Opt sensitivity | §10 LP/ILP, §21 Continuous Opt |
+| §5 Scenario Comparison | §2.1 LP/ILP what-if, §7.3 Nonlinear Opt | §10 LP/ILP, §21 Continuous Opt |
+| §6 Distribution Bar | §4 Counting, §5 Probability, §7.2 Least Squares | §15 Counting, §18 Probability, §21 Least Squares |
+| §7 Pareto Frontier | §7.1 Convex Opt trade-offs, multi-objective | §21 Continuous Opt (A87-A88) |
+| §8 Flow Diagram | §1.4 Flow Results | §5 Network Flow (A19-A20) |
+| §9 Hasse Diagram | (Relations & Orders) | §16 Order Theory (A70-A73) |
+| §10 Proof Steps | §3 Proof Results | §17 Proof Techniques (A74-A77) |
+
+| §11 Group Comparison | §8.1 Hypothesis Test Results | S6-S13 (t-tests, ANOVA) |
+| §12 QQ Plot | Normality diagnostics | S15 (Shapiro-Wilk) |
+| §13 Regression Plot | §8.2 Regression Results | S23-S30 (Regression algorithms) |
+| §14 Residual Plot | §8.2 Regression diagnostics | S23-S30 (Regression algorithms) |
+| §15 Forest Plot | §8.1 Multiple effect sizes | S45 (Effect sizes), S17 (Multiple testing) |
+| §16 Posterior Plot | §8.4 Bayesian Results | S31-S35 (Bayesian methods) |
+
+Also see: **common-mistakes.md** §I1-I6 for visualization and interpretation pitfalls.
+
+---
+
+## 11. Group Comparison (Bar Chart with CI)
+
+**Use for**: Comparing means across 2-6 groups with confidence intervals. Hypothesis test visualization.
+
+```python
+#!/usr/bin/env python3
+"""Group comparison visualization with confidence intervals."""
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+import numpy as np
+
+groups = ['Control', 'Treatment A', 'Treatment B']
+means = [4.2, 5.1, 5.8]
+ci_lower = [3.8, 4.6, 5.2]
+ci_upper = [4.6, 5.6, 6.4]
+errors = [[m - lo for m, lo in zip(means, ci_lower)],
+          [hi - m for m, hi in zip(means, ci_upper)]]
+
+fig, ax = plt.subplots(figsize=(8, 5))
+colors = ['#90caf9', '#42a5f5', '#1976d2']
+bars = ax.bar(groups, means, yerr=errors, capsize=8, color=colors,
+              edgecolor='white', linewidth=1.5, error_kw={'linewidth': 2})
+
+# Annotate means
+for bar, mean in zip(bars, means):
+    ax.text(bar.get_x() + bar.get_width()/2, bar.get_height() + 0.15,
+            '{:.1f}'.format(mean), ha='center', fontsize=11, fontweight='bold')
+
+# Significance annotation
+ax.annotate('', xy=(0, 6.6), xytext=(2, 6.6),
+            arrowprops=dict(arrowstyle='-', color='black', lw=1.5))
+ax.text(1, 6.7, 'p = 0.003 *', ha='center', fontsize=9)
+
+ax.set_ylabel('Outcome Measure', fontsize=11)
+ax.set_title('Treatment Effect Comparison (Mean + 95% CI)', fontsize=14, fontweight='bold')
+ax.set_ylim(0, 7.5)
+plt.tight_layout()
+plt.savefig('group_comparison.png', dpi=150, bbox_inches='tight')
+```
+
+**Key elements**: Error bars = CI (not SD), significance brackets with p-values, y-axis starts at zero, direct value annotation.
+
+---
+
+## 12. QQ Plot (Normality Diagnostic)
+
+**Use for**: Visual assessment of whether data follows a theoretical distribution (typically normal).
+
+```python
+#!/usr/bin/env python3
+"""QQ plot for normality assessment."""
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+from scipy import stats
+import numpy as np
+
+data = np.random.default_rng(42).normal(loc=5, scale=2, size=100)
+
+fig, ax = plt.subplots(figsize=(6, 6))
+res = stats.probplot(data, dist="norm", plot=ax)
+
+ax.get_lines()[0].set_markerfacecolor('#1976d2')
+ax.get_lines()[0].set_markeredgecolor('#0d47a1')
+ax.get_lines()[0].set_markersize(5)
+ax.get_lines()[1].set_color('#d32f2f')
+
+# Add Shapiro-Wilk result
+w, p = stats.shapiro(data)
+ax.text(0.05, 0.95, 'Shapiro-Wilk: W={:.3f}, p={:.3f}'.format(w, p),
+        transform=ax.transAxes, fontsize=9, verticalalignment='top',
+        bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.5))
+
+ax.set_title('QQ Plot: Normality Check', fontsize=14, fontweight='bold')
+plt.tight_layout()
+plt.savefig('qq_plot.png', dpi=150, bbox_inches='tight')
+```
+
+**Key elements**: Points close to diagonal = normal. Curvature at tails indicates skew or heavy tails. Include Shapiro-Wilk test result.
+
+---
+
+## 13. Regression Plot (Scatter + Fit + CI Band)
+
+**Use for**: Visualizing regression fit with confidence band around the predicted line.
+
+```python
+#!/usr/bin/env python3
+"""Regression plot with confidence band."""
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+import numpy as np
+from scipy import stats
+
+np.random.seed(42)
+x = np.linspace(0, 10, 50)
+y = 2.5 * x + 3 + np.random.normal(0, 3, 50)
+
+slope, intercept, r, p, se = stats.linregress(x, y)
+y_pred = slope * x + intercept
+
+# Confidence band
+n = len(x)
+x_mean = np.mean(x)
+se_fit = np.sqrt(np.sum((y - y_pred)**2) / (n-2) * (1/n + (x - x_mean)**2 / np.sum((x - x_mean)**2)))
+t_crit = stats.t.ppf(0.975, df=n-2)
+
+fig, ax = plt.subplots(figsize=(8, 6))
+ax.scatter(x, y, alpha=0.6, color='#1976d2', s=40, label='Observations')
+ax.plot(x, y_pred, color='#d32f2f', linewidth=2, label='OLS fit')
+ax.fill_between(x, y_pred - t_crit*se_fit, y_pred + t_crit*se_fit,
+                alpha=0.2, color='#d32f2f', label='95% CI')
+
+# Annotate
+eq = 'y = {:.2f}x + {:.2f}'.format(slope, intercept)
+ax.text(0.05, 0.95, '{}\nR² = {:.3f}, p = {:.2e}'.format(eq, r**2, p),
+        transform=ax.transAxes, fontsize=10, verticalalignment='top',
+        bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.5))
+
+ax.set_xlabel('Predictor (X)', fontsize=11)
+ax.set_ylabel('Response (Y)', fontsize=11)
+ax.set_title('Linear Regression with 95% Confidence Band', fontsize=14, fontweight='bold')
+ax.legend(fontsize=9)
+plt.tight_layout()
+plt.savefig('regression_plot.png', dpi=150, bbox_inches='tight')
+```
+
+**Key elements**: Scatter + fit line + CI band, equation and R² annotation, labeled axes with units.
+
+---
+
+## 14. Residual Plot (Diagnostics)
+
+**Use for**: Checking regression assumptions (linearity, homoscedasticity, outliers).
+
+```python
+#!/usr/bin/env python3
+"""Residual diagnostics plot."""
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+import numpy as np
+
+# fitted and residuals from regression
+fitted = np.array([...])  # predicted values
+residuals = np.array([...])  # y - y_pred
+
+fig, axes = plt.subplots(1, 2, figsize=(12, 5))
+
+# Residuals vs Fitted
+axes[0].scatter(fitted, residuals, alpha=0.6, color='#1976d2', s=30)
+axes[0].axhline(y=0, color='#d32f2f', linestyle='--', linewidth=1.5)
+axes[0].set_xlabel('Fitted Values', fontsize=11)
+axes[0].set_ylabel('Residuals', fontsize=11)
+axes[0].set_title('Residuals vs Fitted', fontsize=12, fontweight='bold')
+
+# Histogram of residuals
+axes[1].hist(residuals, bins=20, color='#42a5f5', edgecolor='white', density=True)
+from scipy.stats import norm
+x_range = np.linspace(residuals.min(), residuals.max(), 100)
+axes[1].plot(x_range, norm.pdf(x_range, np.mean(residuals), np.std(residuals)),
+             color='#d32f2f', linewidth=2, label='Normal fit')
+axes[1].set_xlabel('Residual Value', fontsize=11)
+axes[1].set_ylabel('Density', fontsize=11)
+axes[1].set_title('Residual Distribution', fontsize=12, fontweight='bold')
+axes[1].legend(fontsize=9)
+
+plt.suptitle('Regression Diagnostics', fontsize=14, fontweight='bold', y=1.02)
+plt.tight_layout()
+plt.savefig('residual_plot.png', dpi=150, bbox_inches='tight')
+```
+
+**Key elements**: Residuals vs. fitted (check for patterns = nonlinearity, funnel = heteroscedasticity). Residual histogram (check for normality). Outliers > 3 SD.
+
+---
+
+## 15. Forest Plot (Multiple Effect Sizes)
+
+**Use for**: Comparing effect sizes across multiple studies, subgroups, or comparisons.
+
+```python
+#!/usr/bin/env python3
+"""Forest plot for multiple effect sizes."""
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+import numpy as np
+
+labels = ['Study A', 'Study B', 'Study C', 'Study D', 'Overall']
+effects = [0.35, 0.52, 0.28, 0.61, 0.44]
+ci_lower = [0.10, 0.30, -0.05, 0.38, 0.32]
+ci_upper = [0.60, 0.74, 0.61, 0.84, 0.56]
+weights = [20, 30, 15, 25, 100]  # relative weight (%)
+
+fig, ax = plt.subplots(figsize=(8, 5))
+y_pos = np.arange(len(labels))
+
+for i, (label, eff, lo, hi, w) in enumerate(zip(labels, effects, ci_lower, ci_upper, weights)):
+    color = '#d32f2f' if label == 'Overall' else '#1976d2'
+    marker = 'D' if label == 'Overall' else 'o'
+    size = w * 3
+    ax.errorbar(eff, i, xerr=[[eff-lo], [hi-eff]], fmt=marker, color=color,
+                markersize=np.sqrt(size), capsize=4, linewidth=2, capthick=1.5)
+    ax.text(hi + 0.05, i, '{:.2f} [{:.2f}, {:.2f}]'.format(eff, lo, hi),
+            va='center', fontsize=9)
+
+ax.axvline(x=0, color='gray', linestyle='--', linewidth=1)
+ax.set_yticks(y_pos)
+ax.set_yticklabels(labels, fontsize=10)
+ax.set_xlabel("Effect Size (Cohen's d)", fontsize=11)
+ax.set_title('Forest Plot: Effect Size Comparison', fontsize=14, fontweight='bold')
+ax.invert_yaxis()
+plt.tight_layout()
+plt.savefig('forest_plot.png', dpi=150, bbox_inches='tight')
+```
+
+**Key elements**: Point estimates with CI bars, vertical line at null (0), diamond for overall/pooled estimate, marker size proportional to weight/sample size.
+
+---
+
+## 16. Posterior Distribution Plot (Bayesian)
+
+**Use for**: Visualizing Bayesian posterior distributions with credible intervals and prior comparison.
+
+```python
+#!/usr/bin/env python3
+"""Bayesian posterior distribution visualization."""
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+import numpy as np
+from scipy import stats
+
+x = np.linspace(-2, 8, 500)
+prior = stats.norm.pdf(x, loc=3, scale=2)
+posterior = stats.norm.pdf(x, loc=4.2, scale=0.8)
+
+fig, ax = plt.subplots(figsize=(8, 5))
+ax.plot(x, prior, '--', color='#90caf9', linewidth=2, label='Prior')
+ax.plot(x, posterior, '-', color='#1976d2', linewidth=2.5, label='Posterior')
+ax.fill_between(x, posterior, where=(x >= 2.63) & (x <= 5.77),
+                alpha=0.3, color='#1976d2', label='95% HDI')
+
+# Mark MAP estimate
+map_val = x[np.argmax(posterior)]
+ax.axvline(x=map_val, color='#d32f2f', linestyle=':', linewidth=1.5, label='MAP = {:.1f}'.format(map_val))
+
+# Annotate HDI
+ax.annotate('95% HDI: [2.63, 5.77]', xy=(4.2, 0.05), fontsize=9,
+            bbox=dict(boxstyle='round', facecolor='wheat', alpha=0.5))
+
+ax.set_xlabel('Parameter Value', fontsize=11)
+ax.set_ylabel('Density', fontsize=11)
+ax.set_title('Posterior Distribution (Prior vs. Posterior)', fontsize=14, fontweight='bold')
+ax.legend(fontsize=9)
+plt.tight_layout()
+plt.savefig('posterior_plot.png', dpi=150, bbox_inches='tight')
+```
+
+**Key elements**: Prior (dashed) vs. posterior (solid) overlay, shaded HDI region, MAP/mean point estimate, clear axis labels.

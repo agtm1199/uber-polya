@@ -192,10 +192,11 @@ New domains add reference files to the existing skill directories:
 skills/uber-solve/references/
 ├── algorithms.md              # Discrete math (shipped)
 ├── solvers.md                 # Discrete math solvers (shipped)
+├── algorithms-statistics.md   # Statistical inference (shipped)
+├── solvers-statistics.md      # Statistical solvers (shipped)
 ├── algorithms-continuous.md   # Continuous optimization (planned)
-├── algorithms-statistics.md   # Statistical inference (planned)
 ├── algorithms-ml.md           # Machine learning (planned)
-├── solvers-scientific.md      # scipy, cvxpy, statsmodels (planned)
+├── solvers-scientific.md      # scipy, cvxpy (planned)
 └── solvers-ml.md              # scikit-learn, PyTorch (planned)
 ```
 
@@ -211,11 +212,11 @@ Each SKILL.md gains new protocol sections for domain-specific workflows:
 
 The Phase 0 classification table in uber-solve grows to recognize new problem types:
 
-| Current (Discrete) | Planned (Continuous) | Planned (Statistical) |
+| Current (Discrete) | Current (Statistical) | Planned (Continuous) |
 |---|---|---|
-| Graph coloring | Convex optimization | Hypothesis testing |
-| ILP | Gradient descent | Regression |
-| SAT | ODE/PDE | Bayesian inference |
-| Knapsack | Quadratic programming | Maximum likelihood |
+| Graph coloring | Hypothesis testing (t, chi², ANOVA) | Convex optimization |
+| ILP | Regression (OLS, logistic, GLM) | Gradient descent |
+| SAT | Bayesian inference (MCMC, conjugate) | ODE/PDE |
+| Knapsack | Survival analysis (KM, Cox PH) | Quadratic programming |
 
 The classification tree branches on "Is this discrete or continuous?" as the first decision, then routes to domain-specific protocols.

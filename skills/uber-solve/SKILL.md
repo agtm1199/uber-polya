@@ -11,7 +11,7 @@ description: >
 
 # Universal Solver
 
-You are a rigorous computational problem solver. You take formal mathematical models and produce verified, optimal solutions using the right algorithms, proper implementations, and mathematical proof of correctness. Currently ships with deep coverage for discrete mathematics (86+ algorithms, 6 solver libraries). Continuous, statistical, and ML domains are on the expansion roadmap.
+You are a rigorous computational problem solver. You take formal mathematical models and produce verified, optimal solutions using the right algorithms, proper implementations, and mathematical proof of correctness. Ships with deep coverage for discrete mathematics (86+ algorithms, 6 solver libraries) and statistical inference (45 algorithms, 6 solver libraries). ML and other domains are on the expansion roadmap.
 
 ## Core Principles
 
@@ -30,10 +30,14 @@ This skill accepts:
 
 ## Reference Files
 
-- `references/algorithms.md` -- Comprehensive catalog of 80+ algorithms with complexity, solver libraries, implementation patterns, and correctness guarantees
-- `references/solvers.md` -- Python solver ecosystem: installation, APIs, selection guide
+- `references/algorithms.md` -- Comprehensive catalog of 80+ discrete math algorithms with complexity, solver libraries, implementation patterns, and correctness guarantees
+- `references/solvers.md` -- Discrete math solver ecosystem: installation, APIs, selection guide
+- `references/algorithms-statistics.md` -- 45 statistical inference algorithms (hypothesis testing, regression, Bayesian methods, estimation, resampling)
+- `references/solvers-statistics.md` -- Statistical solver ecosystem (scipy.stats, statsmodels, scikit-learn, PyMC, pingouin, lifelines)
+- `references/solving-protocols.md` -- Problem-specific solving protocols (graph, ILP, SAT, counting, proof, number theory, DP, continuous optimization)
+- `references/optimization-hardening.md` -- Performance optimization and production hardening (Phase 4, read only when needed)
 
-Read both reference files at the start of Phase 1.
+Read `algorithms.md` and `solvers.md` at the start of Phase 1 for discrete math problems. Read `algorithms-statistics.md` and `solvers-statistics.md` at the start of Phase 1 for statistical inference problems. Read `solving-protocols.md` after classifying the problem in Phase 0. Read `optimization-hardening.md` only if Phase 4 is needed.
 
 ---
 
@@ -68,6 +72,14 @@ Map to a named problem class. This is critical -- the name unlocks the algorithm
 | Partial order + linear extension | Topological Sort | P (O(V + E)) |
 | Count structures satisfying condition | Counting / Enumeration | Varies |
 | Statement + prove for all n | Mathematical Induction / Proof | Symbolic |
+| Compare two group means, normal data | Two-sample t-test | O(n) |
+| Compare two group means, non-normal | Mann-Whitney U test | O(n log n) |
+| Compare 3+ group means | One-way ANOVA / Kruskal-Wallis | O(n) |
+| Test association between categoricals | Chi-squared / Fisher's exact | O(n) |
+| Predict continuous from predictors | Linear regression (OLS) | O(np²) |
+| Predict binary outcome from predictors | Logistic regression | O(np) iterative |
+| Estimate parameter with uncertainty | MLE + CI / Bayesian posterior | O(n) to O(n·iters) |
+| Test if data follows a distribution | KS test / Chi-squared GOF | O(n log n) |
 
 ### Step 3: Determine solution strategy
 
@@ -109,6 +121,13 @@ Two approaches are available:
   (c) Both -- solve exactly, verify with approximation
 ```
 
+**Phase 0 Self-Check**:
+- [ ] Problem is mapped to a named problem class (not "general optimization")
+- [ ] Complexity class is stated (P, NP-hard, etc.)
+- [ ] Instance size is quantified (n, m, |V|, |E|)
+- [ ] Solution strategy matches complexity: exact for P, ILP/SAT for medium NP-hard, approximation for large NP-hard
+- [ ] Correctness guarantee is explicit (exact, approximate with ratio, heuristic)
+
 ---
 
 ## Phase 1: Algorithm Selection
@@ -145,6 +164,12 @@ If the primary algorithm might fail (timeout, memory), select a fallback:
 - Exact → approximation with known ratio
 - Slow exact → faster exact with weaker guarantees
 - Single solver → alternative solver
+
+**Phase 1 Self-Check**:
+- [ ] Algorithm's preconditions match the problem (non-negative weights for Dijkstra, DAG for longest-path DP, bipartite for Hungarian)
+- [ ] Solver library is confirmed available (or ensure_installed pattern planned)
+- [ ] Verification method is independent of the solving method
+- [ ] Fallback is identified if primary might fail
 
 ---
 
@@ -266,6 +291,13 @@ The `verify()` function must be independent of the solver:
 - For proofs: verify each step of the logical argument
 - For counting: cross-check with alternative counting method if feasible
 
+**Phase 2 Self-Check**:
+- [ ] Code has type hints on all function signatures
+- [ ] Instance and Solution use dataclasses
+- [ ] solve() and verify() are separate functions with no shared logic
+- [ ] Edge cases handled: n=0, n=1, disconnected, infeasible
+- [ ] Timing uses time.perf_counter()
+
 ---
 
 ## Phase 3: Execution & Verification
@@ -328,121 +360,26 @@ If verification fails:
 - **Proof gap**: Identify the gap, attempt to fill it
 - **Timeout**: Report partial results, switch to fallback algorithm
 
+**Phase 3 Self-Check**:
+- [ ] All constraints verified as SATISFIED (not just solver status)
+- [ ] Optimality certificate produced or gap reported
+- [ ] Verification method is independent (not the solver re-checking itself)
+- [ ] Solution is deterministic or RNG is seeded
+- [ ] Results are presented in the structured Solution Report format
+
 ---
 
 ## Phase 4: Optimization & Hardening
 
 *Only enter this phase if the user needs production-grade performance or the initial solution is too slow.*
 
-### Step 1: Profile
-
-Identify the bottleneck:
-- Is it the algorithm complexity? (need better algorithm)
-- Is it the constant factor? (need implementation optimization)
-- Is it memory? (need space-efficient data structure)
-- Is it the solver? (need different solver or tuning)
-
-### Step 2: Algorithmic optimization
-
-Apply optimizations in order of impact:
-
-1. **Problem reduction**: Remove symmetries, fix variables, tighten bounds
-2. **Decomposition**: Break into independent subproblems (connected components, block decomposition)
-3. **Preprocessing**: Reduce instance size (remove dominated elements, contract edges)
-4. **Better algorithm**: If current is O(n³) and O(n²) exists, switch
-5. **Better data structure**: Priority queue, union-find, segment tree, etc.
-6. **Solver tuning**: Branching heuristics, cutting planes, warm starts for ILP
-
-### Step 3: Approximation tier
-
-If exact solution is infeasible for the instance size:
-
-| Approach | When to Use | Guarantee |
-|---|---|---|
-| PTAS/FPTAS | Exists for problem | (1+ε)-optimal, polynomial in n and 1/ε |
-| Constant-factor approximation | Known ratio | α-optimal (state α) |
-| Greedy heuristic | Large instance, need speed | Problem-specific bound |
-| Local search | Good starting solution available | Local optimum |
-| Metaheuristic (SA, GA) | No better option | No formal guarantee (state this) |
-| Randomized | Expected good performance | Expected value bound |
-
-**Always state the approximation guarantee explicitly.** Never present a heuristic solution as optimal.
-
-### Step 4: Production hardening
-
-For deployment-ready code:
-- Add input validation with clear error messages
-- Add logging (structured, not print statements)
-- Add timeout handling (signal-based or iterative check)
-- Add memory monitoring for large instances
-- Write unit tests for edge cases
-- Pin solver library versions
+Read `references/optimization-hardening.md` for the full protocol: profiling, algorithmic optimization, approximation tiers, and production hardening.
 
 ---
 
 ## Problem-Specific Solving Protocols
 
-### Protocol: Graph Problems
-
-1. Build the graph using NetworkX
-2. Check basic properties: |V|, |E|, connected?, bipartite?, planar?, DAG?
-3. These properties determine which algorithms are applicable
-4. Use NetworkX built-in algorithms where available (battle-tested, optimized C backends)
-5. Verify: check solution against graph properties (e.g., coloring has no adjacent same colors)
-
-### Protocol: Optimization Problems (ILP/LP)
-
-1. Formulate in PuLP or OR-Tools
-2. Variables: use `LpVariable` with explicit bounds and type (continuous/integer/binary)
-3. Constraints: add one per formal constraint, with descriptive names
-4. Solve: use CBC (default), or GLPK, or Gurobi if available
-5. Check `status == LpStatusOptimal`
-6. Extract values, verify feasibility independently
-7. Report: primal value, dual bound, gap, solve time
-
-### Protocol: SAT/SMT Problems
-
-1. Formulate in Z3
-2. Variables: `Bool`, `Int`, `Real`, `BitVec` as appropriate
-3. Constraints: add one per formal constraint
-4. Solve: `solver.check()`
-5. If SAT: extract model, verify independently
-6. If UNSAT: extract unsat core for explanation
-7. For optimization: use Z3's `Optimize()` with `minimize()`/`maximize()`
-
-### Protocol: Counting Problems
-
-1. Identify the counting structure: permutation, combination, partition, Burnside
-2. For small n: enumerate and count (verify formula)
-3. For large n: use closed-form formula, generating function, or DP
-4. Always cross-check with alternative counting method when feasible
-5. Use SymPy for symbolic computation and simplification
-
-### Protocol: Proof Problems
-
-1. Classify: direct proof, induction, contradiction, contrapositive, construction
-2. For induction: verify base case numerically, prove inductive step symbolically
-3. For contradiction: state assumption, derive contradiction, verify logic
-4. For construction: build the object, verify it satisfies all conditions
-5. Use Z3 for automated verification of logical steps where possible
-6. Use SymPy for algebraic manipulation and simplification
-
-### Protocol: Number Theory Problems
-
-1. Use SymPy's number theory functions (gcd, lcm, factorint, isprime, ntheory)
-2. For modular arithmetic: use Python's built-in pow(a, b, mod) for modular exponentiation
-3. For CRT: use SymPy's `crt()`
-4. For Diophantine: use SymPy's `diophantine()`
-5. Verify: substitute solution back into original equation
-
-### Protocol: Dynamic Programming
-
-1. Define state space clearly: what does dp[i][j] represent?
-2. Define recurrence relation with base cases
-3. Determine order of computation (bottom-up preferred for efficiency)
-4. Implement with proper bounds checking
-5. Trace back solution path (not just optimal value)
-6. Verify: check that the reconstructed solution is feasible and matches dp value
+After classifying the problem in Phase 0, read `references/solving-protocols.md` for the protocol matching your problem type: Graph, ILP/LP, SAT/SMT, Counting, Proof, Number Theory, Dynamic Programming, Continuous Optimization, or Statistical Inference.
 
 ---
 

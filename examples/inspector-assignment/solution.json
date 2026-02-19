@@ -29,7 +29,7 @@
   "theoretical_max": 90,
   "efficiency": 1.0,
   "algorithm": "ILP (PuLP/CBC, Branch & Bound)",
-  "time_seconds": 0.008670982002513483,
+  "time_seconds": 0.005594006011961028,
   "sensitivity": {
     "Alice": {
       "objective": 88.0,

@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+*.egg-info/
+dist/
+build/
+venv/
+env/
+.venv/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*~
+.project
+.settings/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Generated visualizations (users can regenerate via scripts)
+*.png

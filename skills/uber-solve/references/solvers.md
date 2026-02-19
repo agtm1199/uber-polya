@@ -1,5 +1,7 @@
 # Python Solver Ecosystem Reference
 
+**Scope**: Universal (all solver libraries serve multiple domains)
+
 Guide to the solver libraries used by uber-solve. For each library: what it solves, installation, key APIs, and performance notes.
 
 **Python**: Use your project's Python environment (venv, conda, or system Python 3.10+).
@@ -497,6 +499,90 @@ samples = rng.choice(10, size=100, replace=True)
 
 ---
 
+## 9. cvxpy -- Convex Optimization
+
+**Solves**: Convex optimization (LP, QP, SOCP, SDP, exponential cone), disciplined convex programming.
+
+**Install**: `pip install cvxpy`
+
+**When to use**: Any optimization problem where the objective is convex and constraints define a convex set. cvxpy verifies convexity at problem construction time and rejects non-convex formulations, so you get either a guaranteed global optimum or a clear error.
+
+### Key APIs
+
+```python
+import cvxpy as cp
+import numpy as np
+
+# --- Variables ---
+x = cp.Variable(n)                    # vector variable
+X = cp.Variable((m, n))               # matrix variable
+b = cp.Variable(n, boolean=True)      # mixed-integer (MILP via MIP solver)
+
+# --- Objective ---
+objective = cp.Minimize(cp.quad_form(x, Q))        # quadratic
+objective = cp.Minimize(cp.norm(x, 1))              # L1 norm
+objective = cp.Maximize(expected_return @ x)         # linear
+
+# --- Constraints ---
+constraints = [
+    cp.sum(x) == 1,                   # equality
+    x >= 0,                           # elementwise inequality
+    cp.norm(x, 2) <= 1,              # second-order cone
+    X >> 0,                           # positive semidefinite
+    cp.quad_form(x, Sigma) <= risk,  # quadratic
+]
+
+# --- Solve ---
+prob = cp.Problem(objective, constraints)
+prob.solve()                          # uses ECOS/SCS/OSQP by default
+# prob.solve(solver=cp.MOSEK)        # commercial solver (faster for SDP)
+
+# --- Results ---
+print(f"Status: {prob.status}")       # 'optimal', 'infeasible', 'unbounded'
+print(f"Optimal value: {prob.value}")
+print(f"Optimal x: {x.value}")
+
+# --- Dual values ---
+for i, c in enumerate(constraints):
+    print(f"Constraint {i} dual: {c.dual_value}")
+```
+
+### Common Patterns
+
+**Portfolio optimization** (Markowitz):
+```python
+x = cp.Variable(n)
+ret = mu @ x                         # expected return
+risk = cp.quad_form(x, Sigma)        # portfolio variance
+prob = cp.Problem(cp.Maximize(ret - gamma * risk), [cp.sum(x) == 1, x >= 0])
+```
+
+**Lasso regression** (sparse recovery):
+```python
+beta = cp.Variable(p)
+loss = cp.sum_squares(A @ beta - y)
+reg = lambd * cp.norm(beta, 1)
+prob = cp.Problem(cp.Minimize(loss + reg))
+```
+
+**Efficient frontier** (sweep over risk tolerance):
+```python
+for gamma in [0.1, 0.5, 1.0, 5.0, 10.0]:
+    prob = cp.Problem(cp.Maximize(mu @ x - gamma * cp.quad_form(x, Sigma)),
+                      [cp.sum(x) == 1, x >= 0])
+    prob.solve()
+    results.append((np.sqrt(risk.value), ret.value))
+```
+
+### Performance Notes
+- ECOS (default for SOCP): good for problems up to ~10K variables
+- SCS: scales better for large problems, but lower accuracy
+- OSQP: fast for QP, handles ~100K variables
+- MOSEK: commercial, fastest for SDP and large conic programs
+- Problem construction overhead: cache the problem and use `prob.solve(warm_start=True)` for parametric sweeps
+
+---
+
 ## Solver Selection Guide
 
 | Problem Type | Primary Solver | Fallback |
@@ -504,8 +590,13 @@ samples = rng.choice(10, size=100, replace=True)
 | Graph algorithm | NetworkX | igraph, graph-tool |
 | Shortest path (large) | scipy.sparse.csgraph | NetworkX |
 | Bipartite assignment | scipy.linear_sum_assignment | PuLP ILP |
-| LP (continuous) | scipy.linprog (HiGHS) | PuLP |
+| LP (continuous) | scipy.linprog (HiGHS) | cvxpy / PuLP |
 | ILP / MIP | PuLP (CBC) | OR-Tools CP-SAT |
+| QP (convex) | cvxpy (OSQP) | scipy trust-constr |
+| Convex optimization | cvxpy | scipy.optimize |
+| Nonlinear constrained | scipy.optimize (SLSQP) | cvxpy (if convex) |
+| Least squares | numpy.linalg.lstsq | scipy.optimize.least_squares |
+| Nonlinear least squares | scipy.optimize.least_squares | custom Gauss-Newton |
 | SAT / Boolean | Z3 | pysat |
 | SMT / Integer constraints | Z3 | -- |
 | Constraint programming | OR-Tools CP-SAT | Z3 |
@@ -521,7 +612,7 @@ samples = rng.choice(10, size=100, replace=True)
 ## Installation One-Liner
 
 ```bash
-pip install networkx pulp z3-solver sympy scipy ortools numpy
+pip install networkx pulp z3-solver sympy scipy ortools numpy cvxpy
 ```
 
 ## Dependency Check Script
@@ -537,6 +628,7 @@ libs = {
     'scipy': 'scipy',
     'ortools': 'ortools.sat.python.cp_model',
     'numpy': 'numpy',
+    'cvxpy': 'cvxpy',
 }
 for name, module in libs.items():
     try:
@@ -546,3 +638,21 @@ for name, module in libs.items():
     except ImportError:
         print(f"  [MISSING] {name} -- pip install {name}")
 ```
+
+---
+
+## Cross-Reference Index
+
+| Solver | Primary Structures (structures.md) | Key Algorithms (algorithms.md) |
+|---|---|---|
+| §1 NetworkX | §1 Graph Theory (all), §6 Relations & Orders | §1-§9 Graph algorithms (A1-A30), §16 Order Theory (A70-A71) |
+| §2 PuLP | §7.1 ILP | §10 LP/ILP (A31-A34), §12 Set Cover (A47) |
+| §3 Z3 | §4 Logic (4.1-4.4) | §13 SAT/SMT/CSP (A48-A52), §17 Proof (A74-A77) |
+| §4 SymPy | §5 Number Theory, §2 Combinatorics | §14 Number Theory (A53-A62), §15 Counting (A63-A69), §17 Proof (A74) |
+| §5 SciPy | §1.4 Bipartite Graph, §7.1 ILP (LP relaxation) | §4 Matching (A16 Hungarian), §10 LP (A31), §21 Continuous (A89-A93) |
+| §6 OR-Tools | §7.3 Scheduling, §7.1 ILP | §10 ILP (A32), §9 TSP (A30), §13 CSP (A51-A52) |
+| §7 itertools | §2 Combinatorics (2.1-2.4) | §15 Counting/Generation (A63-A65) |
+| §8 numpy | §8 Discrete Probability | §18 Probability (A78-A81), §21 Continuous (A91) |
+| §9 cvxpy | §9 Continuous Optimization (9.1-9.5) | §21 Continuous Opt (A87-A88, A94) |
+
+Also see: **solving-protocols.md** for solver usage within specific problem-type workflows, **optimization-hardening.md** for solver-specific performance tuning.

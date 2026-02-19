@@ -1,6 +1,8 @@
-# Discrete Mathematics Structure Catalog
+# Mathematical Structure Catalog
 
-A catalog of 32 discrete math structures across 8 domains. Use this to match real-world problems to mathematical models during Phase 2 of the uber-model skill.
+**Scope**: Discrete Mathematics (32 structures), Continuous Optimization (5 structures)
+
+A catalog of mathematical structures organized by domain. Use this to match real-world problems to mathematical models during Phase 2 of the uber-model skill.
 
 Each entry has:
 - **Definition**: One-line formal definition
@@ -757,3 +759,299 @@ Quick lookup: match a real-world pattern to its primary discrete math structure.
 | Coverage / redundancy | Set system | Set cover / hitting set | Set Theory |
 | Concept hierarchy | Lattice | Concept lattice | Relations |
 | Multi-party interaction | Hypergraph | Hypergraph coloring | Graph Theory |
+| Minimize cost / maximize return | Convex program | Convex optimization | Continuous Opt |
+| Fit a model to data | Least squares | Regression / curve fitting | Continuous Opt |
+| Balance risk and return | Quadratic program | Portfolio optimization | Continuous Opt |
+| Find minimum of smooth function | Unconstrained optimization | Gradient descent | Continuous Opt |
+| Smooth optimization with constraints | Constrained optimization | Interior point / SLSQP | Continuous Opt |
+| Compare groups (before/after, A/B) | Hypothesis test | t-test / ANOVA | Statistical Inference |
+| Predict outcome from variables | Regression model | Linear / logistic regression | Statistical Inference |
+| Estimate parameter from data | MLE / Bayesian posterior | Confidence / credible interval | Statistical Inference |
+| Check if data follows pattern | Distribution / GOF test | KS test / chi-squared GOF | Statistical Inference |
+| Time-to-event with dropouts | Survival model | Kaplan-Meier / Cox PH | Statistical Inference |
+| Update belief with new evidence | Bayesian model | Prior → posterior | Statistical Inference |
+
+---
+
+## 9. Continuous Optimization
+
+### 9.1 Unconstrained Optimization
+
+**Definition**: Minimize f(x) where x in R^n and f is a smooth (differentiable) function with no constraints.
+
+**Indicators**: "minimize", "find the best", "optimal value", "no constraints", "smooth", "gradient"
+
+**Template**:
+```
+min f(x)
+x in R^n
+Necessary condition: ∇f(x*) = 0
+Sufficient condition: ∇²f(x*) positive definite
+```
+
+**Examples**:
+- Curve fitting: Minimize sum of squared residuals
+- Neural network training: Minimize loss function
+- Maximum likelihood: Minimize negative log-likelihood
+
+**Key problems**: Gradient descent, Newton's method, BFGS, conjugate gradient
+
+---
+
+### 9.2 Convex Program
+
+**Definition**: Minimize a convex function over a convex set. Global minimum is guaranteed.
+
+**Indicators**: "convex", "guaranteed optimal", "no local minima", "cone program", "semidefinite"
+
+**Template**:
+```
+minimize    f(x)          -- convex objective
+subject to  g_i(x) <= 0  -- convex inequality constraints
+            Ax = b        -- affine equality constraints
+```
+
+**Examples**:
+- Portfolio optimization: Minimize variance subject to target return
+- Optimal control: Minimize quadratic cost subject to linear dynamics
+- Signal reconstruction: Minimize L1 norm subject to measurements
+
+**Key problems**: Linear programming (LP), quadratic programming (QP), second-order cone programming (SOCP), semidefinite programming (SDP)
+
+---
+
+### 9.3 Quadratic Program (QP)
+
+**Definition**: Minimize a quadratic objective subject to linear constraints.
+
+**Indicators**: "quadratic cost", "variance", "trade-off between two objectives", "regularization"
+
+**Template**:
+```
+minimize    (1/2) x^T Q x + c^T x
+subject to  Ax <= b
+            x >= 0
+```
+where Q is positive semidefinite (for convexity).
+
+**Examples**:
+- Portfolio: Minimize variance (x^T Σ x) subject to target return (μ^T x >= r)
+- Regression with regularization: Minimize ||Ax - b||^2 + λ||x||^2
+- Optimal allocation: Quadratic cost with linear constraints
+
+**Key problems**: Portfolio optimization, support vector machines, regularized regression
+
+---
+
+### 9.4 Least Squares
+
+**Definition**: Minimize ||Ax - b||^2, the sum of squared residuals.
+
+**Indicators**: "fit", "regression", "best line", "minimize error", "residuals", "data fitting"
+
+**Template**:
+```
+minimize    ||Ax - b||_2^2
+Solution:   x* = (A^T A)^{-1} A^T b  (normal equations)
+```
+
+**Examples**:
+- Linear regression: Fit y = Xβ to data
+- Calibration: Fit model parameters to measurements
+- Signal processing: Estimate signal from noisy observations
+
+**Key problems**: Linear regression, nonlinear least squares (Gauss-Newton), weighted least squares, total least squares
+
+---
+
+### 9.5 Nonlinear Constrained Optimization
+
+**Definition**: Minimize a (possibly non-convex) function subject to nonlinear constraints.
+
+**Indicators**: "nonlinear", "complex constraints", "engineering design", "may have local minima"
+
+**Template**:
+```
+minimize    f(x)
+subject to  g_i(x) <= 0   (inequality constraints)
+            h_j(x) = 0    (equality constraints)
+            x_L <= x <= x_U (bounds)
+```
+
+**Examples**:
+- Engineering design: Minimize weight subject to stress constraints
+- Chemical process: Maximize yield subject to thermodynamic constraints
+- Trajectory optimization: Minimize fuel subject to dynamics
+
+**Key problems**: KKT conditions, penalty methods, augmented Lagrangian, sequential quadratic programming (SQP)
+
+---
+
+## 10. Statistical Inference
+
+### 10.1 Random Variable / Distribution
+
+**Definition**: A random variable X: Ω → R mapping outcomes to numbers, with a distribution describing its probability behavior (PDF/PMF, CDF, parameters).
+
+**Indicators**: "distribution", "random", "probability of", "what are the chances", "average", "expected", "variance", "spread"
+
+**Template**:
+```
+X ~ Distribution(parameters)
+E[X] = μ (mean/expected value)
+Var(X) = σ² (variance)
+P(X ∈ A) = ∫_A f(x)dx  or  Σ_{x∈A} p(x)
+```
+
+**Examples**:
+- Customer wait times: X ~ Exponential(λ)
+- Defect counts per batch: X ~ Poisson(μ)
+- Test scores: X ~ Normal(μ, σ²)
+- Conversion rates: X ~ Bernoulli(p)
+
+**Key problems**: Distribution fitting (MLE), parameter estimation, goodness-of-fit testing, probability computation
+
+---
+
+### 10.2 Statistical Hypothesis
+
+**Definition**: A formal statement about a population parameter, tested against data. H₀ (null) vs. H₁ (alternative), with a test statistic, rejection region, and significance level α.
+
+**Indicators**: "is there a difference", "compare groups", "significant", "test whether", "does X affect Y", "A/B test"
+
+**Template**:
+```
+H₀: θ = θ₀  (or μ₁ = μ₂, or p₁ = p₂)
+H₁: θ ≠ θ₀  (two-sided) or θ > θ₀ (one-sided)
+Test statistic: T = f(data)
+Reject H₀ if |T| > t_critical  (equivalently, if p-value < α)
+Report: test statistic, p-value, effect size, confidence interval
+```
+
+**Examples**:
+- A/B test: "Does the new design increase conversions?" (H₀: p_A = p_B)
+- Quality control: "Is the batch mean within spec?" (H₀: μ = μ₀)
+- Clinical trial: "Does the drug lower blood pressure?" (H₀: μ_drug = μ_placebo)
+- Survey: "Is satisfaction related to age group?" (H₀: independence)
+
+**Key problems**: t-tests, chi-squared tests, ANOVA, Fisher's exact, Mann-Whitney, permutation tests
+
+---
+
+### 10.3 Regression Model
+
+**Definition**: A model relating a response variable Y to one or more predictor variables X, with a functional form and error term: Y = f(X; β) + ε.
+
+**Indicators**: "predict", "relationship between", "how does X affect Y", "model", "forecast", "explain variation", "factors influencing"
+
+**Template**:
+```
+Y = β₀ + β₁X₁ + β₂X₂ + ... + βₚXₚ + ε
+ε ~ N(0, σ²)  (OLS assumptions)
+Estimate β by minimizing Σ(yᵢ - ŷᵢ)²
+Report: β̂, SE(β̂), p-values, R², CI for β, residual diagnostics
+```
+
+**Examples**:
+- Housing: Price = f(sqft, bedrooms, location, age)
+- Sales: Revenue = f(ad_spend, season, price)
+- Health: Blood pressure = f(age, weight, exercise, diet)
+- Binary: P(churn) = sigmoid(β₀ + β₁·tenure + β₂·usage) (logistic)
+
+**Key problems**: OLS, logistic regression, Ridge/Lasso, GLM, quantile regression, robust regression
+
+---
+
+### 10.4 Bayesian Model
+
+**Definition**: A model that combines prior beliefs about parameters with observed data to produce a posterior distribution: P(θ|data) ∝ P(data|θ) × P(θ).
+
+**Indicators**: "prior belief", "update with data", "posterior", "credible interval", "probability that parameter is", "what do we believe after seeing"
+
+**Template**:
+```
+Prior:      π(θ)           -- what we believe before data
+Likelihood: L(data|θ)      -- how data arises given θ
+Posterior:  π(θ|data) ∝ L(data|θ) × π(θ)
+Report: posterior mean/median, credible interval, P(θ > threshold)
+```
+
+**Examples**:
+- A/B test: Beta(1,1) prior on conversion rate, updated with click data
+- Reliability: Gamma prior on failure rate, updated with survival data
+- Survey: Normal prior on population mean, updated with sample
+- Drug efficacy: Prior from previous studies, updated with new trial
+
+**Key problems**: Conjugate priors, MAP estimation, MCMC, variational inference, model comparison
+
+---
+
+### 10.5 Sample / Population
+
+**Definition**: A population is the complete set of items of interest. A sample is a subset drawn from the population. Statistical inference generalizes from sample to population.
+
+**Indicators**: "sample size", "how many do I need", "representative", "margin of error", "power", "generalize"
+
+**Template**:
+```
+Population: N items with parameter θ (unknown)
+Sample: n items drawn (randomly, independently)
+Estimator: θ̂ = f(sample) estimates θ
+SE(θ̂) decreases as O(1/√n) -- larger samples = more precision
+Power = P(reject H₀ | H₁ true) -- increases with n and effect size
+```
+
+**Examples**:
+- Survey design: "How many respondents to get ±3% margin?"
+- A/B test: "How many users per variant to detect a 5% lift?"
+- Clinical trial: "How many patients to have 80% power?"
+- Quality inspection: "How many items to sample from the batch?"
+
+**Key problems**: Sample size determination, power analysis, sampling design, margin of error calculation
+
+---
+
+### 10.6 Experimental Design
+
+**Definition**: A structured plan for collecting data to test causal hypotheses, controlling for confounding variables through randomization, blocking, and replication.
+
+**Indicators**: "experiment", "treatment", "control group", "randomize", "confound", "causal", "factorial", "blocking"
+
+**Template**:
+```
+Units: N subjects/items
+Treatments: k levels of factor(s)
+Design: Completely randomized / Blocked / Factorial / Crossover
+Assignment: Random allocation to treatment groups
+Outcome: Y measured for each unit
+Analysis: ANOVA / regression / Bayesian (depending on design)
+```
+
+**Examples**:
+- A/B test: 2 treatments (old vs. new), random assignment, measure conversion
+- Factorial: 2 × 3 design (drug dose × exercise level), measure blood pressure
+- Blocked: Block by age group, randomize treatment within blocks
+- Before/after: Same subjects measured pre and post intervention (paired design)
+
+**Key problems**: Randomization, blocking, factorial design, sample size, power analysis, multiple comparisons
+
+---
+
+## Cross-Reference Index
+
+Where to go next after identifying a structure.
+
+| Structure Section | Algorithms (algorithms.md) | Solvers (solvers.md) | Interpretation (interpretation-patterns.md) |
+|---|---|---|---|
+| 1. Graph Theory | §1 Traversal (A1-A7), §2 Shortest Path (A8-A12), §3 MST (A13-A14), §4 Matching (A15-A18), §5 Flow (A19-A20), §6 Coloring (A21-A22), §7 Ind. Set/Cover/Clique (A23-A25), §8 Euler/Hamilton (A26-A27), §9 TSP (A28-A30) | §1 NetworkX, §5 SciPy | §1 Graph Theory Solutions |
+| 2. Combinatorics | §15 Counting & Generation (A63-A69) | §7 itertools, §4 SymPy | §4 Counting Results |
+| 3. Set Theory | §12 Greedy (A47 Set Cover), §10 Optimization (A32 ILP) | §2 PuLP | §2.2 Knapsack/Selection |
+| 4. Logic | §13 SAT/SMT/CSP (A48-A52) | §3 Z3, §6 OR-Tools | §3 Proof Results |
+| 5. Number Theory | §14 Number Theory (A53-A62) | §4 SymPy | §6 Number Theory Results |
+| 6. Relations & Orders | §16 Order Theory (A70-A73), §1 Traversal (A3 Topo Sort) | §1 NetworkX, §4 SymPy | -- |
+| 7. Algorithms & Optimization | §10 LP/ILP (A31-A34) | §2 PuLP, §5 SciPy, §6 OR-Tools | §2 Optimization Solutions |
+| 8. Discrete Probability | §18 Probability (A78-A81) | §8 numpy, §4 SymPy | §5 Probability Results |
+| 9. Continuous Optimization | §21 Continuous Opt (A87-A94) | §9 cvxpy, §5 SciPy | §7 Continuous Opt Solutions |
+| 10. Statistical Inference | algorithms-statistics.md S1-S45 | solvers-statistics.md (scipy.stats, statsmodels, PyMC, pingouin, lifelines) | §8 Statistical Inference Solutions |
+
+Also see: **problem-classification.md** for rapid pattern matching from natural language to structure, **common-mistakes.md** for modeling pitfalls by structure type.

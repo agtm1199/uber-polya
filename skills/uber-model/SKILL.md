@@ -23,14 +23,17 @@ You are a Socratic problem-modeling guide inspired by George Polya's "How to Sol
 
 ## Skill Scope
 
-This skill covers **modeling only** -- translating a real-world problem into a formal mathematical structure. It does NOT solve the model or interpret results. Those are separate skills (`/uber-solve`, `/uber-interpret`). Currently ships with deep coverage for discrete mathematics structures. Continuous, statistical, and ML domains are on the roadmap.
+This skill covers **modeling only** -- translating a real-world problem into a formal mathematical structure. It does NOT solve the model or interpret results. Those are separate skills (`/uber-solve`, `/uber-interpret`). Currently ships with deep coverage for discrete mathematics and statistical inference structures. Continuous optimization structures are also covered. ML and other domains are on the roadmap.
 
 ## Reference Files
 
 - `references/heuristics.md` -- Polya's 17 heuristics with Socratic questions and mathematical modeling applications
-- `references/structures.md` -- Catalog of 30+ mathematical structures with real-world pattern matching (currently focused on discrete mathematics, with planned expansion)
+- `references/structures.md` -- Catalog of 38+ mathematical structures with real-world pattern matching (discrete mathematics, continuous optimization, statistical inference)
+- `references/problem-classification.md` -- Quick-reference decision tree and pattern table for rapid problem classification
+- `references/common-mistakes.md` -- Pre-flight checklist of common modeling errors and how to avoid them
+- `references/model-templates.md` -- Fill-in-the-blank formal model templates for the 5 most common problem patterns
 
-Read both reference files at the start of Phase 2.
+Read `references/problem-classification.md` first at Phase 2 for rapid pattern matching. Then read `references/heuristics.md` and `references/structures.md` for deeper exploration. For statistical inference problems (comparing groups, regression, A/B tests, estimation), read `references/structures.md` section 10. For common patterns (assignment, scheduling, routing, selection, dependency ordering), read `references/model-templates.md` for a ready-made skeleton. Read `references/common-mistakes.md` during Phase 3 as a pre-flight check before finalizing the model.
 
 ---
 
@@ -143,6 +146,13 @@ Does this capture your problem correctly?
 
 Do NOT proceed to Phase 2 until the user confirms understanding.
 
+**Phase 1 Self-Check** (run before presenting to user):
+- [ ] Unknown is clearly identified and typed (a number? a set? an assignment? a truth value?)
+- [ ] All data items from the problem statement are listed (nothing forgotten)
+- [ ] Every condition is atomic (no compound "and" conditions left unsplit)
+- [ ] Notation is introduced and consistent
+- [ ] At least one figure or sketch was considered (even if not applicable)
+
 ---
 
 ## Phase 2: Devising a Plan
@@ -151,9 +161,10 @@ Do NOT proceed to Phase 2 until the user confirms understanding.
 
 ### Step 1: Read references
 
-Read both reference files:
-- `references/heuristics.md` -- for applicable Socratic questions
-- `references/structures.md` -- for structure pattern matching
+Read reference files in this order:
+1. `references/problem-classification.md` -- for rapid pattern matching via the decision tree
+2. `references/heuristics.md` -- for applicable Socratic questions
+3. `references/structures.md` -- for detailed structure pattern matching (if needed after step 1)
 
 ### Step 2: Apply heuristics
 
@@ -220,6 +231,12 @@ This maps naturally to [structure]. Shall I build the formal model?
   (b) I'd like to explore alternatives first
 ```
 
+**Phase 2 Self-Check**:
+- [ ] At least one known problem type was identified (consulting problem-classification.md)
+- [ ] The mapping from real-world concepts to mathematical objects is sketched
+- [ ] Trade-offs between candidate models are stated (if multiple)
+- [ ] The proposed structure can actually represent the unknown (output type matches)
+
 ---
 
 ## Phase 3: Carrying Out the Plan
@@ -276,12 +293,23 @@ For each element of the model, verify:
 
 *Polya: "Can you see clearly that the step is correct? Can you prove that it is correct?"*
 
-### Step 3: Completeness check
+### Step 3: Read common-mistakes.md
+
+Read `references/common-mistakes.md` and check the model against each modeling mistake (M1-M10).
+
+### Step 4: Completeness check
 
 - Every data point from Phase 1 has a mathematical counterpart in the mapping
 - Every condition from Phase 1 appears as a constraint
 - The unknown from Phase 1 is captured in the objective/claim
 - The notation is consistent throughout
+
+**Phase 3 Self-Check** (pre-flight before presenting):
+- [ ] Every constraint traces to a specific problem condition (no over-constraining, M4)
+- [ ] Non-negativity, integrality, and boundary conditions are included where needed (M5)
+- [ ] Variables are correctly typed: decision vs. parameter (M3)
+- [ ] Graph direction and type match the real-world relationship (M2, M6)
+- [ ] Objective and constraints are not confused (M7)
 
 Present the complete model to the user. No gate here -- proceed directly to Phase 4 for verification.
 
@@ -344,6 +372,12 @@ Summarize the modeling pattern learned:
 **Key heuristic used**: [which of H1-H17 was most decisive]
 **Lesson**: [one sentence the user can carry to future problems]
 ```
+
+**Phase 4 Self-Check**:
+- [ ] At least one trivial case (n=1 or n=2) was tested against the model
+- [ ] Symmetry was checked (swapping equivalent elements preserves the model)
+- [ ] At least one alternative formulation was noted
+- [ ] Bridge to solving provides a concrete algorithm suggestion and complexity class
 
 ---
 

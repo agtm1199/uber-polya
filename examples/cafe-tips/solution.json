@@ -1,0 +1,103 @@
+{
+  "descriptive": {
+    "jazz": {
+      "n": 25,
+      "mean": 18.16,
+      "std": 2.2410934831014973,
+      "median": 18.4,
+      "min": 13.9,
+      "max": 23.0,
+      "q1": 16.6,
+      "q3": 19.6
+    },
+    "pop": {
+      "n": 25,
+      "mean": 15.86,
+      "std": 2.977834783865619,
+      "median": 16.2,
+      "min": 8.9,
+      "max": 22.5,
+      "q1": 14.1,
+      "q3": 16.8
+    }
+  },
+  "assumptions": {
+    "normality_jazz": {
+      "W": 0.9787599045225069,
+      "p": 0.8594684612457368,
+      "normal": "True"
+    },
+    "normality_pop": {
+      "W": 0.9777448410430343,
+      "p": 0.8370738498773326,
+      "normal": "True"
+    },
+    "equal_variance": {
+      "levene_p": 0.38048328446745394,
+      "equal": "True"
+    },
+    "parametric_ok": "True"
+  },
+  "primary_test": {
+    "t_statistic": 3.0856503854027157,
+    "p_value": 0.003484153592511439,
+    "mean_diff": 2.3000000000000007,
+    "ci_diff": [
+      0.7983288567949629,
+      3.8016711432050387
+    ],
+    "cohens_d": 0.8727537247556578,
+    "effect": "large",
+    "is_significant": "True"
+  },
+  "verification": {
+    "mann_whitney": {
+      "U": 457.5,
+      "p": 0.005034944941204574,
+      "rank_biserial_r": -0.46399999999999997,
+      "agrees": "True"
+    },
+    "permutation": {
+      "p": 0.004199580041995801,
+      "agrees": "True"
+    },
+    "bootstrap_ci": {
+      "ci_2.5": 0.8558999999999982,
+      "ci_97.5": 3.7399999999999984,
+      "contains_zero": false
+    },
+    "all_agree": true
+  },
+  "bayesian": {
+    "prob_jazz_higher": 0.99905,
+    "expected_diff": 2.3026870452379806,
+    "credible_interval_95": [
+      0.8408308700243228,
+      3.7645252401095397
+    ]
+  },
+  "power": {
+    "observed": 0.8561993518397821,
+    "n_for_80pct": 22
+  },
+  "sensitivity": {
+    "power_curve": {
+      "10": 0.455,
+      "15": 0.636,
+      "20": 0.767,
+      "25": 0.856,
+      "30": 0.914,
+      "40": 0.971,
+      "50": 0.991,
+      "75": 1.0,
+      "100": 1.0
+    },
+    "current_n": 25,
+    "current_power": 0.8561993518397821,
+    "stricter_alpha": {
+      "alpha": 0.01,
+      "still_significant": true
+    }
+  },
+  "recommendation": "STRONG EVIDENCE: Jazz music significantly increases tips with a large effect. Switch to jazz during peak hours."
+}

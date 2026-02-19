@@ -1,6 +1,8 @@
 # Algorithm Catalog
 
-Comprehensive catalog of 85+ algorithms for discrete mathematics problem solving. Organized by domain, each entry includes complexity, solver library, correctness guarantee, and implementation guidance.
+**Scope**: Discrete Mathematics (86 algorithms), Continuous Optimization (8 algorithms)
+
+Comprehensive catalog of algorithms for mathematical problem solving. Organized by domain, each entry includes complexity, solver library, correctness guarantee, and implementation guidance.
 
 **Legend**:
 - **T**: Time complexity | **S**: Space complexity
@@ -1235,3 +1237,196 @@ Quick lookup: given a problem class, which algorithm to use.
 | SCC | Tarjan (A5) | Tarjan (A5) | Tarjan (A5) |
 | Proof (induction) | SymPy verify (A74) | SymPy verify (A74) | SymPy verify (A74) |
 | Proof (contradiction) | Z3 (A75) | Z3 (A75) | Z3 (A75) |
+| Convex optimization | cvxpy (A87) | cvxpy (A87) | cvxpy (A87) |
+| Unconstrained smooth | BFGS (A89) | L-BFGS-B (A89) | L-BFGS-B (A89) |
+| Least squares | Normal eqns (A91) | scipy lstsq (A91) | scipy lstsq (A91) |
+| QP (convex) | cvxpy (A88) | cvxpy (A88) | OSQP/cvxpy (A88) |
+| Nonlinear constrained | SLSQP (A93) | SLSQP/trust-constr (A93) | Ipopt (A93) |
+
+---
+
+## 21. Continuous Optimization
+
+### A87: Disciplined Convex Programming (cvxpy)
+
+**Problem**: Minimize a convex function over a convex set.
+**T**: Polynomial (interior point) | **S**: O(n²) for n variables
+**Lib**: `cvxpy`
+**Guarantee**: Exact (global optimum for convex problems). Fails fast if problem is non-convex.
+
+```python
+import cvxpy as cp
+import numpy as np
+
+x = cp.Variable(n)
+objective = cp.Minimize(cp.quad_form(x, Sigma) + lambd * cp.norm(x, 1))
+constraints = [cp.sum(x) == 1, x >= 0]
+prob = cp.Problem(objective, constraints)
+prob.solve()
+print(f"Optimal value: {prob.value}")
+print(f"Optimal x: {x.value}")
+```
+
+**Use when**: Portfolio optimization, signal processing, control, any problem that can be expressed in DCP form. cvxpy verifies convexity at construction time.
+
+---
+
+### A88: Quadratic Programming
+
+**Problem**: Minimize (1/2)x^T Q x + c^T x subject to linear constraints, Q positive semidefinite.
+**T**: Polynomial (interior point or active set) | **S**: O(n²)
+**Lib**: `cvxpy`, `scipy.optimize.minimize(method='trust-constr')`, OSQP
+**Guarantee**: Exact (convex QP has unique global minimum if Q is positive definite)
+
+**Use when**: Portfolio optimization (minimize variance), regularized regression (ridge), SVM training.
+
+---
+
+### A89: BFGS / L-BFGS-B
+
+**Problem**: Unconstrained smooth minimization (or with box constraints for L-BFGS-B).
+**T**: O(n²) per iteration (BFGS), O(n) per iteration (L-BFGS-B) | **S**: O(n²) / O(mn)
+**Lib**: `scipy.optimize.minimize(method='BFGS')` or `method='L-BFGS-B'`
+**Guarantee**: Converges to local minimum (global if convex). Superlinear convergence rate.
+
+```python
+from scipy.optimize import minimize
+
+def objective(x):
+    return (x[0] - 1)**2 + 100 * (x[1] - x[0]**2)**2  # Rosenbrock
+
+result = minimize(objective, x0=[0, 0], method='BFGS')
+print(f"Minimum: {result.fun} at x = {result.x}")
+print(f"Converged: {result.success}")
+```
+
+**Use when**: Smooth unconstrained problems with moderate dimensionality (n < 10K).
+
+---
+
+### A90: Gradient Descent
+
+**Problem**: Unconstrained smooth minimization.
+**T**: O(n) per iteration | **S**: O(n)
+**Lib**: Custom (or use scipy/cvxpy for better variants)
+**Guarantee**: Converges to local minimum. Rate: O(1/k) for convex, O(1/k²) with Nesterov acceleration.
+
+```python
+def gradient_descent(f, grad_f, x0, lr=0.01, tol=1e-8, max_iter=10000):
+    x = x0.copy()
+    for i in range(max_iter):
+        g = grad_f(x)
+        if np.linalg.norm(g) < tol:
+            break
+        x = x - lr * g
+    return x
+```
+
+**Use when**: Large-scale problems where second-order methods are too expensive. ML training, simple convex problems.
+
+---
+
+### A91: Least Squares (Normal Equations / SVD)
+
+**Problem**: Minimize ||Ax - b||² (linear least squares).
+**T**: O(mn²) for m×n matrix A | **S**: O(mn)
+**Lib**: `numpy.linalg.lstsq()`, `scipy.linalg.lstsq()`
+**Guarantee**: Exact (closed-form solution). Unique if A has full column rank.
+
+```python
+import numpy as np
+
+A = np.array([[1, 1], [1, 2], [1, 3]])
+b = np.array([1, 2, 2])
+x, residuals, rank, sv = np.linalg.lstsq(A, b, rcond=None)
+print(f"Coefficients: {x}")
+```
+
+**Use when**: Linear regression, polynomial fitting, any overdetermined linear system.
+
+---
+
+### A92: Gauss-Newton / Levenberg-Marquardt
+
+**Problem**: Nonlinear least squares: minimize Σ r_i(x)² where r_i are nonlinear residuals.
+**T**: O(mn²) per iteration | **S**: O(mn)
+**Lib**: `scipy.optimize.least_squares()`
+**Guarantee**: Converges to local minimum. Often fast for well-conditioned problems.
+
+```python
+from scipy.optimize import least_squares
+
+def residuals(params, x_data, y_data):
+    a, b, c = params
+    return a * np.exp(b * x_data) + c - y_data
+
+result = least_squares(residuals, x0=[1, -0.1, 0], args=(x_data, y_data))
+print(f"Parameters: {result.x}")
+```
+
+**Use when**: Curve fitting, parameter estimation, calibration.
+
+---
+
+### A93: Sequential Quadratic Programming (SQP) / SLSQP
+
+**Problem**: Nonlinear constrained optimization.
+**T**: Problem-dependent (iterative) | **S**: O(n²)
+**Lib**: `scipy.optimize.minimize(method='SLSQP')` or `method='trust-constr'`
+**Guarantee**: Converges to local KKT point. No global guarantee for non-convex.
+
+```python
+from scipy.optimize import minimize
+
+result = minimize(
+    fun=lambda x: x[0]**2 + x[1]**2,
+    x0=[1, 1],
+    method='SLSQP',
+    constraints=[
+        {'type': 'ineq', 'fun': lambda x: x[0] + x[1] - 1},  # x0 + x1 >= 1
+    ],
+    bounds=[(0, None), (0, None)]
+)
+```
+
+**Use when**: Engineering design, constrained optimization with nonlinear constraints.
+
+---
+
+### A94: Interior Point Method
+
+**Problem**: LP, QP, or general convex optimization.
+**T**: O(n^3.5 log(1/ε)) for LP | **S**: O(n²)
+**Lib**: `scipy.optimize.linprog(method='highs')`, `cvxpy` (uses ECOS, SCS, or MOSEK)
+**Guarantee**: Exact for convex problems. Polynomial worst-case.
+
+**Use when**: Large-scale LP/QP, semidefinite programming, any convex problem via cvxpy.
+
+---
+
+## Cross-Reference Index
+
+Where each algorithm section connects to structures and solvers.
+
+| Algorithm Section | Structures (structures.md) | Solvers (solvers.md) | Interpretation (interpretation-patterns.md) |
+|---|---|---|---|
+| §1 Graph Traversal (A1-A7) | §1 Graph Theory (1.1-1.8) | §1 NetworkX | §1.5 Connectivity Results |
+| §2 Shortest Path (A8-A12) | §1.3 Weighted Graph, §1.6 DAG | §1 NetworkX, §5 SciPy | §1.1 Shortest Path Results |
+| §3 MST (A13-A14) | §1.3 Weighted Graph | §1 NetworkX | §1.1 (as routing variant) |
+| §4 Matching (A15-A18) | §1.4 Bipartite Graph | §1 NetworkX, §5 SciPy (A16) | §1.2 Matching Results |
+| §5 Network Flow (A19-A20) | §1.3 Weighted Graph (capacity) | §1 NetworkX, §6 OR-Tools | §1.4 Flow Results |
+| §6-7 Coloring/Clique (A21-A25) | §1.1 Simple Graph | §1 NetworkX, §2 PuLP (ILP) | §1.3 Coloring Results |
+| §8-9 Euler/Hamilton/TSP (A26-A30) | §1.1 Simple Graph, §1.3 Weighted | §1 NetworkX, §6 OR-Tools | §2.3 Scheduling Results |
+| §10 LP/ILP (A31-A34) | §7.1 ILP | §2 PuLP, §5 SciPy, §6 OR-Tools | §2.1 LP/ILP Results |
+| §11 DP Patterns (A35-A42) | §7.1 ILP (Knapsack), §7.2 Search Space | (Custom) | §2.2 Knapsack/Selection |
+| §12 Greedy (A43-A47) | §3.2 Set Systems (Set Cover) | §2 PuLP (ILP fallback) | §2.2 Knapsack/Selection |
+| §13 SAT/SMT/CSP (A48-A52) | §4 Logic (4.1-4.4) | §3 Z3, §6 OR-Tools | §3 Proof Results |
+| §14 Number Theory (A53-A62) | §5 Number Theory (5.1-5.3) | §4 SymPy | §6 Number Theory Results |
+| §15 Counting (A63-A69) | §2 Combinatorics (2.1-2.5) | §7 itertools, §4 SymPy | §4 Counting Results |
+| §16 Order Theory (A70-A73) | §6 Relations & Orders (6.1-6.3) | §1 NetworkX (matching) | -- |
+| §17 Proof Techniques (A74-A77) | §4 Logic | §3 Z3, §4 SymPy | §3 Proof Results |
+| §18 Probability (A78-A81) | §8 Discrete Probability (8.1-8.2) | §8 numpy, §4 SymPy | §5 Probability Results |
+| §19-20 Search/Metaheuristics (A82-A86) | §7.2 Search Space | (Custom) | §2.3 Scheduling Results |
+| §21 Continuous Opt (A87-A94) | §9 Continuous Optimization (9.1-9.5) | §9 cvxpy, §5 SciPy | §7 Continuous Opt Solutions |
+
+Also see: **problem-classification.md** for decision-tree algorithm selection, **solving-protocols.md** for domain-specific solving workflows, **common-mistakes.md** §S1-S6 for solving pitfalls.

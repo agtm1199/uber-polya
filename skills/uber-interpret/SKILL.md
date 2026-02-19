@@ -78,6 +78,11 @@ Who is the primary audience for this interpretation?
 
 This determines the depth and vocabulary of every subsequent phase.
 
+**Phase 0 Self-Check**:
+- [ ] Mapping table is complete (every variable/node/edge has a real-world counterpart)
+- [ ] Objective type is identified (optimization / feasibility / proof / counting)
+- [ ] Audience is determined (technical / decision-maker / domain expert / general)
+
 ---
 
 ## Phase 1: Solution Translation
@@ -135,6 +140,11 @@ Before any detailed analysis, give a single clear sentence:
 > **Bottom line**: [The optimal schedule uses 3 rooms and has no conflicts] / [It is impossible to satisfy all constraints simultaneously] / [There are exactly 42 valid configurations] / [The network can handle at most 150 units of flow]
 
 This is the executive summary. Everything else is supporting detail.
+
+**Phase 1 Self-Check**:
+- [ ] Every mathematical symbol in the solution is translated to real-world meaning
+- [ ] Bottom line is one sentence, no math jargon, understandable by the stated audience
+- [ ] The translation distinguishes what the math *proves* from what it *suggests*
 
 ---
 
@@ -219,6 +229,12 @@ Add balance constraint. Re-solve.
 Result: Objective drops from 47 to 41 (-12.8%). Still feasible. **Cost of fairness: 12.8%**
 ```
 
+**Phase 2 Self-Check**:
+- [ ] 3-5 most important parameters are identified and varied
+- [ ] Each parameter is classified as robust, sensitive, or critical
+- [ ] At least 2 what-if scenarios are meaningful to the stakeholder (not arbitrary)
+- [ ] Binding constraints (bottlenecks) are identified
+
 ---
 
 ## Phase 3: Visualization
@@ -282,6 +298,12 @@ Every visualization must have a text interpretation:
 - What to notice (key insight)
 - What action it suggests (recommendation)
 
+**Phase 3 Self-Check**:
+- [ ] Chart type matches the result type (consulting visualization.md selection matrix)
+- [ ] Chart has title, axis labels, and legend where needed
+- [ ] Key values are annotated directly on the chart
+- [ ] Colorblind-friendly palette is used
+
 ---
 
 ## Phase 4: Recommendations & Communication
@@ -313,6 +335,12 @@ Translate the mathematical result into actionable advice. Structure:
 - The model does not capture [real-world factor], which could affect [aspect]
 - The solution is optimal for the stated objective; other objectives may conflict
 ```
+
+**Phase 4 Self-Check**:
+- [ ] Every recommendation traces to a specific mathematical finding
+- [ ] Limitations section discloses what the model assumes and ignores
+- [ ] Audience vocabulary matches the stated audience level
+- [ ] "Optimal" is qualified as "optimal given the model" (not absolute truth)
 
 ### Step 2: Adapt to audience
 
@@ -436,6 +464,12 @@ Leave the user with a reusable decision framework:
   2. [Question that determines the right variant]
 **Watch out for**: [Common pitfall or assumption to verify]
 ```
+
+**Phase 5 Self-Check**:
+- [ ] Transferable pattern is stated in the form: [real-world pattern] → [structure] → [algorithm]
+- [ ] At least 2 other domains where the same pattern applies are identified
+- [ ] Method critique is honest (what worked, what was difficult)
+- [ ] Decision framework gives concrete trigger conditions for reuse
 
 ### Step 5: Feedback loop
 

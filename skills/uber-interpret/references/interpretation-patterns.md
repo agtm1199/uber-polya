@@ -1,5 +1,7 @@
 # Interpretation Patterns by Domain
 
+**Scope**: Discrete Mathematics (6 domains), Continuous Optimization (3 patterns)
+
 How to translate mathematical solutions back into real-world meaning. For each domain: what the solution objects represent, how to read them, what to check for robustness, and what limitations to flag.
 
 ---
@@ -416,3 +418,274 @@ For any model, disclose these categories of limitations:
 - When does this solution expire?
 - How quickly do the inputs change?
 - When should the analysis be refreshed?
+
+---
+
+## 7. Continuous Optimization Solutions
+
+### 7.1 Convex Optimization Results
+
+**Math object**: Optimal point x*, optimal value f(x*), dual variables λ*, constraint slackness.
+
+**Translation**:
+- **x***: The optimal allocation, portfolio weights, design parameters, control inputs
+- **f(x*)**: The best achievable cost/return/error
+- **Dual variables λ***: Sensitivity of the objective to each constraint (same as shadow prices in LP)
+- **Active constraints**: Constraints where g_i(x*) = 0 -- these are the binding limitations
+
+**Key insights to extract**:
+- The optimal decisions and their real-world meaning
+- How close to the unconstrained optimum (how much do constraints cost?)
+- Which constraints are active (bottlenecks) vs. slack (have room)
+- Dual values: "Relaxing constraint i by one unit improves the objective by λ_i"
+
+**Sensitivity**:
+- Vary constraint right-hand sides: how does the optimal value change? (dual values predict this locally)
+- Vary objective coefficients: does the optimal point change?
+- **Parametric sweep**: For portfolio problems, sweep the risk-return trade-off to generate an efficient frontier
+
+**Limitations**:
+- Convexity guarantees global optimum, but the model may not capture non-convex real-world phenomena
+- Dual values are local: valid for small perturbations only
+- Continuous solutions may need rounding for discrete real-world decisions
+
+---
+
+### 7.2 Least Squares / Regression Results
+
+**Math object**: Coefficient vector β*, residuals r = y - Xβ*, R² statistic.
+
+**Translation**:
+- **β_j**: "A one-unit increase in variable j is associated with a β_j change in the outcome, holding other variables constant"
+- **R²**: "The model explains R²×100% of the variation in the outcome"
+- **Residuals**: The unexplained part -- what the model misses
+- **Prediction**: ŷ_new = X_new β* with confidence interval
+
+**Key insights to extract**:
+- Which variables have the largest coefficients (most influential)
+- Which variables have coefficients near zero (unimportant)
+- R² value: how good is the fit overall?
+- Residual pattern: any systematic error? (plot residuals vs. fitted values)
+
+**Sensitivity**:
+- Remove each variable: how much does R² drop?
+- Add noise to input data: how stable are the coefficients?
+- **Outlier influence**: does removing any single data point change the result substantially?
+
+**Limitations**:
+- Correlation is not causation -- β_j doesn't mean "changing x_j causes the outcome to change"
+- Extrapolation beyond the data range is unreliable
+- Assumes linear relationship (check residual plots)
+- Multicollinearity can make individual coefficients unstable even if overall prediction is good
+
+---
+
+### 7.3 Nonlinear Optimization Results
+
+**Math object**: Local minimum x*, objective f(x*), KKT conditions.
+
+**Translation**:
+- **x***: The locally best design/parameters/decision
+- **"Locally optimal"**: Better than all nearby alternatives, but a different starting point might find a better solution
+- **KKT multipliers**: Same interpretation as dual variables -- sensitivity to constraints
+
+**Key insights to extract**:
+- The solution and its real-world meaning
+- How many local minima were found (if multi-start was used)
+- Gap between best local minimum and any known lower bound
+- Which constraints are active
+
+**Sensitivity**:
+- Run from 5-10 random initial points: do they all converge to the same solution?
+- If not: report the range of solutions found and flag non-convexity
+- Vary key parameters: does the local minimum shift smoothly or jump?
+
+**Limitations**:
+- **Non-convex problems have no guarantee of global optimality.** Always state this explicitly.
+- Gradient-based methods may miss disconnected feasible regions
+- Numerical convergence depends on scaling and conditioning
+
+---
+
+## 8. Statistical Inference Solutions
+
+### 8.1 Hypothesis Test Results
+
+**Math object**: Test statistic T, p-value, effect size d, confidence interval (L, U), sample sizes n₁, n₂.
+
+**Translation**:
+- **p-value**: "If there were truly no difference, we'd see a result this extreme only p×100% of the time"
+  - p < 0.001: "Very strong evidence against no difference"
+  - p < 0.05: "Moderate evidence against no difference"
+  - p > 0.05: "Insufficient evidence to conclude a difference" (NOT "no difference exists")
+- **Effect size**: The practical magnitude of the difference
+  - Cohen's d < 0.2: negligible, d ≈ 0.5: medium, d ≈ 0.8: large
+  - "The difference was d standard deviations"
+- **Confidence interval**: "We are 95% confident the true difference lies between L and U"
+  - If CI contains 0: consistent with no difference
+  - Width of CI indicates precision
+
+**Key insights to extract**:
+- Is the effect statistically significant? (p-value)
+- Is the effect practically meaningful? (effect size -- a large sample can make a tiny effect "significant")
+- How precise is our estimate? (CI width)
+- How much statistical power did we have? (could we have missed a real effect?)
+
+**Standard report**:
+```
+Result: Group A (mean=4.2, SD=1.1, n=50) vs Group B (mean=5.1, SD=1.3, n=50)
+Difference: 0.9 units (95% CI: [0.42, 1.38])
+Effect size: Cohen's d = 0.75 (medium-to-large)
+Test: Welch's t(96) = 3.74, p = 0.0003
+Conclusion: Statistically significant and practically meaningful difference.
+```
+
+**Sensitivity**:
+- Power analysis: "With these sample sizes, we had 92% power to detect this effect"
+- What sample size would detect a smaller effect?
+- How does the conclusion change at α = 0.01 vs. α = 0.05?
+
+**Limitations**:
+- Statistical significance ≠ practical importance (large n can make trivial effects significant)
+- p-value is NOT the probability that H₀ is true
+- Multiple testing: if you ran 20 tests, expect 1 false positive at α = 0.05
+- CI assumes correct model (check assumptions: normality, independence)
+
+---
+
+### 8.2 Regression Results
+
+**Math object**: Coefficients β̂, standard errors SE(β̂), p-values, R², residuals, prediction intervals.
+
+**Translation**:
+- **β̂_j**: "For each one-unit increase in X_j, Y changes by β̂_j units, holding other predictors constant"
+- **R²**: "The model explains R²×100% of the variation in Y"
+  - R² = 0.7 means "70% of the variation is explained"
+  - R² = 0.3 doesn't mean the model is bad -- depends on the domain
+- **p-value for β̂_j**: "Evidence that X_j has a nonzero relationship with Y"
+- **Prediction interval**: Wider than CI -- covers where a NEW observation might fall
+
+**Key insights to extract**:
+- Which predictors matter most? (largest |β̂_j| after standardizing, or smallest p-value)
+- How good is the overall fit? (R², adjusted R²)
+- Are there any assumption violations? (residual plots)
+- How well does the model predict new data? (cross-validated R²)
+
+**Standard report**:
+```
+Model: Price = $45,000 + $120/sqft × Area + $8,500 × Bedrooms - $2,000/year × Age
+R² = 0.78, Adjusted R² = 0.76
+F(3, 96) = 112.4, p < 0.001
+
+Key coefficients:
+  Area:     +$120/sqft  (95% CI: [$95, $145], p < 0.001) -- strongest predictor
+  Bedrooms: +$8,500     (95% CI: [$3,200, $13,800], p = 0.002)
+  Age:      -$2,000/yr  (95% CI: [-$3,100, -$900], p = 0.004)
+```
+
+**Sensitivity**:
+- Remove each predictor: how much does R² drop? (variable importance)
+- Cross-validation R²: how well does the model generalize?
+- Influential observations: Cook's distance > 1 flags influential points
+
+**Limitations**:
+- Regression shows association, NOT causation
+- Extrapolation beyond the data range is unreliable
+- Multicollinearity inflates standard errors (check VIF > 10)
+- Omitted variable bias: unmeasured confounders can distort coefficients
+
+---
+
+### 8.3 Confidence/Credible Interval Results
+
+**Math object**: Interval (L, U) with coverage probability 1-α.
+
+**Translation**:
+- **Frequentist CI**: "If we repeated this study many times, 95% of such intervals would contain the true value"
+  - NOT "there is a 95% probability the true value is in this interval"
+- **Bayesian credible interval**: "There is a 95% probability the parameter lies in this interval" (given the prior and data)
+  - This IS a direct probability statement (under the Bayesian framework)
+
+**Key insights to extract**:
+- Point estimate (center of interval)
+- Precision: narrow interval = precise estimate, wide = uncertain
+- Does the interval contain a meaningful threshold? (e.g., does CI for difference contain 0?)
+- Asymmetry: if the interval is lopsided, the distribution is skewed
+
+**Presentation by audience**:
+- **Technical**: "95% CI: [2.3, 4.7], SE = 0.6, n = 120"
+- **Decision-maker**: "The true value is between 2.3 and 4.7, most likely around 3.5"
+- **General**: "We're quite confident the answer is somewhere between 2 and 5"
+
+**Sensitivity**:
+- How does the interval width change with sample size? (halving width requires 4× sample)
+- What confidence level changes the decision? (90% CI vs. 95% CI vs. 99% CI)
+
+---
+
+### 8.4 Bayesian Posterior Results
+
+**Math object**: Posterior distribution P(θ|data), credible intervals, posterior predictive distribution.
+
+**Translation**:
+- **Posterior mean/median**: "Our best estimate of the parameter after seeing the data"
+- **Credible interval**: "There is a 95% probability the parameter is in this range"
+- **Prior → Posterior**: "Before seeing data, we believed θ was around [prior mean]. After seeing the data, we updated to [posterior mean]."
+- **P(θ > threshold)**: "The probability that the parameter exceeds the threshold is X%"
+
+**Key insights to extract**:
+- How much did the data change our beliefs? (compare prior and posterior)
+- How certain are we? (posterior width)
+- What is the probability of a practically meaningful effect? P(|θ| > ROPE)
+- Posterior predictive: what do we expect for future observations?
+
+**Standard report**:
+```
+Bayesian A/B Test Results:
+  Variant A: posterior mean = 3.2% (95% CrI: [2.8%, 3.6%])
+  Variant B: posterior mean = 3.8% (95% CrI: [3.3%, 4.3%])
+  P(B > A) = 94.3%
+  Expected lift: +0.6 percentage points (95% CrI: [-0.1%, +1.3%])
+  Recommendation: B is very likely better, but the lift could be small.
+```
+
+**Sensitivity**:
+- Prior sensitivity: how does the posterior change with different priors?
+  - If the conclusion is robust to reasonable priors: strong evidence
+  - If the conclusion flips: the data is insufficient to overcome prior uncertainty
+- How much more data would substantially narrow the posterior?
+
+**Limitations**:
+- Results depend on the prior (always disclose prior choice and rationale)
+- MCMC may not have converged (check R-hat < 1.01, ESS > 400)
+- Posterior predictive checks: does the model generate data that looks like the real data?
+
+---
+
+## Cross-Reference Index
+
+Which visualization to use for each result type, and where results come from.
+
+| Interpretation Section | Visualization (visualization.md) | Algorithms (algorithms.md) | Structures (structures.md) |
+|---|---|---|---|
+| §1.1 Shortest Path | §1 Graph Diagram (annotated) | §2 Shortest Path (A8-A12) | §1.3 Weighted Graph |
+| §1.2 Matching | §2 Assignment Matrix Heatmap | §4 Matching (A15-A18) | §1.4 Bipartite Graph |
+| §1.3 Coloring | §1 Graph Diagram (colored) | §6 Coloring (A21-A22) | §1.1 Simple Graph |
+| §1.4 Flow | §8 Flow Diagram | §5 Network Flow (A19-A20) | §1.3 Weighted Graph |
+| §1.5 Connectivity | §1 Graph Diagram (components) | §1 Traversal (A5-A7) | §1.1-1.2 Graphs |
+| §2.1 LP/ILP | §4 Tornado (sensitivity), §5 Scenario Comparison | §10 LP/ILP (A31-A34) | §7.1 ILP |
+| §2.2 Knapsack | §6 Distribution Bar Chart | §11 DP (A33-A34) | §7.1 ILP |
+| §2.3 Scheduling | §3 Gantt Chart | §1 Traversal (A3 Topo Sort), §10 ILP | §7.3 Scheduling Model |
+| §3 Proofs | §10 Proof Step Visualization | §17 Proof Techniques (A74-A77) | §4 Logic |
+| §4 Counting | §6 Distribution Bar Chart | §15 Counting (A63-A69) | §2 Combinatorics |
+| §5 Probability | §6 Distribution/PMF, §7 Pareto | §18 Probability (A78-A81) | §8 Discrete Probability |
+| §6 Number Theory | (text-based) | §14 Number Theory (A53-A62) | §5 Number Theory |
+| §7.1 Convex Opt | §7 Pareto Frontier, §4 Tornado | §21 Continuous Opt (A87-A88) | §9.2 Convex Program |
+| §7.2 Least Squares | §6 Bar Chart (coefficients), scatter (fit) | §21 Continuous Opt (A91-A92) | §9.4 Least Squares |
+| §7.3 Nonlinear Opt | §7 Pareto, §5 Scenario Comparison | §21 Continuous Opt (A93-A94) | §9.5 Nonlinear Constrained |
+| §8.1 Hypothesis Tests | §11 Group Comparison (bar+CI) | algorithms-statistics.md S6-S17 | §10.2 Statistical Hypothesis |
+| §8.2 Regression | §13 Regression Plot, §14 Residual Plot | algorithms-statistics.md S23-S30 | §10.3 Regression Model |
+| §8.3 CI/CrI | §11 Group Comparison, §15 Forest Plot | algorithms-statistics.md S18-S22 | §10.1 Random Variable |
+| §8.4 Bayesian | §16 Posterior Plot | algorithms-statistics.md S31-S35 | §10.4 Bayesian Model |
+
+Also see: **common-mistakes.md** §I1-I6 for interpretation pitfalls.

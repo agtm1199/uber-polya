@@ -27,6 +27,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
   - 6 new chart types in visualization.md (§11-§16: group comparison, QQ plot, regression, residual, forest, posterior)
 - **A/B Testing** worked example (examples/ab-testing/) -- z-test, Bayesian, bootstrap, power analysis
 - **Cafe Tips** worked example (examples/cafe-tips/) -- full Polya cycle demo: t-test, Mann-Whitney, permutation, bootstrap, Bayesian, power analysis, visualizations
+- **10 Everyday Problem** worked examples: shift-scheduling, budget-optimization, fair-rent, route-planning, project-prioritization, study-schedule, meal-planning, team-assignment, break-even, event-seating
 - Cross-reference indexes in all reference files linking structures → algorithms → solvers → interpretation → visualization
 
 ### Changed
@@ -36,7 +37,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - uber-solve now references 6 files (added solving-protocols.md, optimization-hardening.md, algorithms-statistics.md, solvers-statistics.md)
 - All reference files now carry **Scope** tags for multi-domain awareness
 - heuristics.md and structures.md titles updated from "Discrete Math" to "Mathematical" (universal branding)
-- Updated README: 139 algorithms, 15 solver libraries, 43 structures, 10 domains, 6 examples
+- Updated README: 139 algorithms, 15 solver libraries, 43 structures, 10 domains, 16 examples
 
 ## [0.3.0] - 2026-02-18
 

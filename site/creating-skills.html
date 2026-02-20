@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Creating Your Own Skills -- uber-polya</title>
+  <meta name="description" content="How to build Claude Code skills using patterns from the uber-polya project. Anatomy, patterns, testing, and directory structure.">
+  <style>
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg: #0d1117;
+      --bg-surface: #161b22;
+      --bg-surface-hover: #1c2129;
+      --border: #30363d;
+      --text: #e6edf3;
+      --text-muted: #8b949e;
+      --text-dim: #6e7681;
+      --accent: #58a6ff;
+      --accent-hover: #79b8ff;
+      --green: #3fb950;
+      --green-dim: #238636;
+      --yellow: #d29922;
+      --yellow-dim: #9e6a03;
+      --red: #f85149;
+      --purple: #bc8cff;
+      --font-mono: 'JetBrains Mono', 'Fira Code', 'SF Mono', 'Cascadia Code', 'Consolas', 'Liberation Mono', monospace;
+      --sidebar-width: 240px;
+      --nav-height: 56px;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: calc(var(--nav-height) + 24px);
+    }
+
+    body {
+      font-family: var(--font-mono);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      font-size: 14px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ---- NAV ---- */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      background: rgba(13, 17, 23, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      height: var(--nav-height);
+    }
+
+    nav .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    nav .logo {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text);
+      text-decoration: none;
+      letter-spacing: -0.5px;
+    }
+
+    nav .logo span {
+      color: var(--accent);
+    }
+
+    nav .nav-links {
+      display: flex;
+      gap: 24px;
+      list-style: none;
+    }
+
+    nav .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 13px;
+      transition: color 0.2s;
+    }
+
+    nav .nav-links a:hover {
+      color: var(--text);
+    }
+
+    .sidebar-toggle {
+      display: none;
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text-muted);
+      padding: 6px 10px;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .sidebar-toggle:hover {
+      color: var(--text);
+      border-color: var(--accent);
+    }
+
+    /* ---- LAYOUT ---- */
+    .layout {
+      display: flex;
+      margin-top: var(--nav-height);
+      min-height: calc(100vh - var(--nav-height));
+    }
+
+    /* ---- SIDEBAR ---- */
+    .sidebar {
+      width: var(--sidebar-width);
+      position: fixed;
+      top: var(--nav-height);
+      left: 0;
+      bottom: 0;
+      overflow-y: auto;
+      border-right: 1px solid var(--border);
+      padding: 24px 0;
+      background: var(--bg);
+      z-index: 50;
+    }
+
+    .sidebar-section {
+      padding: 0 16px;
+      margin-bottom: 20px;
+    }
+
+    .sidebar-section-title {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--text-dim);
+      margin-bottom: 8px;
+      padding: 0 8px;
+    }
+
+    .sidebar a {
+      display: block;
+      padding: 5px 8px;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 13px;
+      border-radius: 6px;
+      transition: all 0.15s;
+      line-height: 1.4;
+    }
+
+    .sidebar a:hover {
+      color: var(--text);
+      background: var(--bg-surface);
+    }
+
+    .sidebar a.active {
+      color: var(--accent);
+      background: rgba(88, 166, 255, 0.1);
+    }
+
+    .sidebar a.sub {
+      padding-left: 20px;
+      font-size: 12px;
+    }
+
+    /* ---- MAIN CONTENT ---- */
+    .content {
+      flex: 1;
+      margin-left: var(--sidebar-width);
+      max-width: 800px;
+      padding: 48px 48px 120px;
+    }
+
+    /* ---- TYPOGRAPHY ---- */
+    h1 {
+      font-size: 32px;
+      font-weight: 800;
+      letter-spacing: -1px;
+      margin-bottom: 8px;
+      line-height: 1.2;
+    }
+
+    h2 {
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      margin-top: 64px;
+      margin-bottom: 16px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+    }
+
+    h2:first-of-type {
+      border-top: none;
+      margin-top: 48px;
+    }
+
+    h3 {
+      font-size: 17px;
+      font-weight: 700;
+      margin-top: 32px;
+      margin-bottom: 12px;
+    }
+
+    p {
+      margin-bottom: 16px;
+      color: var(--text-muted);
+    }
+
+    p strong {
+      color: var(--text);
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .lead {
+      font-size: 16px;
+      color: var(--text-muted);
+      margin-bottom: 32px;
+    }
+
+    /* ---- CODE BLOCKS ---- */
+    .terminal {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      margin: 16px 0 24px;
+    }
+
+    .terminal-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px;
+      background: rgba(22, 27, 34, 0.8);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .terminal-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .terminal-dot:nth-child(1) { background: #ff5f57; }
+    .terminal-dot:nth-child(2) { background: #febc2e; }
+    .terminal-dot:nth-child(3) { background: #28c840; }
+
+    .terminal-title {
+      flex: 1;
+      text-align: center;
+      font-size: 11px;
+      color: var(--text-dim);
+      margin-right: 30px;
+    }
+
+    .terminal-body {
+      padding: 16px 20px;
+      font-size: 13px;
+      line-height: 1.7;
+      overflow-x: auto;
+    }
+
+    .terminal-body .prompt { color: var(--green); }
+    .terminal-body .cmd { color: var(--text); }
+    .terminal-body .output { color: var(--text-muted); }
+    .terminal-body .highlight { color: var(--accent); }
+    .terminal-body .success { color: var(--green); }
+    .terminal-body .comment { color: var(--text-dim); }
+    .terminal-body .key { color: var(--yellow); }
+    .terminal-body .str { color: var(--green); }
+    .terminal-body .kw { color: var(--purple); }
+
+    code {
+      background: var(--bg-surface);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 13px;
+      color: var(--accent);
+    }
+
+    /* ---- ORDERED LIST ---- */
+    ol {
+      margin: 12px 0 24px;
+      padding-left: 24px;
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+
+    ol li {
+      margin-bottom: 8px;
+      line-height: 1.6;
+    }
+
+    ol li strong {
+      color: var(--text);
+    }
+
+    /* ---- UNORDERED LIST ---- */
+    ul.checklist {
+      list-style: none;
+      margin: 12px 0 24px;
+      padding-left: 0;
+      font-size: 13px;
+    }
+
+    ul.checklist li {
+      padding: 6px 0 6px 22px;
+      position: relative;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    ul.checklist li::before {
+      content: "+";
+      position: absolute;
+      left: 0;
+      color: var(--green);
+      font-weight: 700;
+    }
+
+    ul.checklist li strong {
+      color: var(--text);
+    }
+
+    /* ---- CARDS ---- */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 16px;
+      margin: 16px 0 24px;
+    }
+
+    .card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 24px 20px;
+    }
+
+    .card h4 {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 8px;
+    }
+
+    .card p {
+      font-size: 13px;
+      margin-bottom: 8px;
+    }
+
+    /* ---- ANATOMY LIST ---- */
+    .anatomy-list {
+      list-style: none;
+      padding: 0;
+      margin: 12px 0 24px;
+      font-size: 13px;
+    }
+
+    .anatomy-list li {
+      padding: 8px 0;
+      padding-left: 32px;
+      position: relative;
+      color: var(--text-muted);
+      border-bottom: 1px solid rgba(48, 54, 61, 0.4);
+      line-height: 1.5;
+    }
+
+    .anatomy-list li:last-child {
+      border-bottom: none;
+    }
+
+    .anatomy-list li .step-num {
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+      font-weight: 700;
+      font-size: 12px;
+      width: 22px;
+      height: 22px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+      background: rgba(88, 166, 255, 0.1);
+      top: 8px;
+    }
+
+    .anatomy-list li strong {
+      color: var(--text);
+    }
+
+    /* ---- FOOTER ---- */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 48px 0;
+      margin-left: var(--sidebar-width);
+    }
+
+    .footer-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 32px;
+      max-width: 800px;
+      padding: 0 48px;
+    }
+
+    .footer-left {
+      font-size: 13px;
+    }
+
+    .footer-left .footer-brand {
+      font-weight: 700;
+      font-size: 16px;
+      margin-bottom: 8px;
+    }
+
+    .footer-left .footer-brand span {
+      color: var(--accent);
+    }
+
+    .footer-left p {
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    .footer-left a {
+      color: var(--text-muted);
+      text-decoration: none;
+    }
+
+    .footer-left a:hover {
+      color: var(--accent);
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 24px;
+      list-style: none;
+      flex-wrap: wrap;
+    }
+
+    .footer-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 13px;
+      transition: color 0.2s;
+    }
+
+    .footer-links a:hover {
+      color: var(--accent);
+    }
+
+    /* ---- RESPONSIVE ---- */
+    @media (max-width: 768px) {
+      .sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.25s ease;
+      }
+
+      .sidebar.open {
+        transform: translateX(0);
+      }
+
+      .content {
+        margin-left: 0;
+        padding: 32px 20px 80px;
+      }
+
+      footer {
+        margin-left: 0;
+      }
+
+      .footer-content {
+        padding: 0 20px;
+        flex-direction: column;
+      }
+
+      .sidebar-toggle {
+        display: block;
+      }
+
+      nav .nav-links {
+        gap: 12px;
+      }
+
+      nav .nav-links a {
+        font-size: 12px;
+      }
+
+      .card-grid {
+        grid-template-columns: 1fr;
+      }
+
+      h1 {
+        font-size: 26px;
+      }
+
+      h2 {
+        font-size: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-inner">
+      <div style="display:flex;align-items:center;gap:16px;">
+        <button class="sidebar-toggle" onclick="document.querySelector('.sidebar').classList.toggle('open')" aria-label="Toggle navigation">Menu</button>
+        <a href="index.html" class="logo">uber-<span>polya</span></a>
+      </div>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="guide.html">Guide</a></li>
+        <li><a href="https://github.com/agtm1199/uber-polya">GitHub</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Overview</div>
+        <a href="#top">Introduction</a>
+        <a href="#what-is-a-skill">What Is a Skill?</a>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Anatomy</div>
+        <a href="#skill-md-anatomy">SKILL.md Anatomy</a>
+        <a href="#yaml-frontmatter" class="sub">YAML Frontmatter</a>
+        <a href="#body-structure" class="sub">Body Structure</a>
+        <a href="#reference-files" class="sub">Reference Files</a>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Structure</div>
+        <a href="#directory-structure">Directory Structure</a>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Patterns</div>
+        <a href="#key-patterns">Key Patterns</a>
+        <a href="#pattern-phase-gates" class="sub">Phase Gates</a>
+        <a href="#pattern-reference-reading" class="sub">Reference Reading</a>
+        <a href="#pattern-output-templates" class="sub">Output Templates</a>
+        <a href="#pattern-error-recovery" class="sub">Error Recovery</a>
+        <a href="#pattern-cross-skill" class="sub">Cross-Skill Refs</a>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Testing</div>
+        <a href="#how-to-test">How to Test</a>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="content">
+
+      <!-- INTRO -->
+      <section id="top">
+        <h1>Creating Your Own Skills</h1>
+        <p class="lead">How to build Claude Code skills using patterns from the uber-polya project.</p>
+      </section>
+
+      <!-- WHAT IS A SKILL -->
+      <h2 id="what-is-a-skill">What Is a Claude Code Skill?</h2>
+
+      <p>A skill is a markdown file that specifies Claude's behavior when invoked as a slash command. Skills live in <code>.claude/skills/</code> &mdash; either globally at <code>~/.claude/skills/</code> or locally at <code>./.claude/skills/</code>. When a user types <code>/skill-name</code> or describes a task matching trigger phrases, Claude activates the skill.</p>
+
+      <p><strong>Skills are not code.</strong> They are structured natural-language specifications &mdash; phase-by-phase workflows with steps, verification gates, output templates, and reference catalogs.</p>
+
+      <!-- SKILL.MD ANATOMY -->
+      <h2 id="skill-md-anatomy">SKILL.md Anatomy</h2>
+
+      <h3 id="yaml-frontmatter">YAML Frontmatter</h3>
+      <p>Every skill starts with YAML frontmatter that defines the slash command name and trigger phrases.</p>
+
+      <div class="terminal">
+        <div class="terminal-header">
+          <div class="terminal-dot"></div>
+          <div class="terminal-dot"></div>
+          <div class="terminal-dot"></div>
+          <div class="terminal-title">SKILL.md frontmatter</div>
+        </div>
+        <div class="terminal-body">
+<div><span class="comment">---</span></div>
+<div><span class="key">name</span><span class="output">: my-skill</span></div>
+<div><span class="key">description</span><span class="output">: &gt;</span></div>
+<div><span class="output">  Use when the user wants to "do X", "solve Y",</span></div>
+<div><span class="output">  "analyze Z", or needs help with [domain].</span></div>
+<div><span class="comment">---</span></div>
+        </div>
+      </div>
+
+      <p>The <code>name</code> becomes the slash command: <code>/my-skill</code>. The <code>description</code> lists trigger phrases that Claude uses to auto-suggest the skill when the user's intent matches.</p>
+
+      <h3 id="body-structure">Body Structure</h3>
+      <p>After the frontmatter, a SKILL.md follows a consistent structure:</p>
+
+      <ol class="anatomy-list">
+        <li>
+          <span class="step-num">1</span>
+          <strong>Title and role statement</strong> &mdash; one-line identity for the skill's persona
+        </li>
+        <li>
+          <span class="step-num">2</span>
+          <strong>Core principles</strong> &mdash; 3-6 behavioral rules that constrain how the skill operates
+        </li>
+        <li>
+          <span class="step-num">3</span>
+          <strong>Skill scope</strong> &mdash; what the skill handles and what it does not
+        </li>
+        <li>
+          <span class="step-num">4</span>
+          <strong>Reference file listing</strong> &mdash; paths to catalogs the skill reads on demand
+        </li>
+        <li>
+          <span class="step-num">5</span>
+          <strong>Phases</strong> &mdash; sequential workflow with steps, Socratic questions, output templates, and gates
+        </li>
+        <li>
+          <span class="step-num">6</span>
+          <strong>Error recovery</strong> &mdash; what to do when a phase fails or the user is confused
+        </li>
+        <li>
+          <span class="step-num">7</span>
+          <strong>Output format summary</strong> &mdash; canonical structure for the skill's final artifact
+        </li>
+      </ol>
+
+      <h3 id="reference-files">Reference Files</h3>
+      <p>Reference files are markdown catalogs that the skill reads on demand using the Read tool. They live alongside the SKILL.md in a <code>references/</code> subdirectory.</p>
+
+      <div class="terminal">
+        <div class="terminal-header">
+          <div class="terminal-dot"></div>
+          <div class="terminal-dot"></div>
+          <div class="terminal-dot"></div>
+          <div class="terminal-title">skill directory</div>
+        </div>
+        <div class="terminal-body">
+<div><span class="output">.claude/skills/my-skill/</span></div>
+<div><span class="output">  SKILL.md</span></div>
+<div><span class="output">  references/</span></div>
+<div><span class="highlight">    catalog.md</span></div>
+<div><span class="highlight">    patterns.md</span></div>
+        </div>
+      </div>
+
+      <p>Reference files are <strong>not</strong> loaded when the skill is invoked. They are read at specific phases to keep context overhead low. This is a key design decision: a skill with 10,000 lines of reference material only loads what it needs, when it needs it.</p>
+
+      <!-- DIRECTORY STRUCTURE -->
+      <h2 id="directory-structure">Skill Directory Structure</h2>
+      <p>Here is the complete directory structure of uber-polya's skills, showing how reference files are organized by skill.</p>
+
+      <div class="terminal">
+        <div class="terminal-header">
+          <div class="terminal-dot"></div>
+          <div class="terminal-dot"></div>
+          <div class="terminal-dot"></div>
+          <div class="terminal-title">uber-polya skill tree</div>
+        </div>
+        <div class="terminal-body">
+<div><span class="output">skills/</span></div>
+<div><span class="highlight">  uber-polya/</span></div>
+<div><span class="output">    SKILL.md</span></div>
+<div><span class="highlight">  uber-model/</span></div>
+<div><span class="output">    SKILL.md</span></div>
+<div><span class="output">    references/</span></div>
+<div><span class="str">      heuristics.md</span>        <span class="comment"># 17 heuristics</span></div>
+<div><span class="str">      structures.md</span>        <span class="comment"># 43 structures</span></div>
+<div><span class="str">      problem-classification.md</span></div>
+<div><span class="str">      common-mistakes.md</span>    <span class="comment"># 16 anti-patterns</span></div>
+<div><span class="str">      model-templates.md</span>    <span class="comment"># 5 templates</span></div>
+<div><span class="highlight">  uber-solve/</span></div>
+<div><span class="output">    SKILL.md</span></div>
+<div><span class="output">    references/</span></div>
+<div><span class="str">      algorithms.md</span>        <span class="comment"># 94 algorithms</span></div>
+<div><span class="str">      solvers.md</span>            <span class="comment"># 9 libraries</span></div>
+<div><span class="str">      algorithms-statistics.md</span> <span class="comment"># 45 algorithms</span></div>
+<div><span class="str">      solvers-statistics.md</span> <span class="comment"># 6 libraries</span></div>
+<div><span class="str">      solving-protocols.md</span>  <span class="comment"># 9 protocols</span></div>
+<div><span class="str">      optimization-hardening.md</span></div>
+<div><span class="highlight">  uber-interpret/</span></div>
+<div><span class="output">    SKILL.md</span></div>
+<div><span class="output">    references/</span></div>
+<div><span class="str">      interpretation-patterns.md</span> <span class="comment"># 8 sections</span></div>
+<div><span class="str">      visualization.md</span>     <span class="comment"># 20+ chart types</span></div>
+        </div>
+      </div>
+
+      <!-- KEY PATTERNS -->
+      <h2 id="key-patterns">Key Patterns Used in uber-polya</h2>
+      <p>These are the design patterns that make uber-polya's skills reliable and repeatable. Use them in your own skills.</p>
+
+      <h3 id="pattern-phase-gates">Phase Gates</h3>
+      <p>Phase gates are checkpoints where the skill pauses and asks the user to confirm before proceeding. They prevent the skill from running ahead with a wrong understanding. Every phase transition should have a gate.</p>
+
+      <div class="terminal">
+        <div class="terminal-header">
+          <div class="terminal-dot"></div>
+          <div class="terminal-dot"></div>
+          <div class="terminal-dot"></div>
+          <div class="terminal-title">phase gate pattern</div>
+        </div>
+        <div class="terminal-body">
+<div><span class="highlight">### Phase 1 Gate</span></div>
+<div><span class="output">Present understanding in structured format.</span></div>
+<div><span class="output">Use AskUserQuestion to confirm:</span></div>
+<div><span class="str">  (a) Yes, that's right</span></div>
+<div><span class="str">  (b) Mostly, but [user corrects]</span></div>
+<div><span class="str">  (c) No, let me restate it</span></div>
+<div><span class="output">Do NOT proceed until confirmed.</span></div>
+        </div>
+      </div>
+
+      <p>Gates create a conversation. The user stays in control, and the skill only advances when the understanding is confirmed. This is Polya's principle in action: make sure you understand the problem before solving it.</p>
+
+      <h3 id="pattern-reference-reading">Reference Reading</h3>
+      <p>References are read at specific phases, not at invocation. This keeps context overhead low and ensures the skill only loads what it needs.</p>
+
+      <div class="terminal">
+        <div class="terminal-header">
+          <div class="terminal-dot"></div>
+          <div class="terminal-dot"></div>
+          <div class="terminal-dot"></div>
+          <div class="terminal-title">reference reading pattern</div>
+        </div>
+        <div class="terminal-body">
+<div><span class="highlight">### Step 1: Read references</span></div>
+<div><span class="output">Read both reference files:</span></div>
+<div><span class="str">- references/algorithms.md</span></div>
+<div><span class="str">- references/solvers.md</span></div>
+        </div>
+      </div>
+
+      <p>The skill tells Claude exactly which files to read and when. This is explicit &mdash; no guessing, no loading everything upfront. A skill with thousands of lines of reference material remains fast because it only reads what the current phase requires.</p>
+
+      <h3 id="pattern-output-templates">Structured Output Templates</h3>
+      <p>Every phase produces output in a consistent markdown format. This makes outputs predictable and parseable, and it makes it easy for downstream skills to consume the output.</p>
+
+      <div class="terminal">
+        <div class="terminal-header">
+          <div class="terminal-dot"></div>
+          <div class="terminal-dot"></div>
+          <div class="terminal-dot"></div>
+          <div class="terminal-title">output template pattern</div>
+        </div>
+        <div class="terminal-body">
+<div><span class="highlight">## Formal Model</span></div>
+<div><span class="key">**Domain**</span><span class="output">: [Graph Theory / ...]</span></div>
+<div><span class="key">**Universe**</span><span class="output">: [Set of objects]</span></div>
+<div><span class="key">**Variables**</span><span class="output">: ...</span></div>
+<div><span class="key">**Constraints**</span><span class="output">: ...</span></div>
+<div><span class="key">**Objective**</span><span class="output">: ...</span></div>
+        </div>
+      </div>
+
+      <p>Templates serve two purposes: they force the skill to be complete (every field must be filled), and they give the user a consistent format to read across different problem types.</p>
+
+      <h3 id="pattern-error-recovery">Error Recovery</h3>
+      <p>Skills must handle failures gracefully without abandoning the conversation. uber-polya uses a five-step recovery sequence:</p>
+
+      <ol>
+        <li><strong>Acknowledge the discomfort</strong> &mdash; don't pretend nothing happened</li>
+        <li><strong>Loop back to the earliest phase</strong> &mdash; the error may stem from a bad model, not a bad algorithm</li>
+        <li><strong>Try "Could you restate the problem?"</strong> &mdash; a fresh statement often reveals missed constraints</li>
+        <li><strong>Try "Could you solve a part?"</strong> &mdash; decompose the problem into smaller pieces</li>
+        <li><strong>Try a tiny concrete example</strong> &mdash; solve a 2-node or 3-item version first to build intuition</li>
+      </ol>
+
+      <p>This pattern ensures the skill never hits a dead end. Even if the solver fails, the conversation continues productively.</p>
+
+      <h3 id="pattern-cross-skill">Cross-Skill References</h3>
+      <p>Skills can mention other skills as next steps, creating a pipeline without hard dependencies. Each skill's output is self-contained, but it naturally feeds into the next.</p>
+
+      <div class="card-grid">
+        <div class="card">
+          <h4>Pipeline, not monolith</h4>
+          <p><code>/uber-model</code> produces a formal model. It ends by suggesting <code>/uber-solve</code>. But the user can also bring their own model to <code>/uber-solve</code> directly.</p>
+        </div>
+        <div class="card">
+          <h4>Loose coupling</h4>
+          <p>Each skill is independently useful. Cross-references are suggestions, not requirements. The orchestrator <code>/uber-polya</code> chains them, but each works alone.</p>
+        </div>
+      </div>
+
+      <!-- HOW TO TEST -->
+      <h2 id="how-to-test">How to Test</h2>
+      <p>Skills are tested through conversation, not unit tests. Here is the testing workflow:</p>
+
+      <ol>
+        <li><strong>Install:</strong> Copy to <code>~/.claude/skills/</code> or <code>.claude/skills/</code></li>
+        <li><strong>Invoke:</strong> Run <code>/my-skill Here is a sample problem</code></li>
+        <li><strong>Verify phase outputs:</strong> Check that each phase produces the expected structured output</li>
+        <li><strong>Verify phase gates:</strong> Confirm the skill pauses and asks before advancing</li>
+        <li><strong>Verify reference reading:</strong> Check that references are loaded at the correct phase, not at invocation</li>
+        <li><strong>Verify error recovery:</strong> Give it a malformed or ambiguous problem and see if it recovers gracefully</li>
+        <li><strong>Test edge cases:</strong> Try trivial, standard, and ambiguous inputs</li>
+        <li><strong>Verify trigger phrases:</strong> Type a natural-language description and check if the skill auto-suggests</li>
+      </ol>
+
+      <div class="terminal">
+        <div class="terminal-header">
+          <div class="terminal-dot"></div>
+          <div class="terminal-dot"></div>
+          <div class="terminal-dot"></div>
+          <div class="terminal-title">test invocation</div>
+        </div>
+        <div class="terminal-body">
+<div><span class="comment"># Test with a known problem</span></div>
+<div><span class="prompt">$</span> <span class="cmd">/my-skill Here is a sample problem</span></div>
+<div></div>
+<div><span class="comment"># Test with a trivial case</span></div>
+<div><span class="prompt">$</span> <span class="cmd">/my-skill Solve for x: x = 5</span></div>
+<div></div>
+<div><span class="comment"># Test with an ambiguous case</span></div>
+<div><span class="prompt">$</span> <span class="cmd">/my-skill I need to optimize something</span></div>
+<div></div>
+<div><span class="comment"># Test trigger phrases (no slash command)</span></div>
+<div><span class="prompt">$</span> <span class="cmd">I want to do X with Y</span></div>
+        </div>
+      </div>
+
+      <p>Good skills handle all four cases: the well-defined problem produces a clean result, the trivial case shortcuts correctly, the ambiguous case triggers Socratic clarification, and the trigger phrase auto-suggests the skill.</p>
+
+    </main>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-content">
+      <div class="footer-left">
+        <div class="footer-brand">uber-<span>polya</span></div>
+        <p>Apache 2.0 Licensed. Free forever.</p>
+      </div>
+      <ul class="footer-links">
+        <li><a href="https://github.com/agtm1199/uber-polya">GitHub</a></li>
+        <li><a href="guide.html">Guide</a></li>
+        <li><a href="manifesto.html">Manifesto</a></li>
+        <li><a href="https://github.com/agtm1199/uber-polya/blob/main/CONTRIBUTING.md">Contributing</a></li>
+      </ul>
+    </div>
+  </footer>
+
+  <!-- ACTIVE SECTION TRACKING -->
+  <script>
+    const sections = document.querySelectorAll('h2[id], h3[id], section[id]');
+    const sidebarLinks = document.querySelectorAll('.sidebar a');
+
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const id = entry.target.id;
+          sidebarLinks.forEach(link => {
+            link.classList.toggle('active',
+              link.getAttribute('href') === '#' + id ||
+              (id === 'top' && link.getAttribute('href') === '#top')
+            );
+          });
+        }
+      });
+    }, {
+      rootMargin: '-80px 0px -70% 0px',
+      threshold: 0
+    });
+
+    sections.forEach(section => observer.observe(section));
+
+    // Close sidebar on mobile when a link is clicked
+    document.querySelectorAll('.sidebar a').forEach(link => {
+      link.addEventListener('click', () => {
+        if (window.innerWidth < 768) {
+          document.querySelector('.sidebar').classList.remove('open');
+        }
+      });
+    });
+  </script>
+
+</body>
+</html>

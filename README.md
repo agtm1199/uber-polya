@@ -1,12 +1,12 @@
 # uber-polya
 
-**Describe your problem. Get a verified solution.**
+**Don't guess. Solve.**
 
-uber-polya is the universal algorithm for computational problem-solving. It's a free, open-source Claude Code Skill that turns real-world problems -- business or personal -- into mathematically verified solutions.
+uber-polya is the first math problem-solver skill for Claude Code and 25+ compatible platforms. It's free, open-source, and turns real-world problems -- business or personal -- into mathematically verified solutions.
 
 You describe what you're trying to figure out. uber-polya finds the mathematical structure hiding inside your problem, solves it with the right algorithm, checks the answer, and gives you the result: a schedule, a plan, a decision, a budget, a ranking, a proof -- whatever you need.
 
-One algorithm. Any problem. Verified.
+Describe your problem. Get a verified solution.
 
 ```
 /uber-polya Schedule 12 nurses across 3 shifts so nobody works more than 5 days
@@ -50,7 +50,7 @@ Every problem in this table has a mathematical structure. uber-polya finds it an
 ## Installation
 
 ```bash
-git clone https://github.com/your-username/uber-polya.git
+git clone https://github.com/agtm1199/uber-polya.git
 cd uber-polya
 bash install.sh
 ```
@@ -96,26 +96,6 @@ uber-polya implements George Polya's four-phase problem-solving cycle (from *How
 ```
 
 Each skill's output feeds the next. The pipeline is Socratic: uber-polya asks questions, you confirm understanding, and the solution is built collaboratively -- not dictated.
-
-## Supercharge with the MCP Server
-
-uber-polya works great standalone. The optional MCP server makes it dramatically faster and more accurate.
-
-| Capability | Standalone (free) | With MCP Server |
-|-----------|-------------------|-----------------|
-| Problem classification | LLM reads reference catalogs (~30s) | Deterministic classifier (~1s) |
-| Algorithm selection | LLM scans 139 algorithms | Empirical benchmarks, instant match |
-| Solver code | Written from scratch each time | Pre-built, tested templates |
-| Verification | Self-check (Claude verifies Claude) | Independent verification oracle |
-| Community knowledge | Start from zero every time | "847 people solved a similar problem" |
-
-```bash
-# Connect the MCP server (optional)
-claude mcp add --transport http uber-polya https://mcp.uber-polya.dev/mcp \
-  --header "Authorization: Bearer $UBER_POLYA_API_KEY"
-```
-
-See [uber-polya.dev](https://uber-polya.dev) for pricing and setup.
 
 ## Worked Examples
 
@@ -221,7 +201,7 @@ uber-polya uses the Agent Skills open standard. It works on any platform that su
 
 ## License
 
-[MIT](LICENSE) -- free to use, modify, and distribute.
+[Apache 2.0](LICENSE) -- free to use, modify, and distribute.
 
 ## Acknowledgments
 

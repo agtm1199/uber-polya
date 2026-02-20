@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Manifesto -- uber-polya</title>
+  <meta name="description" content="Every problem is a math problem. You just don't know it yet. The uber-polya manifesto.">
+  <style>
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg: #0d1117;
+      --bg-surface: #161b22;
+      --bg-surface-hover: #1c2129;
+      --border: #30363d;
+      --text: #e6edf3;
+      --text-muted: #8b949e;
+      --text-dim: #6e7681;
+      --accent: #58a6ff;
+      --accent-hover: #79b8ff;
+      --green: #3fb950;
+      --green-dim: #238636;
+      --yellow: #d29922;
+      --font-mono: 'JetBrains Mono', 'Fira Code', 'SF Mono', 'Cascadia Code', 'Consolas', 'Liberation Mono', monospace;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: var(--font-mono);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      font-size: 15px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ---- NAV ---- */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      background: rgba(13, 17, 23, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+
+    nav .container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 56px;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    nav .logo {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text);
+      text-decoration: none;
+      letter-spacing: -0.5px;
+    }
+
+    nav .logo span {
+      color: var(--accent);
+    }
+
+    nav .nav-links {
+      display: flex;
+      gap: 24px;
+      list-style: none;
+    }
+
+    nav .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 13px;
+      transition: color 0.2s;
+    }
+
+    nav .nav-links a:hover {
+      color: var(--text);
+    }
+
+    /* ---- ESSAY LAYOUT ---- */
+    .essay {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 0 24px;
+      padding-top: 120px;
+      padding-bottom: 120px;
+    }
+
+    /* ---- HERO HEADER ---- */
+    .essay-hero {
+      text-align: center;
+      margin-bottom: 80px;
+    }
+
+    .essay-hero h1 {
+      font-size: clamp(36px, 7vw, 56px);
+      font-weight: 800;
+      letter-spacing: -2px;
+      line-height: 1.1;
+      margin-bottom: 16px;
+      background: linear-gradient(135deg, var(--text) 0%, var(--accent) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .essay-hero .subtitle {
+      font-size: clamp(18px, 3vw, 24px);
+      color: var(--text-muted);
+      font-weight: 400;
+      font-style: italic;
+    }
+
+    /* ---- ESSAY SECTIONS ---- */
+    .essay-section {
+      margin-bottom: 64px;
+    }
+
+    .essay-section h2 {
+      font-size: clamp(22px, 3.5vw, 30px);
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      margin-bottom: 24px;
+      line-height: 1.2;
+      color: var(--text);
+    }
+
+    .essay-section p {
+      font-size: 16px;
+      color: var(--text-muted);
+      line-height: 1.85;
+      margin-bottom: 20px;
+    }
+
+    .essay-section p strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    /* Opening section: larger text */
+    .essay-opening p {
+      font-size: clamp(17px, 2.5vw, 19px);
+      line-height: 1.9;
+    }
+
+    /* ---- DIVIDERS ---- */
+    .divider {
+      border: none;
+      height: 1px;
+      background: var(--border);
+      margin: 64px 0;
+    }
+
+    .divider::after {
+      content: '';
+      display: block;
+      width: 48px;
+      height: 3px;
+      background: var(--accent);
+      margin: -2px auto 0;
+      border-radius: 2px;
+    }
+
+    /* ---- BLOCKQUOTE CALLOUTS ---- */
+    .callout {
+      border-left: 3px solid var(--accent);
+      padding: 20px 24px;
+      margin: 32px 0;
+      background: rgba(88, 166, 255, 0.04);
+      border-radius: 0 8px 8px 0;
+    }
+
+    .callout p {
+      font-size: 17px;
+      color: var(--text);
+      font-weight: 500;
+      line-height: 1.7;
+      margin-bottom: 0;
+    }
+
+    .callout p strong {
+      color: var(--accent);
+    }
+
+    /* ---- ORDERED LISTS ---- */
+    .essay-section ol {
+      list-style: none;
+      counter-reset: essay-counter;
+      margin: 20px 0;
+      padding: 0;
+    }
+
+    .essay-section ol li {
+      counter-increment: essay-counter;
+      padding: 8px 0 8px 36px;
+      position: relative;
+      font-size: 16px;
+      color: var(--text-muted);
+      line-height: 1.7;
+    }
+
+    .essay-section ol li::before {
+      content: counter(essay-counter) ".";
+      position: absolute;
+      left: 0;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .essay-section ol li strong {
+      color: var(--text);
+    }
+
+    /* ---- UNORDERED LISTS ---- */
+    .essay-section ul {
+      list-style: none;
+      margin: 20px 0;
+      padding: 0;
+    }
+
+    .essay-section ul li {
+      padding: 8px 0 8px 24px;
+      position: relative;
+      font-size: 16px;
+      color: var(--text-muted);
+      line-height: 1.7;
+    }
+
+    .essay-section ul li::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 18px;
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent);
+    }
+
+    .essay-section ul li strong {
+      color: var(--text);
+    }
+
+    /* ---- CODE BLOCK / TERMINAL ---- */
+    .terminal {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      margin: 28px 0;
+    }
+
+    .terminal-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 16px;
+      background: rgba(22, 27, 34, 0.8);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .terminal-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: var(--border);
+    }
+
+    .terminal-dot:nth-child(1) { background: #ff5f57; }
+    .terminal-dot:nth-child(2) { background: #febc2e; }
+    .terminal-dot:nth-child(3) { background: #28c840; }
+
+    .terminal-body {
+      padding: 24px 28px;
+      font-size: 14px;
+      line-height: 1.9;
+      overflow-x: auto;
+    }
+
+    .terminal-body .kw { color: var(--accent); font-weight: 600; }
+    .terminal-body .cm { color: var(--text-dim); }
+    .terminal-body .fn { color: var(--green); }
+    .terminal-body .str { color: var(--text-muted); }
+    .terminal-body .num { color: var(--yellow); }
+
+    /* ---- INLINE CODE ---- */
+    code {
+      background: var(--bg-surface);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 14px;
+      color: var(--accent);
+    }
+
+    /* ---- VERIFICATION LIST ---- */
+    .check-list {
+      list-style: none;
+      margin: 20px 0;
+      padding: 0;
+    }
+
+    .check-list li {
+      padding: 8px 0 8px 28px;
+      position: relative;
+      font-size: 16px;
+      color: var(--text-muted);
+      line-height: 1.7;
+    }
+
+    .check-list li::before {
+      content: "+";
+      position: absolute;
+      left: 4px;
+      font-weight: 800;
+      color: var(--green);
+      font-size: 18px;
+    }
+
+    /* ---- CLOSING ---- */
+    .essay-closing {
+      text-align: center;
+      margin-top: 80px;
+      margin-bottom: 40px;
+    }
+
+    .essay-closing .closing-line {
+      font-size: clamp(20px, 3vw, 28px);
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 12px;
+      letter-spacing: -0.5px;
+    }
+
+    .essay-closing .closing-sub {
+      font-size: 15px;
+      color: var(--text-muted);
+      font-style: italic;
+      line-height: 1.7;
+      max-width: 540px;
+      margin: 0 auto;
+    }
+
+    .essay-closing .closing-sub a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    .essay-closing .closing-sub a:hover {
+      text-decoration: underline;
+    }
+
+    /* ---- FOOTER ---- */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 48px 0;
+    }
+
+    .footer-inner {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    .footer-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 32px;
+    }
+
+    .footer-left {
+      font-size: 13px;
+    }
+
+    .footer-left .footer-brand {
+      font-weight: 700;
+      font-size: 16px;
+      margin-bottom: 8px;
+    }
+
+    .footer-left .footer-brand span {
+      color: var(--accent);
+    }
+
+    .footer-left p {
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 24px;
+      list-style: none;
+      flex-wrap: wrap;
+    }
+
+    .footer-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 13px;
+      transition: color 0.2s;
+    }
+
+    .footer-links a:hover {
+      color: var(--accent);
+    }
+
+    /* ---- RESPONSIVE ---- */
+    @media (max-width: 640px) {
+      .essay {
+        padding-top: 88px;
+        padding-bottom: 80px;
+      }
+
+      .essay-hero {
+        margin-bottom: 56px;
+      }
+
+      .essay-section {
+        margin-bottom: 48px;
+      }
+
+      .divider {
+        margin: 48px 0;
+      }
+
+      .terminal-body {
+        padding: 18px 20px;
+        font-size: 12px;
+      }
+
+      .callout {
+        padding: 16px 18px;
+      }
+
+      .callout p {
+        font-size: 15px;
+      }
+
+      nav .nav-links {
+        gap: 16px;
+      }
+
+      nav .nav-links a {
+        font-size: 12px;
+      }
+
+      .footer-content {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <div class="container">
+      <a href="index.html" class="logo">uber-<span>polya</span></a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="guide.html">Guide</a></li>
+        <li><a href="https://github.com/agtm1199/uber-polya">GitHub</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- ESSAY -->
+  <article class="essay">
+
+    <!-- HERO -->
+    <header class="essay-hero">
+      <h1>Every Problem Is a Math Problem</h1>
+      <p class="subtitle">You just don't know it yet.</p>
+    </header>
+
+    <!-- OPENING -->
+    <section class="essay-section essay-opening">
+      <p>You have a scheduling conflict. You need to split costs fairly. You're deciding which projects to fund. You're routing deliveries. You're figuring out whether that A/B test result is real or noise.</p>
+      <p>These feel like different problems. They're not. They all have the same shape: <strong>Given some constraints, find the best answer.</strong> That's a math problem. And math problems have solvers.</p>
+    </section>
+
+    <hr class="divider">
+
+    <!-- THE HIDDEN STRUCTURE -->
+    <section class="essay-section">
+      <h2>The Hidden Structure</h2>
+      <p>Every hard decision you make is secretly one of a small number of mathematical structures wearing a real-world disguise.</p>
+      <p>"Schedule 12 nurses across 3 shifts so nobody works more than 5 days" is not a scheduling problem. It is an integer linear program with 252 binary variables and 48 constraints. It has an optimal solution. A solver can find it in 0.3 seconds and <strong>prove that no better answer exists</strong>.</p>
+      <p>"Split rent fairly among 3 roommates with different-sized rooms" is not a negotiation. It is a fair division problem. There exists a <strong>provably fair allocation</strong>.</p>
+      <p>"Pick the best 5 of 20 projects given a $500K budget" is not a meeting. It is a <strong>knapsack optimization</strong>.</p>
+
+      <div class="callout">
+        <p>You don't need to know any of this to solve these problems. You just need a tool that does.</p>
+      </div>
+    </section>
+
+    <hr class="divider">
+
+    <!-- THE GAP -->
+    <section class="essay-section">
+      <h2>The Gap</h2>
+      <p>Today, when people face hard decisions, they do one of four things:</p>
+      <ol>
+        <li><strong>They wing it.</strong> Gut feeling, experience, intuition.</li>
+        <li><strong>They use spreadsheets.</strong> Works for simple problems. Falls apart with combinatorial search spaces.</li>
+        <li><strong>They ask AI.</strong> ChatGPT or Claude gives a plausible-sounding answer. But it's not verified.</li>
+        <li><strong>They hire a consultant.</strong> Expensive, slow.</li>
+      </ol>
+
+      <div class="callout">
+        <p>All four approaches share the same flaw: <strong>they skip the modeling step.</strong></p>
+      </div>
+    </section>
+
+    <hr class="divider">
+
+    <!-- WHAT MODELING DOES -->
+    <section class="essay-section">
+      <h2>What Modeling Does</h2>
+      <p>When you formalize a problem into a mathematical model, three things happen:</p>
+      <ol>
+        <li><strong>Ambiguity disappears.</strong></li>
+        <li><strong>The solution space becomes searchable.</strong></li>
+        <li><strong>The answer comes with a guarantee.</strong></li>
+      </ol>
+    </section>
+
+    <hr class="divider">
+
+    <!-- POLYA'S INSIGHT -->
+    <section class="essay-section">
+      <h2>Polya's Insight</h2>
+      <p>In 1945, George Polya published <em>How to Solve It</em>. His four phases:</p>
+      <ol>
+        <li><strong>Understand</strong> the problem.</li>
+        <li><strong>Devise</strong> a plan.</li>
+        <li><strong>Execute</strong> the plan.</li>
+        <li><strong>Look back.</strong></li>
+      </ol>
+      <p>This method is 80 years old. We now have AI that understands natural language, solver libraries that process millions of variables, and verification methods that prove correctness.</p>
+    </section>
+
+    <hr class="divider">
+
+    <!-- THE UNIVERSAL ALGORITHM -->
+    <section class="essay-section">
+      <h2>The Universal Algorithm</h2>
+
+      <div class="terminal">
+        <div class="terminal-header">
+          <div class="terminal-dot"></div>
+          <div class="terminal-dot"></div>
+          <div class="terminal-dot"></div>
+        </div>
+        <div class="terminal-body">
+          <div><span class="kw">UBER-POLYA</span>(<span class="str">problem</span>):</div>
+          <div>&nbsp;&nbsp;<span class="num">1.</span> <span class="fn">UNDERSTAND</span>  <span class="cm">-- Socratic dialogue</span></div>
+          <div>&nbsp;&nbsp;<span class="num">2.</span> <span class="fn">CLASSIFY</span>&nbsp;&nbsp;&nbsp;<span class="cm">-- Map to mathematical structure</span></div>
+          <div>&nbsp;&nbsp;<span class="num">3.</span> <span class="fn">SELECT</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm">-- Pick algorithm for structure and instance size</span></div>
+          <div>&nbsp;&nbsp;<span class="num">4.</span> <span class="fn">EXECUTE</span>&nbsp;&nbsp;&nbsp;&nbsp;<span class="cm">-- Run it, verify independently</span></div>
+          <div>&nbsp;&nbsp;<span class="num">5.</span> <span class="fn">INTERPRET</span>&nbsp;&nbsp;<span class="cm">-- Translate back with sensitivity analysis</span></div>
+        </div>
+      </div>
+
+      <div class="callout">
+        <p>This is a <strong>compiler for problems</strong>.</p>
+      </div>
+    </section>
+
+    <hr class="divider">
+
+    <!-- WHAT THIS MEANS IN PRACTICE -->
+    <section class="essay-section">
+      <h2>What This Means in Practice</h2>
+      <ul>
+        <li><strong>For the operations manager:</strong> 6 hours becomes 2 minutes</li>
+        <li><strong>For the startup founder:</strong> ranked list with explicit trade-offs</li>
+        <li><strong>For the student:</strong> provably conflict-free timetable</li>
+        <li><strong>For the data scientist:</strong> right hypothesis test, three methods, plain-English interpretation</li>
+      </ul>
+    </section>
+
+    <hr class="divider">
+
+    <!-- WHY VERIFICATION MATTERS -->
+    <section class="essay-section">
+      <h2>Why Verification Matters</h2>
+      <p>LLMs are confident whether they're right or wrong. uber-polya doesn't trust itself. Every solution includes:</p>
+      <ul class="check-list">
+        <li>Feasibility check</li>
+        <li>Optimality certificate</li>
+        <li>Cross-validation</li>
+        <li>Sensitivity analysis</li>
+      </ul>
+    </section>
+
+    <hr class="divider">
+
+    <!-- THE EXPANSION -->
+    <section class="essay-section">
+      <h2>The Expansion</h2>
+      <p>Today: discrete optimization, continuous optimization, statistical inference. <strong>139 algorithms across 10 domains.</strong></p>
+      <p>Coming: game theory, simulation, decision analysis, time series, machine learning.</p>
+    </section>
+
+    <hr class="divider">
+
+    <!-- THE INVITATION -->
+    <section class="essay-section">
+      <h2>The Invitation</h2>
+      <p>uber-polya is free, open-source, and available today. Every problem has a mathematical structure. uber-polya finds it, solves it, and proves the answer is right.</p>
+    </section>
+
+    <!-- CLOSING -->
+    <div class="essay-closing">
+      <p class="closing-line">One algorithm. Any problem.</p>
+      <p class="closing-sub">Built on Polya's <em>How to Solve It</em> (1945), the open-source solver ecosystem, and <a href="https://claude.ai">Claude</a>.</p>
+    </div>
+
+  </article>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-content">
+        <div class="footer-left">
+          <div class="footer-brand">uber-<span>polya</span></div>
+          <p>Apache 2.0 Licensed. Free forever.</p>
+        </div>
+        <ul class="footer-links">
+          <li><a href="https://github.com/agtm1199/uber-polya">GitHub</a></li>
+          <li><a href="guide.html">Guide</a></li>
+          <li><a href="manifesto.html">Manifesto</a></li>
+          <li><a href="https://github.com/agtm1199/uber-polya/blob/main/CONTRIBUTING.md">Contributing</a></li>
+        </ul>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

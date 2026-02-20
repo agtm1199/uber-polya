@@ -1,0 +1,1362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inspector Assignment Walkthrough -- uber-polya</title>
+  <meta name="description" content="Full walkthrough of the Inspector Assignment problem: ILP, LP relaxation, sensitivity testing, and stakeholder visualizations through uber-polya.">
+  <style>
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg: #0d1117;
+      --bg-surface: #161b22;
+      --bg-surface-hover: #1c2129;
+      --border: #30363d;
+      --text: #e6edf3;
+      --text-muted: #8b949e;
+      --text-dim: #6e7681;
+      --accent: #58a6ff;
+      --accent-hover: #79b8ff;
+      --green: #3fb950;
+      --green-dim: #238636;
+      --yellow: #d29922;
+      --yellow-dim: #9e6a03;
+      --red: #f85149;
+      --purple: #bc8cff;
+      --font-mono: 'JetBrains Mono', 'Fira Code', 'SF Mono', 'Cascadia Code', 'Consolas', 'Liberation Mono', monospace;
+      --sidebar-width: 240px;
+      --nav-height: 56px;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: calc(var(--nav-height) + 24px);
+    }
+
+    body {
+      font-family: var(--font-mono);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      font-size: 14px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ---- NAV ---- */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      background: rgba(13, 17, 23, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      height: var(--nav-height);
+    }
+
+    nav .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    nav .logo {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text);
+      text-decoration: none;
+      letter-spacing: -0.5px;
+    }
+
+    nav .logo span {
+      color: var(--accent);
+    }
+
+    nav .nav-links {
+      display: flex;
+      gap: 24px;
+      list-style: none;
+    }
+
+    nav .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 13px;
+      transition: color 0.2s;
+    }
+
+    nav .nav-links a:hover {
+      color: var(--text);
+    }
+
+    .sidebar-toggle {
+      display: none;
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text-muted);
+      padding: 6px 10px;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .sidebar-toggle:hover {
+      color: var(--text);
+      border-color: var(--accent);
+    }
+
+    /* ---- LAYOUT ---- */
+    .layout {
+      display: flex;
+      margin-top: var(--nav-height);
+      min-height: calc(100vh - var(--nav-height));
+    }
+
+    /* ---- SIDEBAR ---- */
+    .sidebar {
+      width: var(--sidebar-width);
+      position: fixed;
+      top: var(--nav-height);
+      left: 0;
+      bottom: 0;
+      overflow-y: auto;
+      border-right: 1px solid var(--border);
+      padding: 24px 0;
+      background: var(--bg);
+      z-index: 50;
+    }
+
+    .sidebar-section {
+      padding: 0 16px;
+      margin-bottom: 20px;
+    }
+
+    .sidebar-section-title {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--text-dim);
+      margin-bottom: 8px;
+      padding: 0 8px;
+    }
+
+    .sidebar a {
+      display: block;
+      padding: 5px 8px;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 13px;
+      border-radius: 6px;
+      transition: all 0.15s;
+      line-height: 1.4;
+    }
+
+    .sidebar a:hover {
+      color: var(--text);
+      background: var(--bg-surface);
+    }
+
+    .sidebar a.active {
+      color: var(--accent);
+      background: rgba(88, 166, 255, 0.1);
+    }
+
+    .sidebar a.sub {
+      padding-left: 20px;
+      font-size: 12px;
+    }
+
+    /* ---- MAIN CONTENT ---- */
+    .content {
+      flex: 1;
+      margin-left: var(--sidebar-width);
+      max-width: 800px;
+      padding: 48px 48px 120px;
+    }
+
+    /* ---- TYPOGRAPHY ---- */
+    h1 {
+      font-size: 32px;
+      font-weight: 800;
+      letter-spacing: -1px;
+      margin-bottom: 8px;
+      line-height: 1.2;
+    }
+
+    h2 {
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      margin-top: 64px;
+      margin-bottom: 16px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+    }
+
+    h2:first-of-type {
+      border-top: none;
+      margin-top: 48px;
+    }
+
+    h3 {
+      font-size: 17px;
+      font-weight: 700;
+      margin-top: 32px;
+      margin-bottom: 12px;
+    }
+
+    h4 {
+      font-size: 15px;
+      font-weight: 700;
+      margin-top: 24px;
+      margin-bottom: 8px;
+    }
+
+    p {
+      margin-bottom: 16px;
+      color: var(--text-muted);
+    }
+
+    p strong {
+      color: var(--text);
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .lead {
+      font-size: 16px;
+      color: var(--text-muted);
+      margin-bottom: 32px;
+    }
+
+    .badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 4px;
+      background: rgba(88, 166, 255, 0.15);
+      color: var(--accent);
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+
+    .badge-green {
+      background: rgba(63, 185, 80, 0.15);
+      color: var(--green);
+    }
+
+    .badge-yellow {
+      background: rgba(210, 153, 34, 0.15);
+      color: var(--yellow);
+    }
+
+    /* ---- PHASE BADGES ---- */
+    .polya-phase {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 4px;
+      margin-right: 4px;
+    }
+
+    .phase-model { background: rgba(88, 166, 255, 0.15); color: var(--accent); }
+    .phase-solve { background: rgba(63, 185, 80, 0.15); color: var(--green); }
+    .phase-interpret { background: rgba(210, 153, 34, 0.15); color: var(--yellow); }
+
+    /* ---- CODE BLOCKS ---- */
+    .terminal {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      margin: 16px 0 24px;
+    }
+
+    .terminal-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px;
+      background: rgba(22, 27, 34, 0.8);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .terminal-title {
+      font-size: 12px;
+      color: var(--text-dim);
+      margin-left: 8px;
+    }
+
+    .terminal-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .terminal-dot:nth-child(1) { background: #ff5f57; }
+    .terminal-dot:nth-child(2) { background: #febc2e; }
+    .terminal-dot:nth-child(3) { background: #28c840; }
+
+    .terminal-body {
+      padding: 16px 20px;
+      font-size: 13px;
+      line-height: 1.7;
+      overflow-x: auto;
+    }
+
+    .terminal-body .prompt { color: var(--green); }
+    .terminal-body .cmd { color: var(--text); }
+    .terminal-body .output { color: var(--text-muted); }
+    .terminal-body .highlight { color: var(--accent); }
+    .terminal-body .success { color: var(--green); }
+    .terminal-body .comment { color: var(--text-dim); }
+    .terminal-body .keyword { color: var(--purple); }
+    .terminal-body .string { color: var(--green); }
+    .terminal-body .number { color: var(--yellow); }
+    .terminal-body .func { color: var(--accent); }
+
+    code {
+      background: var(--bg-surface);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 13px;
+      color: var(--accent);
+    }
+
+    /* ---- TABLES ---- */
+    .table-wrapper {
+      overflow-x: auto;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      margin: 16px 0 24px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    thead th {
+      text-align: left;
+      padding: 12px 16px;
+      font-weight: 700;
+      border-bottom: 2px solid var(--border);
+      background: var(--bg-surface);
+      white-space: nowrap;
+    }
+
+    tbody td {
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    tbody td:first-child {
+      font-weight: 600;
+      color: var(--text);
+      white-space: nowrap;
+    }
+
+    /* Expertise matrix: highlight cells with value 9 */
+    .cell-best {
+      color: var(--green);
+      font-weight: 700;
+    }
+
+    /* Sensitivity risk colors */
+    .risk-moderate {
+      color: var(--yellow);
+      font-weight: 700;
+    }
+
+    .risk-low {
+      color: var(--green);
+      font-weight: 700;
+    }
+
+    .risk-none {
+      color: var(--text-dim);
+      font-weight: 700;
+    }
+
+    /* ---- CARDS ---- */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin: 16px 0 24px;
+    }
+
+    .card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 24px 20px;
+    }
+
+    .card h4 {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 4px;
+      margin-top: 0;
+    }
+
+    .card .card-sub {
+      font-size: 12px;
+      color: var(--text-dim);
+      margin-bottom: 12px;
+    }
+
+    .card p {
+      font-size: 13px;
+      margin-bottom: 12px;
+    }
+
+    .card ul {
+      list-style: none;
+      font-size: 12px;
+    }
+
+    .card ul li {
+      padding: 3px 0;
+      padding-left: 16px;
+      position: relative;
+      color: var(--text-muted);
+    }
+
+    .card ul li::before {
+      content: "+";
+      position: absolute;
+      left: 0;
+      color: var(--green);
+      font-weight: 700;
+    }
+
+    .card-accent {
+      border-color: var(--accent);
+    }
+
+    /* ---- STATS ROW ---- */
+    .stats {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin: 16px 0 24px;
+    }
+
+    .stat {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px 20px;
+      text-align: center;
+      flex: 1;
+      min-width: 120px;
+    }
+
+    .stat-number {
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--accent);
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    .stat-number.green { color: var(--green); }
+    .stat-number.yellow { color: var(--yellow); }
+
+    .stat-label {
+      font-size: 11px;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    /* ---- CHART DESCRIPTIONS ---- */
+    .chart-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px 24px;
+      margin: 12px 0 16px;
+    }
+
+    .chart-card h4 {
+      margin-top: 0;
+      margin-bottom: 8px;
+    }
+
+    .chart-card p {
+      font-size: 13px;
+      margin-bottom: 0;
+    }
+
+    /* ---- FORMULA BLOCK ---- */
+    .formula-block {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: 0 10px 10px 0;
+      padding: 20px 24px;
+      margin: 16px 0 24px;
+      font-size: 14px;
+      line-height: 2;
+      overflow-x: auto;
+    }
+
+    .formula-block .label {
+      color: var(--text-dim);
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+
+    .formula-block .math {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    .formula-block .constraint {
+      color: var(--text-muted);
+    }
+
+    /* ---- CALLOUT ---- */
+    .callout {
+      background: rgba(88, 166, 255, 0.08);
+      border: 1px solid rgba(88, 166, 255, 0.2);
+      border-radius: 10px;
+      padding: 16px 20px;
+      margin: 16px 0 24px;
+      font-size: 13px;
+    }
+
+    .callout p {
+      margin-bottom: 8px;
+      color: var(--text-muted);
+    }
+
+    .callout p:last-child {
+      margin-bottom: 0;
+    }
+
+    .callout strong {
+      color: var(--accent);
+    }
+
+    .callout-green {
+      background: rgba(63, 185, 80, 0.08);
+      border-color: rgba(63, 185, 80, 0.2);
+    }
+
+    .callout-green strong {
+      color: var(--green);
+    }
+
+    .callout-yellow {
+      background: rgba(210, 153, 34, 0.08);
+      border-color: rgba(210, 153, 34, 0.2);
+    }
+
+    .callout-yellow strong {
+      color: var(--yellow);
+    }
+
+    /* ---- ASSIGNMENT RESULT TABLE ---- */
+    .assignment-table tbody td.score-cell {
+      font-weight: 700;
+      color: var(--green);
+    }
+
+    .assignment-table tbody td.zero-cell {
+      color: var(--text-dim);
+    }
+
+    /* ---- PREV/NEXT LINKS ---- */
+    .prev-next {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 64px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+    }
+
+    .prev-next a {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      padding: 16px 20px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      text-decoration: none;
+      transition: border-color 0.15s;
+    }
+
+    .prev-next a:hover {
+      border-color: var(--accent);
+      text-decoration: none;
+    }
+
+    .prev-next .direction {
+      font-size: 11px;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .prev-next .title {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--accent);
+    }
+
+    /* ---- FOOTER ---- */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 48px 24px;
+      text-align: center;
+    }
+
+    footer .footer-inner {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    footer .footer-logo {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    footer .footer-logo span {
+      color: var(--accent);
+    }
+
+    footer .footer-note {
+      font-size: 12px;
+      color: var(--text-dim);
+      margin-bottom: 16px;
+    }
+
+    footer .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      list-style: none;
+    }
+
+    footer .footer-links a {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+
+    footer .footer-links a:hover {
+      color: var(--text);
+    }
+
+    /* ---- RESPONSIVE ---- */
+    @media (max-width: 768px) {
+      .sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.25s ease;
+      }
+
+      .sidebar.open {
+        transform: translateX(0);
+      }
+
+      .content {
+        margin-left: 0;
+        padding: 32px 20px 80px;
+      }
+
+      .sidebar-toggle {
+        display: block;
+      }
+
+      nav .nav-links {
+        gap: 12px;
+      }
+
+      nav .nav-links a {
+        font-size: 12px;
+      }
+
+      .card-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .stats {
+        gap: 8px;
+      }
+
+      .stat {
+        min-width: 80px;
+        padding: 12px;
+      }
+
+      .stat-number {
+        font-size: 22px;
+      }
+
+      h1 {
+        font-size: 26px;
+      }
+
+      h2 {
+        font-size: 20px;
+      }
+
+      .prev-next {
+        flex-direction: column;
+        gap: 12px;
+      }
+
+      .prev-next a {
+        width: 100%;
+      }
+
+      .formula-block {
+        font-size: 12px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-inner">
+      <div style="display:flex;align-items:center;gap:16px;">
+        <button class="sidebar-toggle" onclick="document.querySelector('.sidebar').classList.toggle('open')" aria-label="Toggle navigation">Menu</button>
+        <a href="index.html" class="logo">uber-<span>polya</span></a>
+      </div>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="guide.html">Guide</a></li>
+        <li><a href="https://github.com/agtm1199/uber-polya">GitHub</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Walkthrough</div>
+        <a href="#top">Introduction</a>
+        <a href="#the-problem">The Problem</a>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Phase 1: Model</div>
+        <a href="#phase-1">uber-model</a>
+        <a href="#problem-understanding" class="sub">Problem Understanding</a>
+        <a href="#structure-recognition" class="sub">Structure Recognition</a>
+        <a href="#formal-model" class="sub">Formal Model</a>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Phase 2: Solve</div>
+        <a href="#phase-2">uber-solve</a>
+        <a href="#classification" class="sub">Classification</a>
+        <a href="#ilp-formulation" class="sub">ILP Formulation</a>
+        <a href="#solution" class="sub">Solution</a>
+        <a href="#verification" class="sub">Verification</a>
+        <a href="#sensitivity" class="sub">Sensitivity</a>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Phase 3: Interpret</div>
+        <a href="#phase-3">uber-interpret</a>
+        <a href="#bottom-line" class="sub">Bottom Line</a>
+        <a href="#visualizations" class="sub">Visualizations</a>
+        <a href="#sensitivity-deep-dive" class="sub">Sensitivity Deep Dive</a>
+        <a href="#recommendations" class="sub">Recommendations</a>
+        <a href="#knowledge-transfer" class="sub">Knowledge Transfer</a>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Reference</div>
+        <a href="#running-the-code">Running the Code</a>
+        <a href="#what-you-learned">What You Learned</a>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="content">
+
+      <!-- INTRO -->
+      <section id="top">
+        <h1>Inspector Assignment <span class="badge">Walkthrough</span></h1>
+        <p class="lead">ILP, LP relaxation, sensitivity testing, and stakeholder visualizations &mdash; the full uber-polya pipeline on a real assignment problem.</p>
+        <p>This walkthrough traces every step of the uber-polya trilogy (<code>/uber-model</code>, <code>/uber-solve</code>, <code>/uber-interpret</code>) on the Food Safety Inspector Assignment problem. You will see how a plain-English problem becomes a formal ILP, gets solved to proven optimality, and is translated into actionable recommendations with charts.</p>
+        <p>Runnable code: <a href="https://github.com/agtm1199/uber-polya/tree/main/examples/inspector-assignment">examples/inspector-assignment/</a></p>
+      </section>
+
+      <!-- THE PROBLEM -->
+      <h2 id="the-problem">The Problem</h2>
+      <p>A food safety agency needs to assign <strong>6 inspectors</strong> to <strong>10 facilities</strong> (5 types, 2 each) to <strong>maximize total expertise</strong>. Each inspector handles at most 3 facilities. Each facility needs exactly 1 inspector.</p>
+
+      <h3>Expertise Matrix</h3>
+      <p>Each inspector has a skill score (1&ndash;9) for each facility type.</p>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Inspector</th>
+              <th>Dairy</th>
+              <th>Meat</th>
+              <th>Bakery</th>
+              <th>Seafood</th>
+              <th>Beverage</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Alice</td>
+              <td class="cell-best">9</td>
+              <td>7</td>
+              <td>4</td>
+              <td>3</td>
+              <td>6</td>
+            </tr>
+            <tr>
+              <td>Bob</td>
+              <td>5</td>
+              <td class="cell-best">9</td>
+              <td>6</td>
+              <td>8</td>
+              <td>3</td>
+            </tr>
+            <tr>
+              <td>Carol</td>
+              <td>7</td>
+              <td>4</td>
+              <td class="cell-best">9</td>
+              <td>5</td>
+              <td>8</td>
+            </tr>
+            <tr>
+              <td>Dave</td>
+              <td>3</td>
+              <td>6</td>
+              <td>5</td>
+              <td class="cell-best">9</td>
+              <td>4</td>
+            </tr>
+            <tr>
+              <td>Eve</td>
+              <td>6</td>
+              <td>3</td>
+              <td>7</td>
+              <td>4</td>
+              <td class="cell-best">9</td>
+            </tr>
+            <tr>
+              <td>Frank</td>
+              <td>8</td>
+              <td>5</td>
+              <td>3</td>
+              <td>6</td>
+              <td>7</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout">
+        <p><strong>Notice the diagonal.</strong> Five inspectors each have a clear specialty (score 9). Frank has no 9 &mdash; his best is Dairy (8), which is Alice's domain. This hint foreshadows the optimal solution.</p>
+      </div>
+
+      <!-- PHASE 1: /uber-model -->
+      <h2 id="phase-1"><span class="polya-phase phase-model">PHASE 1</span> /uber-model</h2>
+
+      <h3 id="problem-understanding">Problem Understanding</h3>
+      <p>uber-model begins by classifying the problem type and extracting the four Polya elements.</p>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr><th>Element</th><th>Value</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Problem Type</td><td><strong>Find</strong> (optimization)</td></tr>
+            <tr><td>Unknown</td><td>Assignment that maximizes total expertise</td></tr>
+            <tr><td>Data</td><td>6 inspectors, 10 facilities (5 types &times; 2), expertise matrix</td></tr>
+            <tr><td>Conditions</td><td>Capacity &le; 3 per inspector, coverage = 1 per facility</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 id="structure-recognition">Structure Recognition</h3>
+      <p>The problem maps to a well-known structure in combinatorial optimization.</p>
+
+      <div class="callout">
+        <p><strong>Capacitated Weighted b-Matching on a bipartite graph.</strong></p>
+        <p>Inspector &rarr; left vertex. Facility &rarr; right vertex. Expertise &rarr; edge weight.</p>
+        <p>The bipartite structure means we have two disjoint sets (inspectors and facilities) with edges only between them &mdash; never within the same set.</p>
+      </div>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr><th>Real World</th><th>Math</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Inspector</td><td>Left vertex in bipartite graph</td></tr>
+            <tr><td>Facility</td><td>Right vertex in bipartite graph</td></tr>
+            <tr><td>Expertise score</td><td>Edge weight w(i, f)</td></tr>
+            <tr><td>"at most 3 facilities"</td><td>Degree &le; 3 (capacity constraint)</td></tr>
+            <tr><td>"exactly 1 inspector"</td><td>Degree = 1 (coverage constraint)</td></tr>
+            <tr><td>Maximize total expertise</td><td>Maximize &sum; w(i,f) &middot; x(i,f)</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 id="formal-model">Formal Model</h3>
+      <p>The formal model uses binary decision variables x<sub>i,f</sub> &isin; {0, 1} indicating whether inspector i is assigned to facility f.</p>
+
+      <div class="formula-block">
+        <div class="label">ILP Formulation</div>
+        <div class="math">maximize &nbsp;&sum;<sub>i &isin; I</sub> &sum;<sub>f &isin; F</sub> w(i,f) &middot; x<sub>i,f</sub></div>
+        <br>
+        <div class="constraint">subject to:</div>
+        <div class="constraint">&nbsp;&nbsp;&sum;<sub>f &isin; F</sub> x<sub>i,f</sub> &le; 3 &nbsp;&nbsp;&nbsp;&nbsp; &forall; i &isin; I &nbsp;&nbsp;&nbsp; (capacity)</div>
+        <div class="constraint">&nbsp;&nbsp;&sum;<sub>i &isin; I</sub> x<sub>i,f</sub> = 1 &nbsp;&nbsp;&nbsp;&nbsp; &forall; f &isin; F &nbsp;&nbsp;&nbsp; (coverage)</div>
+        <div class="constraint">&nbsp;&nbsp;x<sub>i,f</sub> &isin; {0, 1} &nbsp;&nbsp;&nbsp;&nbsp; &forall; i, f &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; (integrality)</div>
+      </div>
+
+      <div class="callout-green callout">
+        <p><strong>Key observation: total unimodularity.</strong> The constraint matrix is totally unimodular (TU) &mdash; a consequence of the bipartite structure with &le; and = constraints. This means the LP relaxation (replacing x &isin; {0,1} with 0 &le; x &le; 1) always produces an integer optimum. We get ILP-quality solutions at LP speed.</p>
+      </div>
+
+
+      <!-- PHASE 2: /uber-solve -->
+      <h2 id="phase-2"><span class="polya-phase phase-solve">PHASE 2</span> /uber-solve</h2>
+
+      <h3 id="classification">Problem Classification</h3>
+
+      <div class="stats">
+        <div class="stat"><div class="stat-number">60</div><div class="stat-label">Binary Vars</div></div>
+        <div class="stat"><div class="stat-number">16</div><div class="stat-label">Constraints</div></div>
+        <div class="stat"><div class="stat-number green">TU</div><div class="stat-label">Matrix</div></div>
+        <div class="stat"><div class="stat-number green">Poly</div><div class="stat-label">Complexity</div></div>
+      </div>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr><th>Property</th><th>Value</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Named Problem</td><td>Capacitated Weighted Bipartite b-Matching</td></tr>
+            <tr><td>Complexity</td><td>Effectively polynomial (TU constraint matrix)</td></tr>
+            <tr><td>Variables</td><td>60 binary (6 inspectors &times; 10 facilities)</td></tr>
+            <tr><td>Constraints</td><td>16 (10 coverage + 6 capacity)</td></tr>
+            <tr><td>Algorithm</td><td>ILP via PuLP/CBC (Branch &amp; Bound)</td></tr>
+            <tr><td>Verification</td><td>LP relaxation bound + independent constraint checking</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 id="ilp-formulation">The ILP Formulation</h3>
+      <p>The complete solver code using PuLP. This is the core of <code>inspector_solver.py</code>.</p>
+
+      <div class="terminal">
+        <div class="terminal-header">
+          <div class="terminal-dot"></div>
+          <div class="terminal-dot"></div>
+          <div class="terminal-dot"></div>
+          <span class="terminal-title">inspector_solver.py (core)</span>
+        </div>
+        <div class="terminal-body">
+<div><span class="keyword">from</span> <span class="cmd">pulp</span> <span class="keyword">import</span> <span class="cmd">LpProblem, LpVariable, LpMaximize, LpBinary, lpSum, PULP_CBC_CMD, value</span></div>
+<br>
+<div><span class="comment"># Binary decision variables: x[i,f] = 1 if inspector i assigned to facility f</span></div>
+<div><span class="cmd">prob = LpProblem(</span><span class="string">"inspector_assignment"</span><span class="cmd">, LpMaximize)</span></div>
+<div><span class="cmd">x = {(i, f): LpVariable(</span><span class="string">f"x_{i}_{f}"</span><span class="cmd">, cat=LpBinary)</span></div>
+<div><span class="cmd">     </span><span class="keyword">for</span><span class="cmd"> i </span><span class="keyword">in</span><span class="cmd"> inspectors </span><span class="keyword">for</span><span class="cmd"> f </span><span class="keyword">in</span><span class="cmd"> facilities}</span></div>
+<br>
+<div><span class="comment"># Objective: maximize total expertise</span></div>
+<div><span class="cmd">prob += lpSum(score(i, f) * x[i, f]</span></div>
+<div><span class="cmd">             </span><span class="keyword">for</span><span class="cmd"> i </span><span class="keyword">in</span><span class="cmd"> inspectors </span><span class="keyword">for</span><span class="cmd"> f </span><span class="keyword">in</span><span class="cmd"> facilities)</span></div>
+<br>
+<div><span class="comment"># Constraint 1: capacity &le; 3 per inspector</span></div>
+<div><span class="keyword">for</span><span class="cmd"> i </span><span class="keyword">in</span><span class="cmd"> inspectors:</span></div>
+<div><span class="cmd">    prob += lpSum(x[i, f] </span><span class="keyword">for</span><span class="cmd"> f </span><span class="keyword">in</span><span class="cmd"> facilities) &lt;= </span><span class="number">3</span></div>
+<br>
+<div><span class="comment"># Constraint 2: exactly 1 inspector per facility</span></div>
+<div><span class="keyword">for</span><span class="cmd"> f </span><span class="keyword">in</span><span class="cmd"> facilities:</span></div>
+<div><span class="cmd">    prob += lpSum(x[i, f] </span><span class="keyword">for</span><span class="cmd"> i </span><span class="keyword">in</span><span class="cmd"> inspectors) == </span><span class="number">1</span></div>
+<br>
+<div><span class="comment"># Solve</span></div>
+<div><span class="cmd">prob.solve(PULP_CBC_CMD(msg=</span><span class="keyword">False</span><span class="cmd">))</span></div>
+        </div>
+      </div>
+
+      <h3 id="solution">Solution</h3>
+
+      <div class="stats">
+        <div class="stat"><div class="stat-number green">90</div><div class="stat-label">Objective</div></div>
+        <div class="stat"><div class="stat-number green">90.0</div><div class="stat-label">LP Relaxation</div></div>
+        <div class="stat"><div class="stat-number green">0</div><div class="stat-label">Gap</div></div>
+        <div class="stat"><div class="stat-number green">100%</div><div class="stat-label">Efficiency</div></div>
+      </div>
+
+      <p>The solver finds a <strong>perfect assignment</strong> &mdash; every facility is covered by its top expert.</p>
+
+      <div class="table-wrapper">
+        <table class="assignment-table">
+          <thead>
+            <tr><th>Inspector</th><th>Assigned To</th><th>Score</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Alice</td><td>Dairy (F1, F2)</td><td class="score-cell">18 (9+9)</td></tr>
+            <tr><td>Bob</td><td>Meat (F3, F4)</td><td class="score-cell">18 (9+9)</td></tr>
+            <tr><td>Carol</td><td>Bakery (F5, F6)</td><td class="score-cell">18 (9+9)</td></tr>
+            <tr><td>Dave</td><td>Seafood (F7, F8)</td><td class="score-cell">18 (9+9)</td></tr>
+            <tr><td>Eve</td><td>Beverage (F9, F10)</td><td class="score-cell">18 (9+9)</td></tr>
+            <tr><td>Frank</td><td>Reserve (none)</td><td class="zero-cell">0</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="callout-green callout">
+        <p><strong>Objective: 90 out of 90 possible points.</strong> The LP relaxation confirms optimality with gap = 0. Each of the five specialists is assigned to their strongest type. Frank, with no unique top skill, is left as a reserve &mdash; which turns out to be strategically valuable.</p>
+      </div>
+
+      <h3 id="verification">Independent Verification</h3>
+      <p>The <code>verify()</code> function checks all constraints independently of the solver &mdash; no shared logic.</p>
+
+      <div class="terminal">
+        <div class="terminal-header">
+          <div class="terminal-dot"></div>
+          <div class="terminal-dot"></div>
+          <div class="terminal-dot"></div>
+          <span class="terminal-title">verification output</span>
+        </div>
+        <div class="terminal-body">
+<div><span class="success">PASS</span> <span class="output">capacity_Alice ........ 2 &le; 3</span></div>
+<div><span class="success">PASS</span> <span class="output">capacity_Bob .......... 2 &le; 3</span></div>
+<div><span class="success">PASS</span> <span class="output">capacity_Carol ........ 2 &le; 3</span></div>
+<div><span class="success">PASS</span> <span class="output">capacity_Dave ......... 2 &le; 3</span></div>
+<div><span class="success">PASS</span> <span class="output">capacity_Eve .......... 2 &le; 3</span></div>
+<div><span class="success">PASS</span> <span class="output">capacity_Frank ........ 0 &le; 3</span></div>
+<div><span class="success">PASS</span> <span class="output">coverage_F1..F10 ...... all = 1</span></div>
+<div><span class="success">PASS</span> <span class="output">all_facilities_covered  10/10</span></div>
+<div><span class="success">PASS</span> <span class="output">objective_recomputed .. 90 = 90</span></div>
+        </div>
+      </div>
+
+      <h3 id="sensitivity">Sensitivity: What If an Inspector Leaves?</h3>
+      <p>For each inspector, we remove them and re-solve to measure the impact on total expertise.</p>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr><th>Inspector Removed</th><th>New Objective</th><th>Delta</th><th>Risk Level</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Alice</td><td>88</td><td>-2</td><td><span class="risk-low">LOW</span></td></tr>
+            <tr><td>Bob</td><td>85</td><td>-5</td><td><span class="risk-moderate">MODERATE</span></td></tr>
+            <tr><td>Carol</td><td>85</td><td>-5</td><td><span class="risk-moderate">MODERATE</span></td></tr>
+            <tr><td>Dave</td><td>86</td><td>-4</td><td><span class="risk-low">LOW</span></td></tr>
+            <tr><td>Eve</td><td>87</td><td>-3</td><td><span class="risk-low">LOW</span></td></tr>
+            <tr><td>Frank</td><td>90</td><td>0</td><td><span class="risk-none">NONE</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+
+      <!-- PHASE 3: /uber-interpret -->
+      <h2 id="phase-3"><span class="polya-phase phase-interpret">PHASE 3</span> /uber-interpret</h2>
+
+      <h3 id="bottom-line">Bottom Line</h3>
+
+      <div class="callout-green callout">
+        <p><strong>A perfect assignment exists.</strong> Every facility gets its top-scoring inspector. Total expertise: 90/90 (100% efficiency). Frank serves as a reserve inspector, available for emergencies or substitution without disrupting any assignment.</p>
+      </div>
+
+      <div class="stats">
+        <div class="stat"><div class="stat-number green">100%</div><div class="stat-label">Efficiency</div></div>
+        <div class="stat"><div class="stat-number">5</div><div class="stat-label">Active Inspectors</div></div>
+        <div class="stat"><div class="stat-number">1</div><div class="stat-label">Reserve</div></div>
+        <div class="stat"><div class="stat-number green">0</div><div class="stat-label">Optimality Gap</div></div>
+      </div>
+
+      <h3 id="visualizations">Stakeholder Visualizations</h3>
+      <p>Three charts generated by <code>inspector_viz.py</code>, each targeting a different stakeholder question.</p>
+
+      <div class="chart-card">
+        <h4>Chart 1: Expertise Heatmap</h4>
+        <p><strong>Audience:</strong> Operations manager. <strong>Question:</strong> "Who is assigned where and why?"</p>
+        <p>A 6&times;10 matrix with expertise scores color-coded from low (yellow) to high (red). Optimal assignments are outlined with thick blue borders. Reveals the block-diagonal structure: each specialist covers their top-scoring type pair.</p>
+        <p style="margin-top:8px;"><code>viz_assignment_matrix.png</code></p>
+      </div>
+
+      <div class="chart-card">
+        <h4>Chart 2: Sensitivity Tornado</h4>
+        <p><strong>Audience:</strong> Risk manager. <strong>Question:</strong> "What happens if someone leaves?"</p>
+        <p>Horizontal bar chart showing the objective drop per inspector removal. Bob and Carol cause the largest impact (-5 points each). Frank's removal has zero impact. Color-coded: red = moderate risk, yellow = low risk, green = no impact.</p>
+        <p style="margin-top:8px;"><code>viz_sensitivity_tornado.png</code></p>
+      </div>
+
+      <div class="chart-card">
+        <h4>Chart 3: Workload Distribution</h4>
+        <p><strong>Audience:</strong> HR / scheduling team. <strong>Question:</strong> "Is the workload fair?"</p>
+        <p>Side-by-side bar charts: facilities assigned (left) and expertise score contribution (right). All active inspectors carry exactly 2 facilities out of a maximum 3, contributing 18 points each. Frank carries 0. Capacity slack: 1 facility per inspector.</p>
+        <p style="margin-top:8px;"><code>viz_workload_expertise.png</code></p>
+      </div>
+
+      <h3 id="sensitivity-deep-dive">Sensitivity Deep Dive</h3>
+
+      <h4>Block-Diagonal Structure</h4>
+      <p>The optimal assignment has a clean <strong>block-diagonal</strong> structure: each inspector is paired with exactly one facility type. This makes the solution easy to understand, implement, and maintain. It also means disruptions are localized &mdash; losing one inspector only affects their type pair.</p>
+
+      <h4>Critical Personnel</h4>
+      <p><strong>Bob</strong> (Meat) and <strong>Carol</strong> (Bakery) are the most critical inspectors. Losing either drops the objective by 5 points (-5.6%). Their skills are the hardest to replace because no other inspector scores above 6 in their specialty.</p>
+
+      <div class="callout-yellow callout">
+        <p><strong>Recommendation: Cross-train Bob and Carol.</strong> Their departure risk is the highest. Cross-training a second inspector in Meat and Bakery reduces the maximum single-point-of-failure from -5 to approximately -2.</p>
+      </div>
+
+      <h4>Frank as Insurance</h4>
+      <p>Frank is not idle &mdash; he is <strong>insurance</strong>. His broad skill profile (8, 5, 3, 6, 7) means he can step in for any inspector with a score of at least 5 in most types. Removing Frank from the team has zero impact on the current optimal, but his presence is what makes the system resilient.</p>
+
+      <h4>Capacity Slack</h4>
+      <p>Every active inspector uses 2 out of 3 capacity slots. The remaining <strong>slack of 1 per inspector</strong> (plus Frank's full 3-slot capacity) provides headroom for future facility additions without restructuring.</p>
+
+
+      <h3 id="recommendations">Recommendations</h3>
+
+      <div class="card-grid">
+        <div class="card card-accent">
+          <h4>Primary</h4>
+          <ul>
+            <li>Implement the optimal assignment as computed</li>
+            <li>Each specialist covers their top-scoring type pair</li>
+            <li>Frank held in reserve for substitution</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h4>Monitor</h4>
+          <ul>
+            <li>Bob and Carol: initiate cross-training program</li>
+            <li>Track expertise scores quarterly (static scores may drift)</li>
+            <li>Re-run solver if staffing or facility count changes</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h4>Risk Mitigation</h4>
+          <ul>
+            <li>Keep Frank as dedicated reserve inspector</li>
+            <li>Document substitution protocol for each type pair</li>
+            <li>Alert threshold: re-solve if any inspector's score drops below 7</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h4>Limitations</h4>
+          <ul>
+            <li>Static expertise scores (no learning curve)</li>
+            <li>No travel time between facilities</li>
+            <li>Equal weighting across facility types</li>
+            <li>No inspector preferences considered</li>
+          </ul>
+        </div>
+      </div>
+
+      <h3 id="knowledge-transfer">Knowledge Transfer</h3>
+
+      <div class="callout">
+        <p><strong>Pattern:</strong> "Assign people to roles by skill with capacity limits" &rarr; weighted bipartite b-matching via ILP.</p>
+        <p>This is one of the most common optimization patterns in practice. Whenever you see people, skills, capacity, and a score to maximize, reach for this formulation.</p>
+      </div>
+
+      <h4>Same Pattern, Different Domain</h4>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr><th>Application</th><th>Left Vertices</th><th>Right Vertices</th><th>Edge Weight</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Student-Project</td><td>Students</td><td>Projects</td><td>Preference score</td></tr>
+            <tr><td>Nurse-Shift</td><td>Nurses</td><td>Shifts</td><td>Competency score</td></tr>
+            <tr><td>Truck-Route</td><td>Trucks</td><td>Routes</td><td>Efficiency score</td></tr>
+            <tr><td>Reviewer-Paper</td><td>Reviewers</td><td>Papers</td><td>Expertise score</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>In every case: formulate as ILP with binary variables, check for TU structure, solve with PuLP, verify independently. The entire pipeline transfers directly.</p>
+
+
+      <!-- RUNNING THE CODE -->
+      <h2 id="running-the-code">Running the Code</h2>
+
+      <div class="terminal">
+        <div class="terminal-header">
+          <div class="terminal-dot"></div>
+          <div class="terminal-dot"></div>
+          <div class="terminal-dot"></div>
+          <span class="terminal-title">terminal</span>
+        </div>
+        <div class="terminal-body">
+<div><span class="comment"># Navigate to the example directory</span></div>
+<div><span class="prompt">$</span> <span class="cmd">cd examples/inspector-assignment/</span></div>
+<br>
+<div><span class="comment"># Install dependencies</span></div>
+<div><span class="prompt">$</span> <span class="cmd">pip install pulp</span></div>
+<br>
+<div><span class="comment"># Run the solver</span></div>
+<div><span class="prompt">$</span> <span class="cmd">python inspector_solver.py</span></div>
+<br>
+<div><span class="output">==================================================</span></div>
+<div><span class="output">SOLUTION REPORT: Food Safety Inspector Assignment</span></div>
+<div><span class="output">==================================================</span></div>
+<div><span class="output">[RESULT]  Status: Optimal</span></div>
+<div><span class="output">[RESULT]  Objective: </span><span class="success">90</span><span class="output"> (total expertise score)</span></div>
+<div><span class="output">[RESULT]  LP Bound: </span><span class="success">90.0</span></div>
+<div><span class="output">[RESULT]  Gap: </span><span class="success">0.0 (0.0%)</span></div>
+<div><span class="output">[RESULT]  Efficiency: </span><span class="success">100.0%</span></div>
+<br>
+<div><span class="output">[VERIFY]  </span><span class="success">PASS</span><span class="output"> capacity checks (6/6)</span></div>
+<div><span class="output">[VERIFY]  </span><span class="success">PASS</span><span class="output"> coverage checks (10/10)</span></div>
+<div><span class="output">[VERIFY]  </span><span class="success">PASS</span><span class="output"> objective recomputed: 90</span></div>
+<br>
+<div><span class="output">[SAVE]   </span><span class="success">solution.json</span></div>
+        </div>
+      </div>
+
+      <div class="terminal">
+        <div class="terminal-header">
+          <div class="terminal-dot"></div>
+          <div class="terminal-dot"></div>
+          <div class="terminal-dot"></div>
+          <span class="terminal-title">terminal</span>
+        </div>
+        <div class="terminal-body">
+<div><span class="comment"># Generate stakeholder visualizations</span></div>
+<div><span class="prompt">$</span> <span class="cmd">pip install matplotlib numpy</span></div>
+<div><span class="prompt">$</span> <span class="cmd">python inspector_viz.py</span></div>
+<br>
+<div><span class="output">[SAVE]   </span><span class="success">viz_assignment_matrix.png</span></div>
+<div><span class="output">[SAVE]   </span><span class="success">viz_sensitivity_tornado.png</span></div>
+<div><span class="output">[SAVE]   </span><span class="success">viz_workload_expertise.png</span></div>
+<div><span class="output">[COMPLETE] </span><span class="success">All 3 visualizations generated successfully.</span></div>
+        </div>
+      </div>
+
+
+      <!-- WHAT YOU LEARNED -->
+      <h2 id="what-you-learned">What You Learned</h2>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr><th>Concept</th><th>What You Saw</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Modeling</td><td>Real-world assignment &rarr; capacitated weighted bipartite b-matching via ILP</td></tr>
+            <tr><td>Algorithm</td><td>ILP solved by PuLP/CBC with Branch &amp; Bound</td></tr>
+            <tr><td>Total Unimodularity</td><td>Bipartite structure guarantees LP relaxation = ILP optimum</td></tr>
+            <tr><td>Verification</td><td>Independent <code>verify()</code> checks all constraints and recomputes objective</td></tr>
+            <tr><td>Sensitivity</td><td>What-if analysis: remove each inspector, measure objective drop</td></tr>
+            <tr><td>Interpretation</td><td>Block-diagonal structure, critical personnel, reserve value, capacity slack</td></tr>
+            <tr><td>Knowledge Transfer</td><td>Pattern: "assign by skill with capacity" &rarr; ILP. Applies to nurses, students, trucks, reviewers.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+
+      <!-- PREV/NEXT -->
+      <div class="prev-next">
+        <a href="milking-cows-walkthrough.html">
+          <span class="direction">&larr; Previous</span>
+          <span class="title">Milking Cows Walkthrough</span>
+        </a>
+        <div></div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-logo">uber-<span>polya</span></div>
+      <div class="footer-note">Apache 2.0 Licensed. Free forever.</div>
+      <ul class="footer-links">
+        <li><a href="https://github.com/agtm1199/uber-polya">GitHub</a></li>
+        <li><a href="guide.html">Guide</a></li>
+        <li><a href="manifesto.html">Manifesto</a></li>
+        <li><a href="https://github.com/agtm1199/uber-polya/blob/main/CONTRIBUTING.md">Contributing</a></li>
+      </ul>
+    </div>
+  </footer>
+
+  <!-- ACTIVE SECTION TRACKING -->
+  <script>
+    const sections = document.querySelectorAll('h2[id], h3[id], section[id]');
+    const sidebarLinks = document.querySelectorAll('.sidebar a');
+
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const id = entry.target.id;
+          sidebarLinks.forEach(link => {
+            link.classList.toggle('active',
+              link.getAttribute('href') === '#' + id ||
+              (id === 'top' && link.getAttribute('href') === '#top')
+            );
+          });
+        }
+      });
+    }, {
+      rootMargin: '-80px 0px -70% 0px',
+      threshold: 0
+    });
+
+    sections.forEach(section => observer.observe(section));
+
+    // Close sidebar on mobile when a link is clicked
+    document.querySelectorAll('.sidebar a').forEach(link => {
+      link.addEventListener('click', () => {
+        if (window.innerWidth < 768) {
+          document.querySelector('.sidebar').classList.remove('open');
+        }
+      });
+    });
+  </script>
+
+</body>
+</html>

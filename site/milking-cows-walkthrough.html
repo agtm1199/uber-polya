@@ -1,0 +1,1168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Milking Cows Walkthrough -- uber-polya</title>
+  <meta name="description" content="Complete walkthrough of the USACO Milking Cows problem demonstrating all three uber-polya skills: model, solve, interpret.">
+  <style>
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg: #0d1117;
+      --bg-surface: #161b22;
+      --bg-surface-hover: #1c2129;
+      --border: #30363d;
+      --text: #e6edf3;
+      --text-muted: #8b949e;
+      --text-dim: #6e7681;
+      --accent: #58a6ff;
+      --accent-hover: #79b8ff;
+      --green: #3fb950;
+      --green-dim: #238636;
+      --yellow: #d29922;
+      --yellow-dim: #9e6a03;
+      --red: #f85149;
+      --purple: #bc8cff;
+      --font-mono: 'JetBrains Mono', 'Fira Code', 'SF Mono', 'Cascadia Code', 'Consolas', 'Liberation Mono', monospace;
+      --sidebar-width: 240px;
+      --nav-height: 56px;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: calc(var(--nav-height) + 24px);
+    }
+
+    body {
+      font-family: var(--font-mono);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      font-size: 14px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ---- NAV ---- */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      background: rgba(13, 17, 23, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      height: var(--nav-height);
+    }
+
+    nav .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    nav .logo {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text);
+      text-decoration: none;
+      letter-spacing: -0.5px;
+    }
+
+    nav .logo span {
+      color: var(--accent);
+    }
+
+    nav .nav-links {
+      display: flex;
+      gap: 24px;
+      list-style: none;
+    }
+
+    nav .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 13px;
+      transition: color 0.2s;
+    }
+
+    nav .nav-links a:hover {
+      color: var(--text);
+    }
+
+    .sidebar-toggle {
+      display: none;
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text-muted);
+      padding: 6px 10px;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .sidebar-toggle:hover {
+      color: var(--text);
+      border-color: var(--accent);
+    }
+
+    /* ---- LAYOUT ---- */
+    .layout {
+      display: flex;
+      margin-top: var(--nav-height);
+      min-height: calc(100vh - var(--nav-height));
+    }
+
+    /* ---- SIDEBAR ---- */
+    .sidebar {
+      width: var(--sidebar-width);
+      position: fixed;
+      top: var(--nav-height);
+      left: 0;
+      bottom: 0;
+      overflow-y: auto;
+      border-right: 1px solid var(--border);
+      padding: 24px 0;
+      background: var(--bg);
+      z-index: 50;
+    }
+
+    .sidebar-section {
+      padding: 0 16px;
+      margin-bottom: 20px;
+    }
+
+    .sidebar-section-title {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--text-dim);
+      margin-bottom: 8px;
+      padding: 0 8px;
+    }
+
+    .sidebar a {
+      display: block;
+      padding: 5px 8px;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 13px;
+      border-radius: 6px;
+      transition: all 0.15s;
+      line-height: 1.4;
+    }
+
+    .sidebar a:hover {
+      color: var(--text);
+      background: var(--bg-surface);
+    }
+
+    .sidebar a.active {
+      color: var(--accent);
+      background: rgba(88, 166, 255, 0.1);
+    }
+
+    .sidebar a.sub {
+      padding-left: 20px;
+      font-size: 12px;
+    }
+
+    /* ---- MAIN CONTENT ---- */
+    .content {
+      flex: 1;
+      margin-left: var(--sidebar-width);
+      max-width: 800px;
+      padding: 48px 48px 120px;
+    }
+
+    /* ---- TYPOGRAPHY ---- */
+    h1 {
+      font-size: 32px;
+      font-weight: 800;
+      letter-spacing: -1px;
+      margin-bottom: 8px;
+      line-height: 1.2;
+    }
+
+    h2 {
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      margin-top: 64px;
+      margin-bottom: 16px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+    }
+
+    h2:first-of-type {
+      border-top: none;
+      margin-top: 48px;
+    }
+
+    h3 {
+      font-size: 17px;
+      font-weight: 700;
+      margin-top: 32px;
+      margin-bottom: 12px;
+    }
+
+    p {
+      margin-bottom: 16px;
+      color: var(--text-muted);
+    }
+
+    p strong {
+      color: var(--text);
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .lead {
+      font-size: 16px;
+      color: var(--text-muted);
+      margin-bottom: 32px;
+    }
+
+    .badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 4px;
+      background: rgba(88, 166, 255, 0.15);
+      color: var(--accent);
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+
+    .badge-green {
+      background: rgba(63, 185, 80, 0.15);
+      color: var(--green);
+    }
+
+    .badge-yellow {
+      background: rgba(210, 153, 34, 0.15);
+      color: var(--yellow);
+    }
+
+    /* ---- PHASE LABELS ---- */
+    .phase-label {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 10px;
+      border-radius: 4px;
+      margin-right: 6px;
+      letter-spacing: 0.5px;
+    }
+
+    .phase-model { background: rgba(88, 166, 255, 0.15); color: var(--accent); }
+    .phase-solve { background: rgba(63, 185, 80, 0.15); color: var(--green); }
+    .phase-interpret { background: rgba(210, 153, 34, 0.15); color: var(--yellow); }
+
+    /* ---- TERMINAL / CODE BLOCKS ---- */
+    .terminal {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      margin: 16px 0 24px;
+    }
+
+    .terminal-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px;
+      background: rgba(22, 27, 34, 0.8);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .terminal-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .terminal-dot:nth-child(1) { background: #ff5f57; }
+    .terminal-dot:nth-child(2) { background: #febc2e; }
+    .terminal-dot:nth-child(3) { background: #28c840; }
+
+    .terminal-title {
+      font-size: 11px;
+      color: var(--text-dim);
+      margin-left: 8px;
+    }
+
+    .terminal-body {
+      padding: 16px 20px;
+      font-size: 13px;
+      line-height: 1.7;
+      overflow-x: auto;
+    }
+
+    .terminal-body .prompt { color: var(--green); }
+    .terminal-body .cmd { color: var(--text); }
+    .terminal-body .output { color: var(--text-muted); }
+    .terminal-body .highlight { color: var(--accent); }
+    .terminal-body .success { color: var(--green); }
+    .terminal-body .comment { color: var(--text-dim); }
+
+    code {
+      background: var(--bg-surface);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 13px;
+      color: var(--accent);
+    }
+
+    /* ---- PYTHON SYNTAX HIGHLIGHTING ---- */
+    .code-block {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      margin: 16px 0 24px;
+    }
+
+    .code-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 16px;
+      background: rgba(22, 27, 34, 0.8);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .code-header-dots {
+      display: flex;
+      gap: 8px;
+    }
+
+    .code-header-dots span {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .code-header-dots span:nth-child(1) { background: #ff5f57; }
+    .code-header-dots span:nth-child(2) { background: #febc2e; }
+    .code-header-dots span:nth-child(3) { background: #28c840; }
+
+    .code-header-label {
+      font-size: 11px;
+      color: var(--text-dim);
+    }
+
+    .code-body {
+      padding: 16px 20px;
+      font-size: 13px;
+      line-height: 1.8;
+      overflow-x: auto;
+      white-space: pre;
+    }
+
+    .code-body .kw { color: var(--accent); }          /* keywords */
+    .code-body .fn { color: var(--purple); }           /* function names */
+    .code-body .str { color: var(--green); }           /* strings */
+    .code-body .num { color: var(--yellow); }          /* numbers */
+    .code-body .cm { color: var(--text-dim); }         /* comments */
+    .code-body .op { color: var(--text); }             /* operators */
+    .code-body .id { color: var(--text); }             /* identifiers */
+    .code-body .bi { color: var(--accent-hover); }     /* builtins */
+
+    /* ---- BLOCKQUOTE PANELS ---- */
+    .output-panel {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: 0 10px 10px 0;
+      padding: 20px 24px;
+      margin: 16px 0 24px;
+      font-size: 13px;
+      line-height: 1.8;
+    }
+
+    .output-panel.panel-green {
+      border-left-color: var(--green);
+    }
+
+    .output-panel.panel-yellow {
+      border-left-color: var(--yellow);
+    }
+
+    .output-panel p {
+      margin-bottom: 8px;
+      font-size: 13px;
+    }
+
+    .output-panel p:last-child {
+      margin-bottom: 0;
+    }
+
+    .output-panel .label {
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .output-panel .label-green {
+      color: var(--green);
+      font-weight: 700;
+    }
+
+    .output-panel .label-yellow {
+      color: var(--yellow);
+      font-weight: 700;
+    }
+
+    .output-panel strong {
+      color: var(--text);
+    }
+
+    /* ---- ASCII TIMELINE ---- */
+    .ascii-block {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      margin: 16px 0 24px;
+    }
+
+    .ascii-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px;
+      background: rgba(22, 27, 34, 0.8);
+      border-bottom: 1px solid var(--border);
+      font-size: 11px;
+      color: var(--text-dim);
+    }
+
+    .ascii-body {
+      padding: 20px 24px;
+      font-size: 13px;
+      line-height: 1.6;
+      overflow-x: auto;
+      white-space: pre;
+    }
+
+    .ascii-body .farmer { color: var(--accent); font-weight: 700; }
+    .ascii-body .bar-green { color: var(--green); }
+    .ascii-body .bar-red { color: var(--red); }
+    .ascii-body .bar-accent { color: var(--accent); }
+    .ascii-body .dim { color: var(--text-dim); }
+    .ascii-body .label { color: var(--text-muted); }
+    .ascii-body .divider { color: var(--border); }
+    .ascii-body .num { color: var(--yellow); }
+
+    /* ---- TABLES ---- */
+    .table-wrapper {
+      overflow-x: auto;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      margin: 16px 0 24px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    thead th {
+      text-align: left;
+      padding: 12px 16px;
+      font-weight: 700;
+      border-bottom: 2px solid var(--border);
+      background: var(--bg-surface);
+      white-space: nowrap;
+    }
+
+    tbody td {
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    tbody td:first-child {
+      font-weight: 600;
+      color: var(--text);
+      white-space: nowrap;
+    }
+
+    tbody td:nth-child(2) {
+      color: var(--text-muted);
+    }
+
+    /* ---- MAPPING TABLE ---- */
+    .mapping-table tbody td:first-child {
+      color: var(--text-muted);
+      font-weight: 400;
+    }
+
+    .mapping-table tbody td:nth-child(2) {
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    /* ---- VERIFICATION CHECKS ---- */
+    .check-list {
+      list-style: none;
+      margin: 12px 0 24px;
+      padding: 0;
+    }
+
+    .check-list li {
+      padding: 6px 0;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .check-pass {
+      color: var(--green);
+      font-weight: 700;
+      font-size: 12px;
+      padding: 1px 8px;
+      background: rgba(63, 185, 80, 0.15);
+      border-radius: 4px;
+    }
+
+    .check-label {
+      color: var(--text-muted);
+      font-family: var(--font-mono);
+    }
+
+    /* ---- NEXT LINK ---- */
+    .next-link {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px 24px;
+      margin-top: 48px;
+      text-decoration: none;
+      transition: border-color 0.2s;
+    }
+
+    .next-link:hover {
+      border-color: var(--accent);
+      text-decoration: none;
+    }
+
+    .next-link-label {
+      font-size: 11px;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .next-link-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    .next-link-arrow {
+      margin-left: auto;
+      font-size: 20px;
+      color: var(--text-dim);
+    }
+
+    /* ---- FOOTER ---- */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 48px 0;
+      margin-left: var(--sidebar-width);
+    }
+
+    .footer-inner {
+      max-width: 800px;
+      padding: 0 48px;
+    }
+
+    .footer-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 32px;
+    }
+
+    .footer-left {
+      font-size: 13px;
+    }
+
+    .footer-left .footer-brand {
+      font-weight: 700;
+      font-size: 16px;
+      margin-bottom: 8px;
+    }
+
+    .footer-left p {
+      color: var(--text-muted);
+      margin-bottom: 4px;
+      font-size: 13px;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 24px;
+      list-style: none;
+      flex-wrap: wrap;
+    }
+
+    .footer-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 13px;
+      transition: color 0.2s;
+    }
+
+    .footer-links a:hover {
+      color: var(--accent);
+    }
+
+    /* ---- ORDERED / UNORDERED LISTS ---- */
+    ol, ul {
+      margin: 0 0 16px 24px;
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+
+    ol li, ul li {
+      padding: 3px 0;
+      line-height: 1.7;
+    }
+
+    ol li strong, ul li strong {
+      color: var(--text);
+    }
+
+    /* ---- RESPONSIVE ---- */
+    @media (max-width: 768px) {
+      .sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.25s ease;
+      }
+
+      .sidebar.open {
+        transform: translateX(0);
+      }
+
+      .content {
+        margin-left: 0;
+        padding: 32px 20px 80px;
+      }
+
+      footer {
+        margin-left: 0;
+      }
+
+      .footer-inner {
+        padding: 0 20px;
+      }
+
+      .sidebar-toggle {
+        display: block;
+      }
+
+      nav .nav-links {
+        gap: 12px;
+      }
+
+      nav .nav-links a {
+        font-size: 12px;
+      }
+
+      h1 {
+        font-size: 26px;
+      }
+
+      h2 {
+        font-size: 20px;
+      }
+
+      .footer-content {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-inner">
+      <div style="display:flex;align-items:center;gap:16px;">
+        <button class="sidebar-toggle" onclick="document.querySelector('.sidebar').classList.toggle('open')" aria-label="Toggle navigation">Menu</button>
+        <a href="index.html" class="logo">uber-<span>polya</span></a>
+      </div>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="guide.html">Guide</a></li>
+        <li><a href="https://github.com/agtm1199/uber-polya">GitHub</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Walkthrough</div>
+        <a href="#top">Introduction</a>
+        <a href="#the-problem">The Problem</a>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Phase 1</div>
+        <a href="#phase-1">/uber-model</a>
+        <a href="#problem-understanding" class="sub">Problem Understanding</a>
+        <a href="#structure-recognition" class="sub">Structure Recognition</a>
+        <a href="#formal-model" class="sub">Formal Model</a>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Phase 2</div>
+        <a href="#phase-2">/uber-solve</a>
+        <a href="#problem-classification" class="sub">Classification</a>
+        <a href="#the-algorithm" class="sub">The Algorithm</a>
+        <a href="#solution" class="sub">Solution</a>
+        <a href="#verification" class="sub">Verification</a>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Phase 3</div>
+        <a href="#phase-3">/uber-interpret</a>
+        <a href="#bottom-line" class="sub">Bottom Line</a>
+        <a href="#timeline" class="sub">Timeline</a>
+        <a href="#sensitivity" class="sub">Sensitivity</a>
+        <a href="#modeling-insight" class="sub">Modeling Insight</a>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Wrap-up</div>
+        <a href="#running-the-code">Running the Code</a>
+        <a href="#what-you-learned">What You Learned</a>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="content">
+
+      <!-- INTRO -->
+      <section id="top">
+        <h1>Milking Cows <span class="badge">Walkthrough</span></h1>
+        <p class="lead">Complete walkthrough of the USACO "Milking Cows" problem demonstrating all three uber-polya skills &mdash; from problem statement to actionable insight.</p>
+        <p><strong>Runnable code:</strong> <a href="https://github.com/agtm1199/uber-polya/tree/main/examples/milking-cows">examples/milking-cows/</a></p>
+        <p>The skill outputs shown below are representative of what Claude produces. Exact wording, formatting, and detail level will vary between runs.</p>
+      </section>
+
+      <!-- THE PROBLEM -->
+      <h2 id="the-problem">The Problem</h2>
+
+      <p>N farmers milk cows during various time intervals throughout the day. Given N intervals <code>[start, end)</code>, find:</p>
+      <ol>
+        <li>The <strong>longest continuous period</strong> during which at least one farmer is milking</li>
+        <li>The <strong>longest idle gap</strong> between milking periods (where no one is milking)</li>
+      </ol>
+
+      <p><strong>Sample input:</strong> 3 intervals</p>
+
+      <div class="output-panel">
+        <p><span class="label">Farmer 1:</span> <strong>[300, 1000)</strong> &mdash; 700 seconds</p>
+        <p><span class="label">Farmer 2:</span> <strong>[700, 1200)</strong> &mdash; 500 seconds</p>
+        <p><span class="label">Farmer 3:</span> <strong>[1500, 2100)</strong> &mdash; 600 seconds</p>
+      </div>
+
+      <!-- PHASE 1: /uber-model -->
+      <h2 id="phase-1"><span class="phase-label phase-model">PHASE 1</span> /uber-model</h2>
+
+      <div class="terminal">
+        <div class="terminal-header">
+          <div class="terminal-dot"></div>
+          <div class="terminal-dot"></div>
+          <div class="terminal-dot"></div>
+          <span class="terminal-title">command input</span>
+        </div>
+        <div class="terminal-body">
+          <div><span class="prompt">$</span> <span class="cmd">/uber-model 3 farmers milk cows at different times:</span></div>
+          <div><span class="cmd">  Farmer 1 from second 300 to 1000, Farmer 2 from 700</span></div>
+          <div><span class="cmd">  to 1200, Farmer 3 from 1500 to 2100. Find the longest</span></div>
+          <div><span class="cmd">  stretch where at least one farmer is milking, and the</span></div>
+          <div><span class="cmd">  longest gap where nobody is milking.</span></div>
+        </div>
+      </div>
+
+      <p>Claude works through Polya's understanding and planning phases:</p>
+
+      <h3 id="problem-understanding">Problem Understanding</h3>
+
+      <div class="output-panel">
+        <p><span class="label">Problem Type:</span> Problem to Find</p>
+        <p><span class="label">Unknown:</span> Two values &mdash; (1) longest continuous milking period, (2) longest idle gap</p>
+        <p><span class="label">Data:</span> N intervals, each with integer start and end times. Milking occurs during <code>[start, end)</code> (half-open).</p>
+        <p><span class="label">Conditions:</span></p>
+        <p style="padding-left:16px;">1. Milking is continuous if intervals overlap or touch: <code>start_next &lt;= end_current</code></p>
+        <p style="padding-left:16px;">2. A gap exists between consecutive non-overlapping merged intervals</p>
+        <p style="padding-left:16px;">3. Idle gaps only count between the first and last milking times (not before or after)</p>
+        <p><span class="label">Notation:</span> Let I = {[s<sub>1</sub>, e<sub>1</sub>), [s<sub>2</sub>, e<sub>2</sub>), ..., [s<sub>N</sub>, e<sub>N</sub>)} be the set of milking intervals.</p>
+      </div>
+
+      <h3 id="structure-recognition">Structure Recognition</h3>
+
+      <div class="output-panel">
+        <p><span class="label">Structure:</span> <strong>Interval merging on the real line</strong></p>
+        <p>This maps to a classic pattern: given a set of intervals, merge all overlapping or touching intervals into maximal non-overlapping intervals, then scan the merged result.</p>
+      </div>
+
+      <div class="table-wrapper">
+        <table class="mapping-table">
+          <thead>
+            <tr><th>Real-World Concept</th><th>Mathematical Object</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Farmer's milking shift</td><td>Half-open interval [s, e)</td></tr>
+            <tr><td>"At least one farmer milking"</td><td>Union of intervals</td></tr>
+            <tr><td>Continuous milking period</td><td>Maximal merged interval</td></tr>
+            <tr><td>Idle gap</td><td>Distance between consecutive merged intervals</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3 id="formal-model">Formal Model</h3>
+
+      <div class="output-panel">
+        <p><span class="label">Domain:</span> Optimization (interval geometry)</p>
+        <p><span class="label">Universe:</span> Time axis (non-negative integers)</p>
+        <p><span class="label">Variables:</span> Merged interval set M = {[m<sub>1</sub>, m<sub>1</sub>'), [m<sub>2</sub>, m<sub>2</sub>'), ...}</p>
+        <p><span class="label">Objective:</span></p>
+        <p style="padding-left:16px;">Longest milking = max(m<sub>i</sub>' - m<sub>i</sub>) over all merged intervals</p>
+        <p style="padding-left:16px;">Longest idle = max(m<sub>i+1</sub> - m<sub>i</sub>') over consecutive merged intervals</p>
+        <p><span class="label">Next Steps:</span> Sort intervals by start time, merge in a linear sweep. O(N log N) time, O(N) space. Not NP-hard &mdash; this is a greedy algorithm with a clean polynomial solution.</p>
+      </div>
+
+      <!-- PHASE 2: /uber-solve -->
+      <h2 id="phase-2"><span class="phase-label phase-solve">PHASE 2</span> /uber-solve</h2>
+
+      <div class="terminal">
+        <div class="terminal-header">
+          <div class="terminal-dot"></div>
+          <div class="terminal-dot"></div>
+          <div class="terminal-dot"></div>
+          <span class="terminal-title">command input</span>
+        </div>
+        <div class="terminal-body">
+          <div><span class="prompt">$</span> <span class="cmd">/uber-solve</span></div>
+        </div>
+      </div>
+
+      <p>Claude classifies the problem, selects the algorithm, writes a verified solver, and runs it.</p>
+
+      <h3 id="problem-classification">Problem Classification</h3>
+
+      <div class="output-panel panel-green">
+        <p><span class="label-green">Named Problem:</span> Interval merging (sweep line)</p>
+        <p><span class="label-green">Complexity Class:</span> O(N log N) &mdash; dominated by the sort</p>
+        <p><span class="label-green">Instance Size:</span> N = 3</p>
+        <p><span class="label-green">Solution Strategy:</span> Exact polynomial (sort + linear sweep)</p>
+        <p><span class="label-green">Correctness Guarantee:</span> Deterministic, examines every interval exactly once</p>
+      </div>
+
+      <h3 id="the-algorithm">The Algorithm</h3>
+
+      <p>The solver follows three steps. Here is the core logic from <code>examples/milking-cows/milk2.py</code>:</p>
+
+      <div class="code-block">
+        <div class="code-header">
+          <div class="code-header-dots">
+            <span></span><span></span><span></span>
+          </div>
+          <span class="code-header-label">milk2.py &mdash; core algorithm</span>
+        </div>
+        <div class="code-body"><span class="cm"># Step 1: Sort by start time</span>
+<span class="id">sorted_intervals</span> <span class="op">=</span> <span class="bi">sorted</span><span class="op">(</span><span class="id">intervals</span><span class="op">)</span>
+
+<span class="cm"># Step 2: Merge overlapping/touching intervals</span>
+<span class="id">merged</span> <span class="op">=</span> <span class="op">[]</span>
+<span class="id">cur_start</span><span class="op">,</span> <span class="id">cur_end</span> <span class="op">=</span> <span class="id">sorted_intervals</span><span class="op">[</span><span class="num">0</span><span class="op">]</span>
+
+<span class="kw">for</span> <span class="id">s</span><span class="op">,</span> <span class="id">e</span> <span class="kw">in</span> <span class="id">sorted_intervals</span><span class="op">[</span><span class="num">1</span><span class="op">:]:</span>
+    <span class="kw">if</span> <span class="id">s</span> <span class="op">&lt;=</span> <span class="id">cur_end</span><span class="op">:</span>          <span class="cm"># overlap or touch: extend</span>
+        <span class="id">cur_end</span> <span class="op">=</span> <span class="bi">max</span><span class="op">(</span><span class="id">cur_end</span><span class="op">,</span> <span class="id">e</span><span class="op">)</span>
+    <span class="kw">else</span><span class="op">:</span>                     <span class="cm"># gap: finalize and start new</span>
+        <span class="id">merged</span><span class="op">.</span><span class="fn">append</span><span class="op">((</span><span class="id">cur_start</span><span class="op">,</span> <span class="id">cur_end</span><span class="op">))</span>
+        <span class="id">cur_start</span><span class="op">,</span> <span class="id">cur_end</span> <span class="op">=</span> <span class="id">s</span><span class="op">,</span> <span class="id">e</span>
+<span class="id">merged</span><span class="op">.</span><span class="fn">append</span><span class="op">((</span><span class="id">cur_start</span><span class="op">,</span> <span class="id">cur_end</span><span class="op">))</span>
+
+<span class="cm"># Step 3: Scan merged intervals for answers</span>
+<span class="id">longest_milking</span> <span class="op">=</span> <span class="bi">max</span><span class="op">(</span><span class="id">e</span> <span class="op">-</span> <span class="id">s</span> <span class="kw">for</span> <span class="id">s</span><span class="op">,</span> <span class="id">e</span> <span class="kw">in</span> <span class="id">merged</span><span class="op">)</span>
+<span class="id">longest_idle</span> <span class="op">=</span> <span class="bi">max</span><span class="op">(</span>
+    <span class="op">(</span><span class="id">merged</span><span class="op">[</span><span class="id">i</span><span class="op">][</span><span class="num">0</span><span class="op">]</span> <span class="op">-</span> <span class="id">merged</span><span class="op">[</span><span class="id">i</span><span class="op">-</span><span class="num">1</span><span class="op">][</span><span class="num">1</span><span class="op">]</span> <span class="kw">for</span> <span class="id">i</span> <span class="kw">in</span> <span class="bi">range</span><span class="op">(</span><span class="num">1</span><span class="op">,</span> <span class="bi">len</span><span class="op">(</span><span class="id">merged</span><span class="op">))),</span>
+    <span class="id">default</span><span class="op">=</span><span class="num">0</span>
+<span class="op">)</span></div>
+      </div>
+
+      <h3 id="solution">Solution</h3>
+
+      <div class="output-panel panel-green">
+        <p><span class="label-green">Merged intervals:</span></p>
+        <p style="padding-left:16px;"><strong>[300, 1200)</strong> &mdash; Farmers 1 and 2 overlap (700 &lt;= 1000), so their shifts merge</p>
+        <p style="padding-left:16px;"><strong>[1500, 2100)</strong> &mdash; Farmer 3 is separate (1500 &gt; 1200)</p>
+        <br>
+        <p><span class="label-green">Answer:</span></p>
+        <p style="padding-left:16px;">Longest continuous milking: <strong>900 seconds</strong> (the [300, 1200) block)</p>
+        <p style="padding-left:16px;">Longest idle gap: <strong>300 seconds</strong> (from 1200 to 1500)</p>
+        <br>
+        <p><span class="label-green">Algorithm:</span> Sort + Merge + Scan | O(N log N) time, O(N) space</p>
+        <p><span class="label-green">Time:</span> &lt; 0.001s</p>
+        <p><span class="label-green">Optimal:</span> Yes (deterministic, complete)</p>
+        <p><span class="label-green">Feasible:</span> Yes (all constraints verified)</p>
+      </div>
+
+      <h3 id="verification">Independent Verification</h3>
+
+      <p>The solver includes a brute-force verifier that marks every second on a timeline array and counts runs independently:</p>
+
+      <ul class="check-list">
+        <li><span class="check-pass">PASS</span> <span class="check-label">milking_matches_brute_force</span></li>
+        <li><span class="check-pass">PASS</span> <span class="check-label">idle_matches_brute_force</span></li>
+        <li><span class="check-pass">PASS</span> <span class="check-label">all_intervals_covered</span></li>
+        <li><span class="check-pass">PASS</span> <span class="check-label">merged_non_overlapping</span></li>
+      </ul>
+
+      <p>The brute-force method marks each second in <code>[300, 2100)</code> as milking or idle, then scans for the longest consecutive run of each. Both values agree with the sweep algorithm. This is O(T) where T is the time span &mdash; acceptable for verification but too slow for large instances as a primary solver.</p>
+
+      <!-- PHASE 3: /uber-interpret -->
+      <h2 id="phase-3"><span class="phase-label phase-interpret">PHASE 3</span> /uber-interpret</h2>
+
+      <div class="terminal">
+        <div class="terminal-header">
+          <div class="terminal-dot"></div>
+          <div class="terminal-dot"></div>
+          <div class="terminal-dot"></div>
+          <span class="terminal-title">command input</span>
+        </div>
+        <div class="terminal-body">
+          <div><span class="prompt">$</span> <span class="cmd">/uber-interpret</span></div>
+        </div>
+      </div>
+
+      <p>Claude translates the verified solution back into plain language with visualization and sensitivity analysis.</p>
+
+      <h3 id="bottom-line">Bottom Line</h3>
+
+      <div class="output-panel panel-yellow">
+        <p>The cows are milked continuously for at most <strong>900 seconds</strong> (15 minutes) at a stretch. The longest period with no milking at all is <strong>300 seconds</strong> (5 minutes), between the end of the morning shift overlap and the start of Farmer 3's shift.</p>
+      </div>
+
+      <h3 id="timeline">Timeline Visualization</h3>
+
+      <p>Claude generates a timeline chart (see <code>milk2_viz.py</code>) showing individual farmer intervals and the merged result:</p>
+
+      <div class="ascii-block">
+        <div class="ascii-header">Timeline Visualization</div>
+        <div class="ascii-body"><span class="farmer">Farmer 1</span>  <span class="bar-accent">|████████████████████████|</span>                              <span class="dim">(300-1000)</span>
+<span class="farmer">Farmer 2</span>           <span class="bar-accent">|████████████████████|</span>                         <span class="dim">(700-1200)</span>
+<span class="farmer">Farmer 3</span>                                    <span class="bar-accent">|████████████████████|</span> <span class="dim">(1500-2100)</span>
+          <span class="divider">─────────────────────────────────────────────────────────</span>
+<span class="farmer">Merged  </span>  <span class="bar-green">|████████████████████████████████|</span>    <span class="bar-green">|████████████████████|</span>
+          <span class="num">300</span>          <span class="label">&larr;</span> <span class="bar-green"> 900s </span> <span class="label">&rarr;</span>        <span class="num">1200</span>   <span class="num">1500</span>  <span class="label">&larr;</span> <span class="bar-green"> 600s </span> <span class="label">&rarr;</span>  <span class="num">2100</span>
+                                          <span class="label">&larr;</span> <span class="bar-red">300s idle</span> <span class="label">&rarr;</span></div>
+      </div>
+
+      <h3 id="sensitivity">Sensitivity Analysis</h3>
+
+      <div class="output-panel panel-yellow">
+        <p><span class="label-yellow">What if Farmer 2's shift extends to 1500?</span></p>
+        <p>The gap disappears entirely. Merged result: one block <code>[300, 2100)</code> of 1800 seconds. Longest idle = 0. A single shift extension eliminates all downtime.</p>
+      </div>
+
+      <div class="output-panel panel-yellow">
+        <p><span class="label-yellow">What if a 4th farmer covers the gap (1200-1500)?</span></p>
+        <p>Same effect &mdash; one continuous block. If minimizing idle time is the goal, adding 300 seconds of coverage at <code>[1200, 1500)</code> is the cheapest fix.</p>
+      </div>
+
+      <div class="output-panel panel-yellow">
+        <p><span class="label-yellow">What if Farmer 1 starts later (500 instead of 300)?</span></p>
+        <p>Merged block becomes <code>[500, 1200)</code> = 700 seconds. The longest milking drops from 900 to 700. The solution is moderately sensitive to Farmer 1's start time.</p>
+      </div>
+
+      <h3 id="modeling-insight">Modeling Insight</h3>
+
+      <div class="output-panel panel-yellow">
+        <p><span class="label-yellow">Pattern:</span> "Overlapping time intervals with aggregate queries" maps to <strong>interval merging on a sorted list</strong>.</p>
+        <br>
+        <p><span class="label-yellow">Other applications of this pattern:</span></p>
+        <p style="padding-left:16px;"><strong>Meeting room scheduling</strong> &mdash; merge overlapping meetings to count rooms</p>
+        <p style="padding-left:16px;"><strong>Network session analysis</strong> &mdash; merge overlapping connections to find peak usage</p>
+        <p style="padding-left:16px;"><strong>Genomics</strong> &mdash; merge overlapping gene annotations on a chromosome</p>
+        <p style="padding-left:16px;"><strong>Calendar free/busy</strong> &mdash; merge busy blocks to find free windows</p>
+        <br>
+        <p><span class="label-yellow">Key heuristic:</span> Polya's "Look at the unknown!" &mdash; the unknown is a <em>property of the union</em> of intervals, which points directly to merging as the core operation.</p>
+      </div>
+
+      <!-- RUNNING THE CODE -->
+      <h2 id="running-the-code">Running the Code</h2>
+
+      <div class="terminal">
+        <div class="terminal-header">
+          <div class="terminal-dot"></div>
+          <div class="terminal-dot"></div>
+          <div class="terminal-dot"></div>
+          <span class="terminal-title">terminal</span>
+        </div>
+        <div class="terminal-body">
+          <div><span class="prompt">$</span> <span class="cmd">cd examples/milking-cows/</span></div>
+          <br>
+          <div><span class="comment"># Run the full solver with verification and test cases</span></div>
+          <div><span class="prompt">$</span> <span class="cmd">python milk2.py</span></div>
+          <br>
+          <div><span class="comment"># Run the USACO-format solver (reads milk2.in, writes milk2.out)</span></div>
+          <div><span class="prompt">$</span> <span class="cmd">python milk2_usaco.py</span></div>
+          <br>
+          <div><span class="comment"># Generate the timeline and algorithm visualizations</span></div>
+          <div><span class="prompt">$</span> <span class="cmd">python milk2_viz.py</span></div>
+        </div>
+      </div>
+
+      <p><strong>Expected output</strong> from <code>milk2.py</code>:</p>
+
+      <div class="terminal">
+        <div class="terminal-header">
+          <div class="terminal-dot"></div>
+          <div class="terminal-dot"></div>
+          <div class="terminal-dot"></div>
+          <span class="terminal-title">output</span>
+        </div>
+        <div class="terminal-body">
+          <div><span class="output">MILKING COWS (USACO milk2) -- Solution Report</span></div>
+          <br>
+          <div><span class="output">Input: 3 intervals</span></div>
+          <div><span class="output">  [300, 1000] (duration: 700s)</span></div>
+          <div><span class="output">  [700, 1200] (duration: 500s)</span></div>
+          <div><span class="output">  [1500, 2100] (duration: 600s)</span></div>
+          <br>
+          <div><span class="output">Merged intervals: 2</span></div>
+          <div><span class="output">  [300, 1200] (duration: 900s)</span></div>
+          <div><span class="output">  [1500, 2100] (duration: 600s)</span></div>
+          <br>
+          <div><span class="highlight">ANSWER: 900 300</span></div>
+          <br>
+          <div><span class="output">INDEPENDENT VERIFICATION (brute-force timeline)</span></div>
+          <div><span class="success">milking_matches_brute_force     PASS</span></div>
+          <div><span class="success">idle_matches_brute_force        PASS</span></div>
+          <div><span class="success">all_intervals_covered           PASS</span></div>
+          <div><span class="success">merged_non_overlapping           PASS</span></div>
+          <br>
+          <div><span class="success">All test cases PASSED</span></div>
+        </div>
+      </div>
+
+      <!-- WHAT YOU LEARNED -->
+      <h2 id="what-you-learned">What You Learned</h2>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr><th>Concept</th><th>Lesson</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Modeling</td><td>"Overlapping intervals with aggregate queries" is interval merging</td></tr>
+            <tr><td>Algorithm</td><td>Sort + linear sweep is O(N log N) and exact &mdash; no approximation needed</td></tr>
+            <tr><td>Verification</td><td>Brute-force timeline marking is an independent cross-check</td></tr>
+            <tr><td>Interpretation</td><td>The idle gap is the actionable insight &mdash; it tells you where to add coverage</td></tr>
+            <tr><td>Sensitivity</td><td>A single 300-second shift extension eliminates all downtime</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- NEXT LINK -->
+      <a href="inspector-assignment-walkthrough.html" class="next-link">
+        <div>
+          <div class="next-link-label">Next walkthrough</div>
+          <div class="next-link-title">Inspector Assignment &mdash; ILP, LP relaxation, and stakeholder visualizations</div>
+        </div>
+        <div class="next-link-arrow">&rarr;</div>
+      </a>
+
+    </main>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-content">
+        <div class="footer-left">
+          <div class="footer-brand">uber-polya</div>
+          <p>Apache 2.0 Licensed. Free forever.</p>
+        </div>
+        <ul class="footer-links">
+          <li><a href="https://github.com/agtm1199/uber-polya">GitHub</a></li>
+          <li><a href="guide.html">Guide</a></li>
+          <li><a href="manifesto.html">Manifesto</a></li>
+          <li><a href="https://github.com/agtm1199/uber-polya/blob/main/CONTRIBUTING.md">Contributing</a></li>
+        </ul>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ACTIVE SECTION TRACKING -->
+  <script>
+    const sections = document.querySelectorAll('h2[id], h3[id], section[id]');
+    const sidebarLinks = document.querySelectorAll('.sidebar a');
+
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const id = entry.target.id;
+          sidebarLinks.forEach(link => {
+            link.classList.toggle('active',
+              link.getAttribute('href') === '#' + id
+            );
+          });
+        }
+      });
+    }, {
+      rootMargin: '-80px 0px -70% 0px',
+      threshold: 0
+    });
+
+    sections.forEach(section => observer.observe(section));
+
+    // Close sidebar on mobile when a link is clicked
+    document.querySelectorAll('.sidebar a').forEach(link => {
+      link.addEventListener('click', () => {
+        if (window.innerWidth < 768) {
+          document.querySelector('.sidebar').classList.remove('open');
+        }
+      });
+    });
+  </script>
+
+</body>
+</html>

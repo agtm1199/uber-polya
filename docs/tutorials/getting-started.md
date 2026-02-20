@@ -1,6 +1,6 @@
 # Getting Started with uber-polya
 
-A zero-to-hero tutorial. By the end, you will have modeled, solved, and interpreted a discrete math problem entirely through Claude Code slash commands.
+A zero-to-hero tutorial. By the end, you will have modeled, solved, and interpreted a mathematical problem entirely through Claude Code slash commands.
 
 ## Prerequisites
 
@@ -16,7 +16,7 @@ pip install networkx pulp z3-solver sympy scipy matplotlib numpy cvxpy statsmode
 ## Install uber-polya
 
 ```bash
-git clone https://github.com/your-username/uber-polya.git
+git clone https://github.com/agtm1199/uber-polya.git
 cd uber-polya
 bash install.sh
 ```
@@ -108,14 +108,31 @@ Each skill's output feeds the next. You can also run them independently -- `/ube
 
 ## Next Steps
 
-**Try the worked examples.** The `examples/` directory contains six fully solved problems with runnable code:
+**Try the worked examples.** The `examples/` directory contains 16 fully solved problems with runnable code, organized in two categories:
 
-- **[Milking Cows](../tutorials/milking-cows-walkthrough.md)** -- Interval merging, O(N log N) sort-and-sweep, brute-force verification. A clean algorithmic problem.
-- **[Inspector Assignment](../tutorials/inspector-assignment-walkthrough.md)** -- Capacitated bipartite ILP, LP relaxation, sensitivity analysis. A real-world optimization problem.
-- **[Portfolio Optimization](../../examples/portfolio-optimization/)** -- Markowitz QP with cvxpy, efficient frontier, risk-return trade-off.
-- **[Tournament Hamiltonian](../../examples/tournament-hamiltonian/)** -- Proof by induction with Z3 computational verification.
-- **[A/B Testing](../../examples/ab-testing/)** -- z-test, Bayesian, bootstrap, power analysis.
-- **[Cafe Tips](../../examples/cafe-tips/)** -- Full Polya cycle: t-test, Mann-Whitney, permutation, bootstrap, Bayesian.
+**Everyday Problems** (10 examples):
+
+- **[Shift Scheduling](../../examples/shift-scheduling/)** -- Schedule 8 nurses across 3 shifts over 7 days (ILP)
+- **[Budget Optimization](../../examples/budget-optimization/)** -- Select projects to maximize ROI under budget (Knapsack ILP)
+- **[Fair Rent](../../examples/fair-rent/)** -- Split rent fairly among 3 roommates (Hungarian + envy-free)
+- **[Route Planning](../../examples/route-planning/)** -- Shortest delivery route across 8 stops (Held-Karp TSP)
+- **[Study Schedule](../../examples/study-schedule/)** -- Conflict-free timetable for 6 subjects (graph coloring)
+- **[Meal Planning](../../examples/meal-planning/)** -- 7 dinners minimizing cost within nutrition targets (ILP)
+- **[Team Assignment](../../examples/team-assignment/)** -- Assign 6 developers to 6 projects (Hungarian algorithm)
+- **[Project Prioritization](../../examples/project-prioritization/)** -- Rank 8 features by weighted criteria (MCDA)
+- **[Break-Even Analysis](../../examples/break-even/)** -- Find break-even quantity for product launch (SymPy)
+- **[Event Seating](../../examples/event-seating/)** -- Seat 12 wedding guests at 3 tables with constraints (ILP)
+
+**Technical Showcases** (6 examples):
+
+- **[Milking Cows](../tutorials/milking-cows-walkthrough.md)** -- Interval merging, O(N log N) sort-and-sweep, brute-force verification
+- **[Inspector Assignment](../tutorials/inspector-assignment-walkthrough.md)** -- Capacitated bipartite ILP, LP relaxation, sensitivity analysis
+- **[Portfolio Optimization](../../examples/portfolio-optimization/)** -- Markowitz QP with cvxpy, efficient frontier, risk-return trade-off
+- **[Tournament Hamiltonian](../../examples/tournament-hamiltonian/)** -- Proof by induction with Z3 computational verification
+- **[A/B Testing](../../examples/ab-testing/)** -- z-test, Bayesian, bootstrap, power analysis
+- **[Cafe Tips](../../examples/cafe-tips/)** -- Full Polya cycle: t-test, Mann-Whitney, permutation, bootstrap, Bayesian
+
+See the complete list with algorithm details in [examples/README.md](../../examples/README.md).
 
 **Try your own problem.** Good candidates for `/uber-model`:
 

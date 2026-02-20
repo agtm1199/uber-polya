@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>uber-polya -- The universal algorithm for computational problem-solving</title>
+  <title>uber-polya -- Don't guess. Solve.</title>
   <meta name="description" content="Describe your problem. Get a verified solution. uber-polya turns real-world problems into mathematically verified solutions.">
   <style>
     *, *::before, *::after {
@@ -361,106 +361,44 @@
       color: var(--text-muted);
     }
 
-    .comparison-table .col-label-mcp {
-      color: var(--green);
-    }
-
     .table-wrapper {
       overflow-x: auto;
       border: 1px solid var(--border);
       border-radius: 12px;
     }
 
-    /* ---- PRICING ---- */
-    .pricing-grid {
+    /* ---- FEATURES GRID ---- */
+    .features-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
       gap: 20px;
     }
 
-    .pricing-card {
+    .feature-card {
       background: var(--bg-surface);
       border: 1px solid var(--border);
       border-radius: 12px;
-      padding: 32px 24px;
-      display: flex;
-      flex-direction: column;
+      padding: 24px;
+      text-align: center;
     }
 
-    .pricing-card.featured {
-      border-color: var(--yellow);
-      position: relative;
-    }
-
-    .pricing-card.featured::before {
-      content: "POPULAR";
-      position: absolute;
-      top: -10px;
-      left: 24px;
-      background: var(--yellow);
-      color: var(--bg);
-      font-size: 10px;
+    .feature-icon {
+      font-size: 32px;
       font-weight: 800;
-      padding: 2px 10px;
-      border-radius: 4px;
-      letter-spacing: 1px;
+      color: var(--accent);
+      margin-bottom: 8px;
     }
 
-    .pricing-tier {
+    .feature-name {
       font-size: 14px;
       font-weight: 700;
       margin-bottom: 8px;
     }
 
-    .pricing-price {
-      font-size: 28px;
-      font-weight: 800;
-      margin-bottom: 4px;
-    }
-
-    .pricing-price span {
-      font-size: 13px;
-      font-weight: 400;
-      color: var(--text-muted);
-    }
-
-    .pricing-note {
+    .feature-desc {
       font-size: 12px;
       color: var(--text-muted);
-      margin-bottom: 20px;
-      min-height: 18px;
-    }
-
-    .pricing-features {
-      list-style: none;
-      flex: 1;
-    }
-
-    .pricing-features li {
-      font-size: 12px;
-      color: var(--text-muted);
-      padding: 6px 0;
-      padding-left: 20px;
-      position: relative;
-    }
-
-    .pricing-features li::before {
-      content: "+";
-      position: absolute;
-      left: 0;
-      color: var(--green);
-      font-weight: 700;
-    }
-
-    .pricing-cta {
-      margin-top: 24px;
-    }
-
-    .pricing-cta .btn {
-      width: 100%;
-      justify-content: center;
-      padding: 12px 20px;
-      font-size: 13px;
+      line-height: 1.5;
     }
 
     /* ---- STORY ---- */
@@ -650,10 +588,6 @@
         font-size: 12px;
       }
 
-      .pricing-grid {
-        grid-template-columns: 1fr;
-      }
-
       .footer-content {
         flex-direction: column;
       }
@@ -669,7 +603,7 @@
       <ul class="nav-links">
         <li><a href="#how-it-works">How it works</a></li>
         <li><a href="#problems">Problems</a></li>
-        <li><a href="#pricing">Pricing</a></li>
+        <li><a href="guide.html">Guide</a></li>
         <li><a href="https://github.com/agtm1199/uber-polya">GitHub</a></li>
       </ul>
     </div>
@@ -679,11 +613,11 @@
   <section class="hero">
     <div class="container">
       <h1>uber-polya</h1>
-      <p class="subtitle">The universal algorithm for computational problem-solving</p>
-      <p class="tagline">Describe your problem. Get a verified solution.</p>
+      <p class="subtitle">The first math problem-solver skill for Claude Code and 25+ platforms</p>
+      <p class="tagline">Don't guess. Solve.</p>
       <div class="hero-buttons">
         <a href="https://github.com/agtm1199/uber-polya" class="btn btn-primary">Install Free</a>
-        <a href="#pricing" class="btn btn-secondary">Get MCP Server</a>
+        <a href="guide.html" class="btn btn-secondary">Read the Guide</a>
       </div>
 
       <!-- Terminal Demo -->
@@ -807,133 +741,48 @@
     </div>
   </section>
 
-  <!-- COMPARISON TABLE -->
-  <section id="comparison">
+  <!-- WHAT'S INCLUDED -->
+  <section id="whats-included">
     <div class="container">
-      <p class="section-label">Free vs MCP Server</p>
-      <h2 class="section-title">Great alone. Supercharged with the server.</h2>
-      <p class="section-desc">uber-polya works standalone as a free Claude Code skill. The optional MCP server makes it dramatically faster and more accurate.</p>
+      <p class="section-label">What's included</p>
+      <h2 class="section-title">Free and open source. Apache 2.0 licensed.</h2>
+      <p class="section-desc">Everything you need to turn real-world problems into verified mathematical solutions.</p>
 
-      <div class="table-wrapper">
-        <table class="comparison-table">
-          <thead>
-            <tr>
-              <th>Capability</th>
-              <th class="col-label-free">Standalone (Free)</th>
-              <th class="col-label-mcp">With MCP Server</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Problem classification</td>
-              <td>LLM reads reference catalogs (~30s)</td>
-              <td>Deterministic classifier (~1s)</td>
-            </tr>
-            <tr>
-              <td>Algorithm selection</td>
-              <td>LLM scans 139 algorithms</td>
-              <td>Empirical benchmarks, instant match</td>
-            </tr>
-            <tr>
-              <td>Solver code</td>
-              <td>Written from scratch each time</td>
-              <td>Pre-built, tested templates</td>
-            </tr>
-            <tr>
-              <td>Verification</td>
-              <td>Self-check (Claude verifies Claude)</td>
-              <td>Independent verification oracle</td>
-            </tr>
-            <tr>
-              <td>Community knowledge</td>
-              <td>Start from zero every time</td>
-              <td>"847 people solved a similar problem"</td>
-            </tr>
-            <tr>
-              <td>Price</td>
-              <td>Free forever</td>
-              <td>From $0/month</td>
-            </tr>
-          </tbody>
-        </table>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">4</div>
+          <div class="feature-name">Skills</div>
+          <div class="feature-desc">uber-polya orchestrator + uber-model, uber-solve, uber-interpret</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">139</div>
+          <div class="feature-name">Algorithms</div>
+          <div class="feature-desc">Discrete math, continuous optimization, and statistical inference</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">43</div>
+          <div class="feature-name">Structures</div>
+          <div class="feature-desc">Across 10 mathematical domains with pattern matching</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">16</div>
+          <div class="feature-name">Worked Examples</div>
+          <div class="feature-desc">With runnable solver code, verification, and visualizations</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">15</div>
+          <div class="feature-name">Solver Libraries</div>
+          <div class="feature-desc">PuLP, NetworkX, Z3, SymPy, SciPy, cvxpy, statsmodels, and more</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">25+</div>
+          <div class="feature-name">Platforms</div>
+          <div class="feature-desc">Claude Code, Cursor, Copilot, Codex CLI, Mistral Vibe, and more</div>
+        </div>
       </div>
-    </div>
-  </section>
 
-  <!-- PRICING -->
-  <section id="pricing">
-    <div class="container">
-      <p class="section-label">Pricing</p>
-      <h2 class="section-title">Start free. Scale when you need to.</h2>
-      <p class="section-desc">The standalone skill is MIT licensed and free forever. The MCP server adds speed, accuracy, and community intelligence.</p>
-
-      <div class="pricing-grid">
-        <!-- Free -->
-        <div class="pricing-card">
-          <div class="pricing-tier">Free</div>
-          <div class="pricing-price">$0</div>
-          <div class="pricing-note">50 calls/month</div>
-          <ul class="pricing-features">
-            <li>Problem classification</li>
-            <li>Algorithm selection</li>
-            <li>classify + select_algorithm tools</li>
-            <li>Community support</li>
-          </ul>
-          <div class="pricing-cta">
-            <a href="https://github.com/agtm1199/uber-polya" class="btn btn-primary">Install Free</a>
-          </div>
-        </div>
-
-        <!-- Pro -->
-        <div class="pricing-card featured">
-          <div class="pricing-tier">Pro</div>
-          <div class="pricing-price">$15<span>/month</span></div>
-          <div class="pricing-note">Unlimited calls</div>
-          <ul class="pricing-features">
-            <li>All Free features</li>
-            <li>All MCP tools</li>
-            <li>Pre-built solver templates</li>
-            <li>Empirical benchmarks</li>
-            <li>Verification oracle</li>
-            <li>Community knowledge base</li>
-          </ul>
-          <div class="pricing-cta">
-            <a href="#" class="btn btn-secondary">Get Pro</a>
-          </div>
-        </div>
-
-        <!-- Team -->
-        <div class="pricing-card">
-          <div class="pricing-tier">Team</div>
-          <div class="pricing-price">$12<span>/seat/month</span></div>
-          <div class="pricing-note">Minimum 3 seats</div>
-          <ul class="pricing-features">
-            <li>All Pro features</li>
-            <li>Shared solution history</li>
-            <li>Team dashboard</li>
-            <li>Priority support</li>
-          </ul>
-          <div class="pricing-cta">
-            <a href="#" class="btn btn-secondary">Get Team</a>
-          </div>
-        </div>
-
-        <!-- Enterprise -->
-        <div class="pricing-card">
-          <div class="pricing-tier">Enterprise</div>
-          <div class="pricing-price">Custom</div>
-          <div class="pricing-note">Tailored to your org</div>
-          <ul class="pricing-features">
-            <li>All Team features</li>
-            <li>SSO / SAML</li>
-            <li>Audit trail</li>
-            <li>SLA guarantee</li>
-            <li>Dedicated support</li>
-          </ul>
-          <div class="pricing-cta">
-            <a href="#" class="btn btn-secondary">Contact Us</a>
-          </div>
-        </div>
+      <div style="text-align: center; margin-top: 32px;">
+        <a href="https://github.com/agtm1199/uber-polya" class="btn btn-primary">Install Free</a>
       </div>
     </div>
   </section>
@@ -958,7 +807,7 @@
           One algorithm. Any problem. Verified.
         </p>
         <p>
-          <a href="https://github.com/agtm1199/uber-polya/blob/main/docs/manifesto.md">Read the full manifesto &rarr;</a>
+          <a href="manifesto.html">Read the full manifesto &rarr;</a>
         </p>
       </div>
     </div>
@@ -970,13 +819,16 @@
       <div class="footer-content">
         <div class="footer-left">
           <div class="footer-brand">uber-polya</div>
-          <p>MIT Licensed. Free forever.</p>
+          <p>Apache 2.0 Licensed. Free forever.</p>
           <p>Built with <a href="https://claude.ai/claude-code">Claude Code</a>.</p>
         </div>
         <ul class="footer-links">
           <li><a href="https://github.com/agtm1199/uber-polya">GitHub</a></li>
-          <li><a href="https://github.com/agtm1199/uber-polya/tree/main/docs">Documentation</a></li>
-          <li><a href="https://github.com/agtm1199/uber-polya/blob/main/docs/manifesto.md">Manifesto</a></li>
+          <li><a href="guide.html">Usage Guide</a></li>
+          <li><a href="getting-started.html">Getting Started</a></li>
+          <li><a href="architecture.html">Architecture</a></li>
+          <li><a href="manifesto.html">Manifesto</a></li>
+          <li><a href="creating-skills.html">Creating Skills</a></li>
           <li><a href="https://github.com/agtm1199/uber-polya/blob/main/CONTRIBUTING.md">Contributing</a></li>
         </ul>
       </div>

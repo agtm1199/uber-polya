@@ -73,5 +73,5 @@ Skills are tested through conversation, not unit tests. To test a skill:
 
 ## Current State
 
-- **v0.4.0**: Four skills (orchestrator + trilogy) with 139 algorithms (94 discrete/continuous + 45 statistical), 43 structures across 10 domains, 15 solver libraries. Three shipped domains: discrete math, continuous optimization, statistical inference. Model templates for top 5 patterns. Solving protocols and optimization hardening extracted to reference files. Cross-reference indexes in all reference files. Six worked examples.
+- **v0.4.0**: Four skills (orchestrator + trilogy) with 139 algorithms (94 discrete/continuous + 45 statistical), 43 structures across 10 domains, 15 solver libraries. Three shipped domains: discrete math, continuous optimization, statistical inference. Model templates for top 5 patterns. Solving protocols and optimization hardening extracted to reference files. Cross-reference indexes in all reference files. Sixteen worked examples.
 - **Roadmap**: 11 expansion domains listed in README.md. Contributions welcome per CONTRIBUTING.md.

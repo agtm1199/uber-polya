@@ -1,0 +1,1178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>uber-polya Architecture</title>
+  <meta name="description" content="Architecture documentation for uber-polya: how four Claude Code skills implement George Polya's problem-solving methodology as a universal problem-solving engine.">
+  <style>
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg: #0d1117;
+      --bg-surface: #161b22;
+      --bg-surface-hover: #1c2129;
+      --border: #30363d;
+      --text: #e6edf3;
+      --text-muted: #8b949e;
+      --text-dim: #6e7681;
+      --accent: #58a6ff;
+      --accent-hover: #79b8ff;
+      --green: #3fb950;
+      --green-dim: #238636;
+      --yellow: #d29922;
+      --yellow-dim: #9e6a03;
+      --red: #f85149;
+      --purple: #bc8cff;
+      --font-mono: 'JetBrains Mono', 'Fira Code', 'SF Mono', 'Cascadia Code', 'Consolas', 'Liberation Mono', monospace;
+      --sidebar-width: 240px;
+      --nav-height: 56px;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: calc(var(--nav-height) + 24px);
+    }
+
+    body {
+      font-family: var(--font-mono);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      font-size: 14px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ---- NAV ---- */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      background: rgba(13, 17, 23, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      height: var(--nav-height);
+    }
+
+    nav .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    nav .logo {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text);
+      text-decoration: none;
+      letter-spacing: -0.5px;
+    }
+
+    nav .logo span {
+      color: var(--accent);
+    }
+
+    nav .nav-links {
+      display: flex;
+      gap: 24px;
+      list-style: none;
+    }
+
+    nav .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 13px;
+      transition: color 0.2s;
+    }
+
+    nav .nav-links a:hover {
+      color: var(--text);
+    }
+
+    .sidebar-toggle {
+      display: none;
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text-muted);
+      padding: 6px 10px;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .sidebar-toggle:hover {
+      color: var(--text);
+      border-color: var(--accent);
+    }
+
+    /* ---- LAYOUT ---- */
+    .layout {
+      display: flex;
+      margin-top: var(--nav-height);
+      min-height: calc(100vh - var(--nav-height));
+    }
+
+    /* ---- SIDEBAR ---- */
+    .sidebar {
+      width: var(--sidebar-width);
+      position: fixed;
+      top: var(--nav-height);
+      left: 0;
+      bottom: 0;
+      overflow-y: auto;
+      border-right: 1px solid var(--border);
+      padding: 24px 0;
+      background: var(--bg);
+      z-index: 50;
+    }
+
+    .sidebar-section {
+      padding: 0 16px;
+      margin-bottom: 20px;
+    }
+
+    .sidebar-section-title {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--text-dim);
+      margin-bottom: 8px;
+      padding: 0 8px;
+    }
+
+    .sidebar a {
+      display: block;
+      padding: 5px 8px;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 13px;
+      border-radius: 6px;
+      transition: all 0.15s;
+      line-height: 1.4;
+    }
+
+    .sidebar a:hover {
+      color: var(--text);
+      background: var(--bg-surface);
+    }
+
+    .sidebar a.active {
+      color: var(--accent);
+      background: rgba(88, 166, 255, 0.1);
+    }
+
+    .sidebar a.sub {
+      padding-left: 20px;
+      font-size: 12px;
+    }
+
+    /* ---- MAIN CONTENT ---- */
+    .content {
+      flex: 1;
+      margin-left: var(--sidebar-width);
+      max-width: 800px;
+      padding: 48px 48px 120px;
+    }
+
+    /* ---- TYPOGRAPHY ---- */
+    h1 {
+      font-size: 32px;
+      font-weight: 800;
+      letter-spacing: -1px;
+      margin-bottom: 8px;
+      line-height: 1.2;
+    }
+
+    h2 {
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      margin-top: 64px;
+      margin-bottom: 16px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+    }
+
+    h2:first-of-type {
+      border-top: none;
+      margin-top: 48px;
+    }
+
+    h3 {
+      font-size: 17px;
+      font-weight: 700;
+      margin-top: 32px;
+      margin-bottom: 12px;
+    }
+
+    h4 {
+      font-size: 15px;
+      font-weight: 700;
+      margin-top: 24px;
+      margin-bottom: 8px;
+    }
+
+    p {
+      margin-bottom: 16px;
+      color: var(--text-muted);
+    }
+
+    p strong {
+      color: var(--text);
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .lead {
+      font-size: 16px;
+      color: var(--text-muted);
+      margin-bottom: 32px;
+    }
+
+    .badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 4px;
+      background: rgba(88, 166, 255, 0.15);
+      color: var(--accent);
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+
+    .badge-green {
+      background: rgba(63, 185, 80, 0.15);
+      color: var(--green);
+    }
+
+    .badge-yellow {
+      background: rgba(210, 153, 34, 0.15);
+      color: var(--yellow);
+    }
+
+    /* ---- BLOCKQUOTES (Polya quotes) ---- */
+    blockquote {
+      border-left: 3px solid var(--accent);
+      padding: 12px 20px;
+      margin: 16px 0 24px;
+      background: rgba(88, 166, 255, 0.05);
+      border-radius: 0 8px 8px 0;
+    }
+
+    blockquote p {
+      font-style: italic;
+      color: var(--text);
+      margin-bottom: 0;
+      font-size: 14px;
+      line-height: 1.7;
+    }
+
+    /* ---- CODE BLOCKS ---- */
+    pre {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px 24px;
+      margin: 16px 0 24px;
+      overflow-x: auto;
+      font-size: 13px;
+      line-height: 1.7;
+      color: var(--text-muted);
+    }
+
+    code {
+      background: var(--bg-surface);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 13px;
+      color: var(--accent);
+    }
+
+    pre code {
+      background: none;
+      padding: 0;
+      border-radius: 0;
+      color: var(--text-muted);
+    }
+
+    /* ---- TABLES ---- */
+    .table-wrapper {
+      overflow-x: auto;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      margin: 16px 0 24px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    thead th {
+      text-align: left;
+      padding: 12px 16px;
+      font-weight: 700;
+      border-bottom: 2px solid var(--border);
+      background: var(--bg-surface);
+      white-space: nowrap;
+    }
+
+    tbody td {
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+      color: var(--text-muted);
+    }
+
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    tbody td:first-child {
+      font-weight: 600;
+      color: var(--text);
+      white-space: nowrap;
+    }
+
+    /* ---- CARDS ---- */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 16px;
+      margin: 16px 0 24px;
+    }
+
+    .card-grid-3 {
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    }
+
+    .card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 24px 20px;
+    }
+
+    .card h4 {
+      font-size: 15px;
+      font-weight: 700;
+      margin-top: 0;
+      margin-bottom: 4px;
+    }
+
+    .card .card-sub {
+      font-size: 12px;
+      color: var(--text-dim);
+      margin-bottom: 12px;
+    }
+
+    .card p {
+      font-size: 13px;
+      margin-bottom: 12px;
+    }
+
+    .card ul {
+      list-style: none;
+      font-size: 12px;
+    }
+
+    .card ul li {
+      padding: 3px 0;
+      padding-left: 16px;
+      position: relative;
+      color: var(--text-muted);
+    }
+
+    .card ul li::before {
+      content: "+";
+      position: absolute;
+      left: 0;
+      color: var(--green);
+      font-weight: 700;
+    }
+
+    .card-accent {
+      border-color: var(--accent);
+    }
+
+    /* ---- PIPELINE DIAGRAM ---- */
+    .pipeline {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      margin: 24px 0 32px;
+      flex-wrap: wrap;
+    }
+
+    .pipeline-stage {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px 16px;
+      text-align: center;
+      flex: 1;
+      min-width: 140px;
+    }
+
+    .pipeline-stage-name {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .pipeline-stage-label {
+      font-size: 11px;
+      color: var(--text-dim);
+      margin-bottom: 8px;
+    }
+
+    .pipeline-stage-desc {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .pipeline-arrow {
+      font-size: 20px;
+      color: var(--accent);
+      padding: 0 8px;
+      flex-shrink: 0;
+    }
+
+    /* ---- OUTPUT BLOCKS ---- */
+    .output-block {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px 24px;
+      margin: 12px 0 20px;
+    }
+
+    .output-block h4 {
+      font-size: 14px;
+      font-weight: 700;
+      margin-top: 0;
+      margin-bottom: 10px;
+      color: var(--text);
+    }
+
+    .output-block ul {
+      list-style: none;
+      font-size: 13px;
+    }
+
+    .output-block ul li {
+      padding: 3px 0;
+      padding-left: 16px;
+      position: relative;
+      color: var(--text-muted);
+    }
+
+    .output-block ul li::before {
+      content: "-";
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    .output-block ul li strong {
+      color: var(--text);
+    }
+
+    /* ---- PRINCIPLE CARDS ---- */
+    .principle-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin: 16px 0 24px;
+    }
+
+    .principle-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 24px 20px;
+    }
+
+    .principle-number {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: var(--bg);
+      font-size: 12px;
+      font-weight: 800;
+      margin-bottom: 12px;
+    }
+
+    .principle-card h4 {
+      font-size: 14px;
+      font-weight: 700;
+      margin-top: 0;
+      margin-bottom: 8px;
+    }
+
+    .principle-card p {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.6;
+      margin-bottom: 0;
+    }
+
+    /* ---- ORDERED / UNORDERED LISTS ---- */
+    .content ol,
+    .content ul.plain {
+      margin: 8px 0 20px;
+      padding-left: 24px;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .content ol li,
+    .content ul.plain li {
+      padding: 4px 0;
+      line-height: 1.6;
+    }
+
+    .content ol li strong,
+    .content ul.plain li strong {
+      color: var(--text);
+    }
+
+    /* ---- FILE TREE ---- */
+    .file-tree {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px 24px;
+      margin: 16px 0 24px;
+      font-size: 13px;
+      line-height: 1.8;
+      overflow-x: auto;
+    }
+
+    .file-tree .dir {
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .file-tree .file {
+      color: var(--text-muted);
+    }
+
+    .file-tree .shipped {
+      color: var(--green);
+      font-size: 11px;
+    }
+
+    .file-tree .planned {
+      color: var(--yellow);
+      font-size: 11px;
+    }
+
+    .file-tree .comment {
+      color: var(--text-dim);
+    }
+
+    /* ---- FOOTER ---- */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 48px 0;
+      margin-left: var(--sidebar-width);
+    }
+
+    .footer-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 32px;
+      max-width: 800px;
+      padding: 0 48px;
+    }
+
+    .footer-left {
+      font-size: 13px;
+    }
+
+    .footer-left .footer-brand {
+      font-weight: 700;
+      font-size: 16px;
+      margin-bottom: 8px;
+    }
+
+    .footer-left p {
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    .footer-left a {
+      color: var(--text-muted);
+      text-decoration: none;
+    }
+
+    .footer-left a:hover {
+      color: var(--accent);
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 24px;
+      list-style: none;
+      flex-wrap: wrap;
+    }
+
+    .footer-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 13px;
+      transition: color 0.2s;
+    }
+
+    .footer-links a:hover {
+      color: var(--accent);
+    }
+
+    /* ---- RESPONSIVE ---- */
+    @media (max-width: 768px) {
+      .sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.25s ease;
+      }
+
+      .sidebar.open {
+        transform: translateX(0);
+      }
+
+      .content {
+        margin-left: 0;
+        padding: 32px 20px 80px;
+      }
+
+      footer {
+        margin-left: 0;
+      }
+
+      .footer-content {
+        padding: 0 20px;
+        flex-direction: column;
+      }
+
+      .sidebar-toggle {
+        display: block;
+      }
+
+      nav .nav-links {
+        gap: 12px;
+      }
+
+      nav .nav-links a {
+        font-size: 12px;
+      }
+
+      .card-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .principle-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .pipeline {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .pipeline-arrow {
+        text-align: center;
+        transform: rotate(90deg);
+        padding: 4px 0;
+      }
+
+      h1 {
+        font-size: 26px;
+      }
+
+      h2 {
+        font-size: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-inner">
+      <div style="display:flex;align-items:center;gap:16px;">
+        <button class="sidebar-toggle" onclick="document.querySelector('.sidebar').classList.toggle('open')" aria-label="Toggle navigation">Menu</button>
+        <a href="index.html" class="logo">uber-<span>polya</span></a>
+      </div>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="guide.html">Guide</a></li>
+        <li><a href="https://github.com/agtm1199/uber-polya">GitHub</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Overview</div>
+        <a href="#top">Architecture</a>
+        <a href="#polya-foundation">The Polya Foundation</a>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Polya Phases</div>
+        <a href="#phase-1" class="sub">Phase 1: Understanding</a>
+        <a href="#phase-2" class="sub">Phase 2: Devising a Plan</a>
+        <a href="#phase-3" class="sub">Phase 3: Carrying Out</a>
+        <a href="#phase-4" class="sub">Phase 4: Looking Back</a>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Trilogy</div>
+        <a href="#trilogy">Trilogy Architecture</a>
+        <a href="#outputs-model" class="sub">uber-model Outputs</a>
+        <a href="#outputs-solve" class="sub">uber-solve Outputs</a>
+        <a href="#outputs-interpret" class="sub">uber-interpret Outputs</a>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Knowledge</div>
+        <a href="#knowledge-base">Reference Knowledge Base</a>
+        <a href="#ref-model" class="sub">uber-model refs</a>
+        <a href="#ref-solve" class="sub">uber-solve refs</a>
+        <a href="#ref-interpret" class="sub">uber-interpret refs</a>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Design</div>
+        <a href="#principles">Design Principles</a>
+        <a href="#why-discrete">Why Discrete Math?</a>
+        <a href="#expansion">Expansion Architecture</a>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="content">
+
+      <!-- INTRO -->
+      <section id="top">
+        <h1>Architecture</h1>
+        <p class="lead">How four Claude Code skills implement George Polya's problem-solving methodology as a universal problem-solving engine.</p>
+      </section>
+
+      <!-- THE POLYA FOUNDATION -->
+      <h2 id="polya-foundation">The Polya Foundation</h2>
+      <p>In 1945, mathematician George Polya published <strong>"How to Solve It,"</strong> articulating a four-phase cycle for mathematical problem solving. The uber-polya trilogy maps each of Polya's phases to structured skill workflows.</p>
+
+      <h3 id="phase-1">Phase 1: Understanding the Problem</h3>
+      <blockquote>
+        <p>"It is foolish to answer a question that you do not understand."</p>
+      </blockquote>
+      <p>Polya's first phase asks: What is the unknown? What are the data? What is the condition? Can you separate the parts of the condition?</p>
+      <p>This maps to <code>/uber-model</code> Phases 0-1. Phase 0 receives the problem and classifies it as a <strong>"problem to find"</strong> (seeking an unknown value, object, or structure) or a <strong>"problem to prove"</strong> (establishing truth or falsity). Phase 1 conducts Socratic questioning to extract the unknown, data, conditions, and notation. The phase ends with a structured Problem Understanding block that the user must confirm before proceeding.</p>
+
+      <h3 id="phase-2">Phase 2: Devising a Plan</h3>
+      <blockquote>
+        <p>"The main achievement in the solution of a problem is to conceive the idea of a plan."</p>
+      </blockquote>
+      <p>Polya's second phase asks: Have you seen it before? Do you know a related problem? Could you restate the problem? Could you solve a part of it?</p>
+      <p>This maps to <code>/uber-model</code> Phase 2 and <code>/uber-solve</code> Phases 0-1. In uber-model Phase 2, heuristics from the reference catalog guide the user toward candidate discrete math structures. The skill reads both reference files (heuristics and structures) and proposes 1-3 candidate models with rationale and trade-offs. In uber-solve Phase 0, the chosen model is classified into a named problem class (graph coloring, knapsack, SAT, etc.) with its complexity class, instance size, and solution strategy. Phase 1 selects the specific algorithm, verification method, and fallback.</p>
+
+      <h3 id="phase-3">Phase 3: Carrying Out the Plan</h3>
+      <blockquote>
+        <p>"To carry out the plan is much easier; what we need is mainly patience."</p>
+      </blockquote>
+      <p>Polya's third phase emphasizes careful execution and step-by-step verification.</p>
+      <p>This maps to <code>/uber-solve</code> Phases 2-3. Phase 2 engineers the solution: a self-contained Python script with typed data models, the solver implementation, independent verification, and timing instrumentation. Phase 3 executes the solver, presents results in a structured Solution Report, and runs the independent verification &mdash; checking every constraint from the formal model, computing optimality certificates, and cross-validating with alternative methods when feasible.</p>
+
+      <h3 id="phase-4">Phase 4: Looking Back</h3>
+      <blockquote>
+        <p>"Even fairly good students, when they have obtained the solution of the problem, shut their books and look for something else. Doing so, they miss an important and instructive phase of the work."</p>
+      </blockquote>
+      <p>Polya's fourth phase asks: Can you check the result? Can you derive it differently? Can you use the result or the method for some other problem?</p>
+      <p>This maps to <code>/uber-interpret</code> Phases 1-5. Phase 1 translates the mathematical solution back through the real-world mapping. Phase 2 probes robustness through sensitivity analysis and what-if scenarios. Phase 3 generates visualizations. Phase 4 formulates recommendations adapted to the audience. Phase 5 extracts transferable patterns, critiques the method, and builds a reusable decision framework &mdash; the lasting value beyond the current problem.</p>
+
+      <!-- TRILOGY ARCHITECTURE -->
+      <h2 id="trilogy">Trilogy Architecture</h2>
+      <p>The trilogy skills form a pipeline. Each skill's output feeds the next. The <code>/uber-polya</code> orchestrator chains all three automatically.</p>
+
+      <div class="pipeline">
+        <div class="pipeline-stage">
+          <div class="pipeline-stage-name">/uber-model</div>
+          <div class="pipeline-stage-label">"What IS the problem?"</div>
+          <div class="pipeline-stage-desc">Real-world problem &rarr; Formal Model</div>
+        </div>
+        <div class="pipeline-arrow">&rarr;</div>
+        <div class="pipeline-stage">
+          <div class="pipeline-stage-name">/uber-solve</div>
+          <div class="pipeline-stage-label">"What is the ANSWER?"</div>
+          <div class="pipeline-stage-desc">Formal Model &rarr; Verified Solution</div>
+        </div>
+        <div class="pipeline-arrow">&rarr;</div>
+        <div class="pipeline-stage">
+          <div class="pipeline-stage-name">/uber-interpret</div>
+          <div class="pipeline-stage-label">"What does it MEAN?"</div>
+          <div class="pipeline-stage-desc">Verified Solution &rarr; Actionable Insight</div>
+        </div>
+      </div>
+
+      <h3 id="outputs-model">uber-model Outputs</h3>
+      <p>The modeling skill produces a Problem Understanding block and a Formal Model.</p>
+
+      <div class="output-block">
+        <h4>Problem Understanding <span class="badge-green badge">Phase 1 gate</span></h4>
+        <ul>
+          <li><strong>Problem Type:</strong> Find or Prove</li>
+          <li><strong>Unknown:</strong> what we seek, in one sentence</li>
+          <li><strong>Data:</strong> bulleted list of everything given</li>
+          <li><strong>Conditions:</strong> numbered atomic constraints</li>
+          <li><strong>Notation:</strong> symbol-to-meaning mappings</li>
+          <li><strong>Figure:</strong> ASCII sketch if applicable</li>
+        </ul>
+      </div>
+
+      <div class="output-block">
+        <h4>Formal Model <span class="badge">Phase 3</span></h4>
+        <ul>
+          <li><strong>Domain:</strong> one of the 10 mathematical domains</li>
+          <li><strong>Universe:</strong> the set of objects under consideration</li>
+          <li><strong>Variables:</strong> symbols with meaning and type/range</li>
+          <li><strong>Structure:</strong> the core mathematical object (graph, formula, ILP, etc.)</li>
+          <li><strong>Mapping:</strong> real-world concept to mathematical object table</li>
+          <li><strong>Constraints:</strong> numbered formal constraints</li>
+          <li><strong>Objective</strong> (for find) or <strong>Claim</strong> (for prove)</li>
+        </ul>
+      </div>
+
+      <p>The model also includes a <strong>"Next Steps"</strong> bridge suggesting an algorithm family, complexity class, and available solver tools for uber-solve.</p>
+
+      <h3 id="outputs-solve">uber-solve Outputs</h3>
+      <p>The solving skill produces a Problem Classification and a Solution Report.</p>
+
+      <div class="output-block">
+        <h4>Problem Classification <span class="badge-green badge">Phase 0 gate</span></h4>
+        <ul>
+          <li><strong>Named Problem:</strong> the textbook problem class</li>
+          <li><strong>Complexity Class:</strong> P, NP-hard, NP-complete, etc.</li>
+          <li><strong>Instance Size:</strong> the parameters that determine computational cost</li>
+          <li><strong>Solution Strategy:</strong> exact polynomial, ILP solver, approximation, etc.</li>
+          <li><strong>Selected Algorithm:</strong> name with time and space complexity</li>
+          <li><strong>Solver Library:</strong> NetworkX, PuLP, Z3, SymPy, SciPy, OR-Tools, cvxpy, scipy.stats, statsmodels, or others</li>
+          <li><strong>Correctness Guarantee:</strong> optimal, (1+e)-approximate, or heuristic with bound</li>
+        </ul>
+      </div>
+
+      <div class="output-block">
+        <h4>Solution Report <span class="badge">Phase 3</span></h4>
+        <ul>
+          <li><strong>Answer:</strong> the solution value, proof, or count</li>
+          <li><strong>Objective Value:</strong> for optimization problems</li>
+          <li><strong>Optimal:</strong> yes/no/unknown</li>
+          <li><strong>Feasible:</strong> yes with constraint count verified</li>
+          <li><strong>Algorithm and complexity</strong></li>
+          <li><strong>Timing</strong> in seconds</li>
+          <li><strong>Certificate:</strong> optimality proof description</li>
+          <li><strong>Verification details:</strong> constraint-by-constraint check</li>
+        </ul>
+      </div>
+
+      <p>The report also includes the complete solver script &mdash; a self-contained Python file with type hints, dataclasses, separate <code>verify()</code> function, and timing.</p>
+
+      <h3 id="outputs-interpret">uber-interpret Outputs</h3>
+      <p>The interpretation skill produces five deliverables across its phases.</p>
+
+      <div class="output-block">
+        <h4>Solution Translation <span class="badge">Phase 1</span></h4>
+        <ul>
+          <li>Reverse mapping from math to reality, with the bottom-line sentence</li>
+        </ul>
+      </div>
+
+      <div class="output-block">
+        <h4>Sensitivity Analysis <span class="badge">Phase 2</span></h4>
+        <ul>
+          <li>Parameter sensitivity table (robust/sensitive/critical classification)</li>
+          <li>Structural sensitivity</li>
+          <li>Optimality gap analysis</li>
+          <li>2-3 what-if scenarios</li>
+        </ul>
+      </div>
+
+      <div class="output-block">
+        <h4>Visualizations <span class="badge">Phase 3</span></h4>
+        <ul>
+          <li>1-3 charts selected by result type: graph diagrams, heatmaps, Gantt charts, tornado diagrams, distribution charts, flow diagrams, Pareto frontiers, Hasse diagrams, group comparison bars, QQ plots, regression plots, forest plots, or posterior distributions</li>
+          <li>Each with interpretive annotation</li>
+        </ul>
+      </div>
+
+      <div class="output-block">
+        <h4>Recommendations <span class="badge">Phase 4</span></h4>
+        <ul>
+          <li>Primary recommendation, key constraints to monitor, risk factors, quick wins, and limitations</li>
+          <li>Adapted to the audience: technical, decision-maker, domain expert, or general</li>
+        </ul>
+      </div>
+
+      <div class="output-block">
+        <h4>Knowledge Transfer <span class="badge">Phase 5</span></h4>
+        <ul>
+          <li>Transferable pattern extraction</li>
+          <li>Method critique</li>
+          <li>Generalization inventory</li>
+          <li>Reusable decision framework</li>
+          <li>Validation plan</li>
+        </ul>
+      </div>
+
+      <!-- REFERENCE KNOWLEDGE BASE -->
+      <h2 id="knowledge-base">The Reference Knowledge Base</h2>
+      <p>Fifteen reference files provide the domain knowledge that powers the skills. Each is a curated catalog designed to be read on demand during a specific skill phase. All reference files carry cross-reference indexes linking entries to counterparts in other files.</p>
+
+      <h3 id="ref-model">uber-model references <span class="badge">5 files</span></h3>
+
+      <p><strong>heuristics.md</strong> &mdash; Seventeen heuristics drawn from Polya's "How to Solve It," organized by phase. Each heuristic includes trigger conditions, Socratic questions adapted from Polya, and mathematical modeling applications. Phase 1 heuristics (H1-H4) address understanding: separating conditions, introducing notation, drawing figures, checking feasibility. Phase 2 heuristics (H5-H12) address planning: analogy, decomposition, generalization (the Inventor's Paradox), specialization, working backwards, auxiliary elements, restatement, and related problems. Phase 3 heuristics (H13-H14) address execution: step verification and gap detection. Phase 4 heuristics (H15-H17) address reflection: result verification, method generalization, and connection to known results.</p>
+
+      <p><strong>structures.md</strong> &mdash; A catalog of 43 mathematical structures across 10 domains. Each entry provides a one-line formal definition, real-world indicator phrases that suggest the structure, a formal notation template, concrete examples mapping real-world scenarios to math, and the classic named problems associated with it. The 10 domains are Graph Theory, Combinatorics, Set Theory, Logic, Number Theory, Relations &amp; Orders, Optimization, Discrete Probability, Continuous Optimization, and Statistical Inference. A cross-domain pattern table maps 36+ real-world patterns to their primary structure.</p>
+
+      <p><strong>problem-classification.md</strong> &mdash; A quick-reference decision tree and pattern lookup table for rapid problem classification. Routes problems through branching questions (discrete vs. continuous, find vs. prove, optimization vs. counting, etc.) to a named problem class with suggested structures and algorithms.</p>
+
+      <p><strong>common-mistakes.md</strong> &mdash; Sixteen common anti-patterns across modeling (M1-M10), solving (S1-S6), and interpretation (I1-I6). Each mistake includes symptoms, prevention, and fix. Used as a pre-flight checklist before finalizing a formal model.</p>
+
+      <p><strong>model-templates.md</strong> &mdash; Fill-in-the-blank formal model templates for the 5 most common problem patterns: assignment/matching, scheduling/coloring, routing/shortest path, selection/knapsack, and dependency ordering. Each template includes a skeleton with placeholders, a fill-in checklist, and a quick variant guide.</p>
+
+      <h3 id="ref-solve">uber-solve references <span class="badge">6 files</span></h3>
+
+      <p><strong>algorithms.md</strong> &mdash; A comprehensive catalog of 94 discrete math and continuous optimization algorithms organized into 21 sections. Each entry specifies time complexity, space complexity, recommended Python library, correctness guarantee (exact, approximation ratio, or heuristic), and implementation guidance with code snippets. Coverage spans graph traversal, shortest path, MST, matching, network flow, coloring, independent set/vertex cover/clique, Euler/Hamilton, TSP, LP/ILP, dynamic programming patterns, greedy algorithms, SAT/SMT/CSP, number theory, combinatorial counting, order theory, proof techniques, discrete probability, search/backtracking, and continuous optimization. An algorithm selection matrix maps each problem class to the recommended algorithm by instance size.</p>
+
+      <p><strong>algorithms-statistics.md</strong> &mdash; A catalog of 45 statistical inference algorithms covering hypothesis testing (z-test, t-test, paired t, Mann-Whitney, Wilcoxon, chi-squared, Fisher's exact, ANOVA, Kruskal-Wallis), regression (OLS, logistic, GLM, robust), Bayesian methods (conjugate priors, MCMC, Bayesian A/B), estimation (MLE, CI, bootstrap CI, effect sizes), and resampling (permutation test, bootstrap). Each entry specifies the test conditions, assumptions, Python implementation, and interpretation guidance.</p>
+
+      <p><strong>solvers.md</strong> &mdash; A guide to the discrete math and continuous optimization Python solver ecosystem: what each library solves, installation, key APIs with code examples, and performance notes. Covers NetworkX, PuLP, Z3, SymPy, SciPy, OR-Tools, itertools, numpy, and cvxpy. A solver selection guide maps each problem type to primary and fallback solvers.</p>
+
+      <p><strong>solvers-statistics.md</strong> &mdash; A guide to the statistical inference Python solver ecosystem. Covers scipy.stats, statsmodels, scikit-learn, PyMC, pingouin, and lifelines.</p>
+
+      <p><strong>solving-protocols.md</strong> &mdash; Nine domain-specific step-by-step solving workflows: Graph, ILP/LP, SAT/SMT, Counting, Proof, Number Theory, Dynamic Programming, Continuous Optimization, and Statistical Inference. Each protocol specifies the phases, checks, and common pitfalls for its domain.</p>
+
+      <p><strong>optimization-hardening.md</strong> &mdash; Performance tuning and production hardening guide for Phase 4. Covers profiling, algorithmic optimization, approximation tiers, memory reduction, and production-grade engineering. Read only when the initial solution is too slow or needs production-grade performance.</p>
+
+      <h3 id="ref-interpret">uber-interpret references <span class="badge">2 files</span></h3>
+
+      <p><strong>interpretation-patterns.md</strong> &mdash; Domain-specific patterns for translating mathematical solutions back into real-world meaning. Covers graph theory results (shortest path, matching, coloring, flow, connectivity), optimization results (LP/ILP with shadow prices and reduced costs, knapsack/selection, scheduling), proof results (existence, impossibility, bounds), counting results (exact and asymptotic), probability results, number theory results, convex optimization results (optimal point, dual variables, sensitivity), and statistical inference results (hypothesis test interpretation, regression results, confidence/credible intervals, Bayesian posteriors). Includes a general sensitivity framework and a general limitation framework.</p>
+
+      <p><strong>visualization.md</strong> &mdash; A chart selection matrix mapping 20+ result types to primary and secondary chart types. Provides complete matplotlib/seaborn/NetworkX code templates for annotated graph diagrams, assignment matrix heatmaps, Gantt charts, tornado diagrams, scenario comparison bar charts, distribution bar charts, Pareto frontier scatter plots, flow diagrams, Hasse diagrams, proof step visualizations, group comparison bars with CI, QQ plots, regression plots, residual plots, forest plots, and posterior distribution plots. Includes a colorblind-friendly palette, typography standards, layout rules, and audience adaptation guidelines.</p>
+
+      <!-- DESIGN PRINCIPLES -->
+      <h2 id="principles">Design Principles</h2>
+
+      <div class="principle-grid">
+        <div class="principle-card">
+          <div class="principle-number">1</div>
+          <h4>Socratic, not didactic</h4>
+          <p>The skills ask questions that could have occurred to the user. They present understanding and let the user confirm, correct, or refine. This follows Polya's central insight: "Leave the user a reasonable share of the work." Phase gates use AskUserQuestion to ensure the user drives the thinking, not Claude.</p>
+        </div>
+        <div class="principle-card">
+          <div class="principle-number">2</div>
+          <h4>Verify everything</h4>
+          <p>Every solution includes independent verification. uber-solve requires a separate <code>verify()</code> function that re-checks every constraint independently of the solver logic. For optimization, it computes optimality certificates. For proofs, it verifies each logical step. Never trust a solver output without checking it.</p>
+        </div>
+        <div class="principle-card">
+          <div class="principle-number">3</div>
+          <h4>Right tool for the job</h4>
+          <p>Algorithm selection follows the problem class and instance size, not a one-size-fits-all approach. The algorithm selection matrix maps each problem class to three tiers: small (n &le; 25, exact), medium (n &le; 1000, ILP/SAT), and large (n &gt; 1000, approximation). The skill explicitly states the correctness guarantee.</p>
+        </div>
+        <div class="principle-card">
+          <div class="principle-number">4</div>
+          <h4>Audience adaptation</h4>
+          <p>uber-interpret adapts its output to four audiences. Technical readers get algorithm names and complexity bounds. Decision-makers get the bottom line and business trade-offs. Domain experts get domain vocabulary and validation steps. General audiences get plain language and concrete analogies.</p>
+        </div>
+        <div class="principle-card">
+          <div class="principle-number">5</div>
+          <h4>Knowledge transfer</h4>
+          <p>Every problem teaches a reusable pattern. uber-model extracts a "Modeling Insight" connecting real-world patterns to structures. uber-interpret builds a transferable pattern, generalization inventory, and reusable decision framework. The goal: equip the user to solve similar problems independently.</p>
+        </div>
+        <div class="principle-card">
+          <div class="principle-number">6</div>
+          <h4>Cyclic, not linear</h4>
+          <p>Any phase can loop back to an earlier one when new understanding emerges. uber-model explicitly supports this: "If the model feels wrong, return to the earliest phase where the issue originated." uber-interpret's error recovery sends users back to uber-model when solutions don't make practical sense.</p>
+        </div>
+      </div>
+
+      <!-- WHY DISCRETE MATH -->
+      <h2 id="why-discrete">Why Start With Discrete Mathematics?</h2>
+      <p>Polya's method is universal, but our implementation begins with discrete mathematics for practical reasons:</p>
+
+      <ol>
+        <li><strong>Cleanest complexity theory.</strong> Discrete problems have a well-defined hierarchy (P, NP, PSPACE, EXPTIME) that directly maps to algorithm selection. When you identify "graph coloring," you immediately know: NP-hard, use greedy for small instances, ILP for medium, heuristic for large. No other domain has this level of classification maturity.</li>
+        <li><strong>Most mature solver ecosystem.</strong> Libraries like NetworkX, PuLP, Z3, and OR-Tools have decades of development, millions of users, and well-documented APIs. They provide the reliable foundation that verified solving demands.</li>
+        <li><strong>Polya's own territory.</strong> Many of Polya's examples in "How to Solve It" are discrete or algebraic: geometry problems with integer solutions, combinatorial puzzles, number theory. The heuristics map naturally to discrete structure recognition.</li>
+        <li><strong>Verification is exact.</strong> Discrete solutions can be verified by exhaustive enumeration (for small instances) or by checking certificates (LP relaxation bounds, SAT proofs). This enables the "verify everything" principle without numerical tolerance issues.</li>
+      </ol>
+
+      <p>Starting with discrete math provides the strongest foundation. Each subsequent domain builds on this base while adapting to its own verification paradigm (convergence for optimization, confidence intervals for statistics, cross-validation for ML).</p>
+
+      <!-- EXPANSION ARCHITECTURE -->
+      <h2 id="expansion">Expansion Architecture</h2>
+      <p>The uber-polya framework is designed for modular domain expansion. Each new domain adds content at three levels without changing the core Polya workflow:</p>
+
+      <h3>Level 1: Reference Files</h3>
+      <p>New domains add reference files to the existing skill directories:</p>
+
+      <div class="file-tree">
+        <div><span class="dir">skills/uber-model/references/</span></div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="file">heuristics.md</span> <span class="comment">&mdash; Polya's heuristics</span> <span class="shipped">(shipped)</span></div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="file">structures.md</span> <span class="comment">&mdash; 43 structures, 10 domains</span> <span class="shipped">(shipped)</span></div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="file">problem-classification.md</span> <span class="comment">&mdash; Decision tree</span> <span class="shipped">(shipped)</span></div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="file">common-mistakes.md</span> <span class="comment">&mdash; 16 anti-patterns</span> <span class="shipped">(shipped)</span></div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="file">model-templates.md</span> <span class="comment">&mdash; 5 formal model templates</span> <span class="shipped">(shipped)</span></div>
+        <br>
+        <div><span class="dir">skills/uber-solve/references/</span></div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="file">algorithms.md</span> <span class="comment">&mdash; Discrete math + continuous opt</span> <span class="shipped">(shipped)</span></div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="file">solvers.md</span> <span class="comment">&mdash; Discrete math + continuous solvers</span> <span class="shipped">(shipped)</span></div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="file">algorithms-statistics.md</span> <span class="comment">&mdash; Statistical inference</span> <span class="shipped">(shipped)</span></div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="file">solvers-statistics.md</span> <span class="comment">&mdash; Statistical solvers</span> <span class="shipped">(shipped)</span></div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="file">solving-protocols.md</span> <span class="comment">&mdash; 9 domain-specific protocols</span> <span class="shipped">(shipped)</span></div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="file">optimization-hardening.md</span> <span class="comment">&mdash; Production hardening</span> <span class="shipped">(shipped)</span></div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="file">algorithms-ml.md</span> <span class="comment">&mdash; Machine learning</span> <span class="planned">(planned)</span></div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="file">solvers-ml.md</span> <span class="comment">&mdash; scikit-learn, PyTorch</span> <span class="planned">(planned)</span></div>
+        <br>
+        <div><span class="dir">skills/uber-interpret/references/</span></div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="file">interpretation-patterns.md</span> <span class="comment">&mdash; 8 pattern sections</span> <span class="shipped">(shipped)</span></div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="file">visualization.md</span> <span class="comment">&mdash; 20+ chart types</span> <span class="shipped">(shipped)</span></div>
+      </div>
+
+      <h3>Level 2: Protocol Sections</h3>
+      <p>Each SKILL.md gains new protocol sections for domain-specific workflows:</p>
+      <ul class="plain">
+        <li><strong>uber-model:</strong> New structure entries in <code>structures.md</code> (e.g., "Feature Matrix," "Time Series")</li>
+        <li><strong>uber-solve:</strong> New solving protocols in <code>solving-protocols.md</code> and domain-specific algorithm catalogs</li>
+        <li><strong>uber-interpret:</strong> New interpretation patterns (model performance metrics, convergence diagnostics)</li>
+      </ul>
+
+      <h3>Level 3: Classification Expansion</h3>
+      <p>The Phase 0 classification table in uber-solve grows to recognize new problem types:</p>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr>
+              <th>Shipped (Discrete)</th>
+              <th>Shipped (Continuous)</th>
+              <th>Shipped (Statistical)</th>
+              <th>Planned (ML)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Graph coloring</td>
+              <td>Convex optimization</td>
+              <td>Hypothesis testing (t, chi2, ANOVA)</td>
+              <td>Classification</td>
+            </tr>
+            <tr>
+              <td>ILP</td>
+              <td>Quadratic programming</td>
+              <td>Regression (OLS, logistic, GLM)</td>
+              <td>Clustering</td>
+            </tr>
+            <tr>
+              <td>SAT</td>
+              <td>Gradient descent / BFGS</td>
+              <td>Bayesian inference (MCMC, conjugate)</td>
+              <td>Dimensionality reduction</td>
+            </tr>
+            <tr>
+              <td>Knapsack</td>
+              <td>Interior point / SQP</td>
+              <td>Survival analysis (KM, Cox PH)</td>
+              <td>Feature selection</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>The classification tree branches on <strong>"Is this discrete or continuous?"</strong> and <strong>"Is this inferential?"</strong> as the first decisions, then routes to domain-specific protocols.</p>
+
+    </main>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-content">
+      <div class="footer-left">
+        <div class="footer-brand">uber-polya</div>
+        <p>Apache 2.0 Licensed. Free forever.</p>
+        <p>Built with <a href="https://claude.ai/claude-code">Claude Code</a>.</p>
+      </div>
+      <ul class="footer-links">
+        <li><a href="https://github.com/agtm1199/uber-polya">GitHub</a></li>
+        <li><a href="guide.html">Usage Guide</a></li>
+        <li><a href="manifesto.html">Manifesto</a></li>
+        <li><a href="https://github.com/agtm1199/uber-polya/blob/main/CONTRIBUTING.md">Contributing</a></li>
+      </ul>
+    </div>
+  </footer>
+
+  <!-- ACTIVE SECTION TRACKING -->
+  <script>
+    const sections = document.querySelectorAll('h2[id], h3[id], section[id]');
+    const sidebarLinks = document.querySelectorAll('.sidebar a');
+
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const id = entry.target.id;
+          sidebarLinks.forEach(link => {
+            link.classList.toggle('active',
+              link.getAttribute('href') === '#' + id ||
+              (id === 'top' && link.getAttribute('href') === '#top')
+            );
+          });
+        }
+      });
+    }, {
+      rootMargin: '-80px 0px -70% 0px',
+      threshold: 0
+    });
+
+    sections.forEach(section => observer.observe(section));
+
+    // Close sidebar on mobile when a link is clicked
+    document.querySelectorAll('.sidebar a').forEach(link => {
+      link.addEventListener('click', () => {
+        if (window.innerWidth < 768) {
+          document.querySelector('.sidebar').classList.remove('open');
+        }
+      });
+    });
+  </script>
+
+</body>
+</html>

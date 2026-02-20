@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Getting Started -- uber-polya</title>
+  <meta name="description" content="A zero-to-hero tutorial for uber-polya. Model, solve, and interpret a mathematical problem entirely through Claude Code slash commands.">
+  <style>
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg: #0d1117;
+      --bg-surface: #161b22;
+      --bg-surface-hover: #1c2129;
+      --border: #30363d;
+      --text: #e6edf3;
+      --text-muted: #8b949e;
+      --text-dim: #6e7681;
+      --accent: #58a6ff;
+      --accent-hover: #79b8ff;
+      --green: #3fb950;
+      --green-dim: #238636;
+      --yellow: #d29922;
+      --yellow-dim: #9e6a03;
+      --red: #f85149;
+      --purple: #bc8cff;
+      --font-mono: 'JetBrains Mono', 'Fira Code', 'SF Mono', 'Cascadia Code', 'Consolas', 'Liberation Mono', monospace;
+      --sidebar-width: 240px;
+      --nav-height: 56px;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: calc(var(--nav-height) + 24px);
+    }
+
+    body {
+      font-family: var(--font-mono);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      font-size: 14px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ---- NAV ---- */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      background: rgba(13, 17, 23, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      height: var(--nav-height);
+    }
+
+    nav .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    nav .logo {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text);
+      text-decoration: none;
+      letter-spacing: -0.5px;
+    }
+
+    nav .logo span {
+      color: var(--accent);
+    }
+
+    nav .nav-links {
+      display: flex;
+      gap: 24px;
+      list-style: none;
+    }
+
+    nav .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 13px;
+      transition: color 0.2s;
+    }
+
+    nav .nav-links a:hover {
+      color: var(--text);
+    }
+
+    .sidebar-toggle {
+      display: none;
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text-muted);
+      padding: 6px 10px;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .sidebar-toggle:hover {
+      color: var(--text);
+      border-color: var(--accent);
+    }
+
+    /* ---- LAYOUT ---- */
+    .layout {
+      display: flex;
+      margin-top: var(--nav-height);
+      min-height: calc(100vh - var(--nav-height));
+    }
+
+    /* ---- SIDEBAR ---- */
+    .sidebar {
+      width: var(--sidebar-width);
+      position: fixed;
+      top: var(--nav-height);
+      left: 0;
+      bottom: 0;
+      overflow-y: auto;
+      border-right: 1px solid var(--border);
+      padding: 24px 0;
+      background: var(--bg);
+      z-index: 50;
+    }
+
+    .sidebar-section {
+      padding: 0 16px;
+      margin-bottom: 20px;
+    }
+
+    .sidebar-section-title {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--text-dim);
+      margin-bottom: 8px;
+      padding: 0 8px;
+    }
+
+    .sidebar a {
+      display: block;
+      padding: 5px 8px;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 13px;
+      border-radius: 6px;
+      transition: all 0.15s;
+      line-height: 1.4;
+    }
+
+    .sidebar a:hover {
+      color: var(--text);
+      background: var(--bg-surface);
+    }
+
+    .sidebar a.active {
+      color: var(--accent);
+      background: rgba(88, 166, 255, 0.1);
+    }
+
+    .sidebar a.sub {
+      padding-left: 20px;
+      font-size: 12px;
+    }
+
+    /* ---- MAIN CONTENT ---- */
+    .content {
+      flex: 1;
+      margin-left: var(--sidebar-width);
+      max-width: 800px;
+      padding: 48px 48px 120px;
+    }
+
+    /* ---- TYPOGRAPHY ---- */
+    h1 {
+      font-size: 32px;
+      font-weight: 800;
+      letter-spacing: -1px;
+      margin-bottom: 8px;
+      line-height: 1.2;
+    }
+
+    h2 {
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      margin-top: 64px;
+      margin-bottom: 16px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+    }
+
+    h2:first-of-type {
+      border-top: none;
+      margin-top: 48px;
+    }
+
+    h3 {
+      font-size: 17px;
+      font-weight: 700;
+      margin-top: 32px;
+      margin-bottom: 12px;
+    }
+
+    p {
+      margin-bottom: 16px;
+      color: var(--text-muted);
+    }
+
+    p strong {
+      color: var(--text);
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .lead {
+      font-size: 16px;
+      color: var(--text-muted);
+      margin-bottom: 32px;
+    }
+
+    .badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 4px;
+      background: rgba(88, 166, 255, 0.15);
+      color: var(--accent);
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+
+    .badge-green {
+      background: rgba(63, 185, 80, 0.15);
+      color: var(--green);
+    }
+
+    .badge-yellow {
+      background: rgba(210, 153, 34, 0.15);
+      color: var(--yellow);
+    }
+
+    /* ---- CODE BLOCKS (terminal style) ---- */
+    .terminal {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      margin: 16px 0 24px;
+    }
+
+    .terminal-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px;
+      background: rgba(22, 27, 34, 0.8);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .terminal-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .terminal-dot:nth-child(1) { background: #ff5f57; }
+    .terminal-dot:nth-child(2) { background: #febc2e; }
+    .terminal-dot:nth-child(3) { background: #28c840; }
+
+    .terminal-body {
+      padding: 16px 20px;
+      font-size: 13px;
+      line-height: 1.7;
+      overflow-x: auto;
+    }
+
+    .terminal-body .prompt { color: var(--green); }
+    .terminal-body .cmd { color: var(--text); }
+    .terminal-body .output { color: var(--text-muted); }
+    .terminal-body .highlight { color: var(--accent); }
+    .terminal-body .success { color: var(--green); }
+    .terminal-body .comment { color: var(--text-dim); }
+
+    code {
+      background: var(--bg-surface);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 13px;
+      color: var(--accent);
+    }
+
+    /* ---- BLOCKQUOTE (representative output) ---- */
+    .representative-output {
+      background: var(--bg-surface);
+      border-left: 3px solid var(--accent);
+      border-radius: 0 8px 8px 0;
+      padding: 20px 24px;
+      margin: 16px 0 24px;
+      font-size: 13px;
+      line-height: 1.8;
+    }
+
+    .representative-output .label {
+      color: var(--text);
+      font-weight: 700;
+    }
+
+    .representative-output .value {
+      color: var(--text-muted);
+    }
+
+    .representative-output .sub {
+      padding-left: 20px;
+      color: var(--text-dim);
+    }
+
+    .representative-output .note {
+      margin-top: 12px;
+      font-size: 12px;
+      color: var(--text-dim);
+      font-style: italic;
+    }
+
+    /* ---- TABLES ---- */
+    .table-wrapper {
+      overflow-x: auto;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      margin: 16px 0 24px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    thead th {
+      text-align: left;
+      padding: 12px 16px;
+      font-weight: 700;
+      border-bottom: 2px solid var(--border);
+      background: var(--bg-surface);
+      white-space: nowrap;
+    }
+
+    tbody td {
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    tbody td:first-child {
+      font-weight: 600;
+      color: var(--text);
+      white-space: nowrap;
+    }
+
+    /* ---- POLYA PHASE BADGES ---- */
+    .polya-phase {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 4px;
+      margin-right: 4px;
+    }
+
+    .phase-understand { background: rgba(88, 166, 255, 0.15); color: var(--accent); }
+    .phase-solve { background: rgba(63, 185, 80, 0.15); color: var(--green); }
+    .phase-interpret { background: rgba(210, 153, 34, 0.15); color: var(--yellow); }
+
+    /* ---- EXAMPLE GALLERY ---- */
+    .example-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+      margin: 12px 0 24px;
+    }
+
+    .example-item {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      transition: border-color 0.15s;
+      text-decoration: none;
+    }
+
+    .example-item:hover {
+      border-color: var(--accent);
+      text-decoration: none;
+    }
+
+    .example-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--accent);
+      margin-bottom: 2px;
+    }
+
+    .example-desc {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .example-algo {
+      font-size: 11px;
+      color: var(--text-dim);
+      white-space: nowrap;
+      padding: 2px 8px;
+      background: rgba(48, 54, 61, 0.5);
+      border-radius: 4px;
+      flex-shrink: 0;
+    }
+
+    /* ---- CATEGORY LIST ---- */
+    .category-list {
+      list-style: none;
+      margin: 12px 0 24px;
+    }
+
+    .category-list li {
+      padding: 8px 0;
+      padding-left: 20px;
+      position: relative;
+      color: var(--text-muted);
+      font-size: 13px;
+      border-bottom: 1px solid rgba(48, 54, 61, 0.4);
+    }
+
+    .category-list li:last-child {
+      border-bottom: none;
+    }
+
+    .category-list li::before {
+      content: ">";
+      position: absolute;
+      left: 0;
+      color: var(--green);
+      font-weight: 700;
+    }
+
+    .category-list li strong {
+      color: var(--text);
+    }
+
+    /* ---- PREREQ LIST ---- */
+    .prereq-list {
+      list-style: none;
+      margin: 12px 0 24px;
+    }
+
+    .prereq-list li {
+      padding: 8px 0;
+      padding-left: 20px;
+      position: relative;
+      color: var(--text-muted);
+      font-size: 13px;
+    }
+
+    .prereq-list li::before {
+      content: "+";
+      position: absolute;
+      left: 0;
+      color: var(--green);
+      font-weight: 700;
+    }
+
+    .prereq-list li strong {
+      color: var(--text);
+    }
+
+    /* ---- NOTE BOX ---- */
+    .note-box {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px 20px;
+      margin: 16px 0 24px;
+      font-size: 12px;
+      color: var(--text-dim);
+      font-style: italic;
+    }
+
+    /* ---- FOOTER ---- */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 48px 0;
+      margin-left: var(--sidebar-width);
+    }
+
+    .footer-inner {
+      max-width: 800px;
+      padding: 0 48px;
+    }
+
+    .footer-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      gap: 32px;
+    }
+
+    .footer-left {
+      font-size: 13px;
+    }
+
+    .footer-left .footer-brand {
+      font-weight: 700;
+      font-size: 16px;
+      margin-bottom: 8px;
+    }
+
+    .footer-left p {
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+
+    .footer-left a {
+      color: var(--text-muted);
+      text-decoration: none;
+    }
+
+    .footer-left a:hover {
+      color: var(--accent);
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 24px;
+      list-style: none;
+      flex-wrap: wrap;
+    }
+
+    .footer-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 13px;
+      transition: color 0.2s;
+    }
+
+    .footer-links a:hover {
+      color: var(--accent);
+    }
+
+    /* ---- RESPONSIVE ---- */
+    @media (max-width: 768px) {
+      .sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.25s ease;
+      }
+
+      .sidebar.open {
+        transform: translateX(0);
+      }
+
+      .content {
+        margin-left: 0;
+        padding: 32px 20px 80px;
+      }
+
+      footer {
+        margin-left: 0;
+      }
+
+      .footer-inner {
+        padding: 0 20px;
+      }
+
+      .sidebar-toggle {
+        display: block;
+      }
+
+      nav .nav-links {
+        gap: 12px;
+      }
+
+      nav .nav-links a {
+        font-size: 12px;
+      }
+
+      h1 {
+        font-size: 26px;
+      }
+
+      h2 {
+        font-size: 20px;
+      }
+
+      .footer-content {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-inner">
+      <div style="display:flex;align-items:center;gap:16px;">
+        <button class="sidebar-toggle" onclick="document.querySelector('.sidebar').classList.toggle('open')" aria-label="Toggle navigation">Menu</button>
+        <a href="index.html" class="logo">uber-<span>polya</span></a>
+      </div>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="guide.html">Guide</a></li>
+        <li><a href="https://github.com/agtm1199/uber-polya">GitHub</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Tutorial</div>
+        <a href="#top">Introduction</a>
+        <a href="#prerequisites">Prerequisites</a>
+        <a href="#install">Install</a>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">First Problem</div>
+        <a href="#first-problem">Your First Problem</a>
+        <a href="#phase-1" class="sub">Phase 1: /uber-model</a>
+        <a href="#phase-2" class="sub">Phase 2: /uber-solve</a>
+        <a href="#phase-3" class="sub">Phase 3: /uber-interpret</a>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Next</div>
+        <a href="#what-happened">What Just Happened?</a>
+        <a href="#next-steps">Next Steps</a>
+        <a href="#everyday" class="sub">Everyday Problems</a>
+        <a href="#showcases" class="sub">Technical Showcases</a>
+        <a href="#try-your-own" class="sub">Try Your Own</a>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="content">
+
+      <!-- INTRO -->
+      <section id="top">
+        <h1>Getting Started with uber-polya</h1>
+        <p class="lead">A zero-to-hero tutorial. By the end, you will have modeled, solved, and interpreted a mathematical problem entirely through Claude Code slash commands.</p>
+      </section>
+
+      <!-- PREREQUISITES -->
+      <h2 id="prerequisites">Prerequisites</h2>
+
+      <ul class="prereq-list">
+        <li><strong>Claude Code</strong> &mdash; Anthropic's CLI for Claude (<a href="https://docs.anthropic.com/en/docs/claude-code">installation guide</a>)</li>
+        <li><strong>Python 3.10+</strong> &mdash; for running the solver code that <code>/uber-solve</code> generates</li>
+      </ul>
+
+      <p>Optional Python packages (installed automatically when needed):</p>
+
+      <div class="terminal">
+        <div class="terminal-header">
+          <div class="terminal-dot"></div>
+          <div class="terminal-dot"></div>
+          <div class="terminal-dot"></div>
+        </div>
+        <div class="terminal-body">
+          <div><span class="prompt">$</span> <span class="cmd">pip install networkx pulp z3-solver sympy scipy matplotlib numpy cvxpy statsmodels</span></div>
+        </div>
+      </div>
+
+      <!-- INSTALL -->
+      <h2 id="install">Install uber-polya</h2>
+
+      <div class="terminal">
+        <div class="terminal-header">
+          <div class="terminal-dot"></div>
+          <div class="terminal-dot"></div>
+          <div class="terminal-dot"></div>
+        </div>
+        <div class="terminal-body">
+          <div><span class="prompt">$</span> <span class="cmd">git clone https://github.com/agtm1199/uber-polya.git</span></div>
+          <div><span class="prompt">$</span> <span class="cmd">cd uber-polya</span></div>
+          <div><span class="prompt">$</span> <span class="cmd">bash install.sh</span></div>
+          <br>
+          <div><span class="output">Where would you like to install the skills?</span></div>
+          <div><span class="output">  1) Global  (~/.claude/skills/) &mdash; available in all projects</span></div>
+          <div><span class="output">  2) Local   (./.claude/skills/) &mdash; current project only</span></div>
+        </div>
+      </div>
+
+      <p>That is it. No virtual environment, no build step. The skills are plain markdown files that Claude Code reads on demand.</p>
+
+      <!-- YOUR FIRST PROBLEM -->
+      <h2 id="first-problem">Your First Problem</h2>
+
+      <p>Open Claude Code in any project directory and type:</p>
+
+      <div class="terminal">
+        <div class="terminal-header">
+          <div class="terminal-dot"></div>
+          <div class="terminal-dot"></div>
+          <div class="terminal-dot"></div>
+        </div>
+        <div class="terminal-body">
+          <div><span class="prompt">$</span> <span class="cmd">/uber-model I need to schedule 4 exams (A, B, C, D) into the fewest</span></div>
+          <div><span class="cmd">  time slots so that no student has two exams at the same time.</span></div>
+          <div><span class="cmd">  Students are enrolled in: {A,B}, {A,C}, {B,D}, {C,D}.</span></div>
+        </div>
+      </div>
+
+      <!-- PHASE 1 -->
+      <h3 id="phase-1">Phase 1 &mdash; /uber-model builds the formal model</h3>
+
+      <p>Claude walks through Polya's "Understanding" and "Planning" phases. It asks clarifying questions, then produces a formal model. Representative output:</p>
+
+      <div class="representative-output">
+        <div><span class="label">Problem Type:</span> <span class="value">Problem to Find (optimization)</span></div>
+        <div><span class="label">Unknown:</span> <span class="value">Minimum number of time slots (colors) such that no two conflicting exams share a slot</span></div>
+        <div><span class="label">Structure:</span> <span class="value">Graph coloring on a conflict graph G = (V, E)</span></div>
+        <div class="sub">Vertices V = {A, B, C, D} (exams)</div>
+        <div class="sub">Edges E = {(A,B), (A,C), (B,D), (C,D)} (student enrolled in both)</div>
+        <div><span class="label">Objective:</span> <span class="value">Minimize k such that a proper k-coloring of G exists</span></div>
+        <br>
+        <div><span class="label">Next Steps (for /uber-solve):</span> <span class="value">Graph coloring. NP-hard in general, but greedy is exact for small instances and perfect graphs. This graph is bipartite (cycle of length 4), so chromatic number = 2.</span></div>
+      </div>
+
+      <!-- PHASE 2 -->
+      <h3 id="phase-2">Phase 2 &mdash; /uber-solve finds the answer</h3>
+
+      <p>Type:</p>
+
+      <div class="terminal">
+        <div class="terminal-header">
+          <div class="terminal-dot"></div>
+          <div class="terminal-dot"></div>
+          <div class="terminal-dot"></div>
+        </div>
+        <div class="terminal-body">
+          <div><span class="prompt">$</span> <span class="cmd">/uber-solve</span></div>
+        </div>
+      </div>
+
+      <p>Claude classifies the problem, selects an algorithm, writes a solver script, runs it, and verifies the result. Representative output:</p>
+
+      <div class="representative-output">
+        <div><span class="label">Named Problem:</span> <span class="value">Graph Coloring (k-coloring)</span></div>
+        <div><span class="label">Complexity:</span> <span class="value">NP-hard in general; O(V + E) for bipartite detection</span></div>
+        <div><span class="label">Instance Size:</span> <span class="value">|V| = 4, |E| = 4</span></div>
+        <div><span class="label">Algorithm:</span> <span class="value">Bipartite 2-coloring via BFS</span></div>
+        <br>
+        <div><span class="label">Answer:</span> <span class="value">chromatic number = 2</span></div>
+        <div class="sub">Slot 1: {A, D}</div>
+        <div class="sub">Slot 2: {B, C}</div>
+        <br>
+        <div style="color: var(--green); font-weight: 600;">Verification: All 4 edges checked &mdash; no two adjacent vertices share a color. PASS.</div>
+      </div>
+
+      <!-- PHASE 3 -->
+      <h3 id="phase-3">Phase 3 &mdash; /uber-interpret explains what it means</h3>
+
+      <p>Type:</p>
+
+      <div class="terminal">
+        <div class="terminal-header">
+          <div class="terminal-dot"></div>
+          <div class="terminal-dot"></div>
+          <div class="terminal-dot"></div>
+        </div>
+        <div class="terminal-body">
+          <div><span class="prompt">$</span> <span class="cmd">/uber-interpret</span></div>
+        </div>
+      </div>
+
+      <p>Claude translates the math back into your world. Representative output:</p>
+
+      <div class="representative-output">
+        <div><span class="label">Bottom line:</span> <span class="value">You need exactly 2 time slots. No student has a conflict.</span></div>
+        <br>
+        <div><span class="label">Schedule:</span></div>
+        <div class="sub">Slot 1 (e.g., Monday 9 AM): Exams A and D</div>
+        <div class="sub">Slot 2 (e.g., Monday 2 PM): Exams B and C</div>
+        <br>
+        <div><span class="label">Sensitivity:</span> <span class="value">If a student enrolls in both A and D, the chromatic number rises to 3 (the conflict graph gains an odd cycle). Monitor enrollment changes.</span></div>
+        <br>
+        <div><span class="label">Modeling insight:</span> <span class="value">Whenever you need to assign items to the fewest groups such that conflicting items are separated, model it as graph coloring on a conflict graph.</span></div>
+      </div>
+
+      <div class="note-box">
+        Note: Claude's exact wording, formatting, and level of detail will vary between runs. The outputs above are representative, not verbatim.
+      </div>
+
+      <!-- WHAT JUST HAPPENED -->
+      <h2 id="what-happened">What Just Happened?</h2>
+
+      <p>You used three skills that implement George Polya's four-phase problem-solving cycle:</p>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr><th>Polya Phase</th><th>Skill</th><th>What it does</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="polya-phase phase-understand">1-2</span> Understand &amp; Plan</td>
+              <td><code>/uber-model</code></td>
+              <td>Translates your real-world problem into a formal mathematical model</td>
+            </tr>
+            <tr>
+              <td><span class="polya-phase phase-solve">3</span> Execute</td>
+              <td><code>/uber-solve</code></td>
+              <td>Classifies the problem, selects the right algorithm, solves it, verifies the answer</td>
+            </tr>
+            <tr>
+              <td><span class="polya-phase phase-interpret">4</span> Look Back</td>
+              <td><code>/uber-interpret</code></td>
+              <td>Translates the solution back into actionable insight with sensitivity analysis</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>Each skill's output feeds the next. You can also run them independently &mdash; <code>/uber-solve</code> accepts any well-specified math problem, and <code>/uber-interpret</code> can explain any solution you hand it.</p>
+
+      <!-- NEXT STEPS -->
+      <h2 id="next-steps">Next Steps</h2>
+
+      <p><strong>Try the worked examples.</strong> The <code>examples/</code> directory contains 16 fully solved problems with runnable code, organized in two categories:</p>
+
+      <!-- EVERYDAY PROBLEMS -->
+      <h3 id="everyday">Everyday Problems <span class="badge-green badge">10</span></h3>
+
+      <div class="example-grid">
+        <a href="https://github.com/agtm1199/uber-polya/tree/main/examples/shift-scheduling" class="example-item">
+          <div><div class="example-name">Shift Scheduling</div><div class="example-desc">Schedule 8 nurses across 3 shifts over 7 days</div></div>
+          <div class="example-algo">ILP</div>
+        </a>
+        <a href="https://github.com/agtm1199/uber-polya/tree/main/examples/budget-optimization" class="example-item">
+          <div><div class="example-name">Budget Optimization</div><div class="example-desc">Select projects to maximize ROI under budget</div></div>
+          <div class="example-algo">Knapsack ILP</div>
+        </a>
+        <a href="https://github.com/agtm1199/uber-polya/tree/main/examples/fair-rent" class="example-item">
+          <div><div class="example-name">Fair Rent</div><div class="example-desc">Split rent fairly among 3 roommates</div></div>
+          <div class="example-algo">Hungarian + envy-free</div>
+        </a>
+        <a href="https://github.com/agtm1199/uber-polya/tree/main/examples/route-planning" class="example-item">
+          <div><div class="example-name">Route Planning</div><div class="example-desc">Shortest delivery route across 8 stops</div></div>
+          <div class="example-algo">Held-Karp TSP</div>
+        </a>
+        <a href="https://github.com/agtm1199/uber-polya/tree/main/examples/study-schedule" class="example-item">
+          <div><div class="example-name">Study Schedule</div><div class="example-desc">Conflict-free timetable for 6 subjects</div></div>
+          <div class="example-algo">Graph coloring</div>
+        </a>
+        <a href="https://github.com/agtm1199/uber-polya/tree/main/examples/meal-planning" class="example-item">
+          <div><div class="example-name">Meal Planning</div><div class="example-desc">7 dinners minimizing cost within nutrition targets</div></div>
+          <div class="example-algo">ILP</div>
+        </a>
+        <a href="https://github.com/agtm1199/uber-polya/tree/main/examples/team-assignment" class="example-item">
+          <div><div class="example-name">Team Assignment</div><div class="example-desc">Assign 6 developers to 6 projects</div></div>
+          <div class="example-algo">Hungarian</div>
+        </a>
+        <a href="https://github.com/agtm1199/uber-polya/tree/main/examples/project-prioritization" class="example-item">
+          <div><div class="example-name">Project Prioritization</div><div class="example-desc">Rank 8 features by weighted criteria</div></div>
+          <div class="example-algo">MCDA</div>
+        </a>
+        <a href="https://github.com/agtm1199/uber-polya/tree/main/examples/break-even" class="example-item">
+          <div><div class="example-name">Break-Even Analysis</div><div class="example-desc">Find break-even quantity for product launch</div></div>
+          <div class="example-algo">SymPy</div>
+        </a>
+        <a href="https://github.com/agtm1199/uber-polya/tree/main/examples/event-seating" class="example-item">
+          <div><div class="example-name">Event Seating</div><div class="example-desc">Seat 12 wedding guests at 3 tables with constraints</div></div>
+          <div class="example-algo">ILP</div>
+        </a>
+      </div>
+
+      <!-- TECHNICAL SHOWCASES -->
+      <h3 id="showcases">Technical Showcases <span class="badge">6</span></h3>
+
+      <div class="example-grid">
+        <a href="milking-cows-walkthrough.html" class="example-item">
+          <div><div class="example-name">Milking Cows</div><div class="example-desc">Interval merging, O(N log N) sort-and-sweep, brute-force verification</div></div>
+          <div class="example-algo">Sort + sweep</div>
+        </a>
+        <a href="inspector-assignment-walkthrough.html" class="example-item">
+          <div><div class="example-name">Inspector Assignment</div><div class="example-desc">Capacitated bipartite ILP, LP relaxation, sensitivity analysis</div></div>
+          <div class="example-algo">ILP + LP relaxation</div>
+        </a>
+        <a href="https://github.com/agtm1199/uber-polya/tree/main/examples/portfolio-optimization" class="example-item">
+          <div><div class="example-name">Portfolio Optimization</div><div class="example-desc">Markowitz QP with cvxpy, efficient frontier, risk-return trade-off</div></div>
+          <div class="example-algo">Convex QP (cvxpy)</div>
+        </a>
+        <a href="https://github.com/agtm1199/uber-polya/tree/main/examples/tournament-hamiltonian" class="example-item">
+          <div><div class="example-name">Tournament Hamiltonian</div><div class="example-desc">Proof by induction with Z3 computational verification</div></div>
+          <div class="example-algo">Induction + Z3</div>
+        </a>
+        <a href="https://github.com/agtm1199/uber-polya/tree/main/examples/ab-testing" class="example-item">
+          <div><div class="example-name">A/B Testing</div><div class="example-desc">z-test, Bayesian, bootstrap, power analysis</div></div>
+          <div class="example-algo">z-test + Bayesian + bootstrap</div>
+        </a>
+        <a href="https://github.com/agtm1199/uber-polya/tree/main/examples/cafe-tips" class="example-item">
+          <div><div class="example-name">Cafe Tips</div><div class="example-desc">Full Polya cycle: t-test, Mann-Whitney, permutation, bootstrap, Bayesian</div></div>
+          <div class="example-algo">t-test + Mann-Whitney + bootstrap</div>
+        </a>
+      </div>
+
+      <!-- TRY YOUR OWN -->
+      <h3 id="try-your-own">Try your own problem</h3>
+
+      <p><strong>Good candidates for <code>/uber-model</code>:</strong></p>
+
+      <ul class="category-list">
+        <li><strong>Scheduling</strong> (exams, meetings, shifts) &mdash; graph coloring or ILP</li>
+        <li><strong>Assignment</strong> (people to tasks, resources to jobs) &mdash; bipartite matching or ILP</li>
+        <li><strong>Routing</strong> (deliveries, network paths) &mdash; shortest path, flow, TSP</li>
+        <li><strong>Counting</strong> (arrangements, combinations, probabilities) &mdash; combinatorics, inclusion-exclusion</li>
+        <li><strong>Feasibility</strong> ("Is it possible to...?") &mdash; SAT, constraint satisfaction</li>
+        <li><strong>Optimization</strong> (minimize cost, maximize profit) &mdash; continuous optimization, convex QP</li>
+        <li><strong>Comparing groups</strong> ("Is A better than B?") &mdash; hypothesis testing, A/B tests</li>
+        <li><strong>Prediction</strong> (forecast outcomes from data) &mdash; regression, Bayesian inference</li>
+      </ul>
+
+      <p>Start with <code>/uber-model &lt;describe your problem in plain English&gt;</code> and let Claude guide you from there.</p>
+
+    </main>
+  </div>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-content">
+        <div class="footer-left">
+          <div class="footer-brand">uber-polya</div>
+          <p>Apache 2.0 Licensed. Free forever.</p>
+        </div>
+        <ul class="footer-links">
+          <li><a href="https://github.com/agtm1199/uber-polya">GitHub</a></li>
+          <li><a href="guide.html">Guide</a></li>
+          <li><a href="manifesto.html">Manifesto</a></li>
+          <li><a href="https://github.com/agtm1199/uber-polya/blob/main/CONTRIBUTING.md">Contributing</a></li>
+        </ul>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ACTIVE SECTION TRACKING -->
+  <script>
+    const sections = document.querySelectorAll('h2[id], h3[id], section[id]');
+    const sidebarLinks = document.querySelectorAll('.sidebar a');
+
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const id = entry.target.id;
+          sidebarLinks.forEach(link => {
+            link.classList.toggle('active',
+              link.getAttribute('href') === '#' + id ||
+              (id === 'top' && link.getAttribute('href') === '#top')
+            );
+          });
+        }
+      });
+    }, {
+      rootMargin: '-80px 0px -70% 0px',
+      threshold: 0
+    });
+
+    sections.forEach(section => observer.observe(section));
+
+    // Close sidebar on mobile when a link is clicked
+    document.querySelectorAll('.sidebar a').forEach(link => {
+      link.addEventListener('click', () => {
+        if (window.innerWidth < 768) {
+          document.querySelector('.sidebar').classList.remove('open');
+        }
+      });
+    });
+  </script>
+
+</body>
+</html>

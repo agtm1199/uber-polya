@@ -1,0 +1,1157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>uber-polya Usage Guide</title>
+  <meta name="description" content="Complete usage guide for uber-polya, the first math problem-solver skill for Claude Code and 25+ platforms.">
+  <style>
+    *, *::before, *::after {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg: #0d1117;
+      --bg-surface: #161b22;
+      --bg-surface-hover: #1c2129;
+      --border: #30363d;
+      --text: #e6edf3;
+      --text-muted: #8b949e;
+      --text-dim: #6e7681;
+      --accent: #58a6ff;
+      --accent-hover: #79b8ff;
+      --green: #3fb950;
+      --green-dim: #238636;
+      --yellow: #d29922;
+      --yellow-dim: #9e6a03;
+      --red: #f85149;
+      --purple: #bc8cff;
+      --font-mono: 'JetBrains Mono', 'Fira Code', 'SF Mono', 'Cascadia Code', 'Consolas', 'Liberation Mono', monospace;
+      --sidebar-width: 240px;
+      --nav-height: 56px;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: calc(var(--nav-height) + 24px);
+    }
+
+    body {
+      font-family: var(--font-mono);
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.7;
+      font-size: 14px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ---- NAV ---- */
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      background: rgba(13, 17, 23, 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      height: var(--nav-height);
+    }
+
+    nav .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 100%;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    nav .logo {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text);
+      text-decoration: none;
+      letter-spacing: -0.5px;
+    }
+
+    nav .logo span {
+      color: var(--accent);
+    }
+
+    nav .nav-links {
+      display: flex;
+      gap: 24px;
+      list-style: none;
+    }
+
+    nav .nav-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 13px;
+      transition: color 0.2s;
+    }
+
+    nav .nav-links a:hover {
+      color: var(--text);
+    }
+
+    .sidebar-toggle {
+      display: none;
+      background: none;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text-muted);
+      padding: 6px 10px;
+      font-family: var(--font-mono);
+      font-size: 13px;
+      cursor: pointer;
+    }
+
+    .sidebar-toggle:hover {
+      color: var(--text);
+      border-color: var(--accent);
+    }
+
+    /* ---- LAYOUT ---- */
+    .layout {
+      display: flex;
+      margin-top: var(--nav-height);
+      min-height: calc(100vh - var(--nav-height));
+    }
+
+    /* ---- SIDEBAR ---- */
+    .sidebar {
+      width: var(--sidebar-width);
+      position: fixed;
+      top: var(--nav-height);
+      left: 0;
+      bottom: 0;
+      overflow-y: auto;
+      border-right: 1px solid var(--border);
+      padding: 24px 0;
+      background: var(--bg);
+      z-index: 50;
+    }
+
+    .sidebar-section {
+      padding: 0 16px;
+      margin-bottom: 20px;
+    }
+
+    .sidebar-section-title {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--text-dim);
+      margin-bottom: 8px;
+      padding: 0 8px;
+    }
+
+    .sidebar a {
+      display: block;
+      padding: 5px 8px;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 13px;
+      border-radius: 6px;
+      transition: all 0.15s;
+      line-height: 1.4;
+    }
+
+    .sidebar a:hover {
+      color: var(--text);
+      background: var(--bg-surface);
+    }
+
+    .sidebar a.active {
+      color: var(--accent);
+      background: rgba(88, 166, 255, 0.1);
+    }
+
+    .sidebar a.sub {
+      padding-left: 20px;
+      font-size: 12px;
+    }
+
+    /* ---- MAIN CONTENT ---- */
+    .content {
+      flex: 1;
+      margin-left: var(--sidebar-width);
+      max-width: 800px;
+      padding: 48px 48px 120px;
+    }
+
+    /* ---- TYPOGRAPHY ---- */
+    h1 {
+      font-size: 32px;
+      font-weight: 800;
+      letter-spacing: -1px;
+      margin-bottom: 8px;
+      line-height: 1.2;
+    }
+
+    h2 {
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+      margin-top: 64px;
+      margin-bottom: 16px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+    }
+
+    h2:first-of-type {
+      border-top: none;
+      margin-top: 48px;
+    }
+
+    h3 {
+      font-size: 17px;
+      font-weight: 700;
+      margin-top: 32px;
+      margin-bottom: 12px;
+    }
+
+    p {
+      margin-bottom: 16px;
+      color: var(--text-muted);
+    }
+
+    p strong {
+      color: var(--text);
+    }
+
+    a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    .lead {
+      font-size: 16px;
+      color: var(--text-muted);
+      margin-bottom: 32px;
+    }
+
+    .badge {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 4px;
+      background: rgba(88, 166, 255, 0.15);
+      color: var(--accent);
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+
+    .badge-green {
+      background: rgba(63, 185, 80, 0.15);
+      color: var(--green);
+    }
+
+    .badge-yellow {
+      background: rgba(210, 153, 34, 0.15);
+      color: var(--yellow);
+    }
+
+    /* ---- CODE BLOCKS ---- */
+    .terminal {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      margin: 16px 0 24px;
+    }
+
+    .terminal-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px;
+      background: rgba(22, 27, 34, 0.8);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .terminal-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .terminal-dot:nth-child(1) { background: #ff5f57; }
+    .terminal-dot:nth-child(2) { background: #febc2e; }
+    .terminal-dot:nth-child(3) { background: #28c840; }
+
+    .terminal-body {
+      padding: 16px 20px;
+      font-size: 13px;
+      line-height: 1.7;
+      overflow-x: auto;
+    }
+
+    .terminal-body .prompt { color: var(--green); }
+    .terminal-body .cmd { color: var(--text); }
+    .terminal-body .output { color: var(--text-muted); }
+    .terminal-body .highlight { color: var(--accent); }
+    .terminal-body .success { color: var(--green); }
+    .terminal-body .comment { color: var(--text-dim); }
+
+    code {
+      background: var(--bg-surface);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 13px;
+      color: var(--accent);
+    }
+
+    /* ---- CARDS ---- */
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 16px;
+      margin: 16px 0 24px;
+    }
+
+    .card-grid-4 {
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    }
+
+    .card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 24px 20px;
+    }
+
+    .card h4 {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .card .card-sub {
+      font-size: 12px;
+      color: var(--text-dim);
+      margin-bottom: 12px;
+    }
+
+    .card p {
+      font-size: 13px;
+      margin-bottom: 12px;
+    }
+
+    .card ul {
+      list-style: none;
+      font-size: 12px;
+    }
+
+    .card ul li {
+      padding: 3px 0;
+      padding-left: 16px;
+      position: relative;
+      color: var(--text-muted);
+    }
+
+    .card ul li::before {
+      content: "+";
+      position: absolute;
+      left: 0;
+      color: var(--green);
+      font-weight: 700;
+    }
+
+    .card-accent {
+      border-color: var(--accent);
+    }
+
+    /* ---- TABLES ---- */
+    .table-wrapper {
+      overflow-x: auto;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      margin: 16px 0 24px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+
+    thead th {
+      text-align: left;
+      padding: 12px 16px;
+      font-weight: 700;
+      border-bottom: 2px solid var(--border);
+      background: var(--bg-surface);
+      white-space: nowrap;
+    }
+
+    tbody td {
+      padding: 10px 16px;
+      border-bottom: 1px solid var(--border);
+      vertical-align: top;
+    }
+
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    tbody td:first-child {
+      font-weight: 600;
+      color: var(--text);
+      white-space: nowrap;
+    }
+
+    /* ---- EXAMPLE GALLERY ---- */
+    .example-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 8px;
+      margin: 12px 0 24px;
+    }
+
+    .example-item {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      transition: border-color 0.15s;
+    }
+
+    .example-item:hover {
+      border-color: var(--accent);
+    }
+
+    .example-item a {
+      text-decoration: none;
+    }
+
+    .example-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--accent);
+      margin-bottom: 2px;
+    }
+
+    .example-desc {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .example-algo {
+      font-size: 11px;
+      color: var(--text-dim);
+      white-space: nowrap;
+      padding: 2px 8px;
+      background: rgba(48, 54, 61, 0.5);
+      border-radius: 4px;
+      flex-shrink: 0;
+    }
+
+    /* ---- STATS ROW ---- */
+    .stats {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin: 16px 0 24px;
+    }
+
+    .stat {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px 20px;
+      text-align: center;
+      flex: 1;
+      min-width: 120px;
+    }
+
+    .stat-number {
+      font-size: 28px;
+      font-weight: 800;
+      color: var(--accent);
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    .stat-label {
+      font-size: 11px;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    /* ---- PLATFORM GRID ---- */
+    .platform-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+      margin: 16px 0 24px;
+    }
+
+    .platform-item {
+      background: var(--bg-surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px;
+      text-align: center;
+    }
+
+    .platform-item .platform-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 2px;
+    }
+
+    .platform-item .platform-vendor {
+      font-size: 11px;
+      color: var(--text-dim);
+    }
+
+    /* ---- FAQ ---- */
+    .faq-item {
+      margin-bottom: 24px;
+    }
+
+    .faq-q {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 6px;
+    }
+
+    .faq-a {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.7;
+    }
+
+    .faq-a code {
+      font-size: 12px;
+    }
+
+    /* ---- POLYA TABLE ---- */
+    .polya-phase {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 4px;
+      margin-right: 4px;
+    }
+
+    .phase-understand { background: rgba(88, 166, 255, 0.15); color: var(--accent); }
+    .phase-solve { background: rgba(63, 185, 80, 0.15); color: var(--green); }
+    .phase-interpret { background: rgba(210, 153, 34, 0.15); color: var(--yellow); }
+
+    /* ---- RESPONSIVE ---- */
+    @media (max-width: 768px) {
+      .sidebar {
+        transform: translateX(-100%);
+        transition: transform 0.25s ease;
+      }
+
+      .sidebar.open {
+        transform: translateX(0);
+      }
+
+      .content {
+        margin-left: 0;
+        padding: 32px 20px 80px;
+      }
+
+      .sidebar-toggle {
+        display: block;
+      }
+
+      nav .nav-links {
+        gap: 12px;
+      }
+
+      nav .nav-links a {
+        font-size: 12px;
+      }
+
+      .card-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .stats {
+        gap: 8px;
+      }
+
+      .stat {
+        min-width: 80px;
+        padding: 12px;
+      }
+
+      .stat-number {
+        font-size: 22px;
+      }
+
+      h1 {
+        font-size: 26px;
+      }
+
+      h2 {
+        font-size: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-inner">
+      <div style="display:flex;align-items:center;gap:16px;">
+        <button class="sidebar-toggle" onclick="document.querySelector('.sidebar').classList.toggle('open')" aria-label="Toggle navigation">Menu</button>
+        <a href="index.html" class="logo">uber-<span>polya</span></a>
+      </div>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="#installation">Install</a></li>
+        <li><a href="#quick-start">Quick Start</a></li>
+        <li><a href="#examples">Examples</a></li>
+        <li><a href="https://github.com/agtm1199/uber-polya">GitHub</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <div class="layout">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Getting Started</div>
+        <a href="#top">Introduction</a>
+        <a href="#installation">Installation</a>
+        <a href="#quick-start">Quick Start</a>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Skills</div>
+        <a href="#skills">The Four Skills</a>
+        <a href="#skill-uber-polya" class="sub">uber-polya</a>
+        <a href="#skill-uber-model" class="sub">uber-model</a>
+        <a href="#skill-uber-solve" class="sub">uber-solve</a>
+        <a href="#skill-uber-interpret" class="sub">uber-interpret</a>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">Reference</div>
+        <a href="#examples">Problem Gallery</a>
+        <a href="#knowledge-base">Knowledge Base</a>
+        <a href="#platforms">Platforms</a>
+        <a href="#principles">Design Principles</a>
+        <a href="#faq">FAQ</a>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="content">
+
+      <!-- INTRO -->
+      <section id="top">
+        <h1>Usage Guide <span class="badge">v0.4.0</span></h1>
+        <p class="lead">Everything you need to start solving problems with uber-polya &mdash; the first math problem-solver skill for Claude Code and 25+ compatible platforms.</p>
+        <p>uber-polya is a free, open-source skill that implements George Polya's four-phase problem-solving cycle as an executable algorithm. You describe a problem in plain English. It finds the mathematical structure, selects the right algorithm, writes verified solver code, runs it, and gives you the answer with proof.</p>
+        <p><strong>Don't guess. Solve.</strong></p>
+      </section>
+
+      <!-- INSTALLATION -->
+      <h2 id="installation">Installation</h2>
+
+      <h3>Claude Code (primary)</h3>
+      <div class="terminal">
+        <div class="terminal-header">
+          <div class="terminal-dot"></div>
+          <div class="terminal-dot"></div>
+          <div class="terminal-dot"></div>
+        </div>
+        <div class="terminal-body">
+          <div><span class="prompt">$</span> <span class="cmd">git clone https://github.com/agtm1199/uber-polya.git</span></div>
+          <div><span class="prompt">$</span> <span class="cmd">cd uber-polya</span></div>
+          <div><span class="prompt">$</span> <span class="cmd">bash install.sh</span></div>
+          <br>
+          <div><span class="output">Where would you like to install the skills?</span></div>
+          <div><span class="output">  1) Global  (~/.claude/skills/) &mdash; available in all projects</span></div>
+          <div><span class="output">  2) Local   (./.claude/skills/) &mdash; current project only</span></div>
+        </div>
+      </div>
+      <p>That's it. No virtual environment, no build step. The skills are plain markdown files that your AI agent reads on demand.</p>
+
+      <h3>Other platforms</h3>
+      <p>uber-polya uses the <strong>Agent Skills standard</strong> &mdash; the same <code>.md</code> files work on any compatible platform. Copy the <code>skills/</code> directory into the platform's skill location:</p>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr><th>Platform</th><th>Skill Location</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Claude Code</td><td><code>~/.claude/skills/</code> (global) or <code>.claude/skills/</code> (local)</td></tr>
+            <tr><td>OpenAI Codex CLI</td><td><code>~/.codex/skills/</code></td></tr>
+            <tr><td>Cursor</td><td><code>.cursor/skills/</code></td></tr>
+            <tr><td>GitHub Copilot</td><td><code>.github/skills/</code></td></tr>
+            <tr><td>Mistral Vibe</td><td><code>.mistral/skills/</code></td></tr>
+            <tr><td>Others</td><td>Consult your platform's skill documentation</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Python dependencies</h3>
+      <p>uber-polya generates Python solver code. Install the libraries as needed, or all at once:</p>
+      <div class="terminal">
+        <div class="terminal-header">
+          <div class="terminal-dot"></div>
+          <div class="terminal-dot"></div>
+          <div class="terminal-dot"></div>
+        </div>
+        <div class="terminal-body">
+          <div><span class="comment"># Install everything at once</span></div>
+          <div><span class="prompt">$</span> <span class="cmd">pip install matplotlib numpy pulp scipy sympy networkx cvxpy z3-solver statsmodels</span></div>
+          <br>
+          <div><span class="comment"># Or install by category:</span></div>
+          <div><span class="prompt">$</span> <span class="cmd">pip install pulp</span>            <span class="comment"># ILP/LP (scheduling, knapsack, seating)</span></div>
+          <div><span class="prompt">$</span> <span class="cmd">pip install scipy</span>          <span class="comment"># Assignment, fair division</span></div>
+          <div><span class="prompt">$</span> <span class="cmd">pip install networkx</span>      <span class="comment"># Graph coloring, paths</span></div>
+          <div><span class="prompt">$</span> <span class="cmd">pip install cvxpy</span>          <span class="comment"># Convex optimization, portfolio</span></div>
+          <div><span class="prompt">$</span> <span class="cmd">pip install z3-solver</span>      <span class="comment"># SAT/SMT, theorem proving</span></div>
+          <div><span class="prompt">$</span> <span class="cmd">pip install sympy</span>          <span class="comment"># Symbolic algebra, break-even</span></div>
+          <div><span class="prompt">$</span> <span class="cmd">pip install statsmodels</span>    <span class="comment"># Statistical inference, A/B tests</span></div>
+          <div><span class="prompt">$</span> <span class="cmd">pip install matplotlib numpy</span> <span class="comment"># Visualization (all examples)</span></div>
+        </div>
+      </div>
+
+      <!-- QUICK START -->
+      <h2 id="quick-start">Quick Start</h2>
+      <p>Open your AI agent and type a problem. Here's an exam scheduling example using the three skills step by step.</p>
+
+      <h3>Step 1: Model the problem</h3>
+      <div class="terminal">
+        <div class="terminal-header">
+          <div class="terminal-dot"></div>
+          <div class="terminal-dot"></div>
+          <div class="terminal-dot"></div>
+        </div>
+        <div class="terminal-body">
+          <div><span class="prompt">$</span> <span class="cmd">/uber-model I need to schedule 4 exams (A, B, C, D) into the fewest</span></div>
+          <div><span class="cmd">  time slots so no student has two exams at the same time. Students</span></div>
+          <div><span class="cmd">  are enrolled in: {A,B}, {A,C}, {B,D}, {C,D}.</span></div>
+          <br>
+          <div><span class="output">Structure:</span> <span class="highlight">Graph coloring on conflict graph G = (V, E)</span></div>
+          <div><span class="output">  Vertices V = {A, B, C, D} (exams)</span></div>
+          <div><span class="output">  Edges E = {(A,B), (A,C), (B,D), (C,D)}</span></div>
+          <div><span class="output">  Objective: Minimize k (chromatic number)</span></div>
+          <div><span class="output">  Graph is bipartite &rarr; chromatic number = 2</span></div>
+        </div>
+      </div>
+
+      <h3>Step 2: Solve it</h3>
+      <div class="terminal">
+        <div class="terminal-header">
+          <div class="terminal-dot"></div>
+          <div class="terminal-dot"></div>
+          <div class="terminal-dot"></div>
+        </div>
+        <div class="terminal-body">
+          <div><span class="prompt">$</span> <span class="cmd">/uber-solve</span></div>
+          <br>
+          <div><span class="output">Algorithm:</span> <span class="highlight">Bipartite 2-coloring via BFS</span></div>
+          <div><span class="output">Answer: chromatic number = 2</span></div>
+          <div><span class="output">  Slot 1: {A, D}</span></div>
+          <div><span class="output">  Slot 2: {B, C}</span></div>
+          <br>
+          <div><span class="success">Verification: All 4 edges checked &mdash; no conflicts. PASS.</span></div>
+        </div>
+      </div>
+
+      <h3>Step 3: Interpret the result</h3>
+      <div class="terminal">
+        <div class="terminal-header">
+          <div class="terminal-dot"></div>
+          <div class="terminal-dot"></div>
+          <div class="terminal-dot"></div>
+        </div>
+        <div class="terminal-body">
+          <div><span class="prompt">$</span> <span class="cmd">/uber-interpret</span></div>
+          <br>
+          <div><span class="output">Bottom line:</span> <span class="highlight">You need exactly 2 time slots. No student has a conflict.</span></div>
+          <div><span class="output">  Slot 1 (e.g., Monday 9 AM): Exams A and D</span></div>
+          <div><span class="output">  Slot 2 (e.g., Monday 2 PM): Exams B and C</span></div>
+          <br>
+          <div><span class="output">Sensitivity: If a student enrolls in both A and D,</span></div>
+          <div><span class="output">  chromatic number rises to 3 (odd cycle created).</span></div>
+          <br>
+          <div><span class="output">Modeling insight: Whenever you need items in the fewest</span></div>
+          <div><span class="output">  groups with separation constraints &rarr; graph coloring.</span></div>
+        </div>
+      </div>
+
+      <p><strong>Or use the orchestrator</strong> to run all three steps automatically:</p>
+      <div class="terminal">
+        <div class="terminal-header">
+          <div class="terminal-dot"></div>
+          <div class="terminal-dot"></div>
+          <div class="terminal-dot"></div>
+        </div>
+        <div class="terminal-body">
+          <div><span class="prompt">$</span> <span class="cmd">/uber-polya Schedule 4 exams into the fewest slots with no student conflicts</span></div>
+          <br>
+          <div><span class="output">Runs all three phases automatically. Same result, one command.</span></div>
+        </div>
+      </div>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr><th>Polya Phase</th><th>Skill</th><th>What it does</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><span class="polya-phase phase-understand">1-2</span> Understand &amp; Plan</td><td><code>/uber-model</code></td><td>Translates your problem into a formal mathematical model</td></tr>
+            <tr><td><span class="polya-phase phase-solve">3</span> Execute</td><td><code>/uber-solve</code></td><td>Classifies, selects algorithm, solves, verifies</td></tr>
+            <tr><td><span class="polya-phase phase-interpret">4</span> Look Back</td><td><code>/uber-interpret</code></td><td>Translates the solution into actionable insight</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- THE FOUR SKILLS -->
+      <h2 id="skills">The Four Skills</h2>
+      <p>uber-polya ships four skills. Use the orchestrator for most problems, or individual skills for more control.</p>
+
+      <div class="card-grid" id="skill-uber-polya">
+        <div class="card card-accent">
+          <h4>/uber-polya <span class="badge">Orchestrator</span></h4>
+          <div class="card-sub">Chains Model &rarr; Solve &rarr; Interpret as one command</div>
+          <p><strong>When to use:</strong> Most of the time. Just describe your problem.</p>
+          <p><strong>Invocation:</strong> <code>/uber-polya &lt;describe your problem&gt;</code></p>
+          <ul>
+            <li><strong>Full Pipeline</strong> &mdash; complete model, solve, interpret cycle</li>
+            <li><strong>Fast-Track</strong> &mdash; skip Socratic dialogue for well-defined problems</li>
+            <li><strong>Stop-After-Model</strong> &mdash; just formalize, don't solve</li>
+            <li><strong>Stop-After-Solve</strong> &mdash; solve but skip interpretation</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="card-grid" id="skill-uber-model">
+        <div class="card">
+          <h4>/uber-model <span class="badge-green badge">Phase A</span></h4>
+          <div class="card-sub">Real-world problem &rarr; formal mathematical model</div>
+          <p><strong>When to use:</strong> When you want to understand the math without solving yet.</p>
+          <p>Walks through Polya's Phases 1-2 via Socratic questioning. Classifies the problem, identifies unknowns, data, and constraints, then builds a formal model with a mapping table connecting math variables to real-world meaning.</p>
+          <ul>
+            <li>Phase 0: Problem Reception &amp; Classification</li>
+            <li>Phase 1: Understanding (unknowns, data, conditions)</li>
+            <li>Phase 2: Devising a Plan (heuristics, candidate structures)</li>
+            <li>Phase 3: Formalization (formal model + mapping table)</li>
+            <li>Phase 4: Bridge (hand off to /uber-solve)</li>
+          </ul>
+          <p style="margin-top:8px;font-size:12px;"><strong>References:</strong> heuristics.md, structures.md, problem-classification.md, common-mistakes.md, model-templates.md</p>
+        </div>
+      </div>
+
+      <div class="card-grid" id="skill-uber-solve">
+        <div class="card">
+          <h4>/uber-solve <span class="badge-green badge">Phase B</span></h4>
+          <div class="card-sub">Formal model &rarr; verified solution</div>
+          <p><strong>When to use:</strong> When you already have a well-defined math problem.</p>
+          <p>Classifies the problem to a named problem class, selects the right algorithm based on instance size and complexity, writes a complete Python solver with <code>Instance</code>/<code>Solution</code> dataclasses, runs it, and independently verifies the answer.</p>
+          <ul>
+            <li>Phase 0: Model Reception &amp; Classification</li>
+            <li>Phase 1: Algorithm Selection + verification method</li>
+            <li>Phase 2: Solution Engineering (Python solver code)</li>
+            <li>Phase 3: Execution &amp; Verification</li>
+            <li>Phase 4: Optimization &amp; Hardening</li>
+          </ul>
+          <p style="margin-top:8px;font-size:12px;"><strong>References:</strong> algorithms.md, solvers.md, algorithms-statistics.md, solvers-statistics.md, solving-protocols.md, optimization-hardening.md</p>
+        </div>
+      </div>
+
+      <div class="card-grid" id="skill-uber-interpret">
+        <div class="card">
+          <h4>/uber-interpret <span class="badge-yellow badge">Phase C</span></h4>
+          <div class="card-sub">Solution &rarr; actionable insight</div>
+          <p><strong>When to use:</strong> When you have a solution and need to explain it to stakeholders.</p>
+          <p>Translates mathematical output back to real-world meaning. Performs sensitivity analysis, generates visualizations, formulates actionable recommendations, and adapts communication for the audience (technical, decision-maker, or general).</p>
+          <ul>
+            <li>Phase 0: Context Recovery (mapping, objective, audience)</li>
+            <li>Phase 1: Solution Translation</li>
+            <li>Phase 2: Robustness &amp; Sensitivity Analysis</li>
+            <li>Phase 3: Visualization (matplotlib/seaborn)</li>
+            <li>Phase 4: Recommendations &amp; Communication</li>
+            <li>Phase 5: Knowledge Transfer</li>
+          </ul>
+          <p style="margin-top:8px;font-size:12px;"><strong>References:</strong> interpretation-patterns.md, visualization.md</p>
+        </div>
+      </div>
+
+      <!-- PROBLEM GALLERY -->
+      <h2 id="examples">Problem Gallery</h2>
+      <p>16 worked examples with complete solver code, independent verification, and sample data.</p>
+
+      <h3>Everyday Problems <span class="badge-green badge">10</span></h3>
+      <div class="example-grid">
+        <a href="https://github.com/agtm1199/uber-polya/tree/main/examples/shift-scheduling" class="example-item">
+          <div><div class="example-name">Shift Scheduling</div><div class="example-desc">Schedule 8 nurses across 3 shifts over 7 days with staffing and fairness constraints</div></div>
+          <div class="example-algo">ILP (PuLP/CBC)</div>
+        </a>
+        <a href="https://github.com/agtm1199/uber-polya/tree/main/examples/budget-optimization" class="example-item">
+          <div><div class="example-name">Budget Optimization</div><div class="example-desc">Select projects to maximize ROI under a $500K budget</div></div>
+          <div class="example-algo">0/1 Knapsack ILP</div>
+        </a>
+        <a href="https://github.com/agtm1199/uber-polya/tree/main/examples/fair-rent" class="example-item">
+          <div><div class="example-name">Fair Rent</div><div class="example-desc">Split $3000 rent fairly among 3 roommates with different-sized rooms</div></div>
+          <div class="example-algo">Hungarian + envy-free</div>
+        </a>
+        <a href="https://github.com/agtm1199/uber-polya/tree/main/examples/route-planning" class="example-item">
+          <div><div class="example-name">Route Planning</div><div class="example-desc">Find the shortest delivery route visiting 8 locations</div></div>
+          <div class="example-algo">Held-Karp DP (TSP)</div>
+        </a>
+        <a href="https://github.com/agtm1199/uber-polya/tree/main/examples/project-prioritization" class="example-item">
+          <div><div class="example-name">Project Prioritization</div><div class="example-desc">Rank 8 features by 4 weighted criteria</div></div>
+          <div class="example-algo">MCDA (NumPy)</div>
+        </a>
+        <a href="https://github.com/agtm1199/uber-polya/tree/main/examples/study-schedule" class="example-item">
+          <div><div class="example-name">Study Schedule</div><div class="example-desc">Create a conflict-free study timetable for 6 subjects</div></div>
+          <div class="example-algo">Graph coloring</div>
+        </a>
+        <a href="https://github.com/agtm1199/uber-polya/tree/main/examples/meal-planning" class="example-item">
+          <div><div class="example-name">Meal Planning</div><div class="example-desc">Plan 7 dinners minimizing cost within nutrition targets</div></div>
+          <div class="example-algo">ILP (PuLP/CBC)</div>
+        </a>
+        <a href="https://github.com/agtm1199/uber-polya/tree/main/examples/team-assignment" class="example-item">
+          <div><div class="example-name">Team Assignment</div><div class="example-desc">Assign 6 developers to 6 projects maximizing satisfaction</div></div>
+          <div class="example-algo">Hungarian (SciPy)</div>
+        </a>
+        <a href="https://github.com/agtm1199/uber-polya/tree/main/examples/break-even" class="example-item">
+          <div><div class="example-name">Break-Even Analysis</div><div class="example-desc">Find break-even quantity for a new product launch</div></div>
+          <div class="example-algo">Symbolic (SymPy)</div>
+        </a>
+        <a href="https://github.com/agtm1199/uber-polya/tree/main/examples/event-seating" class="example-item">
+          <div><div class="example-name">Event Seating</div><div class="example-desc">Seat 12 wedding guests at 3 tables with must-together/apart constraints</div></div>
+          <div class="example-algo">ILP (PuLP/CBC)</div>
+        </a>
+      </div>
+
+      <h3>Technical Showcases <span class="badge">6</span></h3>
+      <div class="example-grid">
+        <a href="https://github.com/agtm1199/uber-polya/tree/main/examples/milking-cows" class="example-item">
+          <div><div class="example-name">Milking Cows</div><div class="example-desc">Interval merging &mdash; find longest milking period and longest idle gap</div></div>
+          <div class="example-algo">Sort + sweep O(N log N)</div>
+        </a>
+        <a href="https://github.com/agtm1199/uber-polya/tree/main/examples/inspector-assignment" class="example-item">
+          <div><div class="example-name">Inspector Assignment</div><div class="example-desc">Assign 6 inspectors to 10 facilities maximizing expertise score</div></div>
+          <div class="example-algo">ILP + LP relaxation</div>
+        </a>
+        <a href="https://github.com/agtm1199/uber-polya/tree/main/examples/portfolio-optimization" class="example-item">
+          <div><div class="example-name">Portfolio Optimization</div><div class="example-desc">Markowitz mean-variance optimization with efficient frontier</div></div>
+          <div class="example-algo">Convex QP (cvxpy)</div>
+        </a>
+        <a href="https://github.com/agtm1199/uber-polya/tree/main/examples/tournament-hamiltonian" class="example-item">
+          <div><div class="example-name">Tournament Hamiltonian</div><div class="example-desc">Prove every tournament has a Hamiltonian path via induction</div></div>
+          <div class="example-algo">Induction + Z3</div>
+        </a>
+        <a href="https://github.com/agtm1199/uber-polya/tree/main/examples/ab-testing" class="example-item">
+          <div><div class="example-name">A/B Testing</div><div class="example-desc">Determine if a checkout flow redesign significantly improved conversions</div></div>
+          <div class="example-algo">z-test + Bayesian + bootstrap</div>
+        </a>
+        <a href="https://github.com/agtm1199/uber-polya/tree/main/examples/cafe-tips" class="example-item">
+          <div><div class="example-name">Cafe Tips</div><div class="example-desc">Does music genre affect tipping? Full Polya cycle demonstration.</div></div>
+          <div class="example-algo">t-test + Mann-Whitney + Bayesian</div>
+        </a>
+      </div>
+
+      <!-- KNOWLEDGE BASE -->
+      <h2 id="knowledge-base">Knowledge Base</h2>
+      <p>uber-polya ships 13 reference files that the AI reads on demand. These are the curated catalogs that power problem classification, algorithm selection, and solution interpretation.</p>
+
+      <div class="stats">
+        <div class="stat"><div class="stat-number">139</div><div class="stat-label">Algorithms</div></div>
+        <div class="stat"><div class="stat-number">43</div><div class="stat-label">Structures</div></div>
+        <div class="stat"><div class="stat-number">17</div><div class="stat-label">Heuristics</div></div>
+        <div class="stat"><div class="stat-number">15</div><div class="stat-label">Solver Libraries</div></div>
+        <div class="stat"><div class="stat-number">10</div><div class="stat-label">Domains</div></div>
+      </div>
+
+      <h3>Reference files by skill</h3>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr><th>Skill</th><th>File</th><th>Contents</th></tr>
+          </thead>
+          <tbody>
+            <tr><td rowspan="5">/uber-model</td><td>heuristics.md</td><td>17 Polya heuristics with Socratic questions</td></tr>
+            <tr><td>structures.md</td><td>43 structures across 10 domains with pattern matching</td></tr>
+            <tr><td>problem-classification.md</td><td>Decision tree + quick-lookup table for rapid classification</td></tr>
+            <tr><td>common-mistakes.md</td><td>16 anti-patterns (modeling, solving, interpretation)</td></tr>
+            <tr><td>model-templates.md</td><td>5 fill-in-the-blank formal model templates</td></tr>
+            <tr><td rowspan="6">/uber-solve</td><td>algorithms.md</td><td>94 algorithms (discrete math + continuous optimization)</td></tr>
+            <tr><td>algorithms-statistics.md</td><td>45 statistical algorithms (hypothesis tests, regression, Bayesian)</td></tr>
+            <tr><td>solvers.md</td><td>9 solver libraries (NetworkX, PuLP, Z3, SymPy, SciPy, OR-Tools, cvxpy, ...)</td></tr>
+            <tr><td>solvers-statistics.md</td><td>6 statistical libraries (scipy.stats, statsmodels, PyMC, ...)</td></tr>
+            <tr><td>solving-protocols.md</td><td>8 domain-specific solving workflows</td></tr>
+            <tr><td>optimization-hardening.md</td><td>Performance tuning and production hardening</td></tr>
+            <tr><td rowspan="2">/uber-interpret</td><td>interpretation-patterns.md</td><td>Domain-specific math-to-reality translation patterns</td></tr>
+            <tr><td>visualization.md</td><td>20+ chart types with matplotlib templates</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Domains covered</h3>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr><th>Domain</th><th>Status</th><th>What it adds</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Graph Theory</td><td><span class="badge-green badge">Shipped</span></td><td>Coloring, shortest path, matching, flow, connectivity</td></tr>
+            <tr><td>Combinatorics</td><td><span class="badge-green badge">Shipped</span></td><td>Counting, permutations, combinations, inclusion-exclusion</td></tr>
+            <tr><td>Set Theory</td><td><span class="badge-green badge">Shipped</span></td><td>Set operations, partitions, covers</td></tr>
+            <tr><td>Logic</td><td><span class="badge-green badge">Shipped</span></td><td>SAT, SMT, propositional and first-order logic</td></tr>
+            <tr><td>Number Theory</td><td><span class="badge-green badge">Shipped</span></td><td>GCD, primality, modular arithmetic</td></tr>
+            <tr><td>Relations &amp; Orders</td><td><span class="badge-green badge">Shipped</span></td><td>Topological sort, partial orders, lattices</td></tr>
+            <tr><td>Optimization</td><td><span class="badge-green badge">Shipped</span></td><td>ILP, LP, knapsack, assignment, scheduling</td></tr>
+            <tr><td>Discrete Probability</td><td><span class="badge-green badge">Shipped</span></td><td>Expected value, random variables, distributions</td></tr>
+            <tr><td>Continuous Optimization</td><td><span class="badge-green badge">Shipped</span></td><td>Convex QP, BFGS, gradient descent, interior point</td></tr>
+            <tr><td>Statistical Inference</td><td><span class="badge-green badge">Shipped</span></td><td>Hypothesis testing, regression, Bayesian, bootstrap</td></tr>
+            <tr><td>Game Theory</td><td><span class="badge-yellow badge">Planned</span></td><td>Nash equilibrium, fair division, mechanism design</td></tr>
+            <tr><td>Machine Learning</td><td><span class="badge-yellow badge">Planned</span></td><td>Classification, clustering, dimensionality reduction</td></tr>
+            <tr><td>Simulation</td><td><span class="badge-yellow badge">Planned</span></td><td>Monte Carlo, discrete-event, agent-based</td></tr>
+            <tr><td>Time Series</td><td><span class="badge-yellow badge">Planned</span></td><td>ARIMA, forecasting, anomaly detection</td></tr>
+            <tr><td>Decision Analysis</td><td><span class="badge-yellow badge">Planned</span></td><td>Multi-criteria, decision trees, utility theory</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>New domains plug in as reference files without changing the core Polya workflow. See <a href="https://github.com/agtm1199/uber-polya/blob/main/CONTRIBUTING.md">CONTRIBUTING.md</a> for how to add a domain.</p>
+
+      <!-- PLATFORMS -->
+      <h2 id="platforms">Platform Compatibility</h2>
+      <p>uber-polya uses the <strong>Agent Skills open standard</strong>. The skills are plain <code>.md</code> files &mdash; any platform that reads them is compatible.</p>
+
+      <div class="platform-grid">
+        <div class="platform-item"><div class="platform-name">Claude Code</div><div class="platform-vendor">Anthropic</div></div>
+        <div class="platform-item"><div class="platform-name">Codex CLI</div><div class="platform-vendor">OpenAI</div></div>
+        <div class="platform-item"><div class="platform-name">Cursor</div><div class="platform-vendor">Cursor Inc.</div></div>
+        <div class="platform-item"><div class="platform-name">GitHub Copilot</div><div class="platform-vendor">GitHub / Microsoft</div></div>
+        <div class="platform-item"><div class="platform-name">Mistral Vibe</div><div class="platform-vendor">Mistral AI</div></div>
+        <div class="platform-item"><div class="platform-name">Windsurf</div><div class="platform-vendor">Codeium</div></div>
+        <div class="platform-item"><div class="platform-name">Aider</div><div class="platform-vendor">Paul Gauthier</div></div>
+        <div class="platform-item"><div class="platform-name">25+ more</div><div class="platform-vendor">Agent Skills standard</div></div>
+      </div>
+
+      <!-- DESIGN PRINCIPLES -->
+      <h2 id="principles">Design Principles</h2>
+
+      <div class="card-grid card-grid-4">
+        <div class="card">
+          <h4>Socratic, not didactic</h4>
+          <p>Asks questions that could have occurred to you. Guides discovery through dialogue, never lectures.</p>
+        </div>
+        <div class="card">
+          <h4>Verify everything</h4>
+          <p>Every solution includes independent verification. Feasibility checks, optimality certificates, cross-validation.</p>
+        </div>
+        <div class="card">
+          <h4>Right tool for the job</h4>
+          <p>Algorithm selection based on problem class and instance size. Not the fanciest algorithm &mdash; the right one.</p>
+        </div>
+        <div class="card">
+          <h4>Audience adaptation</h4>
+          <p>Results adapted for technical, decision-maker, or general audiences. Same math, different communication.</p>
+        </div>
+        <div class="card">
+          <h4>Knowledge transfer</h4>
+          <p>Every problem teaches a reusable modeling pattern. You learn while getting your answer.</p>
+        </div>
+        <div class="card">
+          <h4>Modular expansion</h4>
+          <p>New domains plug in as reference files without changing the core workflow. The architecture grows, not changes.</p>
+        </div>
+      </div>
+
+      <!-- FAQ -->
+      <h2 id="faq">FAQ</h2>
+
+      <div class="faq-item">
+        <div class="faq-q">What Python packages do I need?</div>
+        <div class="faq-a">It depends on the problem type. ILP problems need <code>pulp</code>, graph problems need <code>networkx</code>, statistics need <code>statsmodels</code> and <code>scipy</code>. uber-polya tells you what to install when it writes solver code. Or install everything at once: <code>pip install matplotlib numpy pulp scipy sympy networkx cvxpy z3-solver statsmodels</code></div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">Can I use individual skills instead of the orchestrator?</div>
+        <div class="faq-a">Yes. Use <code>/uber-model</code> to just formalize a problem, <code>/uber-solve</code> to just solve a model, or <code>/uber-interpret</code> to just interpret a solution. Each skill's output feeds the next, but they work independently too.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">What if the solver fails or the problem is infeasible?</div>
+        <div class="faq-a">uber-polya handles this explicitly. If a problem is infeasible, it tells you which constraints conflict. If the solver times out, it reports the best solution found so far with its gap to optimality. The common-mistakes.md reference file documents 16 anti-patterns to avoid.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">How do I add a new domain?</div>
+        <div class="faq-a">Add algorithms to <code>algorithms.md</code>, structures to <code>structures.md</code>, interpretation patterns to <code>interpretation-patterns.md</code>, and at least one worked example. See <a href="https://github.com/agtm1199/uber-polya/blob/main/CONTRIBUTING.md">CONTRIBUTING.md</a> for the full checklist.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">Does this work on platforms other than Claude Code?</div>
+        <div class="faq-a">Yes. uber-polya uses the Agent Skills open standard. The same <code>.md</code> files work on OpenAI Codex CLI, Cursor, GitHub Copilot, Mistral Vibe, Windsurf, and 25+ other platforms. Copy the <code>skills/</code> directory into your platform's skill location.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">Is the solution really "verified"?</div>
+        <div class="faq-a">Yes. Every solver includes an independent <code>verify()</code> function that re-checks all constraints without sharing logic with the solver. For optimization problems, uber-polya also checks optimality via LP relaxation bounds or exhaustive comparison on small instances. The verification code is separate from the solver code &mdash; it's a genuine independent check.</div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- ACTIVE SECTION TRACKING -->
+  <script>
+    const sections = document.querySelectorAll('h2[id], section[id]');
+    const sidebarLinks = document.querySelectorAll('.sidebar a');
+
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const id = entry.target.id;
+          sidebarLinks.forEach(link => {
+            link.classList.toggle('active',
+              link.getAttribute('href') === '#' + id ||
+              (id === 'top' && link.getAttribute('href') === '#top')
+            );
+          });
+        }
+      });
+    }, {
+      rootMargin: '-80px 0px -70% 0px',
+      threshold: 0
+    });
+
+    sections.forEach(section => observer.observe(section));
+
+    // Close sidebar on mobile when a link is clicked
+    document.querySelectorAll('.sidebar a').forEach(link => {
+      link.addEventListener('click', () => {
+        if (window.innerWidth < 768) {
+          document.querySelector('.sidebar').classList.remove('open');
+        }
+      });
+    });
+  </script>
+
+</body>
+</html>

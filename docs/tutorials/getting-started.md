@@ -10,7 +10,7 @@ A zero-to-hero tutorial. By the end, you will have modeled, solved, and interpre
 Optional Python packages (installed automatically when needed):
 
 ```bash
-pip install networkx pulp z3-solver sympy scipy matplotlib numpy cvxpy statsmodels
+pip install networkx pulp z3-solver sympy scipy matplotlib numpy cvxpy statsmodels shapely numpy-financial nashpy pymoo prophet arch ruptures lifelines scikit-learn xgboost umap-learn simpy dowhy
 ```
 
 ## Install uber-polya
@@ -108,31 +108,49 @@ Each skill's output feeds the next. You can also run them independently -- `/ube
 
 ## Next Steps
 
-**Try the worked examples.** The `examples/` directory contains 16 fully solved problems with runnable code, organized in two categories:
+**Try the worked examples.** The `examples/` directory contains 36 fully solved problems with runnable code, organized in two categories:
 
-**Everyday Problems** (10 examples):
+**Everyday Problems** (11 examples):
 
 - **[Shift Scheduling](../../examples/shift-scheduling/)** -- Schedule 8 nurses across 3 shifts over 7 days (ILP)
 - **[Budget Optimization](../../examples/budget-optimization/)** -- Select projects to maximize ROI under budget (Knapsack ILP)
 - **[Fair Rent](../../examples/fair-rent/)** -- Split rent fairly among 3 roommates (Hungarian + envy-free)
 - **[Route Planning](../../examples/route-planning/)** -- Shortest delivery route across 8 stops (Held-Karp TSP)
+- **[Project Prioritization](../../examples/project-prioritization/)** -- Rank 8 features by weighted criteria (MCDA)
 - **[Study Schedule](../../examples/study-schedule/)** -- Conflict-free timetable for 6 subjects (graph coloring)
 - **[Meal Planning](../../examples/meal-planning/)** -- 7 dinners minimizing cost within nutrition targets (ILP)
 - **[Team Assignment](../../examples/team-assignment/)** -- Assign 6 developers to 6 projects (Hungarian algorithm)
-- **[Project Prioritization](../../examples/project-prioritization/)** -- Rank 8 features by weighted criteria (MCDA)
 - **[Break-Even Analysis](../../examples/break-even/)** -- Find break-even quantity for product launch (SymPy)
 - **[Event Seating](../../examples/event-seating/)** -- Seat 12 wedding guests at 3 tables with constraints (ILP)
+- **[Mortgage Comparison](../../examples/mortgage-analysis/)** -- Compare 3 mortgage options with refinancing analysis (NPV)
 
-**Technical Showcases** (6 examples):
+**Technical Showcases** (25 examples):
 
-- **[Milking Cows](../tutorials/milking-cows-walkthrough.md)** -- Interval merging, O(N log N) sort-and-sweep, brute-force verification
+- **[Milking Cows](../tutorials/milking-cows-walkthrough.md)** -- Interval merging, O(N log N) sort-and-sweep
 - **[Inspector Assignment](../tutorials/inspector-assignment-walkthrough.md)** -- Capacitated bipartite ILP, LP relaxation, sensitivity analysis
-- **[Portfolio Optimization](../../examples/portfolio-optimization/)** -- Markowitz QP with cvxpy, efficient frontier, risk-return trade-off
-- **[Tournament Hamiltonian](../../examples/tournament-hamiltonian/)** -- Proof by induction with Z3 computational verification
+- **[Portfolio Optimization](../../examples/portfolio-optimization/)** -- Markowitz QP with cvxpy, efficient frontier
+- **[Tournament Hamiltonian](../../examples/tournament-hamiltonian/)** -- Proof by induction with Z3 verification
 - **[A/B Testing](../../examples/ab-testing/)** -- z-test, Bayesian, bootstrap, power analysis
-- **[Cafe Tips](../../examples/cafe-tips/)** -- Full Polya cycle: t-test, Mann-Whitney, permutation, bootstrap, Bayesian
-
-See the complete list with algorithm details in [examples/README.md](../../examples/README.md).
+- **[Cafe Tips](../../examples/cafe-tips/)** -- t-test, Mann-Whitney, permutation, bootstrap, Bayesian
+- **[Traffic Flow](../../examples/traffic-flow/)** -- Gaussian elimination for network flow (numpy)
+- **[Water Tank](../../examples/water-tank/)** -- Symbolic differentiation for optimization (SymPy)
+- **[Land Survey](../../examples/land-survey/)** -- Shoelace + convex hull area computation (shapely)
+- **[Nash Equilibrium](../../examples/nash-equilibrium/)** -- Support enumeration for 2-player games (nashpy)
+- **[Vendor Selection](../../examples/vendor-selection/)** -- AHP + TOPSIS multi-criteria analysis (numpy)
+- **[Pareto Optimization](../../examples/pareto-optimization/)** -- Epsilon-constraint + Pareto filter (pymoo)
+- **[Sales Forecast](../../examples/sales-forecast/)** -- SARIMA + Holt-Winters time series (statsmodels)
+- **[Anomaly Detection](../../examples/anomaly-detection/)** -- Z-score + PELT change point detection (ruptures)
+- **[Customer Survival](../../examples/customer-survival/)** -- Kaplan-Meier + Cox PH survival analysis (lifelines)
+- **[Customer Churn Classification](../../examples/classification/)** -- Random Forest + Gradient Boosting (scikit-learn)
+- **[Customer Segmentation](../../examples/clustering/)** -- K-Means + DBSCAN + GMM clustering (scikit-learn)
+- **[Feature Importance](../../examples/feature-importance/)** -- PCA + Feature Selection + Model Comparison (scikit-learn)
+- **[Call Center Queuing](../../examples/queuing-system/)** -- M/M/c queuing + DES verification (simpy)
+- **[SIR Epidemic Model](../../examples/epidemic-sir/)** -- SIR ODE + vaccination analysis (scipy)
+- **[Monte Carlo Project Risk](../../examples/monte-carlo-risk/)** -- MC risk simulation + convergence analysis (numpy)
+- **[Root Finding & Interpolation](../../examples/root-finding/)** -- Bisection + Newton + Brent + cubic spline (scipy)
+- **[Causal Inference](../../examples/causal-inference/)** -- Propensity matching + DiD + doubly robust (scikit-learn)
+- **[Inventory Optimization](../../examples/inventory-optimization/)** -- EOQ + newsvendor + safety stock (scipy)
+- **[Bin Packing](../../examples/bin-packing/)** -- First Fit Decreasing + ILP optimal (PuLP)
 
 **Try your own problem.** Good candidates for `/uber-model`:
 
@@ -144,5 +162,11 @@ See the complete list with algorithm details in [examples/README.md](../../examp
 - Optimization (minimize cost, maximize profit) -- continuous optimization, convex QP
 - Comparing groups ("Is A better than B?") -- hypothesis testing, A/B tests
 - Prediction (forecast outcomes from data) -- regression, Bayesian inference
+- Time series (forecasting, anomaly detection) -- SARIMA, change point detection
+- Survival analysis (churn, equipment failure) -- Kaplan-Meier, Cox PH
+- Machine learning (classification, clustering, feature selection) -- Random Forest, K-Means, PCA
+- Simulation (queuing, epidemics, Monte Carlo risk) -- DES, SIR ODE, MC sampling
+- Causal inference (treatment effects, policy evaluation) -- propensity matching, DiD
+- Operations research (inventory, bin packing, lot sizing) -- EOQ, newsvendor, first-fit decreasing
 
 Start with `/uber-model <describe your problem in plain English>` and let Claude guide you from there.

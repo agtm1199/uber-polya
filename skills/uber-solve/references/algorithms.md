@@ -1,6 +1,6 @@
 # Algorithm Catalog
 
-**Scope**: Discrete Mathematics (86 algorithms), Continuous Optimization (8 algorithms), Linear Algebra (12 algorithms), Calculus (10 algorithms), Geometry & Trigonometry (10 algorithms), Financial Mathematics (8 algorithms), Game Theory (12 algorithms), Decision Analysis (10 algorithms), Multi-Objective Optimization (8 algorithms), Numerical ODEs & Dynamical Systems (10 algorithms)
+**Scope**: Discrete Mathematics (86 algorithms), Continuous Optimization (8 algorithms), Linear Algebra (12 algorithms), Calculus (10 algorithms), Geometry & Trigonometry (10 algorithms), Financial Mathematics (8 algorithms), Game Theory (12 algorithms), Decision Analysis (10 algorithms), Multi-Objective Optimization (8 algorithms), Numerical ODEs & Dynamical Systems (10 algorithms), Root Finding (5 algorithms), Interpolation & Approximation (5 algorithms), Numerical Integration (3 algorithms), Extended Operations Research (8 algorithms)
 
 Comprehensive catalog of algorithms for mathematical problem solving. Organized by domain, each entry includes complexity, solver library, correctness guarantee, and implementation guidance.
 
@@ -3424,6 +3424,576 @@ def lotka_volterra(t_span, prey0, pred0, alpha=1.0, beta=0.1, delta=0.075, gamma
 
 ---
 
+## 30. Root Finding
+
+### A175: Bisection Method
+
+**Problem**: Find a root of f(x) = 0 on interval [a, b] where f(a) and f(b) have opposite signs.
+**T**: O(log((b-a)/ε)) iterations | **S**: O(1)
+**Lib**: `scipy.optimize.bisect()`
+**Guarantee**: Exact to tolerance ε (guaranteed convergence for continuous f with sign change).
+
+```python
+from scipy.optimize import bisect
+
+def find_root_bisection(f, a: float, b: float, tol: float = 1e-12) -> dict:
+    """Find root of f on [a,b] via bisection."""
+    root = bisect(f, a, b, xtol=tol)
+    return {"root": root, "f_at_root": f(root), "method": "bisection"}
+```
+
+**Use when**: Robust baseline; always converges if sign change exists. Slower than Newton but guaranteed.
+
+---
+
+### A176: Newton-Raphson Method
+
+**Problem**: Find a root of f(x) = 0 given f and f' (derivative), starting from initial guess x₀.
+**T**: O(log log(1/ε)) iterations (quadratic convergence) | **S**: O(1)
+**Lib**: `scipy.optimize.newton()`
+**Guarantee**: Exact to tolerance (locally; may diverge if x₀ is far from root or f' ≈ 0).
+
+```python
+from scipy.optimize import newton
+
+def find_root_newton(f, fprime, x0: float, tol: float = 1e-12) -> dict:
+    """Find root via Newton-Raphson."""
+    root = newton(f, x0, fprime=fprime, tol=tol)
+    return {"root": root, "f_at_root": f(root), "method": "newton"}
+```
+
+**Use when**: Fast convergence needed and derivative is available. Quadratic convergence near root.
+
+---
+
+### A177: Secant Method
+
+**Problem**: Find a root of f(x) = 0 without computing the derivative, using two initial guesses.
+**T**: O(log(1/ε) / log(φ)) iterations (superlinear, order φ ≈ 1.618) | **S**: O(1)
+**Lib**: `scipy.optimize.newton()` (without fprime)
+**Guarantee**: Exact to tolerance (locally; convergence order φ ≈ 1.618).
+
+```python
+from scipy.optimize import newton
+
+def find_root_secant(f, x0: float, x1: float, tol: float = 1e-12) -> dict:
+    """Find root via secant method."""
+    root = newton(f, x0, x1=x1, tol=tol)
+    return {"root": root, "f_at_root": f(root), "method": "secant"}
+```
+
+**Use when**: Derivative not available but faster than bisection needed. Good general-purpose method.
+
+---
+
+### A178: Brent's Method
+
+**Problem**: Find a root of f(x) = 0 on [a, b] combining bisection reliability with superlinear speed.
+**T**: O(log((b-a)/ε)) worst case, superlinear typical | **S**: O(1)
+**Lib**: `scipy.optimize.brentq()`
+**Guarantee**: Exact to tolerance (guaranteed convergence like bisection, fast like secant).
+
+```python
+from scipy.optimize import brentq
+
+def find_root_brent(f, a: float, b: float, tol: float = 1e-12) -> dict:
+    """Find root via Brent's method (gold standard)."""
+    root = brentq(f, a, b, xtol=tol)
+    return {"root": root, "f_at_root": f(root), "method": "brent"}
+```
+
+**Use when**: Default choice for 1D root finding. Combines guaranteed convergence with fast performance. The gold standard.
+
+---
+
+### A179: Fixed-Point Iteration
+
+**Problem**: Find x such that g(x) = x (equivalently, f(x) = g(x) - x = 0).
+**T**: O(log(1/ε)) if |g'(x*)| < 1 (linear convergence) | **S**: O(1)
+**Lib**: `scipy.optimize.fixed_point()`
+**Guarantee**: Converges if |g'(x*)| < 1 near fixed point x* (contraction mapping).
+
+```python
+from scipy.optimize import fixed_point
+
+def find_fixed_point(g, x0: float, tol: float = 1e-10) -> dict:
+    """Find x such that g(x) = x."""
+    xstar = fixed_point(g, x0, xtol=tol)
+    return {"fixed_point": float(xstar), "g_at_fp": float(g(xstar)), "method": "fixed_point"}
+```
+
+**Use when**: Problem naturally has form x = g(x). Common in iterative schemes, economic equilibrium, convergence analysis.
+
+---
+
+## 31. Interpolation & Approximation
+
+### A180: Linear Interpolation
+
+**Problem**: Estimate y at a new x given (x₁, y₁), (x₂, y₂) pairs, using piecewise linear segments.
+**T**: O(n) setup, O(log n) query (with sorted x) | **S**: O(n)
+**Lib**: `numpy.interp()`, `scipy.interpolate.interp1d(kind='linear')`
+**Guarantee**: Exact at data points; O(h²) error between points (h = spacing).
+
+```python
+import numpy as np
+
+def linear_interpolate(x_data, y_data, x_new):
+    """Piecewise linear interpolation."""
+    y_new = np.interp(x_new, x_data, y_data)
+    return {"x": x_new.tolist(), "y": y_new.tolist(), "method": "linear"}
+```
+
+**Use when**: Simple, fast, no overshoot. Good for noisy data or when smoothness is not critical.
+
+---
+
+### A181: Lagrange / Polynomial Interpolation
+
+**Problem**: Find the unique polynomial of degree ≤ n-1 passing through n data points.
+**T**: O(n²) construction, O(n) evaluation | **S**: O(n)
+**Lib**: `scipy.interpolate.lagrange()`, `numpy.polyfit()`
+**Guarantee**: Exact at data points; may exhibit Runge's phenomenon (oscillation) for high degree.
+
+```python
+from scipy.interpolate import lagrange
+import numpy as np
+
+def polynomial_interpolate(x_data, y_data, x_new):
+    """Lagrange polynomial interpolation."""
+    poly = lagrange(x_data, y_data)
+    y_new = poly(x_new)
+    return {"x": x_new.tolist(), "y": y_new.tolist(), "degree": len(x_data) - 1, "method": "lagrange"}
+```
+
+**Use when**: Few data points (≤10), need exact polynomial. Avoid for many points (use splines instead).
+
+---
+
+### A182: Cubic Spline Interpolation
+
+**Problem**: Fit a smooth piecewise cubic polynomial through data points with continuous first and second derivatives.
+**T**: O(n) construction (tridiagonal solve) | **S**: O(n)
+**Lib**: `scipy.interpolate.CubicSpline()`
+**Guarantee**: Exact at data points; C² smooth; minimizes total curvature (natural spline).
+
+```python
+from scipy.interpolate import CubicSpline
+import numpy as np
+
+def cubic_spline_interpolate(x_data, y_data, x_new):
+    """Cubic spline interpolation (natural boundary)."""
+    cs = CubicSpline(x_data, y_data)
+    y_new = cs(x_new)
+    return {"x": x_new.tolist(), "y": y_new.tolist(), "method": "cubic_spline"}
+```
+
+**Use when**: Default for smooth interpolation. Avoids Runge's phenomenon. Good for visualization and differentiation.
+
+---
+
+### A183: Chebyshev Approximation
+
+**Problem**: Approximate a function f(x) on [a, b] by a polynomial that minimizes the maximum error (minimax).
+**T**: O(n log n) via FFT on Chebyshev nodes | **S**: O(n)
+**Lib**: `numpy.polynomial.chebyshev`
+**Guarantee**: Near-minimax approximation; avoids Runge's phenomenon by using Chebyshev nodes.
+
+```python
+import numpy as np
+from numpy.polynomial import chebyshev
+
+def chebyshev_approximate(f, a: float, b: float, degree: int, x_eval):
+    """Chebyshev polynomial approximation on [a,b]."""
+    # Chebyshev nodes on [a,b]
+    nodes = np.cos((2*np.arange(degree+1) + 1) / (2*(degree+1)) * np.pi)
+    x_nodes = 0.5*(b - a)*nodes + 0.5*(a + b)
+    y_nodes = np.array([f(x) for x in x_nodes])
+    coeffs = chebyshev.chebfit(x_nodes, y_nodes, degree)
+    y_eval = chebyshev.chebval(x_eval, coeffs)
+    return {"x": x_eval.tolist(), "y": y_eval.tolist(), "degree": degree, "method": "chebyshev"}
+```
+
+**Use when**: Need high-accuracy polynomial approximation without oscillation. Function evaluation is expensive.
+
+---
+
+### A184: RBF Interpolation
+
+**Problem**: Interpolate scattered (non-gridded) data in any dimension using radial basis functions.
+**T**: O(n³) construction (linear system), O(n) evaluation | **S**: O(n²)
+**Lib**: `scipy.interpolate.RBFInterpolator()`
+**Guarantee**: Exact at data points; smooth; works in any dimension.
+
+```python
+from scipy.interpolate import RBFInterpolator
+import numpy as np
+
+def rbf_interpolate(points, values, query_points, kernel: str = "thin_plate_spline"):
+    """RBF interpolation for scattered data."""
+    rbf = RBFInterpolator(points, values, kernel=kernel)
+    result = rbf(query_points)
+    return {"values": result.tolist(), "kernel": kernel, "method": "rbf"}
+```
+
+**Use when**: Scattered data (non-uniform grid), multi-dimensional. Default for spatial interpolation.
+
+---
+
+## 32. Numerical Integration (Quadrature)
+
+### A185: Trapezoidal Rule
+
+**Problem**: Approximate ∫ₐᵇ f(x)dx using trapezoidal segments.
+**T**: O(n) for n panels | **S**: O(1)
+**Lib**: `numpy.trapz()`, `scipy.integrate.trapezoid()`
+**Guarantee**: Error O(h²) where h = (b-a)/n. Exact for linear functions.
+
+```python
+import numpy as np
+from scipy.integrate import trapezoid
+
+def integrate_trapezoidal(f, a: float, b: float, n: int = 1000) -> dict:
+    """Numerical integration via trapezoidal rule."""
+    x = np.linspace(a, b, n + 1)
+    y = np.array([f(xi) for xi in x])
+    result = trapezoid(y, x)
+    return {"integral": float(result), "n_panels": n, "method": "trapezoidal"}
+```
+
+**Use when**: Simple, robust. Good for tabulated data or when function evaluations are cheap.
+
+---
+
+### A186: Simpson's Rule
+
+**Problem**: Approximate ∫ₐᵇ f(x)dx using parabolic segments (higher accuracy than trapezoidal).
+**T**: O(n) for n panels (n must be even) | **S**: O(1)
+**Lib**: `scipy.integrate.simpson()`
+**Guarantee**: Error O(h⁴) where h = (b-a)/n. Exact for polynomials up to degree 3.
+
+```python
+import numpy as np
+from scipy.integrate import simpson
+
+def integrate_simpson(f, a: float, b: float, n: int = 1000) -> dict:
+    """Numerical integration via Simpson's rule."""
+    if n % 2 == 1:
+        n += 1  # Simpson requires even n
+    x = np.linspace(a, b, n + 1)
+    y = np.array([f(xi) for xi in x])
+    result = simpson(y, x=x)
+    return {"integral": float(result), "n_panels": n, "method": "simpson"}
+```
+
+**Use when**: Default for smooth functions. Much more accurate than trapezoidal for same number of evaluations.
+
+---
+
+### A187: Gaussian Quadrature
+
+**Problem**: Approximate ∫ₐᵇ f(x)dx using optimally chosen nodes and weights for maximum accuracy.
+**T**: O(n) evaluations for n-point quadrature | **S**: O(n)
+**Lib**: `scipy.integrate.quad()` (adaptive Gauss-Kronrod)
+**Guarantee**: n-point Gaussian quadrature is exact for polynomials up to degree 2n-1.
+
+```python
+from scipy.integrate import quad
+
+def integrate_gaussian(f, a: float, b: float) -> dict:
+    """Adaptive Gaussian quadrature (scipy.integrate.quad)."""
+    result, error = quad(f, a, b)
+    return {"integral": float(result), "error_estimate": float(error), "method": "gaussian_quadrature"}
+```
+
+**Use when**: Need high accuracy with minimal function evaluations. `scipy.integrate.quad` is the gold standard for 1D integration.
+
+---
+
+## 33. Extended Operations Research
+
+### A188: Economic Order Quantity (EOQ)
+
+**Problem**: Find the order quantity that minimizes total inventory cost (ordering + holding).
+**T**: O(1) (closed-form: Q* = √(2DK/h)) | **S**: O(1)
+**Lib**: Custom (math)
+**Guarantee**: Exact (convex cost function, unique minimum).
+
+```python
+import math
+
+def eoq(demand_rate: float, order_cost: float, holding_cost: float) -> dict:
+    """Classic EOQ model: Q* = sqrt(2DK/h)."""
+    Q_star = math.sqrt(2 * demand_rate * order_cost / holding_cost)
+    total_cost = math.sqrt(2 * demand_rate * order_cost * holding_cost)
+    orders_per_year = demand_rate / Q_star
+    cycle_time = Q_star / demand_rate
+    return {
+        "optimal_quantity": Q_star,
+        "total_annual_cost": total_cost,
+        "orders_per_year": orders_per_year,
+        "cycle_time": cycle_time,
+    }
+```
+
+**Use when**: Deterministic demand, fixed order cost, constant holding cost. Classic inventory management baseline.
+
+---
+
+### A189: Newsvendor Model
+
+**Problem**: Find the optimal order quantity for a perishable product with uncertain demand (single period).
+**T**: O(1) if demand CDF is known (Q* = F⁻¹(Cu/(Cu+Co))) | **S**: O(1)
+**Lib**: `scipy.stats` (for inverse CDF)
+**Guarantee**: Exact (maximizes expected profit for given demand distribution).
+
+```python
+from scipy import stats
+
+def newsvendor(mu: float, sigma: float, cost: float, price: float, salvage: float = 0) -> dict:
+    """Newsvendor with normal demand. Cu = underage cost, Co = overage cost."""
+    Cu = price - cost       # cost of understocking
+    Co = cost - salvage     # cost of overstocking
+    critical_ratio = Cu / (Cu + Co)
+    Q_star = stats.norm.ppf(critical_ratio, loc=mu, scale=sigma)
+    expected_profit = Cu * mu - (Cu + Co) * sigma * stats.norm.pdf(
+        stats.norm.ppf(critical_ratio)) + (Cu + Co) * sigma * critical_ratio * stats.norm.ppf(critical_ratio)
+    return {
+        "optimal_quantity": float(Q_star),
+        "critical_ratio": critical_ratio,
+        "expected_sales": float(mu - sigma * stats.norm.pdf(stats.norm.ppf(critical_ratio)) / (1 - critical_ratio)),
+    }
+```
+
+**Use when**: Single-period ordering with uncertain demand (fashion, perishables, seasonal). Critical ratio determines service level.
+
+---
+
+### A190: Safety Stock Calculation
+
+**Problem**: Determine safety stock level to achieve a target service level given demand and lead time uncertainty.
+**T**: O(1) (closed-form) | **S**: O(1)
+**Lib**: `scipy.stats.norm.ppf()`
+**Guarantee**: Exact for normal demand assumption; robust for moderate deviations.
+
+```python
+from scipy.stats import norm
+import math
+
+def safety_stock(demand_mean: float, demand_std: float, lead_time_mean: float,
+                 lead_time_std: float, service_level: float = 0.95) -> dict:
+    """Safety stock for (demand, lead time) variability."""
+    z = norm.ppf(service_level)
+    # Combined variability during lead time
+    ss = z * math.sqrt(lead_time_mean * demand_std**2 + demand_mean**2 * lead_time_std**2)
+    reorder_point = demand_mean * lead_time_mean + ss
+    return {
+        "safety_stock": ss,
+        "reorder_point": reorder_point,
+        "z_score": z,
+        "service_level": service_level,
+    }
+```
+
+**Use when**: Continuous-review inventory with variable demand and/or variable lead times. Set reorder point = expected demand during lead time + safety stock.
+
+---
+
+### A191: Job Shop Scheduling (ILP)
+
+**Problem**: Schedule n jobs on m machines, each job visiting machines in a given order, minimizing makespan.
+**T**: NP-hard; O(2^n) worst case, practical via ILP | **S**: O(n·m)
+**Lib**: `pulp` / OR-Tools CP-SAT
+**Guarantee**: Exact (optimal) for small instances; heuristic for large.
+
+```python
+from ortools.sat.python import cp_model
+
+def job_shop_schedule(jobs: list[list[tuple[int, int]]]) -> dict:
+    """Job shop scheduling via CP-SAT. jobs[j] = [(machine, duration), ...]."""
+    model = cp_model.CpModel()
+    n_jobs = len(jobs)
+    horizon = sum(d for job in jobs for _, d in job)
+    starts, ends, intervals = {}, {}, {}
+    for j, job in enumerate(jobs):
+        for k, (m, d) in enumerate(job):
+            starts[j, k] = model.NewIntVar(0, horizon, f"s_{j}_{k}")
+            ends[j, k] = model.NewIntVar(0, horizon, f"e_{j}_{k}")
+            intervals[j, k] = model.NewIntervalVar(starts[j, k], d, ends[j, k], f"i_{j}_{k}")
+    # Precedence within each job
+    for j, job in enumerate(jobs):
+        for k in range(len(job) - 1):
+            model.Add(ends[j, k] <= starts[j, k + 1])
+    # No overlap on each machine
+    from collections import defaultdict
+    machine_intervals = defaultdict(list)
+    for j, job in enumerate(jobs):
+        for k, (m, _) in enumerate(job):
+            machine_intervals[m].append(intervals[j, k])
+    for m_intervals in machine_intervals.values():
+        model.AddNoOverlap(m_intervals)
+    makespan = model.NewIntVar(0, horizon, "makespan")
+    model.AddMaxEquality(makespan, [ends[j, len(job)-1] for j, job in enumerate(jobs)])
+    model.Minimize(makespan)
+    solver = cp_model.CpSolver()
+    status = solver.Solve(model)
+    schedule = {}
+    if status in (cp_model.OPTIMAL, cp_model.FEASIBLE):
+        for j, job in enumerate(jobs):
+            schedule[f"job_{j}"] = [(solver.Value(starts[j, k]), solver.Value(ends[j, k])) for k in range(len(job))]
+    return {"makespan": solver.Value(makespan), "schedule": schedule, "status": solver.StatusName(status)}
+```
+
+**Use when**: Manufacturing, task scheduling with machine-specific orderings. Use CP-SAT for up to ~50 jobs × 10 machines.
+
+---
+
+### A192: Flow Shop Scheduling
+
+**Problem**: Schedule n jobs through m machines in the same order, minimizing makespan.
+**T**: NP-hard for m ≥ 3; O(n log n) for m = 2 (Johnson's rule) | **S**: O(n·m)
+**Lib**: Custom (Johnson's rule) / OR-Tools (general)
+**Guarantee**: Exact for 2 machines (Johnson); heuristic for 3+.
+
+```python
+def johnsons_rule(jobs: list[tuple[float, float]]) -> dict:
+    """Johnson's rule for 2-machine flow shop. jobs = [(time_m1, time_m2), ...]."""
+    n = len(jobs)
+    group1, group2 = [], []
+    for i, (a, b) in enumerate(jobs):
+        if a <= b:
+            group1.append((a, i))
+        else:
+            group2.append((b, i))
+    group1.sort()
+    group2.sort(reverse=True)
+    order = [i for _, i in group1] + [i for _, i in group2]
+    # Compute makespan
+    t1, t2 = 0, 0
+    for i in order:
+        t1 += jobs[i][0]
+        t2 = max(t1, t2) + jobs[i][1]
+    return {"order": order, "makespan": t2}
+```
+
+**Use when**: Assembly line, production sequencing where all jobs follow the same machine order.
+
+---
+
+### A193: Bin Packing (First-Fit Decreasing)
+
+**Problem**: Pack items of given sizes into minimum number of bins of capacity C.
+**T**: O(n log n) for FFD heuristic | **S**: O(n)
+**Lib**: Custom / `pulp` (exact ILP)
+**Guarantee**: FFD uses at most (11/9)·OPT + 6/9 bins. ILP gives exact.
+
+```python
+def bin_packing_ffd(items: list[float], capacity: float) -> dict:
+    """First Fit Decreasing heuristic for bin packing."""
+    sorted_items = sorted(enumerate(items), key=lambda x: -x[1])
+    bins = []  # list of (remaining_capacity, [item_indices])
+    for idx, size in sorted_items:
+        placed = False
+        for b in bins:
+            if b[0] >= size:
+                b[0] -= size
+                b[1].append(idx)
+                placed = True
+                break
+        if not placed:
+            bins.append([capacity - size, [idx]])
+    return {
+        "n_bins": len(bins),
+        "bins": [{"items": b[1], "used": capacity - b[0], "remaining": b[0]} for b in bins],
+    }
+```
+
+**Use when**: Packing goods into containers, memory allocation, cutting stock problems. FFD is fast and near-optimal.
+
+---
+
+### A194: Facility Location (p-Median ILP)
+
+**Problem**: Place p facilities among candidate locations to minimize total weighted distance to demand points.
+**T**: NP-hard; practical via ILP for ~1000 locations | **S**: O(n·m)
+**Lib**: `pulp`
+**Guarantee**: Exact (ILP optimal).
+
+```python
+import pulp
+import numpy as np
+
+def facility_location(distances: np.ndarray, demands: np.ndarray, p: int) -> dict:
+    """p-Median facility location. distances[i,j] = dist from demand i to candidate j."""
+    n_demand, n_candidates = distances.shape
+    prob = pulp.LpProblem("p_median", pulp.LpMinimize)
+    # y[j] = 1 if facility at j
+    y = [pulp.LpVariable(f"y_{j}", cat="Binary") for j in range(n_candidates)]
+    # x[i][j] = 1 if demand i served by facility j
+    x = [[pulp.LpVariable(f"x_{i}_{j}", cat="Binary") for j in range(n_candidates)] for i in range(n_demand)]
+    prob += pulp.lpSum(demands[i] * distances[i, j] * x[i][j]
+                       for i in range(n_demand) for j in range(n_candidates))
+    prob += pulp.lpSum(y) == p
+    for i in range(n_demand):
+        prob += pulp.lpSum(x[i]) == 1
+        for j in range(n_candidates):
+            prob += x[i][j] <= y[j]
+    prob.solve(pulp.PULP_CBC_CMD(msg=0))
+    facilities = [j for j in range(n_candidates) if y[j].value() > 0.5]
+    assignments = [int(np.argmax([x[i][j].value() or 0 for j in range(n_candidates)])) for i in range(n_demand)]
+    return {"facilities": facilities, "assignments": assignments,
+            "total_cost": pulp.value(prob.objective), "status": pulp.LpStatus[prob.status]}
+```
+
+**Use when**: Warehouse placement, hospital siting, fire station location, retail store placement.
+
+---
+
+### A195: Capacitated Vehicle Routing (VRP)
+
+**Problem**: Route vehicles from a depot to serve customers with known demands, minimizing total distance, subject to vehicle capacity.
+**T**: NP-hard; practical via OR-Tools for ~1000 customers | **S**: O(n²)
+**Lib**: `ortools.constraint_solver`
+**Guarantee**: Heuristic (OR-Tools uses local search + metaheuristics).
+
+```python
+from ortools.constraint_solver import routing_enums_pb2, pywrapcp
+
+def capacitated_vrp(distance_matrix, demands, vehicle_capacity, num_vehicles, depot=0):
+    """Capacitated VRP via OR-Tools."""
+    n = len(distance_matrix)
+    manager = pywrapcp.RoutingIndexManager(n, num_vehicles, depot)
+    routing = pywrapcp.RoutingModel(manager)
+    def dist_callback(from_idx, to_idx):
+        return distance_matrix[manager.IndexToNode(from_idx)][manager.IndexToNode(to_idx)]
+    transit_id = routing.RegisterTransitCallback(dist_callback)
+    routing.SetArcCostEvaluatorOfAllVehicles(transit_id)
+    def demand_callback(idx):
+        return demands[manager.IndexToNode(idx)]
+    demand_id = routing.RegisterUnaryTransitCallback(demand_callback)
+    routing.AddDimensionWithVehicleCapacity(demand_id, 0, [vehicle_capacity]*num_vehicles, True, "Capacity")
+    search_params = pywrapcp.DefaultRoutingSearchParameters()
+    search_params.first_solution_strategy = routing_enums_pb2.FirstSolutionStrategy.PATH_CHEAPEST_ARC
+    search_params.local_search_metaheuristic = routing_enums_pb2.LocalSearchMetaheuristic.GUIDED_LOCAL_SEARCH
+    search_params.time_limit.FromSeconds(30)
+    solution = routing.SolveWithParameters(search_params)
+    routes = []
+    if solution:
+        for v in range(num_vehicles):
+            route = []
+            idx = routing.Start(v)
+            while not routing.IsEnd(idx):
+                route.append(manager.IndexToNode(idx))
+                idx = solution.Value(routing.NextVar(idx))
+            route.append(manager.IndexToNode(idx))
+            routes.append(route)
+    return {"routes": routes, "total_distance": solution.ObjectiveValue() if solution else None}
+```
+
+**Use when**: Delivery routing, field service, school bus routing. Extends TSP with capacity constraints and multiple vehicles.
+
+---
+
 ## Cross-Reference Index
 
 Where each algorithm section connects to structures and solvers.
@@ -3456,5 +4026,9 @@ Where each algorithm section connects to structures and solvers.
 | §27 Decision Analysis (A147-A156) | §16 Decision Analysis (16.1-16.3) | numpy, scipy, §2 PuLP | §14 Decision Analysis Results |
 | §28 Multi-Objective Opt (A157-A164) | §17 Multi-Objective Opt (17.1-17.3) | §14 pymoo, §2 PuLP, §5 SciPy | §15 Multi-Objective Results |
 | §29 ODEs & Dynamical Systems (A165-A174) | §21 ODE/Dynamical System (21.1-21.3) | §5 SciPy (solve_ivp) | §18 Simulation & ODE Results |
+| §30 Root Finding (A175-A179) | §22.1 Root-Finding Problem | §5 SciPy (optimize) | §19 Numerical Methods Results |
+| §31 Interpolation (A180-A184) | §22.2 Interpolation Problem | §5 SciPy (interpolate) | §19 Numerical Methods Results |
+| §32 Numerical Integration (A185-A187) | §22.3 Quadrature Problem | §5 SciPy (integrate) | §19 Numerical Methods Results |
+| §33 Extended OR (A188-A195) | §24 Extended OR (24.1-24.3) | §2 PuLP, §6 OR-Tools | §21 Extended OR Results |
 
 Also see: **problem-classification.md** for decision-tree algorithm selection, **solving-protocols.md** for domain-specific solving workflows, **common-mistakes.md** §S1-S6 for solving pitfalls.

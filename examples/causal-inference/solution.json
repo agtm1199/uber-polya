@@ -1,0 +1,39 @@
+{
+  "instance": {
+    "n": 1000,
+    "n_treated": 469,
+    "n_control": 531,
+    "true_effect": 5000.0
+  },
+  "naive": {
+    "estimate": 9684.698875175221,
+    "bias": 4684.6988751752215
+  },
+  "propensity_score_matching": {
+    "att": 5272.522697321817,
+    "propensity_treated_mean": 0.4903382688785756,
+    "propensity_control_mean": 0.450153518232801,
+    "error": 272.52269732181685
+  },
+  "difference_in_differences": {
+    "estimate": 4703.696862731206,
+    "error": -296.30313726879376
+  },
+  "doubly_robust": {
+    "ate": 5130.567137251021,
+    "error": 130.56713725102145
+  },
+  "verification": {
+    "naive_biased": true,
+    "psm_close": true,
+    "did_close": true,
+    "dr_close": true,
+    "psm_closer_than_naive": true,
+    "dr_closer_than_naive": true,
+    "propensity_overlap": true,
+    "treatment_balance": true,
+    "all_passed": true
+  },
+  "algorithm": "Naive + Propensity Score Matching + Difference-in-Differences + Doubly Robust (AIPW)",
+  "time_seconds": 0.008804242999758571
+}

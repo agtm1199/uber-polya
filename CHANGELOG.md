@@ -4,6 +4,76 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.2.0] - 2026-02-21
+
+### Added
+
+- **Documentation overhaul**:
+  - Standardized nav bar across all 8 HTML pages (Docs, Tutorial, Manifesto, GitHub with SVG icon)
+  - Added `.github-link` CSS with inline GitHub Octicon SVG to all pages
+  - Updated index.html stats: 305 algorithms, 91 structures, 36 examples, 26 solver libraries, 24 domains
+  - Expanded getting-started tutorial from 16 to 36 worked examples (both .md and .html)
+  - Added 6 new problem categories to tutorial: time series, survival analysis, ML, simulation, causal inference, OR
+  - Updated pip install command across all docs to include all 21 packages
+- **Expansion roadmap**: Added 14 Planned domains and 9 Unlikely domains to README
+  - Planned: PDEs, dynamical systems, spatial statistics, geodesy, option pricing, risk management, agent-based modeling, Fourier analysis, DSP, information theory, classical control, modern control, population dynamics, epidemiology
+  - Unlikely: abstract algebra, real analysis, complex analysis, calculus of variations, actuarial science, reinforcement learning, coding theory, cryptography, phylogenetics
+
+### Changed
+
+- Manifesto title: "Every Problem Is a Math Problem" → "Most of Your Problems Are Math Problems"
+- README Documentation section: updated manifesto link text
+- All 8 HTML docs pages: consistent 4-item nav bar (was inconsistent mix of 3-5 items)
+
+---
+
+_Internal development milestones below (v0.3.0–v1.0.0) detail the per-phase changes._
+
+---
+
+## [1.0.0] - 2026-02-21
+
+### Added
+
+- **Numerical Methods domain** seeded end-to-end:
+  - 3 new structures in structures.md (§22: root-finding problem, interpolation problem, quadrature problem)
+  - 13 new algorithms in algorithms.md:
+    - §30 Root Finding (A175-A179): bisection, Newton-Raphson, secant, Brent's, fixed-point iteration
+    - §31 Interpolation & Approximation (A180-A184): linear, Lagrange, cubic spline, Chebyshev, RBF
+    - §32 Numerical Integration (A185-A187): trapezoidal, Simpson's, Gaussian quadrature
+  - 3 new interpretation patterns (§19.1: root-finding, §19.2: interpolation, §19.3: quadrature)
+  - 1 new chart type (§35 root/interpolation plot)
+  - **Root Finding & Interpolation** worked example (examples/root-finding/)
+- **Causal Inference domain** seeded end-to-end:
+  - 2 new structures in structures.md (§23: causal graph/DAG, treatment-outcome model)
+  - 7 new algorithms in algorithms-statistics.md (S104-S110):
+    - §19 Causal Inference: propensity score matching, difference-in-differences, instrumental variables, regression discontinuity, synthetic control, DAG-based identification, doubly robust ATE
+  - dowhy solver reference in solvers-statistics.md (§13)
+  - 2 new interpretation patterns (§20.1: treatment effect, §20.2: causal DAG)
+  - 1 new chart type (§36 causal effect plot)
+  - **Causal Inference -- Job Training Program** worked example (examples/causal-inference/)
+- **Extended Operations Research domain** seeded end-to-end:
+  - 3 new structures in structures.md (§24: inventory model, packing/bin problem, facility location model)
+  - 8 new algorithms in algorithms.md:
+    - §33 Extended OR (A188-A195): EOQ, newsvendor, safety stock, job shop scheduling, flow shop scheduling, bin packing FFD, facility location p-median, capacitated VRP
+  - 3 new interpretation patterns (§21.1: inventory policy, §21.2: scheduling/routing, §21.3: packing/location)
+  - 1 new chart type (§37 inventory policy chart)
+  - **Inventory Optimization -- EOQ & Newsvendor** worked example (examples/inventory-optimization/)
+  - **Bin Packing -- Container Loading** worked example (examples/bin-packing/)
+- Problem classification decision tree expanded with 11 new branches (FIND ROOT, INTERPOLATE, INTEGRATE, CAUSAL EFFECT, MANAGE INVENTORY, PACK, LOCATE, SCHEDULE JOBS, ROUTE VEHICLES)
+- 19 new quick-lookup patterns, 10 new complexity entries, 7 new disambiguation tips
+- Cross-reference indexes updated in all modified reference files
+
+### Changed
+
+- algorithms.md scope: 174 → 195 algorithms (added 13 numerical methods + 8 extended OR)
+- algorithms-statistics.md scope: 103 → 110 algorithms (added 7 causal inference)
+- structures.md scope: 83 → 91 structures (added 3+2+3 for numerical/causal/OR)
+- solvers-statistics.md: 12 → 13 solver library entries (added dowhy)
+- interpretation-patterns.md: 37 → 43 pattern groups (added 6 for numerical/causal/OR)
+- visualization.md: 34 → 37 chart types (added root/interpolation, causal effect, inventory policy)
+- Updated README: 305 algorithms, 26 solver libraries, 91 structures, 24 domains, 36 examples
+
 ## [0.9.0] - 2026-02-20
 
 ### Added
@@ -242,7 +312,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 - Updated install.sh to include uber-polya orchestrator
 - Updated README with orchestrator documentation and expanded reference catalog table
 
-## [0.2.0] - 2026-02-18
+## [0.2.0-dev] - 2026-02-18
 
 ### Changed
 

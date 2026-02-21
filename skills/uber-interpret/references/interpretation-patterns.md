@@ -1116,6 +1116,149 @@ For 95% variance: need [N] components out of [P] original features
 
 ---
 
+## 19. Numerical Methods Results
+
+### 19.1 Root-Finding Results
+
+**What to report**:
+- **Root value**: x* such that f(x*) ≈ 0, to specified tolerance
+- **Residual**: |f(x*)| (should be near machine epsilon)
+- **Iterations**: Number of iterations to converge
+- **Method used**: Bisection (guaranteed), Newton (fast), Brent (recommended)
+- **Bracketing**: Initial interval [a,b] and how root was isolated
+
+**Audience adaptation**:
+- *Technical*: x* = [value] ± [tolerance], converged in [N] iterations, residual = [value]
+- *Decision-maker*: "The break-even point is at [quantity/price]. Below this, you lose money; above it, you profit."
+- *General*: "The answer is [value]. We found it by narrowing down the search until the error was smaller than [tolerance]."
+
+---
+
+### 19.2 Interpolation Results
+
+**What to report**:
+- **Interpolated values**: y(x*) at query points
+- **Method**: Linear / spline / polynomial / RBF
+- **Data range**: Warning if extrapolating beyond data bounds
+- **Smoothness**: C⁰ (linear), C² (cubic spline)
+- **Fit quality**: Max deviation at data points (should be ~0 for interpolation)
+
+**Audience adaptation**:
+- *Technical*: Cubic spline (C² smooth), [N] data points, extrapolation warning beyond [range]
+- *Decision-maker*: "Based on the data, the estimated value at [x] is [y]. This is interpolated between measured points."
+- *General*: "We drew a smooth curve through the data points. At [x], the curve gives [y]."
+
+---
+
+### 19.3 Numerical Integration Results
+
+**What to report**:
+- **Integral value**: Numerical approximation of ∫f(x)dx
+- **Error estimate**: Estimated error (from adaptive methods)
+- **Method**: Trapezoidal / Simpson / Gaussian quadrature
+- **Number of evaluations**: Function evaluations used
+
+**Audience adaptation**:
+- *Technical*: ∫f(x)dx = [value] ± [error], [N] function evaluations, [method]
+- *Decision-maker*: "The total [quantity] over the period is [value]."
+- *General*: "The area under the curve (total accumulated) is [value]."
+
+---
+
+## 20. Causal Inference Results
+
+### 20.1 Treatment Effect Results
+
+**What to report**:
+- **ATE / ATT**: Average treatment effect (or on the treated)
+- **Confidence interval**: 95% CI for the effect
+- **p-value**: Statistical significance
+- **Effect size**: Magnitude relative to baseline outcome
+- **Identification strategy**: Which method (matching, DiD, IV, RDD, synthetic control)
+- **Key assumptions**: And whether they can be tested
+
+**Audience adaptation**:
+- *Technical*: ATE = [value] (95% CI: [lo, hi]), p = [value], identified via [strategy], [assumption] untestable
+- *Decision-maker*: "The program caused a [X unit] increase in [outcome]. We're 95% confident the true effect is between [lo] and [hi]. This accounts for [confounders]."
+- *General*: "People who received the treatment had [X] better outcomes, and this difference is unlikely due to chance."
+
+**Sensitivity checks**:
+1. Placebo test: Apply method to a group that shouldn't be affected
+2. Random common cause: Add a random variable as confounder — effect should not change
+3. Subset stability: Re-estimate on random subsets — effect should be stable
+4. Sensitivity to unobserved confounders: How strong would an unmeasured confounder need to be to explain away the effect?
+
+---
+
+### 20.2 Causal Graph / DAG Results
+
+**What to report**:
+- **Adjustment set**: Variables to control for (backdoor criterion)
+- **Identification status**: Whether the effect is identifiable from the DAG
+- **Confounders**: Variables on backdoor paths
+- **Colliders**: Variables that should NOT be conditioned on
+- **Causal paths**: Direct and indirect paths from treatment to outcome
+
+**Audience adaptation**:
+- *Technical*: Adjustment set = {[variables]}, [N] backdoor paths blocked, [M] causal paths
+- *Decision-maker*: "To isolate the effect of [treatment], you must account for [confounders]. Do NOT control for [colliders] as this would bias the estimate."
+- *General*: "To understand whether [X] truly causes [Y], we need to account for [confounders]."
+
+---
+
+## 21. Extended Operations Research Results
+
+### 21.1 Inventory Policy Results
+
+**What to report**:
+- **Order quantity** (Q*): Optimal amount to order each time
+- **Reorder point** (s): When to trigger a new order
+- **Safety stock**: Buffer against uncertainty
+- **Total cost**: Annual ordering + holding + shortage cost
+- **Service level**: Probability of not stocking out
+- **Cycle time**: Time between orders
+- **Sensitivity**: How cost changes with demand variation
+
+**Audience adaptation**:
+- *Technical*: Q* = [value] (EOQ), ROP = [value], SS = [value] at [service level]% SL, TC = $[value]/year
+- *Decision-maker*: "Order [Q] units every [cycle time]. Keep [SS] units as safety stock. This costs $[TC]/year and achieves [SL]% availability."
+- *General*: "Order [Q] units when stock drops to [ROP]. This keeps you from running out [SL]% of the time."
+
+---
+
+### 21.2 Scheduling / Routing Results
+
+**What to report**:
+- **Makespan**: Total completion time
+- **Schedule/routes**: Job-to-machine assignments or vehicle routes
+- **Utilization**: Per-machine or per-vehicle utilization
+- **Optimality gap**: Distance from proven lower bound (if ILP/CP)
+- **Bottleneck**: Longest path or most utilized resource
+
+**Audience adaptation**:
+- *Technical*: Makespan = [value], optimal (gap = [X]%), [N] jobs × [M] machines, bottleneck on machine [k]
+- *Decision-maker*: "All jobs complete by [time]. The bottleneck is [resource]. Adding capacity there would reduce completion time by [X]."
+- *General*: "Everything finishes by [time]. Here's the schedule: [table]."
+
+---
+
+### 21.3 Packing / Location Results
+
+**What to report**:
+- **Bins used**: Number of containers needed
+- **Fill rate**: Average utilization per bin
+- **Facilities opened**: Which locations selected
+- **Total cost**: Transport + fixed costs
+- **Assignment**: Which demand points served by which facility
+- **Coverage**: Fraction of demand within target distance
+
+**Audience adaptation**:
+- *Technical*: [N] bins at [X]% avg fill, FFD heuristic (within 11/9 of optimal). [P] facilities, total cost $[value].
+- *Decision-maker*: "You need [N] containers. Opening facilities at [locations] minimizes total cost to $[value] and serves all demand within [distance]."
+- *General*: "You need [N] bins. Place warehouses at [locations] to be closest to all customers."
+
+---
+
 ## Cross-Reference Index
 
 Which visualization to use for each result type, and where results come from.
@@ -1165,5 +1308,13 @@ Which visualization to use for each result type, and where results come from.
 | §18.3 Queuing | §33 Queue Performance Dashboard | algorithms-statistics.md S96-S100 | §21.2 Queuing System |
 | §18.4 Monte Carlo | §6 Distribution Bar Chart, §34 Convergence Plot | algorithms-statistics.md S91-S95 | §21.3 Simulation Model |
 | §18.5 DES | §33 Queue Performance Dashboard | algorithms-statistics.md S101-S103 | §21.4 Discrete-Event System |
+| §19.1 Root Finding | §35 Root/Interpolation Plot | algorithms.md §30 (A175-A179) | §22.1 Root-Finding Problem |
+| §19.2 Interpolation | §35 Root/Interpolation Plot | algorithms.md §31 (A180-A184) | §22.2 Interpolation Problem |
+| §19.3 Numerical Integration | §19 Function Plot (shaded area) | algorithms.md §32 (A185-A187) | §22.3 Quadrature Problem |
+| §20.1 Treatment Effect | §36 Causal Effect Plot | algorithms-statistics.md S104-S110 | §23.2 Treatment-Outcome Model |
+| §20.2 Causal DAG | §1 Graph Diagram | algorithms-statistics.md S109 | §23.1 Causal Graph/DAG |
+| §21.1 Inventory Policy | §37 Inventory Policy Chart | algorithms.md A188-A190 | §24.1 Inventory Model |
+| §21.2 Scheduling/Routing | §3 Gantt Chart | algorithms.md A191-A192, A195 | §24.3 Facility Location |
+| §21.3 Packing/Location | §20 Geometric Diagram | algorithms.md A193-A194 | §24.2-24.3 Packing/Location |
 
 Also see: **common-mistakes.md** §I1-I6 for interpretation pitfalls.

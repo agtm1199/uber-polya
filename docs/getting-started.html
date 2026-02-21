@@ -100,6 +100,11 @@
       color: var(--text);
     }
 
+    nav .nav-links .github-link {
+      display: inline-flex;
+      align-items: center;
+    }
+
     .sidebar-toggle {
       display: none;
       background: none;
@@ -637,9 +642,10 @@
         <a href="index.html" class="logo">uber-<span>polya</span></a>
       </div>
       <ul class="nav-links">
-        <li><a href="index.html">Home</a></li>
-        <li><a href="guide.html">Guide</a></li>
-        <li><a href="https://github.com/agtm1199/uber-polya">GitHub</a></li>
+        <li><a href="guide.html">Docs</a></li>
+        <li><a href="getting-started.html">Tutorial</a></li>
+        <li><a href="manifesto.html">Manifesto</a></li>
+        <li><a href="https://github.com/agtm1199/uber-polya" class="github-link"><svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" style="vertical-align:-2px;margin-right:4px;"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>GitHub</a></li>
       </ul>
     </div>
   </nav>
@@ -697,7 +703,7 @@
           <div class="terminal-dot"></div>
         </div>
         <div class="terminal-body">
-          <div><span class="prompt">$</span> <span class="cmd">pip install networkx pulp z3-solver sympy scipy matplotlib numpy cvxpy statsmodels</span></div>
+          <div><span class="prompt">$</span> <span class="cmd">pip install networkx pulp z3-solver sympy scipy matplotlib numpy cvxpy statsmodels shapely numpy-financial nashpy pymoo prophet arch ruptures lifelines scikit-learn xgboost umap-learn simpy dowhy</span></div>
         </div>
       </div>
 
@@ -857,10 +863,10 @@
       <!-- NEXT STEPS -->
       <h2 id="next-steps">Next Steps</h2>
 
-      <p><strong>Try the worked examples.</strong> The <code>examples/</code> directory contains 16 fully solved problems with runnable code, organized in two categories:</p>
+      <p><strong>Try the worked examples.</strong> The <code>examples/</code> directory contains 36 fully solved problems with runnable code, organized in two categories:</p>
 
       <!-- EVERYDAY PROBLEMS -->
-      <h3 id="everyday">Everyday Problems <span class="badge-green badge">10</span></h3>
+      <h3 id="everyday">Everyday Problems <span class="badge-green badge">11</span></h3>
 
       <div class="example-grid">
         <a href="https://github.com/agtm1199/uber-polya/tree/main/examples/shift-scheduling" class="example-item">
@@ -903,10 +909,14 @@
           <div><div class="example-name">Event Seating</div><div class="example-desc">Seat 12 wedding guests at 3 tables with constraints</div></div>
           <div class="example-algo">ILP</div>
         </a>
+            <a href="https://github.com/agtm1199/uber-polya/tree/main/examples/mortgage-analysis" class="example-item">
+              <div><div class="example-name">Mortgage Comparison</div><div class="example-desc">Compare 3 mortgage options with refinancing analysis</div></div>
+              <div class="example-algo">NPV + amortization</div>
+            </a>
       </div>
 
       <!-- TECHNICAL SHOWCASES -->
-      <h3 id="showcases">Technical Showcases <span class="badge">6</span></h3>
+      <h3 id="showcases">Technical Showcases <span class="badge">25</span></h3>
 
       <div class="example-grid">
         <a href="milking-cows-walkthrough.html" class="example-item">
@@ -933,6 +943,86 @@
           <div><div class="example-name">Cafe Tips</div><div class="example-desc">Full Polya cycle: t-test, Mann-Whitney, permutation, bootstrap, Bayesian</div></div>
           <div class="example-algo">t-test + Mann-Whitney + bootstrap</div>
         </a>
+            <a href="https://github.com/agtm1199/uber-polya/tree/main/examples/traffic-flow" class="example-item">
+              <div><div class="example-name">Traffic Flow</div><div class="example-desc">Solve traffic network flow with Gaussian elimination</div></div>
+              <div class="example-algo">numpy</div>
+            </a>
+            <a href="https://github.com/agtm1199/uber-polya/tree/main/examples/water-tank" class="example-item">
+              <div><div class="example-name">Water Tank</div><div class="example-desc">Optimize tank dimensions with symbolic calculus</div></div>
+              <div class="example-algo">SymPy</div>
+            </a>
+            <a href="https://github.com/agtm1199/uber-polya/tree/main/examples/land-survey" class="example-item">
+              <div><div class="example-name">Land Survey</div><div class="example-desc">Compute area with Shoelace formula and convex hull</div></div>
+              <div class="example-algo">shapely</div>
+            </a>
+            <a href="https://github.com/agtm1199/uber-polya/tree/main/examples/mortgage-analysis" class="example-item">
+              <div><div class="example-name">Mortgage Analysis</div><div class="example-desc">Compare mortgage options with NPV and amortization</div></div>
+              <div class="example-algo">numpy-financial</div>
+            </a>
+            <a href="https://github.com/agtm1199/uber-polya/tree/main/examples/nash-equilibrium" class="example-item">
+              <div><div class="example-name">Nash Equilibrium</div><div class="example-desc">Find mixed-strategy equilibria for 2-player games</div></div>
+              <div class="example-algo">nashpy</div>
+            </a>
+            <a href="https://github.com/agtm1199/uber-polya/tree/main/examples/vendor-selection" class="example-item">
+              <div><div class="example-name">Vendor Selection</div><div class="example-desc">Multi-criteria decision analysis with AHP + TOPSIS</div></div>
+              <div class="example-algo">AHP + TOPSIS</div>
+            </a>
+            <a href="https://github.com/agtm1199/uber-polya/tree/main/examples/pareto-optimization" class="example-item">
+              <div><div class="example-name">Pareto Optimization</div><div class="example-desc">Multi-objective optimization with Pareto frontier</div></div>
+              <div class="example-algo">pymoo</div>
+            </a>
+            <a href="https://github.com/agtm1199/uber-polya/tree/main/examples/sales-forecast" class="example-item">
+              <div><div class="example-name">Sales Forecast</div><div class="example-desc">Time series forecasting with SARIMA + Holt-Winters</div></div>
+              <div class="example-algo">statsmodels</div>
+            </a>
+            <a href="https://github.com/agtm1199/uber-polya/tree/main/examples/anomaly-detection" class="example-item">
+              <div><div class="example-name">Anomaly Detection</div><div class="example-desc">Z-score + PELT change point detection in time series</div></div>
+              <div class="example-algo">ruptures</div>
+            </a>
+            <a href="https://github.com/agtm1199/uber-polya/tree/main/examples/customer-survival" class="example-item">
+              <div><div class="example-name">Customer Survival</div><div class="example-desc">Kaplan-Meier + Cox PH survival analysis</div></div>
+              <div class="example-algo">lifelines</div>
+            </a>
+            <a href="https://github.com/agtm1199/uber-polya/tree/main/examples/classification" class="example-item">
+              <div><div class="example-name">Customer Churn Classification</div><div class="example-desc">Random Forest + Gradient Boosting classification</div></div>
+              <div class="example-algo">scikit-learn</div>
+            </a>
+            <a href="https://github.com/agtm1199/uber-polya/tree/main/examples/clustering" class="example-item">
+              <div><div class="example-name">Customer Segmentation</div><div class="example-desc">K-Means + DBSCAN + GMM clustering</div></div>
+              <div class="example-algo">scikit-learn</div>
+            </a>
+            <a href="https://github.com/agtm1199/uber-polya/tree/main/examples/feature-importance" class="example-item">
+              <div><div class="example-name">Feature Importance</div><div class="example-desc">PCA + feature selection + model comparison</div></div>
+              <div class="example-algo">scikit-learn</div>
+            </a>
+            <a href="https://github.com/agtm1199/uber-polya/tree/main/examples/queuing-system" class="example-item">
+              <div><div class="example-name">Call Center Queuing</div><div class="example-desc">M/M/c queuing model + DES verification</div></div>
+              <div class="example-algo">simpy</div>
+            </a>
+            <a href="https://github.com/agtm1199/uber-polya/tree/main/examples/epidemic-sir" class="example-item">
+              <div><div class="example-name">SIR Epidemic Model</div><div class="example-desc">SIR ODE + vaccination analysis</div></div>
+              <div class="example-algo">scipy</div>
+            </a>
+            <a href="https://github.com/agtm1199/uber-polya/tree/main/examples/monte-carlo-risk" class="example-item">
+              <div><div class="example-name">Monte Carlo Project Risk</div><div class="example-desc">MC risk simulation + convergence analysis</div></div>
+              <div class="example-algo">numpy</div>
+            </a>
+            <a href="https://github.com/agtm1199/uber-polya/tree/main/examples/root-finding" class="example-item">
+              <div><div class="example-name">Root Finding &amp; Interpolation</div><div class="example-desc">Bisection + Newton + Brent + cubic spline</div></div>
+              <div class="example-algo">scipy</div>
+            </a>
+            <a href="https://github.com/agtm1199/uber-polya/tree/main/examples/causal-inference" class="example-item">
+              <div><div class="example-name">Causal Inference</div><div class="example-desc">Propensity matching + DiD + doubly robust</div></div>
+              <div class="example-algo">scikit-learn</div>
+            </a>
+            <a href="https://github.com/agtm1199/uber-polya/tree/main/examples/inventory-optimization" class="example-item">
+              <div><div class="example-name">Inventory Optimization</div><div class="example-desc">EOQ + newsvendor + safety stock</div></div>
+              <div class="example-algo">scipy</div>
+            </a>
+            <a href="https://github.com/agtm1199/uber-polya/tree/main/examples/bin-packing" class="example-item">
+              <div><div class="example-name">Bin Packing</div><div class="example-desc">First Fit Decreasing + ILP optimal</div></div>
+              <div class="example-algo">PuLP</div>
+            </a>
       </div>
 
       <!-- TRY YOUR OWN -->
@@ -949,6 +1039,12 @@
         <li><strong>Optimization</strong> (minimize cost, maximize profit) &mdash; continuous optimization, convex QP</li>
         <li><strong>Comparing groups</strong> ("Is A better than B?") &mdash; hypothesis testing, A/B tests</li>
         <li><strong>Prediction</strong> (forecast outcomes from data) &mdash; regression, Bayesian inference</li>
+            <li>Time series (forecasting, anomaly detection) -- SARIMA, change point detection</li>
+            <li>Survival analysis (churn, equipment failure) -- Kaplan-Meier, Cox PH</li>
+            <li>Machine learning (classification, clustering, feature selection) -- Random Forest, K-Means, PCA</li>
+            <li>Simulation (queuing, epidemics, Monte Carlo risk) -- DES, SIR ODE, MC sampling</li>
+            <li>Causal inference (treatment effects, policy evaluation) -- propensity matching, DiD</li>
+            <li>Operations research (inventory, bin packing, lot sizing) -- EOQ, newsvendor, first-fit decreasing</li>
       </ul>
 
       <p>Start with <code>/uber-model &lt;describe your problem in plain English&gt;</code> and let Claude guide you from there.</p>

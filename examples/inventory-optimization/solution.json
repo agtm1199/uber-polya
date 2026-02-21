@@ -1,0 +1,172 @@
+{
+  "instance": {
+    "demand_rate": 10000,
+    "order_cost": 50.0,
+    "holding_cost": 2.0,
+    "lead_time_weeks": 1.0,
+    "weekly_demand_mean": 192.0,
+    "weekly_demand_std": 40.0,
+    "service_level": 0.95,
+    "unit_cost": 10.0,
+    "selling_price": 25.0,
+    "salvage_value": 3.0
+  },
+  "eoq": {
+    "quantity": 707.1067811865476,
+    "total_cost": 1414.213562373095,
+    "ordering_cost": 707.1067811865474,
+    "holding_cost": 707.1067811865476,
+    "orders_per_year": 14.14213562373095,
+    "cycle_time_days": 25.809397513308987
+  },
+  "reorder_point": {
+    "rop": 257.7941450780589,
+    "safety_stock": 65.79414507805889,
+    "z_score": 1.6448536269514722,
+    "mean_demand_lt": 192.0,
+    "std_demand_lt": 40.0
+  },
+  "newsvendor": {
+    "critical_ratio": 0.6818181818181818,
+    "optimal_q": 210.9115648396907,
+    "expected_profit": 2566.0547530906856,
+    "expected_leftover": 27.164487250212495,
+    "expected_shortage": 8.252922410521796
+  },
+  "sensitivity": {
+    "demand_variation": [
+      {
+        "demand": 8000.0,
+        "eoq": 632.5,
+        "total_cost": 1264.91
+      },
+      {
+        "demand": 9000.0,
+        "eoq": 670.8,
+        "total_cost": 1341.64
+      },
+      {
+        "demand": 10000.0,
+        "eoq": 707.1,
+        "total_cost": 1414.21
+      },
+      {
+        "demand": 11000.0,
+        "eoq": 741.6,
+        "total_cost": 1483.24
+      },
+      {
+        "demand": 12000.0,
+        "eoq": 774.6,
+        "total_cost": 1549.19
+      }
+    ],
+    "holding_cost_variation": [
+      {
+        "holding_cost": 1.0,
+        "eoq": 1000.0,
+        "total_cost": 1000.0
+      },
+      {
+        "holding_cost": 1.5,
+        "eoq": 816.5,
+        "total_cost": 1224.74
+      },
+      {
+        "holding_cost": 2.0,
+        "eoq": 707.1,
+        "total_cost": 1414.21
+      },
+      {
+        "holding_cost": 2.5,
+        "eoq": 632.5,
+        "total_cost": 1581.14
+      },
+      {
+        "holding_cost": 3.0,
+        "eoq": 577.4,
+        "total_cost": 1732.05
+      }
+    ],
+    "order_cost_variation": [
+      {
+        "order_cost": 25.0,
+        "eoq": 500.0,
+        "total_cost": 1000.0
+      },
+      {
+        "order_cost": 37.5,
+        "eoq": 612.4,
+        "total_cost": 1224.74
+      },
+      {
+        "order_cost": 50.0,
+        "eoq": 707.1,
+        "total_cost": 1414.21
+      },
+      {
+        "order_cost": 62.5,
+        "eoq": 790.6,
+        "total_cost": 1581.14
+      },
+      {
+        "order_cost": 75.0,
+        "eoq": 866.0,
+        "total_cost": 1732.05
+      }
+    ],
+    "service_level_variation": [
+      {
+        "service_level": 0.85,
+        "z_score": 1.036,
+        "safety_stock": 41.5
+      },
+      {
+        "service_level": 0.9,
+        "z_score": 1.282,
+        "safety_stock": 51.3
+      },
+      {
+        "service_level": 0.93,
+        "z_score": 1.476,
+        "safety_stock": 59.0
+      },
+      {
+        "service_level": 0.95,
+        "z_score": 1.645,
+        "safety_stock": 65.8
+      },
+      {
+        "service_level": 0.97,
+        "z_score": 1.881,
+        "safety_stock": 75.2
+      },
+      {
+        "service_level": 0.99,
+        "z_score": 2.326,
+        "safety_stock": 93.1
+      }
+    ]
+  },
+  "simulation": {
+    "n_cycles": 10000,
+    "simulated_fill_rate": 0.9502,
+    "target_service_level": 0.95,
+    "fill_rate_error": 0.000200000000000089,
+    "simulated_nv_mean_profit": 2573.6907738778355,
+    "simulated_nv_std_profit": 644.1411236017017
+  },
+  "verification": {
+    "eoq_positive": true,
+    "eoq_formula_correct": true,
+    "total_cost_at_eoq": true,
+    "rop_gt_mean_demand": true,
+    "safety_stock_positive": true,
+    "newsvendor_in_range": true,
+    "critical_ratio_correct": true,
+    "simulation_service_level": true,
+    "all_passed": true
+  },
+  "algorithm": "EOQ + (s,Q) reorder point + Newsvendor",
+  "time_seconds": 0.002817382977809757
+}

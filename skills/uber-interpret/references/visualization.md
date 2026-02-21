@@ -59,6 +59,12 @@ Which chart for which result type. matplotlib/seaborn/NetworkX templates for com
 | Queuing performance | Queue dashboard (2x2) | Single metric focus | Sensitivity line plot |
 | Monte Carlo estimate | Convergence plot + histogram | Tail risk focus | CDF / VaR line |
 | DES results | Queue dashboard | Bottleneck focus | Utilization bar chart |
+| Root finding | Function plot with root markers | Multiple roots | Convergence plot |
+| Interpolation | Data + fitted curve overlay | Comparison of methods | Error plot |
+| Causal effect | Treatment effect with CI | Multiple estimators | Forest plot |
+| Inventory policy | Inventory level over time | Cost breakdown | Sensitivity (demand) |
+| Bin packing | Stacked bar (bin utilization) | Many bins | Heatmap |
+| Facility location | Map with assignments | Coverage radius | Cost sensitivity |
 
 ---
 
@@ -1686,3 +1692,137 @@ plt.savefig('mc_convergence.png', dpi=150, bbox_inches='tight')
 ```
 
 **Key elements**: Running mean with shrinking CI band showing convergence, true value line (if known), outcome histogram with mean and tail percentile marked, dual-panel layout.
+
+---
+
+## 35. Root Finding / Interpolation Plot
+
+**When to use**: Showing where a function crosses zero (root), or how an interpolation fits data points.
+
+**Template (dual-panel: root finding + interpolation)**:
+
+```python
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+import numpy as np
+
+fig, axes = plt.subplots(1, 2, figsize=(14, 6))
+
+# Panel 1: Root finding
+x = np.linspace(a, b, 500)
+axes[0].plot(x, [f(xi) for xi in x], 'b-', linewidth=2, label='f(x)')
+axes[0].axhline(0, color='black', linewidth=0.5)
+for root in roots:
+    axes[0].plot(root, 0, 'ro', markersize=10, zorder=5)
+    axes[0].annotate(f'x* = {root:.6f}', xy=(root, 0), xytext=(root, 0.1*y_range),
+                     fontsize=10, arrowprops=dict(arrowstyle='->', color='red'))
+axes[0].set_xlabel('x', fontsize=12)
+axes[0].set_ylabel('f(x)', fontsize=12)
+axes[0].set_title('Root Finding: f(x) = 0', fontsize=14)
+axes[0].legend(fontsize=11)
+axes[0].grid(True, alpha=0.3)
+
+# Panel 2: Interpolation
+axes[1].scatter(x_data, y_data, c='red', s=60, zorder=5, label='Data points')
+x_fine = np.linspace(x_data[0], x_data[-1], 500)
+axes[1].plot(x_fine, interp_func(x_fine), 'b-', linewidth=2, label='Interpolant')
+axes[1].set_xlabel('x', fontsize=12)
+axes[1].set_ylabel('y', fontsize=12)
+axes[1].set_title(f'{method_name} Interpolation', fontsize=14)
+axes[1].legend(fontsize=11)
+axes[1].grid(True, alpha=0.3)
+
+plt.tight_layout()
+plt.savefig('root_interpolation.png', dpi=150, bbox_inches='tight')
+```
+
+**Key elements**: Function curve with root markers and annotations, zero line, data points as red dots, interpolant as smooth blue curve.
+
+---
+
+## 36. Causal Effect Plot
+
+**When to use**: Displaying estimated treatment effects with confidence intervals, comparing multiple estimation methods.
+
+**Template**:
+
+```python
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+import numpy as np
+
+fig, ax = plt.subplots(figsize=(10, 6))
+
+methods = ['Propensity\nMatching', 'DiD', 'IV (2SLS)', 'Doubly\nRobust']
+estimates = [ate_psm, ate_did, ate_iv, ate_dr]
+ci_low = [ci_psm[0], ci_did[0], ci_iv[0], ci_dr[0]]
+ci_high = [ci_psm[1], ci_did[1], ci_iv[1], ci_dr[1]]
+errors = [[e - lo for e, lo in zip(estimates, ci_low)],
+          [hi - e for e, hi in zip(estimates, ci_high)]]
+
+y_pos = np.arange(len(methods))
+ax.barh(y_pos, estimates, xerr=errors, height=0.5, color='steelblue',
+        edgecolor='black', alpha=0.7, capsize=5)
+ax.axvline(0, color='red', linestyle='--', linewidth=1, label='No effect')
+if true_effect is not None:
+    ax.axvline(true_effect, color='green', linestyle=':', linewidth=2, label=f'True = {true_effect:.2f}')
+
+ax.set_yticks(y_pos)
+ax.set_yticklabels(methods, fontsize=12)
+ax.set_xlabel('Estimated Treatment Effect', fontsize=12)
+ax.set_title('Causal Effect Estimates by Method', fontsize=14)
+ax.legend(fontsize=11)
+ax.grid(True, axis='x', alpha=0.3)
+plt.tight_layout()
+plt.savefig('causal_effect.png', dpi=150, bbox_inches='tight')
+```
+
+**Key elements**: Horizontal bar chart with CI error bars per method, zero-effect reference line, true effect line (if known), method labels.
+
+---
+
+## 37. Inventory Policy Chart
+
+**When to use**: Visualizing inventory levels over time with reorder points and order arrivals.
+
+**Template**:
+
+```python
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+import numpy as np
+
+fig, axes = plt.subplots(1, 2, figsize=(14, 6))
+
+# Panel 1: Inventory level over time (sawtooth)
+t = np.linspace(0, n_cycles * cycle_time, 1000)
+inventory = np.array([Q - demand_rate * (ti % cycle_time) for ti in t])
+axes[0].plot(t, inventory, 'b-', linewidth=2)
+axes[0].axhline(reorder_point, color='orange', linestyle='--', linewidth=1.5, label=f'Reorder point = {reorder_point:.0f}')
+axes[0].axhline(safety_stock, color='red', linestyle=':', linewidth=1.5, label=f'Safety stock = {safety_stock:.0f}')
+axes[0].fill_between(t, 0, safety_stock, alpha=0.1, color='red')
+axes[0].set_xlabel('Time', fontsize=12)
+axes[0].set_ylabel('Inventory Level', fontsize=12)
+axes[0].set_title(f'Inventory Policy (Q={Q:.0f}, ROP={reorder_point:.0f})', fontsize=14)
+axes[0].legend(fontsize=11)
+axes[0].grid(True, alpha=0.3)
+
+# Panel 2: Cost breakdown
+costs = ['Ordering', 'Holding', 'Shortage', 'Total']
+values = [ordering_cost, holding_cost, shortage_cost, total_cost]
+colors = ['#2196F3', '#4CAF50', '#F44336', '#9C27B0']
+axes[1].bar(costs, values, color=colors, edgecolor='black', alpha=0.8)
+for i, v in enumerate(values):
+    axes[1].text(i, v + 0.02*max(values), f'${v:,.0f}', ha='center', fontsize=11)
+axes[1].set_ylabel('Annual Cost ($)', fontsize=12)
+axes[1].set_title('Cost Breakdown', fontsize=14)
+axes[1].grid(True, axis='y', alpha=0.3)
+
+plt.tight_layout()
+plt.savefig('inventory_policy.png', dpi=150, bbox_inches='tight')
+```
+
+**Key elements**: Sawtooth inventory pattern, reorder point and safety stock lines, safety stock zone shaded, cost breakdown bar chart with dollar annotations.

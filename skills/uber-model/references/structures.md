@@ -1,6 +1,6 @@
 # Mathematical Structure Catalog
 
-**Scope**: Discrete Mathematics (32 structures), Continuous Optimization (5 structures), Statistical Inference (6 structures), Linear Algebra (4 structures), Calculus (3 structures), Geometry & Trigonometry (4 structures), Financial Mathematics (1 structure), Game Theory (3 structures), Decision Analysis (3 structures), Multi-Objective Optimization (3 structures), Time Series (3 structures), Stochastic Processes (3 structures), Machine Learning (5 structures), Simulation & ODEs (8 structures)
+**Scope**: Discrete Mathematics (32 structures), Continuous Optimization (5 structures), Statistical Inference (6 structures), Linear Algebra (4 structures), Calculus (3 structures), Geometry & Trigonometry (4 structures), Financial Mathematics (1 structure), Game Theory (3 structures), Decision Analysis (3 structures), Multi-Objective Optimization (3 structures), Time Series (3 structures), Stochastic Processes (3 structures), Machine Learning (5 structures), Simulation & ODEs (8 structures), Numerical Methods (3 structures), Causal Inference (2 structures), Extended OR (3 structures)
 
 A catalog of mathematical structures organized by domain. Use this to match real-world problems to mathematical models during Phase 2 of the uber-model skill.
 
@@ -2042,6 +2042,181 @@ Metrics: E[Xₜ], Var[Xₜ], P(first passage ≤ t)
 
 ---
 
+## 22. Numerical Methods
+
+### 22.1 Root-Finding Problem
+
+**Definition**: Find x* such that f(x*) = 0 (or f(x*) = target) for a given continuous function f.
+
+**Indicators**: "find where f equals zero," "solve equation numerically," "break-even point," "equilibrium price," "find the root," "what value of x makes this zero"
+
+**Template**:
+```
+Function: f(x) = [expression]
+Domain: x ∈ [a, b] or starting guess x₀
+Target: f(x*) = 0 (or f(x*) = c → solve f(x) - c = 0)
+Tolerance: ε (e.g., 1e-10)
+```
+
+**Examples**: Break-even quantity, equilibrium price, IRR (internal rate of return), steady-state concentration, intersection of curves
+
+**Key problems**: Bisection (A175), Newton-Raphson (A176), Secant (A177), Brent's (A178), Fixed-Point (A179)
+
+---
+
+### 22.2 Interpolation Problem
+
+**Definition**: Given discrete data points {(xᵢ, yᵢ)}, construct a continuous function that passes through (or approximates) the data, enabling evaluation at new x values.
+
+**Indicators**: "estimate between data points," "fill in missing values," "smooth curve through data," "look up table value," "approximate function"
+
+**Template**:
+```
+Data: {(x₁,y₁), (x₂,y₂), ..., (xₙ,yₙ)}
+Query: y(x*) for x* not in {xᵢ}
+Method: linear / polynomial / spline / RBF
+Smoothness: C⁰ (linear), C² (cubic spline)
+```
+
+**Examples**: Temperature at unmeasured times, material property at untested composition, signal reconstruction, terrain elevation between survey points
+
+**Key problems**: Linear (A180), Lagrange (A181), Cubic Spline (A182), Chebyshev (A183), RBF (A184)
+
+---
+
+### 22.3 Quadrature Problem
+
+**Definition**: Numerically approximate a definite integral ∫ₐᵇ f(x)dx when an analytical antiderivative is not available.
+
+**Indicators**: "numerical integral," "area under curve (no formula)," "total accumulated quantity," "integrate numerically," "quadrature"
+
+**Template**:
+```
+Integrand: f(x)
+Limits: [a, b]
+Required accuracy: ε
+Method: trapezoidal / Simpson / Gaussian / adaptive
+```
+
+**Examples**: Total work done (force × distance), cumulative probability from PDF, total heat transfer, area of complex region
+
+**Key problems**: Trapezoidal Rule (A185), Simpson's Rule (A186), Gaussian Quadrature (A187)
+
+---
+
+## 23. Causal Inference
+
+### 23.1 Causal Graph / DAG
+
+**Definition**: A directed acyclic graph where nodes are variables and edges represent direct causal effects. Used to determine what to control for and whether a causal effect is identifiable.
+
+**Indicators**: "what causes what," "confounders," "colliders," "backdoor path," "causal diagram," "DAG," "adjust for," "control for"
+
+**Template**:
+```
+Variables: {X₁, X₂, ..., Xₙ}
+Treatment: T (intervention variable)
+Outcome: Y (response variable)
+Edges: T → Y, X₁ → T, X₁ → Y (confounders), ...
+Query: P(Y | do(T=t))
+Adjustment set: {X₁, ...} (minimal set to block backdoor paths)
+```
+
+**Examples**: Does education cause higher income? (confounders: family background, ability), drug efficacy (confounders: age, severity), marketing campaign effect (confounders: existing engagement)
+
+**Key problems**: DAG-Based Identification (S109), Propensity Score Matching (S104), Doubly Robust ATE (S110)
+
+---
+
+### 23.2 Treatment-Outcome Model
+
+**Definition**: A statistical model relating a binary or continuous treatment variable to an outcome, with methods to isolate the causal effect from confounding.
+
+**Indicators**: "treatment effect," "causal impact," "does X cause Y," "what would have happened without treatment," "counterfactual," "ATE," "ATT"
+
+**Template**:
+```
+Treatment: T ∈ {0, 1} (binary) or continuous
+Outcome: Y (continuous or binary)
+Covariates: X = [X₁, ..., Xₚ]
+Estimand: ATE = E[Y(1) - Y(0)] or ATT = E[Y(1) - Y(0) | T=1]
+Identification strategy: matching / DiD / IV / RDD / synthetic control
+Assumptions: no unmeasured confounders / parallel trends / exclusion restriction / continuity
+```
+
+**Examples**: A/B test analysis (with non-compliance), policy evaluation, medical treatment effect, job training program impact
+
+**Key problems**: Propensity Score Matching (S104), Difference-in-Differences (S105), Instrumental Variables (S106), Regression Discontinuity (S107), Synthetic Control (S108), Doubly Robust ATE (S110)
+
+---
+
+## 24. Extended Operations Research
+
+### 24.1 Inventory Model
+
+**Definition**: A model for managing stock levels — when to order, how much to order — balancing ordering costs, holding costs, and stockout costs under deterministic or stochastic demand.
+
+**Indicators**: "inventory," "reorder point," "safety stock," "economic order quantity," "stockout," "how much to order," "when to reorder"
+
+**Template**:
+```
+Demand: D (units/period), deterministic or D ~ Dist(μ,σ)
+Ordering cost: K (fixed cost per order)
+Holding cost: h (per unit per period)
+Stockout/shortage cost: p (per unit)
+Lead time: L (periods)
+Decision: Q (order quantity), s (reorder point)
+Objective: minimize total cost = ordering + holding + shortage
+```
+
+**Examples**: Warehouse inventory management, retail stock replenishment, spare parts management, pharmaceutical inventory
+
+**Key problems**: EOQ (A188), Newsvendor (A189), Safety Stock (A190)
+
+---
+
+### 24.2 Packing / Bin Problem
+
+**Definition**: Pack items of various sizes into containers of fixed capacity, minimizing the number of containers or maximizing the value packed.
+
+**Indicators**: "pack into bins," "fit items in containers," "cutting stock," "minimize waste," "how many containers needed"
+
+**Template**:
+```
+Items: {(size₁), (size₂), ..., (sizeₙ)}
+Bin capacity: C
+Objective: minimize number of bins used
+Variant: 1D bin packing, 2D cutting stock, 3D container loading
+```
+
+**Examples**: Packing boxes into trucks, cutting rolls of material, memory allocation, scheduling tasks into time slots
+
+**Key problems**: Bin Packing FFD (A193), Knapsack (A33-A34), ILP (A32)
+
+---
+
+### 24.3 Facility Location Model
+
+**Definition**: Choose locations for facilities (warehouses, stores, hospitals) to serve demand points, minimizing total cost (distance + fixed costs) subject to capacity constraints.
+
+**Indicators**: "where to put," "facility location," "warehouse placement," "minimize distance to customers," "how many locations," "coverage"
+
+**Template**:
+```
+Demand points: {d₁, d₂, ..., dₙ} with demands wᵢ
+Candidate locations: {f₁, f₂, ..., fₘ}
+Distance/cost: cᵢⱼ (cost to serve demand i from facility j)
+Fixed cost: Fⱼ (cost to open facility j)
+Number to open: p (or minimize total cost including fixed)
+Objective: min Σᵢ Σⱼ wᵢ cᵢⱼ xᵢⱼ + Σⱼ Fⱼ yⱼ
+```
+
+**Examples**: Warehouse network design, hospital siting, fire station placement, retail store network, EV charging station placement
+
+**Key problems**: Facility Location p-Median (A194), Capacitated VRP (A195), ILP (A32)
+
+---
+
 ## Cross-Reference Index
 
 Where to go next after identifying a structure.
@@ -2069,5 +2244,8 @@ Where to go next after identifying a structure.
 | 19. Stochastic Processes | algorithms-statistics.md S61-S65 | scipy.linalg, scipy.stats | §16.3 Survival/Process Results |
 | 20. Machine Learning | algorithms-statistics.md S69-S90 | scikit-learn, xgboost, umap-learn | §17 Machine Learning Results |
 | 21. Simulation & ODEs | algorithms.md §29 (A165-A174), algorithms-statistics.md S91-S103 | scipy.integrate, simpy, numpy | §18 Simulation & ODE Results |
+| 22. Numerical Methods | algorithms.md §30-§32 (A175-A187) | scipy.optimize, scipy.interpolate, scipy.integrate | §19 Numerical Methods Results |
+| 23. Causal Inference | algorithms-statistics.md S104-S110 | scikit-learn, statsmodels, dowhy | §20 Causal Inference Results |
+| 24. Extended OR | algorithms.md §33 (A188-A195) | PuLP, OR-Tools, scipy | §21 Extended OR Results |
 
 Also see: **problem-classification.md** for rapid pattern matching from natural language to structure, **common-mistakes.md** for modeling pitfalls by structure type.

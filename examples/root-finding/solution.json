@@ -1,0 +1,88 @@
+{
+  "instance": {
+    "temperatures": [
+      0.0,
+      100.0,
+      200.0,
+      300.0,
+      400.0,
+      500.0,
+      600.0,
+      700.0
+    ],
+    "coefficients": [
+      9.4,
+      10.6,
+      11.4,
+      12.1,
+      13.0,
+      14.0,
+      15.1,
+      16.3
+    ],
+    "target_coefficient": 12.0,
+    "integration_range": [
+      100.0,
+      500.0
+    ]
+  },
+  "root_finding": {
+    "methods": [
+      {
+        "method": "bisection",
+        "root_degC": 286.9445164043773,
+        "residual": 5.329070518200751e-15,
+        "iterations": 50,
+        "converged": true
+      },
+      {
+        "method": "newton",
+        "root_degC": 286.9445164043777,
+        "residual": 0.0,
+        "iterations": 5,
+        "converged": true
+      },
+      {
+        "method": "secant",
+        "root_degC": 286.94451640438876,
+        "residual": 8.171241461241152e-14,
+        "iterations": 6,
+        "converged": true
+      },
+      {
+        "method": "brent",
+        "root_degC": 286.94451640437774,
+        "residual": 0.0,
+        "iterations": 7,
+        "converged": true
+      }
+    ],
+    "best_method": "brent",
+    "best_root_degC": 286.94451640437774,
+    "best_residual": 0.0
+  },
+  "interpolation": {
+    "cubic_spline_max_error": 0.0,
+    "linear_max_error": 0.0,
+    "lagrange_max_error": 6.181721801112872e-12,
+    "max_spline_vs_linear": 0.06695225346573253,
+    "max_spline_vs_lagrange": 0.05979770258919004
+  },
+  "integration": {
+    "trapezoidal": 4879.250410717704,
+    "simpson": 4879.2503987240825,
+    "gaussian_quad": 4879.250398724083
+  },
+  "algorithm": "Cubic Spline + Brent/Bisection/Newton/Secant root finding",
+  "time_seconds": 0.018176484969444573,
+  "verification": {
+    "all_methods_find_root": true,
+    "roots_agree": true,
+    "residual_small": true,
+    "root_in_range": true,
+    "spline_passes_through_data": true,
+    "integration_methods_agree": true,
+    "integration_positive": true,
+    "brent_fewest_or_tied": true
+  }
+}

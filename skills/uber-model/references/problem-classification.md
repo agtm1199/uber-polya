@@ -221,15 +221,60 @@ What is the user trying to do?
 │  ├─ Relate throughput/time/inventory? ────────── Little's Law (S99)
 │  └─ Network of queues? ─────────────────────── Jackson Network (S100)
 │
-└─ MODEL DYNAMICS / SOLVE ODE
-   ├─ Simple growth/decay/trajectory? ─────────── Euler (A165) or RK4 (A166)
-   ├─ Stiff system (chemical/biological)? ──────── BDF/Radau (A167)
-   ├─ Visualize state-space behavior? ──────────── Phase Portrait (A168)
-   ├─ Find steady states & stability? ──────────── Equilibrium Analysis (A169)
-   ├─ Parameter causes behavior change? ────────── Bifurcation (A170)
-   ├─ Fit ODE model to data? ──────────────────── Parameter Estimation (A171)
-   ├─ Epidemic / disease spread? ──────────────── SIR/SEIR (A173)
-   └─ Predator-prey / population cycles? ──────── Lotka-Volterra (A174)
+├─ MODEL DYNAMICS / SOLVE ODE
+│  ├─ Simple growth/decay/trajectory? ─────────── Euler (A165) or RK4 (A166)
+│  ├─ Stiff system (chemical/biological)? ──────── BDF/Radau (A167)
+│  ├─ Visualize state-space behavior? ──────────── Phase Portrait (A168)
+│  ├─ Find steady states & stability? ──────────── Equilibrium Analysis (A169)
+│  ├─ Parameter causes behavior change? ────────── Bifurcation (A170)
+│  ├─ Fit ODE model to data? ──────────────────── Parameter Estimation (A171)
+│  ├─ Epidemic / disease spread? ──────────────── SIR/SEIR (A173)
+│  └─ Predator-prey / population cycles? ──────── Lotka-Volterra (A174)
+│
+├─ FIND ROOT / SOLVE EQUATION numerically
+│  ├─ Know bracketing interval [a,b]? ─────────── Brent's Method (A178, recommended)
+│  ├─ Have derivative f'(x)? ──────────────────── Newton-Raphson (A176)
+│  ├─ No derivative, two guesses? ─────────────── Secant Method (A177)
+│  ├─ Need guaranteed convergence? ────────────── Bisection (A175)
+│  └─ Fixed-point form x = g(x)? ─────────────── Fixed-Point Iteration (A179)
+│
+├─ INTERPOLATE / APPROXIMATE between data points
+│  ├─ Simple, few points? ─────────────────────── Linear Interpolation (A180)
+│  ├─ Smooth curve through many points? ────────── Cubic Spline (A182)
+│  ├─ High-accuracy polynomial? ───────────────── Chebyshev Approximation (A183)
+│  ├─ Scattered / multi-dimensional? ──────────── RBF Interpolation (A184)
+│  └─ Exact polynomial through N points? ──────── Lagrange (A181)
+│
+├─ INTEGRATE NUMERICALLY (no closed form)
+│  ├─ Simple, tabulated data? ─────────────────── Trapezoidal Rule (A185)
+│  ├─ Smooth function, moderate accuracy? ──────── Simpson's Rule (A186)
+│  └─ High accuracy, adaptive? ────────────────── Gaussian Quadrature / quad (A187)
+│
+├─ MEASURE CAUSAL EFFECT (not just correlation)
+│  ├─ Observational data, covariates? ──────────── Propensity Matching (S104) / Doubly Robust (S110)
+│  ├─ Pre/post with comparison group? ──────────── Difference-in-Differences (S105)
+│  ├─ Endogenous treatment, instrument? ────────── Instrumental Variables (S106)
+│  ├─ Treatment assigned at cutoff? ────────────── Regression Discontinuity (S107)
+│  ├─ Single treated unit, controls? ───────────── Synthetic Control (S108)
+│  └─ What to control for? ────────────────────── DAG Identification (S109)
+│
+├─ MANAGE INVENTORY (when/how much to order)
+│  ├─ Deterministic demand? ───────────────────── EOQ (A188)
+│  ├─ Uncertain demand, single period? ────────── Newsvendor (A189)
+│  └─ Safety stock for service level? ─────────── Safety Stock (A190)
+│
+├─ PACK ITEMS / MINIMIZE CONTAINERS
+│  └─ Items into bins of fixed capacity? ──────── Bin Packing FFD (A193) / ILP (A32)
+│
+├─ LOCATE FACILITIES / WAREHOUSES
+│  └─ Place p facilities to minimize distance? ── Facility Location (A194)
+│
+├─ SCHEDULE JOBS on machines
+│  ├─ Different machine orders per job? ────────── Job Shop (A191) via CP-SAT
+│  └─ Same machine order for all? ─────────────── Flow Shop (A192, Johnson's rule)
+│
+└─ ROUTE VEHICLES with capacity
+   └─ Multiple vehicles, customer demands? ────── Capacitated VRP (A195) via OR-Tools
 ```
 
 ---
@@ -350,6 +395,24 @@ One-line lookup from problem description to solution approach.
 | "predator prey / ecosystem" | Lotka-Volterra | Population system | Lotka-Volterra (A174) | scipy |
 | "equilibrium / steady state (ODE)" | Stability analysis | Dynamical system | Equilib. (A169) | scipy |
 | "rate of change / trajectory" | ODE | Dynamical system | Euler (A165) / RK4 (A166) | scipy |
+| "find where f(x) = 0" | Root finding | Root-finding problem | Brent's (A178) | scipy |
+| "break-even / crossover point" | Root finding | Root-finding problem | Brent's (A178) | scipy |
+| "interpolate / estimate between" | Interpolation | Interpolation problem | Cubic Spline (A182) | scipy |
+| "smooth curve through data" | Interpolation | Interpolation problem | Cubic Spline (A182) | scipy |
+| "numerical integral / no formula" | Quadrature | Quadrature problem | quad (A187) | scipy |
+| "area under curve (numerical)" | Quadrature | Quadrature problem | Simpson's (A186) | scipy |
+| "does X cause Y / causal" | Causal inference | Treatment-outcome model | Doubly Robust (S110) | dowhy/sklearn |
+| "treatment effect / impact" | Causal inference | Treatment-outcome model | Propensity (S104) / DiD (S105) | dowhy |
+| "before/after comparison" | Diff-in-diff | Treatment-outcome model | DiD (S105) | statsmodels |
+| "policy evaluation / program" | Causal inference | Treatment-outcome model | Synthetic Control (S108) | scipy |
+| "confounders / what to control" | Causal DAG | Causal graph | DAG Identification (S109) | dowhy |
+| "how much to order / inventory" | Inventory | Inventory model | EOQ (A188) | custom |
+| "safety stock / reorder point" | Inventory | Inventory model | Safety Stock (A190) | scipy |
+| "perishable / single period" | Newsvendor | Inventory model | Newsvendor (A189) | scipy |
+| "pack items / containers" | Bin packing | Packing problem | FFD (A193) | custom/PuLP |
+| "where to build / locate" | Facility location | Facility location | p-Median (A194) | PuLP |
+| "delivery routes / vehicles" | VRP | Facility location | CVRP (A195) | OR-Tools |
+| "job shop / machine scheduling" | Job shop | Scheduling | CP-SAT (A191) | OR-Tools |
 
 ---
 
@@ -425,6 +488,15 @@ Before committing to an approach, verify the computational feasibility.
 | ODE (RK4 / solve_ivp) | O(n_steps · dim) | Any size (adaptive) | N/A |
 | ODE stiff (BDF) | O(n_steps · dim³) | Any size (adaptive) | N/A |
 | SIR/SEIR epidemic | O(n_steps · compartments) | Any size | N/A |
+| Root finding (Brent) | O(log((b-a)/ε)) | Any | N/A (guaranteed) |
+| Newton-Raphson | O(log log(1/ε)) | Any (if converges) | Bisection fallback |
+| Cubic spline interpolation | O(n) construction | Any size | N/A |
+| Gaussian quadrature (quad) | O(n evaluations) | Any | Adaptive refinement |
+| Propensity score matching | O(n² log n) | ~100K subjects | Doubly robust |
+| Job shop scheduling | NP-hard | ~50 jobs × 10 machines (CP-SAT) | Heuristic |
+| Bin packing (FFD) | O(n log n) | Any size | At most 11/9 × OPT |
+| Facility location (p-Median) | NP-hard | ~1000 locations (ILP) | Greedy heuristic |
+| Capacitated VRP | NP-hard | ~1000 customers (OR-Tools) | Local search metaheuristic |
 
 ---
 
@@ -498,6 +570,20 @@ When two patterns seem equally likely, use these tiebreakers:
 
 **Queuing vs. Scheduling**: Queuing theory analyzes steady-state performance of systems with random arrivals (how long will people wait?). Scheduling optimizes a deterministic plan to minimize makespan or meet deadlines (when should each job run?).
 
+**Root Finding vs. Optimization**: Root finding solves f(x) = 0 (find where function crosses zero). Optimization finds min/max of f(x) (find where f'(x) = 0). Break-even is root finding; best price is optimization.
+
+**Interpolation vs. Regression**: Interpolation passes exactly through all data points (no noise). Regression fits a model that minimizes error (data has noise). Use interpolation for tabulated exact values; regression for noisy measurements.
+
+**Correlation vs. Causation**: Correlation (S5) measures association; causal inference (S104-S110) measures what happens if you intervene. Use causal methods when you need to know "what if we do X?" rather than "is X associated with Y?"
+
+**DiD vs. RDD**: Both exploit quasi-experimental settings. DiD uses a before/after comparison with a control group (parallel trends). RDD uses a cutoff/threshold where treatment changes discontinuously. DiD needs panel data; RDD needs a running variable.
+
+**EOQ vs. Newsvendor**: EOQ is for deterministic, repeating demand (how much to order regularly). Newsvendor is for uncertain, single-period demand (perishables, seasonal items). EOQ minimizes ordering+holding; newsvendor balances understocking vs. overstocking.
+
+**Bin Packing vs. Knapsack**: Bin packing minimizes the number of bins used (all items must be packed). Knapsack maximizes value in a single container (not all items need to fit). "Fit everything" = bin packing; "choose best subset" = knapsack.
+
+**Facility Location vs. Assignment**: Facility location decides WHERE to place facilities AND which demands they serve. Assignment takes fixed facility locations and just assigns demands. If locations are given, use assignment (A16); if locations are to be chosen, use facility location (A194).
+
 ---
 
 ## Cross-Reference Index
@@ -538,5 +624,15 @@ After identifying the problem type here, consult the corresponding reference fil
 | DISCRETE-EVENT SIM | §21.4 Discrete-Event System | algorithms-statistics.md S101-S103 | (simpy) |
 | MODEL DYNAMICS/ODE | §21.1 ODE/Dynamical System | algorithms.md §29 (A165-A174) | (scipy.integrate) |
 | EPIDEMIC MODEL | §21.5 Epidemic/Compartmental | algorithms.md A173-A174 | (scipy.integrate) |
+| FIND ROOT | §22.1 Root-Finding Problem | algorithms.md §30 (A175-A179) | (scipy.optimize) |
+| INTERPOLATE | §22.2 Interpolation Problem | algorithms.md §31 (A180-A184) | (scipy.interpolate) |
+| INTEGRATE NUMERICALLY | §22.3 Quadrature Problem | algorithms.md §32 (A185-A187) | (scipy.integrate) |
+| CAUSAL EFFECT | §23.2 Treatment-Outcome Model | algorithms-statistics.md S104-S110 | (dowhy / sklearn) |
+| CAUSAL DAG | §23.1 Causal Graph/DAG | algorithms-statistics.md S109 | (dowhy / networkx) |
+| MANAGE INVENTORY | §24.1 Inventory Model | algorithms.md A188-A190 | (custom / scipy) |
+| PACK/BIN | §24.2 Packing Problem | algorithms.md A193 | (custom / PuLP) |
+| LOCATE FACILITIES | §24.3 Facility Location Model | algorithms.md A194 | (PuLP) |
+| SCHEDULE JOBS | §7.3 Scheduling Model | algorithms.md A191-A192 | (OR-Tools CP-SAT) |
+| ROUTE VEHICLES | §24.3 Facility Location Model | algorithms.md A195 | (OR-Tools) |
 
 Also see: **common-mistakes.md** for pitfalls specific to each problem category.

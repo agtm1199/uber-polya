@@ -1,8 +1,8 @@
 # Statistical Inference Algorithm Catalog
 
-Comprehensive catalog of 103 algorithms for statistical inference, time series analysis, stochastic processes, survival analysis, machine learning, Monte Carlo simulation, queuing theory, and discrete-event simulation. Organized by problem type, each entry includes complexity, solver library, correctness guarantee, and implementation guidance.
+Comprehensive catalog of 110 algorithms for statistical inference, time series analysis, stochastic processes, survival analysis, machine learning, Monte Carlo simulation, queuing theory, discrete-event simulation, and causal inference. Organized by problem type, each entry includes complexity, solver library, correctness guarantee, and implementation guidance.
 
-**Scope**: Statistical Inference (45 algorithms), Time Series Analysis (15 algorithms), Stochastic Processes (5 algorithms), Survival Analysis (3 new algorithms), Machine Learning (22 algorithms), Monte Carlo Methods (5 algorithms), Queuing Theory (5 algorithms), Discrete-Event Simulation (3 algorithms).
+**Scope**: Statistical Inference (45 algorithms), Time Series Analysis (15 algorithms), Stochastic Processes (5 algorithms), Survival Analysis (3 new algorithms), Machine Learning (22 algorithms), Monte Carlo Methods (5 algorithms), Queuing Theory (5 algorithms), Discrete-Event Simulation (3 algorithms), Causal Inference (7 algorithms).
 
 **Legend**:
 - **T**: Time complexity | **S**: Space complexity
@@ -3297,6 +3297,270 @@ def detect_warmup(data: list, method: str = "mser") -> dict:
 
 ---
 
+## 19. Causal Inference
+
+### S104: Propensity Score Matching
+
+**Problem**: Estimate the causal effect of a treatment from observational data by matching treated/control units with similar propensity scores.
+**T**: O(n² log n) for nearest-neighbor matching | **S**: O(n)
+**Lib**: `sklearn.linear_model.LogisticRegression` + custom matching, or `dowhy`
+**Guarantee**: Unbiased if propensity model is correctly specified and overlap holds.
+
+```python
+import numpy as np
+from sklearn.linear_model import LogisticRegression
+from scipy.spatial import KDTree
+
+def propensity_score_matching(X: np.ndarray, treatment: np.ndarray, outcome: np.ndarray,
+                               caliper: float = 0.05) -> dict:
+    """Estimate ATE via propensity score matching."""
+    # Estimate propensity scores
+    ps_model = LogisticRegression(max_iter=1000)
+    ps_model.fit(X, treatment)
+    ps = ps_model.predict_proba(X)[:, 1]
+    # Match treated to control via nearest neighbor
+    treated_idx = np.where(treatment == 1)[0]
+    control_idx = np.where(treatment == 0)[0]
+    tree = KDTree(ps[control_idx].reshape(-1, 1))
+    dists, matches = tree.query(ps[treated_idx].reshape(-1, 1))
+    matched_control = control_idx[matches.flatten()]
+    valid = dists.flatten() < caliper
+    att = np.mean(outcome[treated_idx[valid]] - outcome[matched_control[valid]])
+    return {
+        "att": float(att),
+        "n_matched": int(valid.sum()),
+        "n_treated": len(treated_idx),
+        "mean_ps_treated": float(ps[treated_idx].mean()),
+        "mean_ps_control": float(ps[control_idx].mean()),
+    }
+```
+
+**Use when**: Observational study where treatment assignment is not random but depends on observable covariates. Key assumption: no unobserved confounders.
+
+---
+
+### S105: Difference-in-Differences (DiD)
+
+**Problem**: Estimate causal effect by comparing pre/post changes in treated vs. control groups (parallel trends assumption).
+**T**: O(n) for estimation | **S**: O(n)
+**Lib**: `statsmodels.OLS`, custom
+**Guarantee**: Unbiased if parallel trends assumption holds.
+
+```python
+import numpy as np
+import statsmodels.api as sm
+
+def difference_in_differences(outcome: np.ndarray, treated: np.ndarray,
+                               post: np.ndarray) -> dict:
+    """DiD estimator: outcome ~ treated + post + treated*post."""
+    interaction = treated * post
+    X = np.column_stack([treated, post, interaction])
+    X = sm.add_constant(X)
+    model = sm.OLS(outcome, X).fit()
+    did_estimate = model.params[3]  # coefficient on interaction
+    return {
+        "did_estimate": float(did_estimate),
+        "std_error": float(model.bse[3]),
+        "p_value": float(model.pvalues[3]),
+        "ci_95": [float(model.conf_int()[3, 0]), float(model.conf_int()[3, 1])],
+        "pre_treatment_diff": float(model.params[1]),
+    }
+```
+
+**Use when**: Policy evaluation (new law, program rollout) with a natural comparison group. Requires pre/post data for both groups.
+
+---
+
+### S106: Instrumental Variables (2SLS)
+
+**Problem**: Estimate causal effect when treatment is endogenous (correlated with unobserved factors), using an instrument Z that affects treatment but not outcome directly.
+**T**: O(n·p²) for two-stage least squares | **S**: O(n·p)
+**Lib**: `statsmodels.sandbox.regression.gmm` or `linearmodels.iv`
+**Guarantee**: Consistent if instrument is valid (relevant, excludable, independent).
+
+```python
+import numpy as np
+import statsmodels.api as sm
+
+def two_stage_least_squares(outcome: np.ndarray, treatment: np.ndarray,
+                             instrument: np.ndarray, controls: np.ndarray = None) -> dict:
+    """Two-stage least squares (2SLS) IV estimation."""
+    # Stage 1: regress treatment on instrument (+ controls)
+    Z = sm.add_constant(instrument.reshape(-1, 1) if instrument.ndim == 1 else instrument)
+    if controls is not None:
+        Z = np.column_stack([Z, controls])
+    stage1 = sm.OLS(treatment, Z).fit()
+    treatment_hat = stage1.fittedvalues
+    # Stage 2: regress outcome on predicted treatment
+    X2 = sm.add_constant(treatment_hat.reshape(-1, 1))
+    if controls is not None:
+        X2 = np.column_stack([X2, controls])
+    stage2 = sm.OLS(outcome, X2).fit()
+    return {
+        "iv_estimate": float(stage2.params[1]),
+        "std_error": float(stage2.bse[1]),
+        "first_stage_f": float(stage1.fvalue),
+        "instrument_relevance": "strong" if stage1.fvalue > 10 else "weak",
+    }
+```
+
+**Use when**: Endogenous treatment variable (self-selection, reverse causality). Must have a valid instrument (relevance + exclusion).
+
+---
+
+### S107: Regression Discontinuity Design (RDD)
+
+**Problem**: Estimate causal effect at a threshold/cutoff where treatment assignment changes discontinuously based on a running variable.
+**T**: O(n) for local linear regression | **S**: O(n)
+**Lib**: `statsmodels.OLS` (local), `rdrobust` (R; Python via rpy2)
+**Guarantee**: Identifies local average treatment effect (LATE) at the cutoff.
+
+```python
+import numpy as np
+import statsmodels.api as sm
+
+def regression_discontinuity(running_var: np.ndarray, outcome: np.ndarray,
+                              cutoff: float, bandwidth: float = None) -> dict:
+    """Sharp RDD with local linear regression."""
+    if bandwidth is None:
+        bandwidth = 1.06 * np.std(running_var) * len(running_var)**(-0.2)  # Silverman
+    mask = np.abs(running_var - cutoff) <= bandwidth
+    X_local = running_var[mask] - cutoff
+    Y_local = outcome[mask]
+    treated = (X_local >= 0).astype(float)
+    X_reg = np.column_stack([treated, X_local, treated * X_local])
+    X_reg = sm.add_constant(X_reg)
+    model = sm.OLS(Y_local, X_reg).fit()
+    return {
+        "rdd_estimate": float(model.params[1]),
+        "std_error": float(model.bse[1]),
+        "p_value": float(model.pvalues[1]),
+        "ci_95": [float(model.conf_int()[1, 0]), float(model.conf_int()[1, 1])],
+        "bandwidth": float(bandwidth),
+        "n_in_bandwidth": int(mask.sum()),
+    }
+```
+
+**Use when**: Treatment determined by a cutoff (test scores for scholarships, age thresholds for eligibility, geographic boundaries).
+
+---
+
+### S108: Synthetic Control Method
+
+**Problem**: Estimate the causal effect of an intervention on a single treated unit by constructing a weighted combination of untreated units as a counterfactual.
+**T**: O(m² · T) for m donor units, T time periods | **S**: O(m · T)
+**Lib**: `scipy.optimize.minimize` (constrained), custom
+**Guarantee**: Identifies effect if pre-treatment fit is good and no spillovers.
+
+```python
+import numpy as np
+from scipy.optimize import minimize
+
+def synthetic_control(treated_series: np.ndarray, donor_matrix: np.ndarray,
+                       pre_periods: int) -> dict:
+    """Synthetic control: find weights w such that donors @ w ≈ treated in pre-period."""
+    n_donors = donor_matrix.shape[1]
+    pre_treated = treated_series[:pre_periods]
+    pre_donors = donor_matrix[:pre_periods]
+    def objective(w):
+        synthetic = pre_donors @ w
+        return np.sum((pre_treated - synthetic)**2)
+    # Constraints: weights sum to 1, all non-negative
+    constraints = [{"type": "eq", "fun": lambda w: np.sum(w) - 1}]
+    bounds = [(0, 1)] * n_donors
+    w0 = np.ones(n_donors) / n_donors
+    result = minimize(objective, w0, bounds=bounds, constraints=constraints, method="SLSQP")
+    weights = result.x
+    synthetic_full = donor_matrix @ weights
+    effect = treated_series[pre_periods:] - synthetic_full[pre_periods:]
+    return {
+        "weights": weights.tolist(),
+        "pre_treatment_rmse": float(np.sqrt(result.fun / pre_periods)),
+        "post_treatment_effects": effect.tolist(),
+        "average_effect": float(np.mean(effect)),
+    }
+```
+
+**Use when**: Single treated unit (a country, state, company) with many potential controls and long pre-treatment time series. Classic example: effect of policy on one state.
+
+---
+
+### S109: DAG-Based Causal Identification
+
+**Problem**: Given a causal directed acyclic graph (DAG), determine the minimal adjustment set to identify a causal effect, and check for confounders/colliders.
+**T**: O(V + E) for d-separation checks | **S**: O(V + E)
+**Lib**: `dowhy`, `networkx`
+**Guarantee**: Correct identification if DAG is correctly specified (Pearl's do-calculus).
+
+```python
+import networkx as nx
+
+def identify_adjustment_set(dag_edges: list[tuple[str, str]], treatment: str,
+                             outcome: str) -> dict:
+    """Find minimal adjustment set using backdoor criterion."""
+    G = nx.DiGraph(dag_edges)
+    # Find all backdoor paths: paths from treatment to outcome through parents of treatment
+    parents_of_treatment = set(G.predecessors(treatment))
+    # Simple backdoor criterion: condition on parents of treatment
+    # (sufficient but not always minimal)
+    adjustment_set = parents_of_treatment - {outcome}
+    # Check if treatment -> outcome path exists
+    has_direct_effect = outcome in G.successors(treatment)
+    causal_paths = list(nx.all_simple_paths(G, treatment, outcome))
+    return {
+        "adjustment_set": sorted(adjustment_set),
+        "n_causal_paths": len(causal_paths),
+        "has_direct_effect": has_direct_effect,
+        "causal_paths": [p for p in causal_paths[:10]],  # limit output
+    }
+```
+
+**Use when**: Need to decide which variables to control for. Prevents conditioning on colliders (which biases estimates). Foundation of causal reasoning.
+
+---
+
+### S110: Average Treatment Effect (ATE) Estimation
+
+**Problem**: Estimate the population-level average causal effect of treatment using doubly robust estimation (combines propensity score and outcome model).
+**T**: O(n · p) for doubly robust estimation | **S**: O(n)
+**Lib**: `sklearn`, custom doubly robust estimator
+**Guarantee**: Consistent if either the propensity model OR the outcome model is correctly specified (double robustness).
+
+```python
+import numpy as np
+from sklearn.linear_model import LogisticRegression, LinearRegression
+from sklearn.model_selection import cross_val_predict
+
+def doubly_robust_ate(X: np.ndarray, treatment: np.ndarray, outcome: np.ndarray) -> dict:
+    """Doubly robust ATE estimator (AIPW)."""
+    # Propensity score model
+    ps_model = LogisticRegression(max_iter=1000)
+    ps = cross_val_predict(ps_model, X, treatment, cv=5, method="predict_proba")[:, 1]
+    ps = np.clip(ps, 0.01, 0.99)  # trim extreme propensities
+    # Outcome models
+    treated_mask = treatment == 1
+    mu1_model = LinearRegression().fit(X[treated_mask], outcome[treated_mask])
+    mu0_model = LinearRegression().fit(X[~treated_mask], outcome[~treated_mask])
+    mu1 = mu1_model.predict(X)
+    mu0 = mu0_model.predict(X)
+    # Doubly robust estimator (AIPW)
+    n = len(outcome)
+    dr1 = mu1 + treatment * (outcome - mu1) / ps
+    dr0 = mu0 + (1 - treatment) * (outcome - mu0) / (1 - ps)
+    ate = np.mean(dr1 - dr0)
+    se = np.std(dr1 - dr0) / np.sqrt(n)
+    return {
+        "ate": float(ate),
+        "std_error": float(se),
+        "ci_95": [float(ate - 1.96 * se), float(ate + 1.96 * se)],
+        "method": "doubly_robust_aipw",
+    }
+```
+
+**Use when**: Default for observational causal inference. More robust than propensity matching or regression alone. Standard in economics and epidemiology.
+
+---
+
 ## Algorithm Selection Flowchart
 
 ```
@@ -3420,6 +3684,15 @@ Question about data?
 │   ├── Sample size needed → S44 (Power analysis)
 │   ├── Uncertainty of statistic → S41 (Bootstrap) or S42 (Jackknife)
 │   └── Smooth noisy data → S58 (Moving Average) + S59 (Spectral Analysis)
+│
+├── Measure causal effect?
+│   ├── Randomized experiment? → Standard hypothesis tests (S6-S17)
+│   ├── Observational, covariates available? → S104 (Propensity Matching) or S110 (Doubly Robust)
+│   ├── Pre/post with comparison group? → S105 (Difference-in-Differences)
+│   ├── Endogenous treatment, have instrument? → S106 (Instrumental Variables)
+│   ├── Treatment at a cutoff/threshold? → S107 (Regression Discontinuity)
+│   ├── Single treated unit, many controls? → S108 (Synthetic Control)
+│   └── Need to determine what to control for? → S109 (DAG Identification)
 │
 └── Model dynamics / ODEs? → See algorithms.md §29 (A165-A174)
     ├── Simple initial-value problem → A165 (Euler) or A166 (RK4)

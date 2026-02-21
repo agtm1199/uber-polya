@@ -1,4 +1,4 @@
-# Every Problem Is a Math Problem
+# Most of Your Problems Are Math Problems
 
 ## You just don't know it yet.
 

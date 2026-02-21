@@ -140,26 +140,30 @@ Each skill's output feeds the next. The pipeline is Socratic: uber-polya asks qu
 | [Call Center Queuing](examples/queuing-system/) | Queuing theory | M/M/c + simpy DES verification |
 | [SIR Epidemic Model](examples/epidemic-sir/) | Numerical ODEs | SIR ODE + vaccination analysis (scipy) |
 | [Monte Carlo Project Risk](examples/monte-carlo-risk/) | Simulation | MC risk simulation + convergence analysis |
+| [Root Finding & Interpolation](examples/root-finding/) | Numerical methods | Bisection + Newton + Brent + cubic spline |
+| [Causal Inference](examples/causal-inference/) | Causal inference | Propensity matching + DiD + doubly robust |
+| [Inventory Optimization](examples/inventory-optimization/) | Operations research | EOQ + newsvendor + safety stock |
+| [Bin Packing](examples/bin-packing/) | Operations research | First Fit Decreasing + ILP optimal |
 
 ## What's Under the Hood
 
 ### The Knowledge Base
 
-277 algorithms, 83 structures, 17 heuristics, 25 solver libraries -- curated, cross-referenced, and organized for rapid problem-solving.
+305 algorithms, 91 structures, 17 heuristics, 26 solver libraries -- curated, cross-referenced, and organized for rapid problem-solving.
 
 | Catalog | Entries |
 |---------|---------|
 | Polya's Heuristics | 17 heuristics with Socratic questions |
-| Structure Catalog | 83 structures across 21 mathematical domains |
+| Structure Catalog | 91 structures across 24 mathematical domains |
 | Problem Classification | Decision tree + pattern table for rapid matching |
-| Algorithm Catalogs | 277 algorithms (discrete math, continuous optimization, statistics, time series, stochastic processes, survival analysis, machine learning, simulation, queuing theory, ODEs, linear algebra, calculus, geometry, financial math, game theory, decision analysis, multi-objective optimization) |
-| Solver Ecosystem | 25 Python libraries (NetworkX, PuLP, Z3, SymPy, SciPy, OR-Tools, cvxpy, statsmodels, PyMC, shapely, numpy-financial, nashpy, pymoo, prophet, arch, ruptures, lifelines, scikit-learn, xgboost, umap-learn, simpy, and more) |
+| Algorithm Catalogs | 305 algorithms (discrete math, continuous optimization, statistics, time series, stochastic processes, survival analysis, machine learning, simulation, queuing theory, ODEs, numerical methods, causal inference, extended OR, linear algebra, calculus, geometry, financial math, game theory, decision analysis, multi-objective optimization) |
+| Solver Ecosystem | 26 Python libraries (NetworkX, PuLP, Z3, SymPy, SciPy, OR-Tools, cvxpy, statsmodels, PyMC, shapely, numpy-financial, nashpy, pymoo, prophet, arch, ruptures, lifelines, scikit-learn, xgboost, umap-learn, simpy, dowhy, and more) |
 | Interpretation Patterns | Domain-specific math-to-reality translation |
-| Visualization Guide | 34 chart types with matplotlib templates |
+| Visualization Guide | 37 chart types with matplotlib templates |
 
 ### Domains Covered
 
-Graph Theory, Combinatorics, Set Theory, Logic, Number Theory, Relations & Orders, Optimization, Discrete Probability, Continuous Optimization, Statistical Inference, Time Series Analysis, Stochastic Processes, Survival Analysis, Machine Learning, Simulation & ODEs, Linear Algebra, Calculus, Geometry & Trigonometry, Financial Mathematics, Game Theory, Decision Analysis, Multi-Objective Optimization.
+Graph Theory, Combinatorics, Set Theory, Logic, Number Theory, Relations & Orders, Optimization, Discrete Probability, Continuous Optimization, Statistical Inference, Time Series Analysis, Stochastic Processes, Survival Analysis, Machine Learning, Simulation & ODEs, Numerical Methods, Causal Inference, Extended Operations Research, Linear Algebra, Calculus, Geometry & Trigonometry, Financial Mathematics, Game Theory, Decision Analysis, Multi-Objective Optimization.
 
 ### Expansion Roadmap
 
@@ -180,8 +184,34 @@ Graph Theory, Combinatorics, Set Theory, Logic, Number Theory, Relations & Order
 | Survival Analysis | Shipped | 5 algorithms (3 new + 2 existing), lifelines |
 | Machine Learning | Shipped | 22 algorithms, 5 structures, scikit-learn/xgboost/umap-learn |
 | Simulation & ODEs | Shipped | 23 algorithms (10 ODE + 13 simulation), 8 structures, simpy/scipy.integrate |
+| Numerical Methods | Shipped | 13 algorithms, 3 structures, scipy.optimize/interpolate/integrate |
+| Causal Inference | Shipped | 7 algorithms, 2 structures, dowhy/scikit-learn |
+| Extended Operations Research | Shipped | 8 algorithms, 3 structures, PuLP/OR-Tools |
+| Partial Differential Equations | Planned | Heat, wave, diffusion equations -- FEniCS, FiPy |
+| Dynamical Systems & Chaos | Planned | Stability, attractors, bifurcation analysis |
+| Spatial Statistics | Planned | Geostatistics, spatial autocorrelation -- geopandas, PySAL |
+| Spherical Geometry / Geodesy | Planned | Great circle distance, geodesic calculations -- geopy |
+| Option Pricing | Planned | Black-Scholes, binomial lattice -- QuantLib |
+| Risk Management | Planned | VaR, CVaR, stress testing |
+| Agent-Based Modeling | Planned | Agent simulation, emergent behavior -- mesa |
+| Fourier Analysis / Spectral Methods | Planned | FFT, spectral decomposition -- scipy.fft |
+| Digital Signal Processing | Planned | Filtering, convolution, spectral analysis -- scipy.signal |
+| Information Theory | Planned | Entropy, mutual information, KL divergence -- scipy.stats |
+| Classical Control | Planned | PID control, stability margins -- python-control |
+| Modern Control | Planned | State-space, LQR, Kalman filtering -- python-control, filterpy |
+| Population Dynamics | Planned | Lotka-Volterra, predator-prey models (extends Simulation & ODEs) |
+| Epidemiology | Planned | SIR, SEIR, compartmental models (extends Simulation & ODEs) |
+| Abstract Algebra | Unlikely | Group theory, ring theory, field extensions |
+| Real Analysis | Unlikely | Measure theory, convergence, completeness |
+| Complex Analysis | Unlikely | Contour integration, conformal mapping, residues |
+| Calculus of Variations | Unlikely | Euler-Lagrange, optimal control |
+| Actuarial Science | Unlikely | Life tables, annuity pricing, loss models |
+| Reinforcement Learning | Unlikely | MDP, Q-learning, policy gradient |
+| Coding Theory | Unlikely | Error-correcting codes, Hamming, Reed-Solomon |
+| Cryptography | Unlikely | RSA, elliptic curves, hash functions |
+| Phylogenetics | Unlikely | Evolutionary trees, maximum likelihood |
 
-New domains plug in as reference files without changing the core Polya workflow. Contributions welcome -- see [CONTRIBUTING.md](CONTRIBUTING.md).
+Domains marked **Shipped** are fully integrated. **Planned** domains have clear implementation paths and are accepting contributions. **Unlikely** domains are outside the primary scope but could be added by community contributors. New domains plug in as reference files without changing the core Polya workflow. Contributions welcome -- see [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## Requirements
 
@@ -191,7 +221,7 @@ New domains plug in as reference files without changing the core Polya workflow.
 Optional Python packages (installed as needed):
 
 ```bash
-pip install networkx pulp z3-solver sympy scipy matplotlib numpy cvxpy statsmodels shapely numpy-financial nashpy pymoo prophet arch ruptures lifelines scikit-learn xgboost umap-learn simpy
+pip install networkx pulp z3-solver sympy scipy matplotlib numpy cvxpy statsmodels shapely numpy-financial nashpy pymoo prophet arch ruptures lifelines scikit-learn xgboost umap-learn simpy dowhy
 ```
 
 ## Design Principles
@@ -205,7 +235,7 @@ pip install networkx pulp z3-solver sympy scipy matplotlib numpy cvxpy statsmode
 
 ## Documentation
 
-- [The Manifesto](docs/manifesto.md) -- Why every problem is a math problem
+- [The Manifesto](docs/manifesto.md) -- Why most of your problems are math problems
 - [Architecture](docs/architecture.md) -- How Polya's method maps to the skills
 - [Getting Started](docs/tutorials/getting-started.md) -- Your first problem
 - [Creating Skills](docs/creating-skills.md) -- Build on this framework

@@ -97,6 +97,11 @@
       color: var(--text);
     }
 
+    nav .nav-links .github-link {
+      display: inline-flex;
+      align-items: center;
+    }
+
     /* ---- HERO ---- */
     .hero {
       padding: 160px 0 100px;
@@ -599,12 +604,12 @@
   <!-- NAV -->
   <nav>
     <div class="container">
-      <a href="#" class="logo">uber-<span>polya</span></a>
+      <a href="index.html" class="logo">uber-<span>polya</span></a>
       <ul class="nav-links">
-        <li><a href="#how-it-works">How it works</a></li>
-        <li><a href="#problems">Problems</a></li>
-        <li><a href="guide.html">Guide</a></li>
-        <li><a href="https://github.com/agtm1199/uber-polya">GitHub</a></li>
+        <li><a href="guide.html">Docs</a></li>
+        <li><a href="getting-started.html">Tutorial</a></li>
+        <li><a href="manifesto.html">Manifesto</a></li>
+        <li><a href="https://github.com/agtm1199/uber-polya" class="github-link"><svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor" style="vertical-align:-2px;margin-right:4px;"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>GitHub</a></li>
       </ul>
     </div>
   </nav>
@@ -755,22 +760,22 @@
           <div class="feature-desc">uber-polya orchestrator + uber-model, uber-solve, uber-interpret</div>
         </div>
         <div class="feature-card">
-          <div class="feature-icon">139</div>
+          <div class="feature-icon">305</div>
           <div class="feature-name">Algorithms</div>
-          <div class="feature-desc">Discrete math, continuous optimization, and statistical inference</div>
+          <div class="feature-desc">Across 24 mathematical domains with cross-referenced selection</div>
         </div>
         <div class="feature-card">
-          <div class="feature-icon">43</div>
+          <div class="feature-icon">91</div>
           <div class="feature-name">Structures</div>
-          <div class="feature-desc">Across 10 mathematical domains with pattern matching</div>
+          <div class="feature-desc">Across 24 mathematical domains with pattern matching</div>
         </div>
         <div class="feature-card">
-          <div class="feature-icon">16</div>
+          <div class="feature-icon">36</div>
           <div class="feature-name">Worked Examples</div>
           <div class="feature-desc">With runnable solver code, verification, and visualizations</div>
         </div>
         <div class="feature-card">
-          <div class="feature-icon">15</div>
+          <div class="feature-icon">26</div>
           <div class="feature-name">Solver Libraries</div>
           <div class="feature-desc">PuLP, NetworkX, Z3, SymPy, SciPy, cvxpy, statsmodels, and more</div>
         </div>
@@ -801,7 +806,7 @@
           For 80 years, that method lived in textbooks. It was a framework for humans, not machines. But the method was always algorithmic at its core: classify the problem, select a strategy, execute, verify.
         </p>
         <p>
-          uber-polya makes it executable. You describe a real-world problem in plain English. The system finds the hidden mathematical structure, selects the right algorithm from a curated catalog of 139 options, writes verified solver code, and translates the answer back into something you can act on.
+          uber-polya makes it executable. You describe a real-world problem in plain English. The system finds the hidden mathematical structure, selects the right algorithm from a curated catalog of 305 options, writes verified solver code, and translates the answer back into something you can act on.
         </p>
         <p>
           One algorithm. Any problem. Verified.

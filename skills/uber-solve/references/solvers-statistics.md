@@ -688,6 +688,66 @@ print(f"Mean wait: {np.mean(wait_times):.3f}")
 
 ---
 
+## 13. dowhy -- Causal Inference Framework
+
+**Install**: `pip install dowhy econml`
+**Import**: `import dowhy`
+
+### Key APIs
+
+| Function | Purpose |
+|---|---|
+| `dowhy.CausalModel(data, treatment, outcome, graph)` | Define causal model with DAG |
+| `model.identify_effect()` | Find identification strategy (backdoor, IV, frontdoor) |
+| `model.estimate_effect(method_name=...)` | Estimate causal effect via chosen method |
+| `model.refute_estimate(method_name=...)` | Test robustness (placebo, random cause, subset) |
+| `econml.dml.DML()` | Double Machine Learning estimator |
+| `econml.dr.DRLearner()` | Doubly Robust Learner |
+| `econml.metalearners.TLearner()` | T-Learner for heterogeneous effects |
+
+### Typical Usage
+
+```python
+import dowhy
+import pandas as pd
+
+# Define causal model with DAG
+model = dowhy.CausalModel(
+    data=df,
+    treatment="treatment",
+    outcome="outcome",
+    graph="digraph { confounder -> treatment; confounder -> outcome; treatment -> outcome; }"
+)
+
+# Identify causal effect
+identified = model.identify_effect()
+print(identified)  # Shows backdoor adjustment set
+
+# Estimate effect
+estimate = model.estimate_effect(
+    identified,
+    method_name="backdoor.propensity_score_matching"
+)
+print(f"ATE = {estimate.value:.3f}")
+
+# Refute: placebo treatment (should give ~0)
+refutation = model.refute_estimate(
+    identified, estimate,
+    method_name="placebo_treatment_refuter"
+)
+print(f"Placebo effect = {refutation.new_effect:.3f}")
+```
+
+### Gotchas
+
+- Requires specifying the causal DAG as a DOT string; results depend entirely on DAG correctness
+- `identify_effect()` may find no valid identification if DAG has no adjustment set
+- Refutation tests (placebo, random common cause) are necessary — a "significant" estimate may be spurious
+- EconML methods (DML, DRLearner) are better for heterogeneous treatment effects but need larger samples
+- propensity score methods need overlap (common support) — check propensity distributions
+
+---
+
 ## Library Selection Guide
 
 | Question | First Choice | Alternative |
@@ -722,6 +782,9 @@ print(f"Mean wait: {np.mean(wait_times):.3f}")
 | Discrete-event simulation | simpy | custom |
 | ODE / dynamical system | scipy.integrate.solve_ivp | SymPy (dsolve, symbolic) |
 | Epidemic modeling (SIR/SEIR) | scipy.integrate.solve_ivp | custom |
+| Causal effect (observational) | dowhy | econml (DML, DRLearner) |
+| Propensity score matching | scikit-learn + custom | dowhy |
+| Causal DAG / identification | dowhy | networkx |
 
 ### Decision Flow
 
@@ -762,7 +825,12 @@ Need to test a hypothesis or estimate a parameter?
 │   └── Process with queues / resources → simpy
 ├── Queuing analysis (analytical)?
 │   └── scipy (closed-form M/M/1, M/M/c, M/G/1)
-└── Solve ODE / model dynamics?
-    ├── Symbolic / exact solution → SymPy (dsolve)
-    └── Numerical / complex system → scipy.integrate.solve_ivp
+├── Solve ODE / model dynamics?
+│   ├── Symbolic / exact solution → SymPy (dsolve)
+│   └── Numerical / complex system → scipy.integrate.solve_ivp
+└── Estimate causal effect?
+    ├── Specify DAG + identify strategy → dowhy
+    ├── Propensity score matching → scikit-learn + custom
+    ├── Heterogeneous treatment effects → econml (DML, DRLearner)
+    └── Simple DiD / IV / RDD → statsmodels
 ```

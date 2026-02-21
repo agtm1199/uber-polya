@@ -49,6 +49,11 @@ Which chart for which result type. matplotlib/seaborn/NetworkX templates for com
 | Survival curves | KM step plot + CI band | Group comparison | Hazard ratio forest plot |
 | Change points | Line + vertical markers | Regime coloring | Segment mean overlay |
 | Anomalies | Line + highlighted outliers | Context needed | Rolling statistics overlay |
+| Confusion matrix | Annotated heatmap | Multi-class | Normalized confusion matrix |
+| Classification performance | ROC curve | Precision-recall trade-off | PR curve |
+| Cluster assignments | 2D scatter (PCA/UMAP) | Cluster profiles | Radar/bar chart per cluster |
+| Feature importance | Horizontal bar chart | Comparison | Grouped bar (multiple models) |
+| Explained variance | Scree plot | Cumulative view | Cumulative variance line |
 
 ---
 
@@ -1319,3 +1324,145 @@ plt.savefig('survival_curve.png', dpi=150, bbox_inches='tight')
 ```
 
 **Key elements**: Step function (survival is piecewise constant), confidence bands (shaded), median survival reference line at 0.5, log-rank p-value annotation, y-axis from 0 to 1, group colors for comparison.
+
+---
+
+## 28. Confusion Matrix Heatmap
+
+**When to use**: Classification results — show true vs. predicted labels, identify which classes are confused.
+
+```python
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+import numpy as np
+import seaborn as sns
+
+# --- Data ---
+# confusion_matrix: 2D array (shape [n_classes, n_classes])
+# class_names: list of class label strings
+
+fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+
+# Raw counts
+sns.heatmap(confusion_matrix, annot=True, fmt='d', cmap='Blues',
+            xticklabels=class_names, yticklabels=class_names, ax=axes[0])
+axes[0].set_xlabel('Predicted', fontsize=12)
+axes[0].set_ylabel('Actual', fontsize=12)
+axes[0].set_title('Confusion Matrix (counts)', fontsize=14)
+
+# Normalized (row-wise = recall per class)
+cm_norm = confusion_matrix.astype(float) / confusion_matrix.sum(axis=1, keepdims=True)
+sns.heatmap(cm_norm, annot=True, fmt='.2f', cmap='Blues',
+            xticklabels=class_names, yticklabels=class_names, ax=axes[1])
+axes[1].set_xlabel('Predicted', fontsize=12)
+axes[1].set_ylabel('Actual', fontsize=12)
+axes[1].set_title('Confusion Matrix (normalized)', fontsize=14)
+
+plt.tight_layout()
+plt.savefig('confusion_matrix.png', dpi=150, bbox_inches='tight')
+```
+
+**Key elements**: Two panels (raw counts + normalized), Blues colormap, annotated cells, class labels on both axes, row-normalized shows recall per class.
+
+---
+
+## 29. ROC / Precision-Recall Curve
+
+**When to use**: Binary or multi-class classification — show the trade-off between true positive rate and false positive rate (ROC) or precision and recall (PR).
+
+```python
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+from sklearn.metrics import roc_curve, auc, precision_recall_curve, average_precision_score
+
+# --- Data ---
+# y_true: true binary labels
+# y_prob: predicted probabilities for the positive class
+# model_name: string
+
+fig, axes = plt.subplots(1, 2, figsize=(14, 5))
+
+# ROC Curve
+fpr, tpr, _ = roc_curve(y_true, y_prob)
+roc_auc = auc(fpr, tpr)
+axes[0].plot(fpr, tpr, color='#58a6ff', linewidth=2, label=f'{model_name} (AUC = {roc_auc:.3f})')
+axes[0].plot([0, 1], [0, 1], color='#8b949e', linestyle='--', linewidth=1, label='Random')
+axes[0].fill_between(fpr, tpr, alpha=0.1, color='#58a6ff')
+axes[0].set_xlabel('False Positive Rate', fontsize=12)
+axes[0].set_ylabel('True Positive Rate', fontsize=12)
+axes[0].set_title('ROC Curve', fontsize=14)
+axes[0].legend(loc='lower right', fontsize=11)
+axes[0].grid(True, alpha=0.3)
+
+# Precision-Recall Curve
+precision, recall, _ = precision_recall_curve(y_true, y_prob)
+ap = average_precision_score(y_true, y_prob)
+axes[1].plot(recall, precision, color='#f0883e', linewidth=2, label=f'{model_name} (AP = {ap:.3f})')
+axes[1].fill_between(recall, precision, alpha=0.1, color='#f0883e')
+axes[1].set_xlabel('Recall', fontsize=12)
+axes[1].set_ylabel('Precision', fontsize=12)
+axes[1].set_title('Precision-Recall Curve', fontsize=14)
+axes[1].legend(loc='upper right', fontsize=11)
+axes[1].grid(True, alpha=0.3)
+
+plt.tight_layout()
+plt.savefig('roc_pr_curves.png', dpi=150, bbox_inches='tight')
+```
+
+**Key elements**: Two panels (ROC + PR), diagonal reference line for ROC (random classifier), AUC/AP annotations in legend, shaded area under curve, grid for readability.
+
+---
+
+## 30. Cluster Scatter Plot (2D Projection)
+
+**When to use**: Clustering results — show cluster assignments in a 2D projection (PCA or UMAP), with centroids and optional decision boundaries.
+
+```python
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+import numpy as np
+from sklearn.decomposition import PCA
+
+# --- Data ---
+# X: feature matrix (n_samples, n_features)
+# labels: cluster assignments (n_samples,)
+# centroids: cluster centers in original space (optional)
+# method_name: string (e.g., "K-Means")
+
+# Project to 2D for visualization
+pca = PCA(n_components=2)
+X_2d = pca.fit_transform(X)
+
+colors = ['#58a6ff', '#f0883e', '#3fb950', '#bc8cff', '#f778ba', '#d29922']
+fig, ax = plt.subplots(figsize=(10, 7))
+
+unique_labels = sorted(set(labels))
+for i, label in enumerate(unique_labels):
+    if label == -1:  # Noise (DBSCAN)
+        mask = labels == label
+        ax.scatter(X_2d[mask, 0], X_2d[mask, 1], c='#8b949e', marker='x',
+                   s=30, alpha=0.5, label='Noise')
+    else:
+        mask = labels == label
+        ax.scatter(X_2d[mask, 0], X_2d[mask, 1], c=colors[i % len(colors)],
+                   s=50, alpha=0.6, label=f'Cluster {label} (n={mask.sum()})')
+
+# Plot centroids if available
+if centroids is not None:
+    centroids_2d = pca.transform(centroids)
+    ax.scatter(centroids_2d[:, 0], centroids_2d[:, 1], c='red', marker='*',
+               s=200, edgecolors='black', linewidths=1, zorder=5, label='Centroids')
+
+ax.set_xlabel(f'PC1 ({pca.explained_variance_ratio_[0]:.1%} variance)', fontsize=12)
+ax.set_ylabel(f'PC2 ({pca.explained_variance_ratio_[1]:.1%} variance)', fontsize=12)
+ax.set_title(f'{method_name} Clustering (2D PCA Projection)', fontsize=14)
+ax.legend(loc='best', fontsize=10)
+ax.grid(True, alpha=0.3)
+plt.tight_layout()
+plt.savefig('cluster_scatter.png', dpi=150, bbox_inches='tight')
+```
+
+**Key elements**: PCA 2D projection with explained variance on axes, distinct colors per cluster, noise points as gray X markers (DBSCAN), centroids as red stars, cluster sizes in legend, grid for readability.

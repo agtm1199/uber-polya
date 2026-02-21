@@ -1,0 +1,83 @@
+{
+  "instance": {
+    "n_customers": 1000,
+    "n_features": 6,
+    "feature_names": [
+      "tenure",
+      "monthly_charges",
+      "total_charges",
+      "num_support_tickets",
+      "contract_type",
+      "has_internet"
+    ],
+    "churn_rate": 0.3,
+    "seed": 42,
+    "test_size": 0.2
+  },
+  "model_metrics": {
+    "Logistic Regression": {
+      "accuracy": 0.8,
+      "precision": 0.7083,
+      "recall": 0.5667,
+      "f1": 0.6296,
+      "roc_auc": 0.8502
+    },
+    "Random Forest": {
+      "accuracy": 0.795,
+      "precision": 0.7111,
+      "recall": 0.5333,
+      "f1": 0.6095,
+      "roc_auc": 0.8137
+    },
+    "Gradient Boosting": {
+      "accuracy": 0.795,
+      "precision": 0.6863,
+      "recall": 0.5833,
+      "f1": 0.6306,
+      "roc_auc": 0.834
+    }
+  },
+  "best_model": {
+    "name": "Logistic Regression",
+    "accuracy": 0.8,
+    "roc_auc": 0.8502
+  },
+  "confusion_matrix": {
+    "TP": 34,
+    "FP": 14,
+    "FN": 26,
+    "TN": 126
+  },
+  "feature_importances": {
+    "tenure": 0.3385,
+    "total_charges": 0.2531,
+    "monthly_charges": 0.2305,
+    "num_support_tickets": 0.1051,
+    "contract_type": 0.0493,
+    "has_internet": 0.0234
+  },
+  "cross_validation": {
+    "n_folds": 5,
+    "scores": [
+      0.81,
+      0.725,
+      0.74,
+      0.74,
+      0.815
+    ],
+    "mean": 0.766,
+    "std": 0.0384
+  },
+  "majority_class_accuracy": 0.7,
+  "verification": {
+    "best_accuracy_gt_75pct": true,
+    "best_roc_auc_gt_70pct": true,
+    "rf_outperforms_baseline": true,
+    "feature_importances_sum_to_1": true,
+    "cv_accuracy_stable": true,
+    "confusion_matrix_sums_correct": true,
+    "all_passed": true
+  },
+  "algorithm": "Logistic Regression + Random Forest (100) + Gradient Boosting (100)",
+  "time_seconds": 0.4055803510127589
+}

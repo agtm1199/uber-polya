@@ -4,6 +4,39 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.8.0] - 2026-02-20
+
+### Added
+
+- **Machine Learning domain** seeded end-to-end:
+  - 5 new structures in structures.md (§20: classification model, regression model (ML), cluster structure, low-dimensional embedding, ML pipeline/feature space)
+  - 22 new algorithms in algorithms-statistics.md (S69-S90):
+    - §11 Classification (S69-S75): k-NN, Decision Tree, Random Forest, SVM, Naive Bayes, Gradient Boosting, MLP Neural Network
+    - §12 ML Regression (S76-S77): Decision Tree/RF Regressor, Gradient Boosting Regressor
+    - §13 Clustering (S78-S82): K-Means, DBSCAN, Agglomerative, GMM, Spectral Clustering
+    - §14 Dimensionality Reduction (S83-S86): PCA, t-SNE, UMAP, Factor Analysis
+    - §15 Model Selection & Feature Engineering (S87-S90): Feature Selection, Hyperparameter Tuning, Model Comparison, Pipeline Construction
+  - xgboost solver reference in solvers-statistics.md (§10), umap-learn solver (§11)
+  - Expanded scikit-learn solver entry (§3) with full ML APIs (classifiers, clustering, dim reduction, pipelines)
+  - 3 new interpretation patterns (§17.1: classification results, §17.2: clustering results, §17.3: dimensionality reduction results)
+  - 3 new chart types in visualization.md (§28 confusion matrix heatmap, §29 ROC/PR curve, §30 cluster scatter plot)
+  - **Customer Churn Classification** worked example (examples/classification/)
+  - **Customer Segmentation via Clustering** worked example (examples/clustering/)
+  - **Feature Importance & Model Comparison** worked example (examples/feature-importance/)
+- Problem classification decision tree expanded with 6 new branches (CLASSIFY, PREDICT VALUE, CLUSTER/SEGMENT, REDUCE DIMENSIONS, SELECT FEATURES, TUNE MODEL) and 15 new quick-lookup patterns
+- 12 new complexity quick-check entries in problem-classification.md
+- 7 new disambiguation tips in problem-classification.md
+- Cross-reference indexes updated in all modified reference files
+
+### Changed
+
+- algorithms-statistics.md scope: 68 → 90 algorithms (added 22 for machine learning)
+- structures.md scope: 70 → 75 structures (added 5 for ML)
+- solvers-statistics.md: 9 → 11 solver library entries (added xgboost, umap-learn); expanded scikit-learn entry
+- interpretation-patterns.md: 29 → 32 pattern groups (added 3 for ML)
+- visualization.md: 27 → 30 chart types (added confusion matrix, ROC/PR curve, cluster scatter)
+- Updated README: 254 algorithms, 24 solver libraries, 75 structures, 20 domains, 29 examples
+
 ## [0.7.0] - 2026-02-21
 
 ### Added

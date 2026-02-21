@@ -165,12 +165,46 @@ What is the user trying to do?
 │  ├─ Recurring events (non-exponential)? ──── Renewal Process (S65)
 │  └─ Is it a random walk? ─────────────────── Random Walk Analysis (S64)
 │
-└─ SURVIVAL / TIME-TO-EVENT analysis
-   ├─ Estimate time until event? ────────────── Kaplan-Meier (S39)
-   ├─ Compare survival between groups? ──────── Log-Rank Test (S66)
-   ├─ Effect of factors on hazard? ──────────── Cox PH (S40)
-   ├─ Effect of factors on time? ────────────── AFT Model (S67)
-   └─ Multiple possible events? ─────────────── Competing Risks (S68)
+├─ SURVIVAL / TIME-TO-EVENT analysis
+│  ├─ Estimate time until event? ────────────── Kaplan-Meier (S39)
+│  ├─ Compare survival between groups? ──────── Log-Rank Test (S66)
+│  ├─ Effect of factors on hazard? ──────────── Cox PH (S40)
+│  ├─ Effect of factors on time? ────────────── AFT Model (S67)
+│  └─ Multiple possible events? ─────────────── Competing Risks (S68)
+│
+├─ CLASSIFY / PREDICT CATEGORY (machine learning)
+│  ├─ Need interpretable rules? ──────────────── Decision Tree (S70)
+│  ├─ Best accuracy, tabular data? ────────────── Gradient Boosting (S74) / Random Forest (S71)
+│  ├─ Small data, simple baseline? ────────────── k-NN (S69) / Naive Bayes (S73)
+│  ├─ High-dimensional, clear margin? ─────────── SVM (S72)
+│  ├─ Complex nonlinear patterns? ─────────────── MLP Neural Net (S75)
+│  └─ Compare multiple models? ────────────────── Model Comparison (S89)
+│
+├─ PREDICT CONTINUOUS VALUE (ML regression)
+│  ├─ Nonlinear relationships? ────────────────── RF Regressor (S76) / GB Regressor (S77)
+│  ├─ Need coefficients / inference? ──────────── Linear Regression (S23-S27)
+│  └─ Need feature importance? ────────────────── Random Forest (S76) + Feature Selection (S87)
+│
+├─ FIND GROUPS / CLUSTER / SEGMENT
+│  ├─ Know number of clusters?
+│  │  ├─ Spherical clusters? ──────────────────── K-Means (S78)
+│  │  ├─ Elliptical / overlapping? ────────────── GMM (S81)
+│  │  └─ Non-convex shapes? ──────────────────── Spectral Clustering (S82)
+│  └─ Unknown number?
+│     ├─ Noise / outliers present? ────────────── DBSCAN (S79)
+│     └─ Want hierarchy / dendrogram? ─────────── Agglomerative (S80)
+│
+├─ REDUCE DIMENSIONS / VISUALIZE
+│  ├─ Linear reduction / feature compression? ── PCA (S83)
+│  ├─ 2D visualization (small data)? ──────────── t-SNE (S84)
+│  ├─ 2D visualization (large data)? ──────────── UMAP (S85)
+│  └─ Latent constructs / survey data? ────────── Factor Analysis (S86)
+│
+└─ SELECT FEATURES / TUNE MODEL
+   ├─ Too many features? ──────────────────────── Feature Selection (S87)
+   ├─ Optimize hyperparameters? ───────────────── Hyperparameter Tuning (S88)
+   ├─ Compare models fairly? ──────────────────── Model Comparison (S89)
+   └─ Build production workflow? ──────────────── Pipeline Construction (S90)
 ```
 
 ---
@@ -266,6 +300,20 @@ One-line lookup from problem description to solution approach.
 | "compare survival curves" | Group comparison | Survival | Log-rank (S66) | lifelines |
 | "risk factors for event" | Hazard modeling | Survival | Cox PH (S40) | lifelines |
 | "multiple ways to leave" | Competing risks | Survival | Aalen-Johansen (S68) | lifelines |
+| "classify / detect / diagnose" | Classification | Classification model | Random Forest (S71) / GB (S74) | scikit-learn |
+| "spam or not / fraud detection" | Binary classification | Classification model | Logistic (S25) / RF (S71) | scikit-learn |
+| "which category / type" | Multi-class classification | Classification model | RF (S71) / SVM (S72) | scikit-learn |
+| "predict a number / price" | ML regression | Regression model | RF Regressor (S76) / GB (S77) | scikit-learn |
+| "best model / which algorithm" | Model comparison | ML Pipeline | Model Comparison (S89) | scikit-learn |
+| "segment customers / group" | Clustering | Cluster structure | K-Means (S78) / DBSCAN (S79) | scikit-learn |
+| "find natural groups" | Clustering | Cluster structure | GMM (S81) / Hierarchical (S80) | scikit-learn |
+| "how many clusters / segments" | Cluster selection | Cluster structure | Elbow + Silhouette (S78) | scikit-learn |
+| "reduce features / compress" | Dimensionality reduction | Low-dim embedding | PCA (S83) | scikit-learn |
+| "visualize high-dim data" | Embedding visualization | Low-dim embedding | UMAP (S85) / t-SNE (S84) | umap-learn |
+| "latent factors / constructs" | Factor analysis | Low-dim embedding | Factor Analysis (S86) | scikit-learn |
+| "which features matter" | Feature selection | ML Pipeline | Feature Selection (S87) | scikit-learn |
+| "tune / optimize parameters" | Hyperparameter tuning | ML Pipeline | Grid/Random Search (S88) | scikit-learn |
+| "too many variables" | Feature reduction | ML Pipeline | PCA (S83) / Selection (S87) | scikit-learn |
 
 ---
 
@@ -323,6 +371,17 @@ Before committing to an approach, verify the computational feasibility.
 | Kaplan-Meier | P (O(n log n)) | Any size | N/A |
 | Cox PH regression | P (O(n·p·iter)) | ~100K subjects | Penalized/regularized |
 | Log-rank test | P (O(n log n)) | Any size | N/A |
+| k-NN classification | P (O(nd)) | ~100K (brute), any (KD-tree) | N/A |
+| Decision tree | P (O(np log n)) | Any size | N/A |
+| Random forest | P (O(np log n · T)) | Any size | N/A |
+| SVM (RBF kernel) | O(n²-n³) | ~10K samples | LinearSVC for large sparse |
+| Gradient boosting | P (O(np log n · T)) | Any size (use XGBoost) | N/A |
+| K-Means | P (O(nkp · iter)) | Any size | Mini-batch K-Means |
+| DBSCAN | O(n log n) with index | ~100K | HDBSCAN (auto-eps) |
+| PCA | P (O(min(np², p³))) | Any size | Randomized PCA |
+| t-SNE | O(n² log n) | ~10K | Barnes-Hut approximation |
+| UMAP | O(n^1.14) empirical | ~1M | N/A |
+| Grid search (k params) | O(grid^k · CV) | ~100 combinations | RandomizedSearchCV |
 
 ---
 
@@ -374,6 +433,18 @@ When two patterns seem equally likely, use these tiebreakers:
 
 **Cox PH vs. AFT**: Cox PH models the hazard ratio (multiplicative effect on risk). AFT models the acceleration factor (multiplicative effect on time). AFT is more intuitive ("this factor doubles the time to event") but Cox PH is more flexible.
 
+**Classification vs. Regression**: If the target is categorical (yes/no, type A/B/C), it's classification. If the target is continuous (price, temperature, score), it's regression. "Binary outcome" is classification even if coded as 0/1.
+
+**Classification (ML) vs. Logistic Regression (Stats)**: Both predict categories. Use logistic regression (S25) when you need p-values, odds ratios, and interpretability. Use ML classifiers (S69-S75) when you need maximum prediction accuracy.
+
+**K-Means vs. GMM**: K-Means produces hard assignments (each point belongs to exactly one cluster) and assumes spherical clusters. GMM produces soft assignments (probability of belonging to each cluster) and handles elliptical clusters. Use GMM when clusters overlap.
+
+**K-Means vs. DBSCAN**: K-Means requires specifying k and finds spherical clusters. DBSCAN finds clusters of arbitrary shape and identifies noise points, but requires tuning eps. Use DBSCAN when you don't know k or when data has outliers.
+
+**PCA vs. t-SNE/UMAP**: PCA is a linear method — fast, deterministic, and the components are interpretable. t-SNE/UMAP are nonlinear — better for visualization but distances between distant points are NOT meaningful. Use PCA for preprocessing/feature reduction, t-SNE/UMAP for visualization only.
+
+**Feature Selection vs. PCA**: Feature selection keeps original features (interpretable). PCA creates new features as linear combinations (less interpretable). Use feature selection when you need to explain which original variables matter.
+
 ---
 
 ## Cross-Reference Index
@@ -404,5 +475,10 @@ After identifying the problem type here, consult the corresponding reference fil
 | DETECT CHANGE/ANOMALY | §18 Time Series | algorithms-statistics.md S56-S60 | (ruptures / scipy) |
 | MODEL RANDOM EVENTS | §19 Stochastic Processes | algorithms-statistics.md S61-S65 | (scipy / custom) |
 | SURVIVAL/TIME-TO-EVENT | §10 Statistical Inference | algorithms-statistics.md S39-S40, S66-S68 | (lifelines) |
+| CLASSIFY/PREDICT CATEGORY | §20.1 Classification Model | algorithms-statistics.md S69-S75 | (scikit-learn / xgboost) |
+| PREDICT VALUE (ML) | §20.2 Regression Model (ML) | algorithms-statistics.md S76-S77 | (scikit-learn / xgboost) |
+| CLUSTER/SEGMENT | §20.3 Cluster Structure | algorithms-statistics.md S78-S82 | (scikit-learn) |
+| REDUCE DIMENSIONS | §20.4 Low-Dim Embedding | algorithms-statistics.md S83-S86 | (scikit-learn / umap-learn) |
+| SELECT FEATURES/TUNE | §20.5 ML Pipeline | algorithms-statistics.md S87-S90 | (scikit-learn) |
 
 Also see: **common-mistakes.md** for pitfalls specific to each problem category.

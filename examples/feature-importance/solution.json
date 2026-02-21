@@ -1,0 +1,325 @@
+{
+  "instance": {
+    "n_samples": 800,
+    "n_features": 20,
+    "n_informative": 5,
+    "n_redundant": 3,
+    "n_select": 8,
+    "seed": 42,
+    "true_informative_indices": [
+      0,
+      1,
+      2,
+      3,
+      4
+    ]
+  },
+  "pca": {
+    "explained_variance_ratio": [
+      0.16644649296713315,
+      0.1060868391892555,
+      0.06736178334292274,
+      0.0603417787570129,
+      0.058517356289954185,
+      0.055754959591424735,
+      0.05397420495623675,
+      0.05372459135366004,
+      0.0511916274111392,
+      0.05024652616592137,
+      0.04626279059629472,
+      0.045191456453578985,
+      0.0439110920060505,
+      0.04190282082015906,
+      0.039424302210516474,
+      0.03784002255850645,
+      0.02182135533023316,
+      7.15564530667287e-18,
+      0.0,
+      0.0
+    ],
+    "cumulative_variance": [
+      0.16644649296713315,
+      0.27253333215638864,
+      0.3398951154993114,
+      0.4002368942563243,
+      0.4587542505462785,
+      0.5145092101377032,
+      0.56848341509394,
+      0.6222080064476,
+      0.6733996338587392,
+      0.7236461600246606,
+      0.7699089506209553,
+      0.8151004070745343,
+      0.8590114990805848,
+      0.9009143199007439,
+      0.9403386221112604,
+      0.9781786446697669,
+      1.0,
+      1.0,
+      1.0,
+      1.0
+    ],
+    "n_components_95pct": 16
+  },
+  "mutual_information": {
+    "feature_scores": [
+      0.07186493134477323,
+      0.14715550132543642,
+      0.0037096422834761444,
+      0.10512617914569011,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.09360233644736482,
+      0.046949699464870154,
+      0.012938641558625008,
+      0.0,
+      0.03963397505131927,
+      0.05120701611478462,
+      0.001982215706785029,
+      0.0023131139751830787,
+      0.0,
+      0.011730956549275806,
+      0.013550671046379748
+    ],
+    "feature_ranking": [
+      4,
+      1,
+      11,
+      2,
+      16,
+      15,
+      19,
+      14,
+      18,
+      3,
+      6,
+      9,
+      17,
+      7,
+      5,
+      13,
+      12,
+      20,
+      10,
+      8
+    ],
+    "selected_indices": [
+      0,
+      1,
+      3,
+      9,
+      10,
+      13,
+      14,
+      19
+    ]
+  },
+  "rfe": {
+    "feature_ranking": [
+      1,
+      1,
+      7,
+      1,
+      9,
+      3,
+      8,
+      12,
+      10,
+      1,
+      1,
+      1,
+      4,
+      1,
+      1,
+      11,
+      5,
+      13,
+      2,
+      6
+    ],
+    "selected_indices": [
+      0,
+      1,
+      3,
+      9,
+      10,
+      11,
+      13,
+      14
+    ]
+  },
+  "feature_overlap": {
+    "mi_rfe_overlap": [
+      0,
+      1,
+      3,
+      9,
+      10,
+      13,
+      14
+    ],
+    "overlap_count": 7
+  },
+  "model_comparison": {
+    "LogisticRegression": {
+      "all_features": {
+        "mean_accuracy": 0.8187,
+        "std_accuracy": 0.0213,
+        "fold_scores": [
+          0.7937,
+          0.8063,
+          0.8375,
+          0.8063,
+          0.85
+        ]
+      },
+      "mi_features": {
+        "mean_accuracy": 0.8175,
+        "std_accuracy": 0.0179,
+        "fold_scores": [
+          0.7875,
+          0.8187,
+          0.8187,
+          0.8187,
+          0.8438
+        ]
+      },
+      "rfe_features": {
+        "mean_accuracy": 0.8212,
+        "std_accuracy": 0.0166,
+        "fold_scores": [
+          0.7937,
+          0.8187,
+          0.8313,
+          0.8187,
+          0.8438
+        ]
+      }
+    },
+    "RandomForest": {
+      "all_features": {
+        "mean_accuracy": 0.845,
+        "std_accuracy": 0.0299,
+        "fold_scores": [
+          0.7937,
+          0.8438,
+          0.875,
+          0.8375,
+          0.875
+        ]
+      },
+      "mi_features": {
+        "mean_accuracy": 0.8475,
+        "std_accuracy": 0.0297,
+        "fold_scores": [
+          0.8313,
+          0.8375,
+          0.8875,
+          0.8063,
+          0.875
+        ]
+      },
+      "rfe_features": {
+        "mean_accuracy": 0.8613,
+        "std_accuracy": 0.0228,
+        "fold_scores": [
+          0.8375,
+          0.8562,
+          0.8938,
+          0.8375,
+          0.8812
+        ]
+      }
+    },
+    "SVM_RBF": {
+      "all_features": {
+        "mean_accuracy": 0.82,
+        "std_accuracy": 0.0238,
+        "fold_scores": [
+          0.7812,
+          0.8187,
+          0.8562,
+          0.825,
+          0.8187
+        ]
+      },
+      "mi_features": {
+        "mean_accuracy": 0.8475,
+        "std_accuracy": 0.0211,
+        "fold_scores": [
+          0.8187,
+          0.8375,
+          0.8688,
+          0.8375,
+          0.875
+        ]
+      },
+      "rfe_features": {
+        "mean_accuracy": 0.8562,
+        "std_accuracy": 0.0256,
+        "fold_scores": [
+          0.8125,
+          0.8562,
+          0.875,
+          0.85,
+          0.8875
+        ]
+      }
+    },
+    "kNN": {
+      "all_features": {
+        "mean_accuracy": 0.7712,
+        "std_accuracy": 0.0161,
+        "fold_scores": [
+          0.7438,
+          0.7688,
+          0.775,
+          0.7937,
+          0.775
+        ]
+      },
+      "mi_features": {
+        "mean_accuracy": 0.8412,
+        "std_accuracy": 0.0289,
+        "fold_scores": [
+          0.8125,
+          0.8,
+          0.8688,
+          0.8625,
+          0.8625
+        ]
+      },
+      "rfe_features": {
+        "mean_accuracy": 0.8675,
+        "std_accuracy": 0.0225,
+        "fold_scores": [
+          0.8375,
+          0.8938,
+          0.8812,
+          0.8438,
+          0.8812
+        ]
+      }
+    }
+  },
+  "best_combination": {
+    "model_name": "kNN",
+    "feature_method": "rfe_features",
+    "accuracy": 0.8675,
+    "accuracy_std": 0.0225
+  },
+  "verification": {
+    "pca_95pct_lt_20": true,
+    "informative_features_selected": true,
+    "rfe_features_selected": true,
+    "selected_beats_random": true,
+    "best_accuracy_gt_80pct": true,
+    "cv_scores_stable": true,
+    "all_passed": true
+  },
+  "algorithm": "PCA + Mutual Information + RFE (Random Forest) + 4-Model 5-Fold CV",
+  "time_seconds": 5.937013507995289
+}

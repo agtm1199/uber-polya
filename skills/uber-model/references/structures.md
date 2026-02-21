@@ -1,6 +1,6 @@
 # Mathematical Structure Catalog
 
-**Scope**: Discrete Mathematics (32 structures), Continuous Optimization (5 structures), Statistical Inference (6 structures), Linear Algebra (4 structures), Calculus (3 structures), Geometry & Trigonometry (4 structures), Financial Mathematics (1 structure), Game Theory (3 structures), Decision Analysis (3 structures), Multi-Objective Optimization (3 structures), Time Series (3 structures), Stochastic Processes (3 structures)
+**Scope**: Discrete Mathematics (32 structures), Continuous Optimization (5 structures), Statistical Inference (6 structures), Linear Algebra (4 structures), Calculus (3 structures), Geometry & Trigonometry (4 structures), Financial Mathematics (1 structure), Game Theory (3 structures), Decision Analysis (3 structures), Multi-Objective Optimization (3 structures), Time Series (3 structures), Stochastic Processes (3 structures), Machine Learning (5 structures)
 
 A catalog of mathematical structures organized by domain. Use this to match real-world problems to mathematical models during Phase 2 of the uber-model skill.
 
@@ -1740,6 +1740,128 @@ Test: ADF unit root test (S51), variance ratio test (S64)
 
 ---
 
+## 20. Machine Learning
+
+### 20.1 Classification Model
+
+**Definition**: A function f: X → {c₁, ..., cₖ} that maps feature vectors to discrete class labels, learned from labeled training examples.
+
+**Indicators**: "classify", "predict category", "which type", "spam or not", "diagnose", "detect fraud", "churn prediction", "sentiment", "label"
+
+**Template**:
+```
+Features: X = (x₁, x₂, ..., xₚ) ∈ ℝᵖ
+Labels: y ∈ {c₁, c₂, ..., cₖ}
+Training set: {(Xᵢ, yᵢ)}ᵢ₌₁ⁿ
+Model: f̂(X) = argmax_c P(Y=c | X)
+Evaluation: accuracy, precision, recall, F1, ROC-AUC
+```
+
+**Examples**:
+- Email spam detection: X = word frequencies, y ∈ {spam, ham}
+- Medical diagnosis: X = symptoms/tests, y ∈ {disease, healthy}
+- Customer churn: X = usage metrics, y ∈ {churn, retain}
+- Image recognition: X = pixel values, y ∈ {cat, dog, bird, ...}
+
+**Key problems**: k-NN (S69), Decision Tree (S70), Random Forest (S71), SVM (S72), Naive Bayes (S73), Gradient Boosting (S74), MLP (S75)
+
+---
+
+### 20.2 Regression Model (ML)
+
+**Definition**: A function f: X → ℝ that maps feature vectors to continuous values, optimizing a loss function (MSE, MAE) on training data.
+
+**Indicators**: "predict value", "estimate amount", "how much", "forecast price", "expected revenue", "regression"
+
+**Template**:
+```
+Features: X = (x₁, x₂, ..., xₚ) ∈ ℝᵖ
+Target: y ∈ ℝ
+Training set: {(Xᵢ, yᵢ)}ᵢ₌₁ⁿ
+Model: f̂(X) minimizing Σ L(yᵢ, f̂(Xᵢ))
+Evaluation: R², RMSE, MAE, cross-validated score
+```
+
+**Examples**:
+- House price prediction: X = bedrooms, sqft, location; y = price
+- Salary estimation: X = experience, education, role; y = salary
+- Energy consumption: X = temperature, time, occupancy; y = kWh
+
+**Key problems**: RF Regressor (S76), Gradient Boosting Regressor (S77), also Ridge/Lasso (S27)
+
+---
+
+### 20.3 Cluster Structure
+
+**Definition**: A partition of data points into groups where within-group similarity is high and between-group similarity is low, without labeled training data.
+
+**Indicators**: "group", "segment", "cluster", "find patterns", "types of customers", "natural groupings", "unsupervised", "similar items"
+
+**Template**:
+```
+Data: {X₁, X₂, ..., Xₙ} ⊂ ℝᵖ (no labels)
+Partition: C = {C₁, C₂, ..., Cₖ} where ∪Cⱼ = {1,...,n}
+Objective: maximize intra-cluster similarity, minimize inter-cluster similarity
+Evaluation: silhouette score, inertia, Calinski-Harabasz, domain interpretation
+```
+
+**Examples**:
+- Customer segmentation: group customers by purchasing behavior
+- Document clustering: group articles by topic similarity
+- Gene expression: identify co-expressed gene groups
+- Market segmentation: identify distinct market segments
+
+**Key problems**: K-Means (S78), DBSCAN (S79), Hierarchical (S80), GMM (S81), Spectral (S82)
+
+---
+
+### 20.4 Low-Dimensional Embedding
+
+**Definition**: A mapping f: ℝᵖ → ℝᵈ (d ≪ p) that preserves relevant structure (variance, neighborhoods, topology) while reducing dimensionality.
+
+**Indicators**: "visualize", "reduce dimensions", "too many features", "project", "embed", "latent space", "compress features"
+
+**Template**:
+```
+High-dimensional data: X ∈ ℝⁿˣᵖ
+Embedding: Z = f(X) ∈ ℝⁿˣᵈ, d ≪ p
+Preservation: structure-dependent (variance for PCA, neighborhoods for t-SNE/UMAP)
+Evaluation: explained variance, reconstruction error, visual cluster separation
+```
+
+**Examples**:
+- Visualize word embeddings in 2D (300-D → 2-D)
+- Reduce survey responses to latent factors
+- Compress image features before classification
+- Explore single-cell RNA-seq data
+
+**Key problems**: PCA (S83), t-SNE (S84), UMAP (S85), Factor Analysis (S86)
+
+---
+
+### 20.5 ML Pipeline / Feature Space
+
+**Definition**: An ordered sequence of data transformations (imputation, scaling, encoding, selection) followed by a learning algorithm, forming a reproducible end-to-end workflow.
+
+**Indicators**: "preprocess", "clean data", "encode categories", "scale features", "missing values", "pipeline", "production model", "deploy"
+
+**Template**:
+```
+Raw data: X_raw (mixed types, missing values, varying scales)
+Transforms: T₁ → T₂ → ... → Tₖ → Model
+Pipeline: fit(X_train, y_train), predict(X_new)
+Prevents: data leakage (transforms fitted only on training fold)
+```
+
+**Examples**:
+- ETL + model pipeline for production deployment
+- Cross-validated pipeline with preprocessing
+- Mixed numeric/categorical feature handling
+
+**Key problems**: Pipeline Construction (S90), Feature Selection (S87), Hyperparameter Tuning (S88)
+
+---
+
 ## Cross-Reference Index
 
 Where to go next after identifying a structure.
@@ -1765,5 +1887,6 @@ Where to go next after identifying a structure.
 | 17. Multi-Objective Optimization | §28 Multi-Objective Opt (A157-A164) | §14 pymoo, §2 PuLP, §5 SciPy | §15 Multi-Objective Results |
 | 18. Time Series | algorithms-statistics.md S46-S60 | statsmodels, prophet | §16 Time Series Results |
 | 19. Stochastic Processes | algorithms-statistics.md S61-S65 | scipy.linalg, scipy.stats | §16.3 Survival/Process Results |
+| 20. Machine Learning | algorithms-statistics.md S69-S90 | scikit-learn, xgboost, umap-learn | §17 Machine Learning Results |
 
 Also see: **problem-classification.md** for rapid pattern matching from natural language to structure, **common-mistakes.md** for modeling pitfalls by structure type.

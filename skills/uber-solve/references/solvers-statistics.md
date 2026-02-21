@@ -141,62 +141,103 @@ n = analysis.solve_power(effect_size=0.5, alpha=0.05, power=0.8)
 
 ---
 
-## 3. scikit-learn -- Cross-Validation, Model Selection, Preprocessing
+## 3. scikit-learn -- Machine Learning, Model Selection, Preprocessing
 
-**Solves**: Cross-validation, train/test splitting, model selection (grid search, random search), preprocessing (scaling, encoding), regularized regression (Ridge, Lasso, ElasticNet), basic regression/classification metrics.
+**Solves**: Classification, regression, clustering, dimensionality reduction, feature selection, cross-validation, hyperparameter tuning, preprocessing (scaling, encoding, imputation), pipelines.
 
 **Install**: `pip install scikit-learn`
 
-**When to use**: When the goal is **prediction** rather than **inference**. Use sklearn for cross-validation, model comparison, regularization, and preprocessing. Does NOT provide p-values or confidence intervals for coefficients -- use statsmodels for those.
+**When to use**: Default library for all supervised/unsupervised ML on tabular data. When the goal is **prediction** rather than **inference**. Does NOT provide p-values or confidence intervals for coefficients — use statsmodels for those.
 
 ### Key APIs
 
 ```python
+# --- Model Selection & Preprocessing ---
 from sklearn.model_selection import (
-    cross_val_score, KFold, StratifiedKFold, train_test_split,
-    GridSearchCV, RandomizedSearchCV
+    cross_val_score, cross_validate, KFold, StratifiedKFold,
+    train_test_split, GridSearchCV, RandomizedSearchCV
 )
+from sklearn.preprocessing import StandardScaler, OneHotEncoder, LabelEncoder
+from sklearn.impute import SimpleImputer
+from sklearn.pipeline import Pipeline, make_pipeline
+from sklearn.compose import ColumnTransformer
+
+# --- Linear Models ---
 from sklearn.linear_model import (
     LinearRegression, Ridge, Lasso, ElasticNet,
     LogisticRegression, HuberRegressor, BayesianRidge
 )
-from sklearn.preprocessing import StandardScaler, PolynomialFeatures
-from sklearn.metrics import (
-    r2_score, mean_squared_error, mean_absolute_error,
-    accuracy_score, precision_score, recall_score, f1_score,
-    roc_auc_score, confusion_matrix, classification_report
+
+# --- Classification ---
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import (
+    RandomForestClassifier, GradientBoostingClassifier,
+    AdaBoostClassifier, BaggingClassifier
 )
-import numpy as np
+from sklearn.svm import SVC, LinearSVC
+from sklearn.naive_bayes import GaussianNB, MultinomialNB
+from sklearn.neural_network import MLPClassifier
+
+# --- Regression ---
+from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor
+from sklearn.tree import DecisionTreeRegressor
+
+# --- Clustering ---
+from sklearn.cluster import KMeans, DBSCAN, AgglomerativeClustering, SpectralClustering
+from sklearn.mixture import GaussianMixture
+
+# --- Dimensionality Reduction ---
+from sklearn.decomposition import PCA, FactorAnalysis
+from sklearn.manifold import TSNE
+
+# --- Feature Selection ---
+from sklearn.feature_selection import SelectKBest, mutual_info_classif, RFE, SelectFromModel
+
+# --- Metrics ---
+from sklearn.metrics import (
+    # Classification
+    accuracy_score, precision_score, recall_score, f1_score,
+    roc_auc_score, confusion_matrix, classification_report, roc_curve,
+    # Regression
+    r2_score, mean_squared_error, mean_absolute_error,
+    # Clustering
+    silhouette_score, calinski_harabasz_score, davies_bouldin_score,
+)
 
 # --- Train/Test Split ---
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42, stratify=y)
 
 # --- Cross-Validation ---
-scores = cross_val_score(Ridge(alpha=1.0), X, y, cv=5, scoring='r2')
-print(f"R² = {scores.mean():.3f} ± {scores.std():.3f}")
+scores = cross_val_score(RandomForestClassifier(random_state=42), X, y, cv=5, scoring='accuracy')
 
-# --- Regularized Regression ---
-scaler = StandardScaler()
-X_scaled = scaler.fit_transform(X)
-model = Lasso(alpha=0.1).fit(X_scaled, y)
-print(f"Non-zero coefficients: {np.sum(np.abs(model.coef_) > 1e-8)}")
+# --- Pipeline with Preprocessing ---
+pipe = make_pipeline(StandardScaler(), SVC(probability=True, random_state=42))
+pipe.fit(X_train, y_train)
 
 # --- Hyperparameter Tuning ---
-param_grid = {'alpha': [0.001, 0.01, 0.1, 1.0, 10.0]}
-grid = GridSearchCV(Ridge(), param_grid, cv=5, scoring='r2')
-grid.fit(X_scaled, y)
-print(f"Best alpha: {grid.best_params_['alpha']}, R²: {grid.best_score_:.3f}")
+param_grid = {'n_estimators': [50, 100, 200], 'max_depth': [3, 5, 10]}
+grid = GridSearchCV(RandomForestClassifier(random_state=42), param_grid, cv=5, scoring='accuracy')
+grid.fit(X_train, y_train)
 
-# --- Polynomial Features ---
-poly = PolynomialFeatures(degree=2, include_bias=False)
-X_poly = poly.fit_transform(X)
+# --- Clustering with Evaluation ---
+kmeans = KMeans(n_clusters=3, n_init=10, random_state=42).fit(X_scaled)
+sil = silhouette_score(X_scaled, kmeans.labels_)
 
-# --- Bayesian Ridge ---
-model = BayesianRidge().fit(X, y)
-y_pred, y_std = model.predict(X_test, return_std=True)  # predictions + uncertainty
+# --- Dimensionality Reduction ---
+pca = PCA(n_components=2).fit_transform(X_scaled)
 ```
 
-**Performance note**: Linear models handle millions of rows. Cross-validation with k=5 or k=10 is standard. Use `n_jobs=-1` for parallel CV.
+### Gotchas
+
+- Always scale features for distance-based methods (k-NN, SVM, PCA, k-Means)
+- Use `stratify=y` in train_test_split for imbalanced classification
+- Use pipelines to prevent data leakage in cross-validation
+- `n_jobs=-1` parallelizes across CPU cores (model fitting, CV, grid search)
+- For >100K rows: prefer LinearSVC over SVC, use `partial_fit` for incremental learning
+- Random forest `oob_score=True` gives free cross-validation estimate
+
+**Performance note**: Linear models handle millions of rows. Tree ensembles (RF, GB) handle 100K+ rows easily. SVM with RBF kernel is O(n²-n³), so keep n < 10K. Use `n_jobs=-1` for parallel CV.
 
 ---
 
@@ -497,6 +538,92 @@ rpt.display(signal, bkps)
 
 ---
 
+## 10. xgboost -- Gradient Boosting (High Performance)
+
+**Solves**: Classification, regression, ranking via gradient-boosted decision trees. State-of-the-art on structured/tabular data.
+
+**Install**: `pip install xgboost`
+
+**When to use**: Best predictive accuracy for tabular data. Faster than sklearn's GradientBoosting (histogram-based, GPU support). Default choice for Kaggle-style ML tasks.
+
+### Key APIs
+
+```python
+import xgboost as xgb
+from sklearn.model_selection import cross_val_score
+
+# --- Classification ---
+model = xgb.XGBClassifier(
+    n_estimators=200, max_depth=6, learning_rate=0.1,
+    use_label_encoder=False, eval_metric='logloss', random_state=42,
+)
+model.fit(X_train, y_train, eval_set=[(X_val, y_val)], verbose=False)
+preds = model.predict(X_test)
+probs = model.predict_proba(X_test)
+
+# --- Regression ---
+model = xgb.XGBRegressor(n_estimators=200, max_depth=6, learning_rate=0.1, random_state=42)
+model.fit(X_train, y_train)
+
+# --- Feature Importance ---
+importances = model.feature_importances_
+xgb.plot_importance(model)
+
+# --- Early Stopping ---
+model.fit(X_train, y_train,
+          eval_set=[(X_val, y_val)],
+          callbacks=[xgb.callback.EarlyStopping(rounds=20)])
+
+# --- Cross-Validation ---
+scores = cross_val_score(model, X, y, cv=5, scoring='accuracy')
+```
+
+**Gotchas**:
+- Always use early stopping to prevent overfitting
+- Set `use_label_encoder=False` and explicit `eval_metric` to silence warnings
+- For imbalanced data: use `scale_pos_weight = n_neg / n_pos`
+- LightGBM (`lightgbm`) is a drop-in alternative that's often faster on large datasets
+
+---
+
+## 11. umap-learn -- UMAP Dimensionality Reduction
+
+**Solves**: Nonlinear dimensionality reduction preserving both local and global structure. Faster than t-SNE, supports transform on new data.
+
+**Install**: `pip install umap-learn`
+
+**When to use**: Visualizing high-dimensional data in 2D/3D, preprocessing before clustering, faster alternative to t-SNE that supports new-point projection.
+
+### Key APIs
+
+```python
+import umap
+
+# --- Basic 2D embedding ---
+reducer = umap.UMAP(n_neighbors=15, min_dist=0.1, n_components=2, random_state=42)
+embedding = reducer.fit_transform(X)
+
+# --- Transform new data (unlike t-SNE!) ---
+new_embedding = reducer.transform(X_new)
+
+# --- Supervised UMAP (use labels to guide embedding) ---
+reducer = umap.UMAP(n_neighbors=15, random_state=42)
+embedding = reducer.fit_transform(X, y=labels)
+
+# --- Tuning ---
+# n_neighbors: 5-15 (local) to 50-200 (global structure)
+# min_dist: 0.0 (tight clusters) to 0.99 (spread out)
+# metric: 'euclidean', 'cosine', 'manhattan', 'correlation'
+```
+
+**Gotchas**:
+- Import as `import umap`, not `import umap_learn`
+- Set `random_state` for reproducibility
+- Always scale features before UMAP (StandardScaler)
+- For very large data (>100K): use `umap.UMAP(low_memory=True)`
+
+---
+
 ## Library Selection Guide
 
 | Question | First Choice | Alternative |
@@ -518,6 +645,14 @@ rpt.display(signal, bkps)
 | Volatility / risk modeling | arch (GARCH) | -- |
 | Change point detection | ruptures | -- |
 | Spectral analysis / frequencies | scipy.signal | -- |
+| Classification (tabular data) | scikit-learn (RF, SVM) | xgboost (best accuracy) |
+| Regression prediction (ML) | scikit-learn (RF, GB) | xgboost |
+| Clustering | scikit-learn (KMeans, DBSCAN) | -- |
+| Dimensionality reduction (linear) | scikit-learn (PCA) | -- |
+| Dimensionality reduction (nonlinear) | umap-learn | scikit-learn (t-SNE) |
+| Feature selection | scikit-learn (SelectKBest, RFE) | -- |
+| Hyperparameter tuning | scikit-learn (GridSearchCV) | optuna |
+| Build ML pipeline | scikit-learn (Pipeline) | -- |
 
 ### Decision Flow
 
@@ -540,6 +675,17 @@ Need to test a hypothesis or estimate a parameter?
 │   ├── Multiple seasonalities / holidays → prophet
 │   ├── Multiple related series → statsmodels (VAR)
 │   └── Volatility → arch (GARCH)
-└── Detect changes?
-    └── ruptures
+├── Detect changes?
+│   └── ruptures
+├── Classify / predict category?
+│   ├── Best accuracy (tabular) → xgboost or scikit-learn (RF, GB)
+│   ├── Need interpretability → scikit-learn (Decision Tree, Logistic)
+│   └── Text data → scikit-learn (Naive Bayes + TF-IDF)
+├── Cluster / segment?
+│   └── scikit-learn (KMeans, DBSCAN, GMM)
+├── Reduce dimensions / visualize?
+│   ├── Linear → scikit-learn (PCA)
+│   └── Nonlinear → umap-learn (UMAP) or scikit-learn (t-SNE)
+└── Build ML pipeline?
+    └── scikit-learn (Pipeline + ColumnTransformer)
 ```

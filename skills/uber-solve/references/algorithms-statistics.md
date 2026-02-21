@@ -1,8 +1,8 @@
 # Statistical Inference Algorithm Catalog
 
-Comprehensive catalog of 68 algorithms for statistical inference, time series analysis, stochastic processes, and survival analysis. Organized by problem type, each entry includes complexity, solver library, correctness guarantee, and implementation guidance.
+Comprehensive catalog of 90 algorithms for statistical inference, time series analysis, stochastic processes, survival analysis, and machine learning. Organized by problem type, each entry includes complexity, solver library, correctness guarantee, and implementation guidance.
 
-**Scope**: Statistical Inference (45 algorithms), Time Series Analysis (15 algorithms), Stochastic Processes (5 algorithms), Survival Analysis (3 new + 2 existing = 5 algorithms).
+**Scope**: Statistical Inference (45 algorithms), Time Series Analysis (15 algorithms), Stochastic Processes (5 algorithms), Survival Analysis (3 new + 2 existing = 5 algorithms), Machine Learning (22 algorithms).
 
 **Legend**:
 - **T**: Time complexity | **S**: Space complexity
@@ -2164,6 +2164,706 @@ def competing_risks(durations: np.ndarray, events: np.ndarray) -> dict:
 
 ---
 
+## 11. Classification
+
+### S69: k-Nearest Neighbors (k-NN)
+
+**Problem**: Classify a sample by majority vote of its k nearest neighbors in feature space.
+**T**: O(nd) per query (brute force), O(n log n) with KD-tree | **S**: O(nd) for training data
+**Lib**: `sklearn.neighbors.KNeighborsClassifier()`
+**Guarantee**: Approx (nonparametric; Bayes-optimal as n→∞, k→∞, k/n→0)
+
+```python
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import cross_val_score
+
+def knn_classify(X_train, y_train, X_test, k: int = 5) -> dict:
+    """k-NN classification with standardized features."""
+    scaler = StandardScaler()
+    X_tr = scaler.fit_transform(X_train)
+    X_te = scaler.transform(X_test)
+    model = KNeighborsClassifier(n_neighbors=k)
+    model.fit(X_tr, y_train)
+    cv_scores = cross_val_score(model, X_tr, y_train, cv=5, scoring='accuracy')
+    return {
+        "predictions": model.predict(X_te).tolist(),
+        "probabilities": model.predict_proba(X_te).tolist(),
+        "cv_accuracy": float(cv_scores.mean()),
+        "cv_std": float(cv_scores.std()),
+    }
+```
+
+**Use when**: Small-to-medium datasets, no assumptions about decision boundary shape, interpretable neighborhood-based reasoning. Always scale features first. Use odd k to avoid ties in binary classification.
+
+---
+
+### S70: Decision Tree Classifier
+
+**Problem**: Classify samples by learning axis-aligned splits that maximize information gain (or Gini impurity reduction).
+**T**: O(n·p·log n) training, O(depth) prediction | **S**: O(nodes)
+**Lib**: `sklearn.tree.DecisionTreeClassifier()`
+**Guarantee**: Exact fit on training data (can overfit); pruning controls complexity.
+
+```python
+from sklearn.tree import DecisionTreeClassifier, export_text
+
+def decision_tree_classify(X_train, y_train, X_test, max_depth: int = 5) -> dict:
+    """Decision tree with depth control and feature importance."""
+    model = DecisionTreeClassifier(max_depth=max_depth, random_state=42)
+    model.fit(X_train, y_train)
+    return {
+        "predictions": model.predict(X_test).tolist(),
+        "probabilities": model.predict_proba(X_test).tolist(),
+        "feature_importances": model.feature_importances_.tolist(),
+        "tree_depth": model.get_depth(),
+        "n_leaves": model.get_n_leaves(),
+        "tree_rules": export_text(model, max_depth=3),
+    }
+```
+
+**Use when**: Need interpretable rules ("if feature X > threshold, then class A"). Good for feature selection. Limit depth to prevent overfitting. Single trees are unstable — prefer Random Forest for accuracy.
+
+---
+
+### S71: Random Forest Classifier
+
+**Problem**: Ensemble of decision trees trained on bootstrap samples with random feature subsets; classify by majority vote.
+**T**: O(n·p·log n · n_trees) training, O(depth · n_trees) prediction | **S**: O(n_trees · nodes)
+**Lib**: `sklearn.ensemble.RandomForestClassifier()`
+**Guarantee**: Approx (reduced variance vs. single tree; Breiman's OOB error estimate is nearly unbiased)
+
+```python
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import cross_val_score
+
+def random_forest_classify(X_train, y_train, X_test, n_trees: int = 100) -> dict:
+    """Random forest with OOB score and feature importance."""
+    model = RandomForestClassifier(
+        n_estimators=n_trees, oob_score=True, random_state=42, n_jobs=-1
+    )
+    model.fit(X_train, y_train)
+    return {
+        "predictions": model.predict(X_test).tolist(),
+        "probabilities": model.predict_proba(X_test).tolist(),
+        "oob_accuracy": float(model.oob_score_),
+        "feature_importances": model.feature_importances_.tolist(),
+    }
+```
+
+**Use when**: Default first-choice classifier. Handles mixed feature types, missing values (with imputation), nonlinear boundaries. OOB score provides free cross-validation estimate. Feature importance for interpretability.
+
+---
+
+### S72: Support Vector Machine (SVM)
+
+**Problem**: Find the maximum-margin hyperplane separating classes; kernel trick for nonlinear boundaries.
+**T**: O(n²·p) to O(n³) training (SMO), O(n_sv · p) prediction | **S**: O(n_sv · p)
+**Lib**: `sklearn.svm.SVC()`, `sklearn.svm.LinearSVC()`
+**Guarantee**: Global optimum of the convex dual problem (for given kernel and C).
+
+```python
+from sklearn.svm import SVC
+from sklearn.preprocessing import StandardScaler
+from sklearn.pipeline import make_pipeline
+
+def svm_classify(X_train, y_train, X_test, kernel: str = "rbf", C: float = 1.0) -> dict:
+    """SVM classification with scaling pipeline."""
+    pipe = make_pipeline(StandardScaler(), SVC(kernel=kernel, C=C, probability=True, random_state=42))
+    pipe.fit(X_train, y_train)
+    svc = pipe.named_steps['svc']
+    return {
+        "predictions": pipe.predict(X_test).tolist(),
+        "probabilities": pipe.predict_proba(X_test).tolist(),
+        "n_support_vectors": int(sum(svc.n_support_)),
+        "support_per_class": svc.n_support_.tolist(),
+    }
+```
+
+**Use when**: Medium-sized datasets (n < 10K works well), high-dimensional spaces, clear margin of separation. RBF kernel for nonlinear; LinearSVC for large sparse data (text classification). Always scale features.
+
+---
+
+### S73: Naive Bayes Classifier
+
+**Problem**: Apply Bayes' theorem with strong feature independence assumption; compute P(class|features) ∝ P(features|class)·P(class).
+**T**: O(n·p) training, O(p·k) prediction (k classes) | **S**: O(p·k)
+**Lib**: `sklearn.naive_bayes.GaussianNB()`, `MultinomialNB()`, `BernoulliNB()`
+**Guarantee**: Exact posterior under independence assumption (biased but low variance).
+
+```python
+from sklearn.naive_bayes import GaussianNB, MultinomialNB
+
+def naive_bayes_classify(X_train, y_train, X_test, variant: str = "gaussian") -> dict:
+    """Naive Bayes classification."""
+    models = {"gaussian": GaussianNB, "multinomial": MultinomialNB}
+    model = models[variant]()
+    model.fit(X_train, y_train)
+    return {
+        "predictions": model.predict(X_test).tolist(),
+        "probabilities": model.predict_proba(X_test).tolist(),
+        "class_prior": model.class_prior_.tolist(),
+    }
+```
+
+**Use when**: Text classification (MultinomialNB with TF-IDF), very large datasets, real-time prediction, baseline model. Fast training and prediction. Probabilities are poorly calibrated but ranking is often good.
+
+---
+
+### S74: Gradient Boosting Classifier
+
+**Problem**: Sequentially fit weak learners (trees) to residuals of the ensemble; combine via gradient descent in function space.
+**T**: O(n·p·log n · n_rounds) training | **S**: O(n_rounds · nodes)
+**Lib**: `sklearn.ensemble.GradientBoostingClassifier()`, `xgboost.XGBClassifier()`, `lightgbm.LGBMClassifier()`
+**Guarantee**: Approx (converges to Bayes-optimal as n_rounds→∞ with proper regularization; state-of-the-art on tabular data)
+
+```python
+from sklearn.ensemble import GradientBoostingClassifier
+
+def gradient_boosting_classify(X_train, y_train, X_test, n_estimators: int = 200,
+                                learning_rate: float = 0.1, max_depth: int = 3) -> dict:
+    """Gradient boosting classification."""
+    model = GradientBoostingClassifier(
+        n_estimators=n_estimators, learning_rate=learning_rate,
+        max_depth=max_depth, random_state=42,
+    )
+    model.fit(X_train, y_train)
+    return {
+        "predictions": model.predict(X_test).tolist(),
+        "probabilities": model.predict_proba(X_test).tolist(),
+        "feature_importances": model.feature_importances_.tolist(),
+        "train_score": float(model.score(X_train, y_train)),
+    }
+```
+
+**Use when**: Best accuracy on structured/tabular data. Use XGBoost or LightGBM for large datasets (faster, GPU support). Tune learning_rate, n_estimators, max_depth together. Early stopping prevents overfitting.
+
+---
+
+### S75: Multi-Layer Perceptron (MLP) Classifier
+
+**Problem**: Feedforward neural network with backpropagation; learns nonlinear decision boundaries via hidden layers.
+**T**: O(n · Σ(l_i · l_{i+1}) · epochs) | **S**: O(Σ(l_i · l_{i+1}))
+**Lib**: `sklearn.neural_network.MLPClassifier()`
+**Guarantee**: Approx (universal approximation theorem; local optima possible; sensitive to hyperparameters)
+
+```python
+from sklearn.neural_network import MLPClassifier
+from sklearn.preprocessing import StandardScaler
+from sklearn.pipeline import make_pipeline
+
+def mlp_classify(X_train, y_train, X_test, hidden_layers: tuple = (100, 50)) -> dict:
+    """MLP neural network classification."""
+    pipe = make_pipeline(
+        StandardScaler(),
+        MLPClassifier(hidden_layer_sizes=hidden_layers, max_iter=500,
+                      early_stopping=True, random_state=42),
+    )
+    pipe.fit(X_train, y_train)
+    mlp = pipe.named_steps['mlpclassifier']
+    return {
+        "predictions": pipe.predict(X_test).tolist(),
+        "probabilities": pipe.predict_proba(X_test).tolist(),
+        "n_iterations": mlp.n_iter_,
+        "loss": float(mlp.loss_),
+        "n_layers": mlp.n_layers_,
+    }
+```
+
+**Use when**: Complex nonlinear patterns, sufficient data (n > 1K), can tolerate less interpretability. Always scale features. Use early_stopping to prevent overfitting. For serious deep learning, use PyTorch/TensorFlow instead.
+
+---
+
+## 12. ML Regression
+
+### S76: Decision Tree / Random Forest Regressor
+
+**Problem**: Predict continuous values using tree-based models; ensemble of trees (Random Forest) reduces variance.
+**T**: O(n·p·log n · n_trees) training | **S**: O(n_trees · nodes)
+**Lib**: `sklearn.tree.DecisionTreeRegressor()`, `sklearn.ensemble.RandomForestRegressor()`
+**Guarantee**: Approx (consistent estimator; OOB error is nearly unbiased for RF)
+
+```python
+from sklearn.ensemble import RandomForestRegressor
+
+def rf_regress(X_train, y_train, X_test, n_trees: int = 100) -> dict:
+    """Random forest regression with OOB score."""
+    model = RandomForestRegressor(
+        n_estimators=n_trees, oob_score=True, random_state=42, n_jobs=-1
+    )
+    model.fit(X_train, y_train)
+    preds = model.predict(X_test)
+    return {
+        "predictions": preds.tolist(),
+        "oob_r2": float(model.oob_score_),
+        "feature_importances": model.feature_importances_.tolist(),
+    }
+```
+
+**Use when**: Nonlinear regression, mixed feature types, robustness to outliers. Default choice for tabular regression when interpretability of individual coefficients is not required.
+
+---
+
+### S77: Gradient Boosting Regressor
+
+**Problem**: Sequential tree ensemble for regression; minimizes squared error (or other loss) via gradient descent in function space.
+**T**: O(n·p·log n · n_rounds) | **S**: O(n_rounds · nodes)
+**Lib**: `sklearn.ensemble.GradientBoostingRegressor()`, `xgboost.XGBRegressor()`
+**Guarantee**: Approx (state-of-the-art on tabular regression tasks)
+
+```python
+from sklearn.ensemble import GradientBoostingRegressor
+
+def gb_regress(X_train, y_train, X_test, n_estimators: int = 200,
+               learning_rate: float = 0.1) -> dict:
+    """Gradient boosting regression."""
+    model = GradientBoostingRegressor(
+        n_estimators=n_estimators, learning_rate=learning_rate,
+        max_depth=3, random_state=42,
+    )
+    model.fit(X_train, y_train)
+    return {
+        "predictions": model.predict(X_test).tolist(),
+        "feature_importances": model.feature_importances_.tolist(),
+        "train_r2": float(model.score(X_train, y_train)),
+    }
+```
+
+**Use when**: Best predictive accuracy for tabular regression. Use XGBoost/LightGBM for speed. Tune via early stopping on validation set.
+
+---
+
+## 13. Clustering
+
+### S78: K-Means Clustering
+
+**Problem**: Partition n observations into k clusters minimizing within-cluster sum of squares (inertia).
+**T**: O(n·k·p·iterations) | **S**: O(n·p + k·p)
+**Lib**: `sklearn.cluster.KMeans()`
+**Guarantee**: Converges to local optimum; k-means++ initialization gives O(log k)-competitive solution in expectation.
+
+```python
+from sklearn.cluster import KMeans
+from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import silhouette_score
+
+def kmeans_cluster(X, k: int = 3) -> dict:
+    """K-Means clustering with silhouette evaluation."""
+    scaler = StandardScaler()
+    X_scaled = scaler.fit_transform(X)
+    model = KMeans(n_clusters=k, n_init=10, random_state=42)
+    labels = model.fit_predict(X_scaled)
+    sil = silhouette_score(X_scaled, labels) if k > 1 else 0.0
+    return {
+        "labels": labels.tolist(),
+        "centroids": scaler.inverse_transform(model.cluster_centers_).tolist(),
+        "inertia": float(model.inertia_),
+        "silhouette_score": float(sil),
+        "n_iterations": model.n_iter_,
+    }
+```
+
+**Use when**: Default first-choice for clustering. Requires specifying k (use elbow plot or silhouette analysis). Assumes spherical clusters of similar size. Always scale features.
+
+---
+
+### S79: DBSCAN (Density-Based Spatial Clustering)
+
+**Problem**: Group points in high-density regions; mark low-density points as noise. No need to specify k.
+**T**: O(n log n) with spatial index, O(n²) worst case | **S**: O(n)
+**Lib**: `sklearn.cluster.DBSCAN()`
+**Guarantee**: Deterministic (for given eps and min_samples); identifies clusters of arbitrary shape.
+
+```python
+from sklearn.cluster import DBSCAN
+from sklearn.preprocessing import StandardScaler
+
+def dbscan_cluster(X, eps: float = 0.5, min_samples: int = 5) -> dict:
+    """DBSCAN density-based clustering."""
+    scaler = StandardScaler()
+    X_scaled = scaler.fit_transform(X)
+    model = DBSCAN(eps=eps, min_samples=min_samples)
+    labels = model.fit_predict(X_scaled)
+    n_clusters = len(set(labels)) - (1 if -1 in labels else 0)
+    n_noise = int((labels == -1).sum())
+    return {
+        "labels": labels.tolist(),
+        "n_clusters": n_clusters,
+        "n_noise": n_noise,
+        "core_sample_indices": model.core_sample_indices_.tolist(),
+    }
+```
+
+**Use when**: Unknown number of clusters, clusters of arbitrary shape, data with noise/outliers. Sensitive to eps — use k-distance plot to choose. Struggles with varying-density clusters.
+
+---
+
+### S80: Agglomerative (Hierarchical) Clustering
+
+**Problem**: Bottom-up merging of clusters based on linkage criterion; produces dendrogram.
+**T**: O(n³) naive, O(n² log n) with efficient linkage | **S**: O(n²) for distance matrix
+**Lib**: `sklearn.cluster.AgglomerativeClustering()`, `scipy.cluster.hierarchy`
+**Guarantee**: Deterministic; single-linkage produces MST of distance graph.
+
+```python
+from sklearn.cluster import AgglomerativeClustering
+from scipy.cluster.hierarchy import dendrogram, linkage
+
+def hierarchical_cluster(X, n_clusters: int = 3, linkage_type: str = "ward") -> dict:
+    """Agglomerative hierarchical clustering."""
+    model = AgglomerativeClustering(n_clusters=n_clusters, linkage=linkage_type)
+    labels = model.fit_predict(X)
+    Z = linkage(X, method=linkage_type)
+    return {
+        "labels": labels.tolist(),
+        "n_clusters": n_clusters,
+        "linkage_matrix": Z.tolist(),
+        "n_leaves": int(model.n_leaves_),
+    }
+```
+
+**Use when**: Want dendrogram visualization of cluster hierarchy, don't know k in advance (cut dendrogram at desired level), small-to-medium data (n < 10K due to O(n²) memory). Ward linkage for compact spherical clusters.
+
+---
+
+### S81: Gaussian Mixture Model (GMM)
+
+**Problem**: Fit k Gaussian components via EM algorithm; soft cluster assignment (probabilistic membership).
+**T**: O(n·k·p²·iterations) | **S**: O(k·p²)
+**Lib**: `sklearn.mixture.GaussianMixture()`
+**Guarantee**: Converges to local optimum of log-likelihood; BIC/AIC for model selection.
+
+```python
+from sklearn.mixture import GaussianMixture
+import numpy as np
+
+def gmm_cluster(X, n_components: int = 3) -> dict:
+    """Gaussian mixture model with BIC model selection."""
+    # Try different k values for BIC comparison
+    bics = {}
+    for k in range(2, min(n_components + 3, len(X))):
+        gmm = GaussianMixture(n_components=k, random_state=42)
+        gmm.fit(X)
+        bics[k] = gmm.bic(X)
+    best_k = min(bics, key=bics.get)
+    model = GaussianMixture(n_components=best_k, random_state=42)
+    model.fit(X)
+    return {
+        "labels": model.predict(X).tolist(),
+        "probabilities": model.predict_proba(X).tolist(),
+        "means": model.means_.tolist(),
+        "bic": float(model.bic(X)),
+        "aic": float(model.aic(X)),
+        "best_k": best_k,
+        "bic_by_k": {str(k): float(v) for k, v in bics.items()},
+    }
+```
+
+**Use when**: Clusters are elliptical with different shapes/orientations, want soft assignments (probability of belonging to each cluster), automatic k selection via BIC. Generalizes K-Means (K-Means = GMM with spherical, equal-variance components).
+
+---
+
+### S82: Spectral Clustering
+
+**Problem**: Use eigenvalues of the graph Laplacian of the similarity matrix to reduce dimensionality, then cluster in spectral space.
+**T**: O(n³) for eigendecomposition, O(n²) for affinity matrix | **S**: O(n²)
+**Lib**: `sklearn.cluster.SpectralClustering()`
+**Guarantee**: Relaxation of the normalized graph cut problem; near-optimal under planted partition models.
+
+```python
+from sklearn.cluster import SpectralClustering
+
+def spectral_cluster(X, n_clusters: int = 3) -> dict:
+    """Spectral clustering for non-convex cluster shapes."""
+    model = SpectralClustering(
+        n_clusters=n_clusters, affinity='rbf', random_state=42, n_jobs=-1
+    )
+    labels = model.fit_predict(X)
+    return {
+        "labels": labels.tolist(),
+        "n_clusters": n_clusters,
+        "affinity_matrix_shape": list(model.affinity_matrix_.shape),
+    }
+```
+
+**Use when**: Clusters are non-convex (e.g., concentric rings, spirals), graph-structured data. Limited to medium datasets (n < 10K) due to O(n²) affinity matrix. Use 'nearest_neighbors' affinity for larger data.
+
+---
+
+## 14. Dimensionality Reduction
+
+### S83: Principal Component Analysis (PCA)
+
+**Problem**: Find orthogonal directions of maximum variance; project data onto top-k principal components.
+**T**: O(min(n·p², p³)) | **S**: O(p²) for covariance matrix
+**Lib**: `sklearn.decomposition.PCA()`
+**Guarantee**: Exact (optimal rank-k approximation in Frobenius norm, Eckart-Young theorem).
+
+```python
+from sklearn.decomposition import PCA
+import numpy as np
+
+def pca_reduce(X, n_components: int = 2) -> dict:
+    """PCA with explained variance analysis."""
+    pca = PCA(n_components=n_components)
+    X_reduced = pca.fit_transform(X)
+    return {
+        "X_reduced": X_reduced.tolist(),
+        "explained_variance_ratio": pca.explained_variance_ratio_.tolist(),
+        "cumulative_variance": np.cumsum(pca.explained_variance_ratio_).tolist(),
+        "components": pca.components_.tolist(),
+        "singular_values": pca.singular_values_.tolist(),
+        "n_components_for_95pct": int(np.searchsorted(
+            np.cumsum(PCA().fit(X).explained_variance_ratio_), 0.95) + 1),
+    }
+```
+
+**Use when**: Feature reduction before modeling, visualization (project to 2D/3D), multicollinearity removal, noise filtering. Choose n_components to explain ≥ 90% variance (scree plot). Linear method — for nonlinear structure use t-SNE or UMAP.
+
+---
+
+### S84: t-SNE (t-distributed Stochastic Neighbor Embedding)
+
+**Problem**: Nonlinear dimensionality reduction preserving local neighborhood structure; map high-D to 2D/3D for visualization.
+**T**: O(n² log n) with Barnes-Hut approximation | **S**: O(n²) exact, O(n) Barnes-Hut
+**Lib**: `sklearn.manifold.TSNE()`
+**Guarantee**: Approx (stochastic; preserves local structure, distorts global distances; non-convex optimization)
+
+```python
+from sklearn.manifold import TSNE
+from sklearn.preprocessing import StandardScaler
+
+def tsne_embed(X, perplexity: float = 30.0, n_components: int = 2) -> dict:
+    """t-SNE embedding for visualization."""
+    scaler = StandardScaler()
+    X_scaled = scaler.fit_transform(X)
+    model = TSNE(n_components=n_components, perplexity=perplexity, random_state=42)
+    X_embedded = model.fit_transform(X_scaled)
+    return {
+        "X_embedded": X_embedded.tolist(),
+        "kl_divergence": float(model.kl_divergence_),
+        "n_iterations": model.n_iter_,
+    }
+```
+
+**Use when**: Visualization of clusters in high-dimensional data (e.g., image embeddings, gene expression). Do NOT interpret distances between distant clusters. Perplexity ≈ 5-50; try multiple values. Not suitable for new-point projection (use UMAP instead).
+
+---
+
+### S85: UMAP (Uniform Manifold Approximation and Projection)
+
+**Problem**: Nonlinear dimensionality reduction preserving both local and global structure; faster than t-SNE with support for transform on new data.
+**T**: O(n^1.14) empirical | **S**: O(n·k) for neighbor graph
+**Lib**: `umap.UMAP()`
+**Guarantee**: Approx (based on Riemannian geometry and fuzzy simplicial sets; preserves topological structure)
+
+```python
+import umap
+
+def umap_embed(X, n_neighbors: int = 15, min_dist: float = 0.1, n_components: int = 2) -> dict:
+    """UMAP embedding with transform support."""
+    reducer = umap.UMAP(
+        n_neighbors=n_neighbors, min_dist=min_dist,
+        n_components=n_components, random_state=42,
+    )
+    X_embedded = reducer.fit_transform(X)
+    return {
+        "X_embedded": X_embedded.tolist(),
+        "n_neighbors": n_neighbors,
+        "min_dist": min_dist,
+    }
+```
+
+**Use when**: Preferred over t-SNE for larger datasets (faster), when you need to project new points (`.transform()`), or want to preserve more global structure. Use n_neighbors=15 (local), 50+ (global). Install: `pip install umap-learn`.
+
+---
+
+### S86: Factor Analysis
+
+**Problem**: Model observed variables as linear combinations of latent factors plus noise; identify underlying constructs.
+**T**: O(p³ · iterations) | **S**: O(p²)
+**Lib**: `sklearn.decomposition.FactorAnalysis()`
+**Guarantee**: MLE under the factor model; rotation (varimax) aids interpretability.
+
+```python
+from sklearn.decomposition import FactorAnalysis
+import numpy as np
+
+def factor_analysis(X, n_factors: int = 3) -> dict:
+    """Factor analysis with loadings matrix."""
+    fa = FactorAnalysis(n_components=n_factors, random_state=42)
+    X_scores = fa.fit_transform(X)
+    loadings = fa.components_.T  # (features x factors)
+    return {
+        "scores": X_scores.tolist(),
+        "loadings": loadings.tolist(),
+        "noise_variance": fa.noise_variance_.tolist(),
+        "log_likelihood": float(fa.score(X)),
+    }
+```
+
+**Use when**: Survey/questionnaire data (identify latent constructs), psychology (personality factors), finance (factor models). Unlike PCA, assumes a generative model with noise. Use varimax rotation for interpretable loadings.
+
+---
+
+## 15. Model Selection & Feature Engineering
+
+### S87: Feature Selection (Filter, Wrapper, Embedded)
+
+**Problem**: Select the most informative features to improve model performance and interpretability.
+**T**: Filter O(n·p), Wrapper O(2^p worst case), Embedded O(model fitting) | **S**: O(p)
+**Lib**: `sklearn.feature_selection` (SelectKBest, RFE, SelectFromModel)
+**Guarantee**: Filter methods are optimal for their criterion; wrapper/embedded depend on base model.
+
+```python
+from sklearn.feature_selection import SelectKBest, mutual_info_classif, RFE
+from sklearn.ensemble import RandomForestClassifier
+
+def select_features(X, y, method: str = "mutual_info", k: int = 10) -> dict:
+    """Feature selection using filter or wrapper methods."""
+    if method == "mutual_info":
+        selector = SelectKBest(mutual_info_classif, k=k)
+        X_selected = selector.fit_transform(X, y)
+        scores = selector.scores_
+        mask = selector.get_support()
+    elif method == "rfe":
+        estimator = RandomForestClassifier(n_estimators=50, random_state=42)
+        rfe = RFE(estimator, n_features_to_select=k)
+        X_selected = rfe.fit_transform(X, y)
+        scores = rfe.ranking_
+        mask = rfe.support_
+    return {
+        "selected_features": mask.tolist(),
+        "scores": scores.tolist(),
+        "n_selected": int(mask.sum()),
+    }
+```
+
+**Use when**: Too many features (p > 50), remove noise features, improve training speed, prevent overfitting. Use mutual info for general-purpose, chi-squared for categorical targets, RFE for model-based selection, Lasso (S27) for embedded selection.
+
+---
+
+### S88: Hyperparameter Tuning (Grid / Random / Bayesian)
+
+**Problem**: Find optimal hyperparameters by searching over a parameter space with cross-validated performance.
+**T**: O(|grid| · k_folds · model_fit) for grid; O(n_iter · k · fit) for random | **S**: O(|grid| · k)
+**Lib**: `sklearn.model_selection.GridSearchCV()`, `RandomizedSearchCV()`, `optuna`
+**Guarantee**: Grid search is exhaustive (for given grid); random search finds near-optimal with high probability.
+
+```python
+from sklearn.model_selection import RandomizedSearchCV
+from sklearn.ensemble import RandomForestClassifier
+from scipy.stats import randint, uniform
+
+def tune_hyperparameters(X, y, n_iter: int = 50) -> dict:
+    """Randomized hyperparameter search for Random Forest."""
+    param_dist = {
+        "n_estimators": randint(50, 300),
+        "max_depth": randint(3, 20),
+        "min_samples_split": randint(2, 20),
+        "min_samples_leaf": randint(1, 10),
+        "max_features": uniform(0.1, 0.9),
+    }
+    search = RandomizedSearchCV(
+        RandomForestClassifier(random_state=42),
+        param_dist, n_iter=n_iter, cv=5, scoring='accuracy',
+        random_state=42, n_jobs=-1,
+    )
+    search.fit(X, y)
+    return {
+        "best_params": search.best_params_,
+        "best_score": float(search.best_score_),
+        "cv_results": {
+            "mean_test_score": search.cv_results_['mean_test_score'].tolist(),
+            "std_test_score": search.cv_results_['std_test_score'].tolist(),
+        },
+    }
+```
+
+**Use when**: After selecting a model, before final evaluation. Random search is more efficient than grid search for > 3 hyperparameters. Use Optuna/Bayesian optimization for expensive models. Always use cross-validation, never tune on test set.
+
+---
+
+### S89: Model Comparison & Selection
+
+**Problem**: Compare multiple models using cross-validated metrics and statistical tests; select the best model.
+**T**: O(n_models · k_folds · model_fit) | **S**: O(n_models · k)
+**Lib**: `sklearn.model_selection.cross_validate()`, `scipy.stats.friedmanchisquare()`
+**Guarantee**: Cross-validation provides nearly unbiased estimate of generalization error.
+
+```python
+from sklearn.model_selection import cross_validate
+from sklearn.linear_model import LogisticRegression
+from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier
+from sklearn.svm import SVC
+import numpy as np
+
+def compare_models(X, y) -> dict:
+    """Compare multiple classifiers via cross-validation."""
+    models = {
+        "LogisticRegression": LogisticRegression(max_iter=500, random_state=42),
+        "RandomForest": RandomForestClassifier(n_estimators=100, random_state=42),
+        "GradientBoosting": GradientBoostingClassifier(n_estimators=100, random_state=42),
+        "SVM": SVC(probability=True, random_state=42),
+    }
+    results = {}
+    for name, model in models.items():
+        cv = cross_validate(model, X, y, cv=5,
+                           scoring=['accuracy', 'f1_weighted', 'roc_auc_ovr_weighted'],
+                           return_train_score=True, n_jobs=-1)
+        results[name] = {
+            "test_accuracy": float(np.mean(cv['test_accuracy'])),
+            "test_f1": float(np.mean(cv['test_f1_weighted'])),
+            "test_roc_auc": float(np.mean(cv['test_roc_auc_ovr_weighted'])),
+            "train_accuracy": float(np.mean(cv['train_accuracy'])),
+            "fit_time": float(np.mean(cv['fit_time'])),
+        }
+    best = max(results, key=lambda m: results[m]['test_accuracy'])
+    return {"model_results": results, "best_model": best}
+```
+
+**Use when**: Always compare at least 2-3 models before selecting. Use the same CV splits (same random_state). Report mean ± std. If models are close, prefer simpler (Occam's razor). Use paired t-test or Wilcoxon on fold scores to check if difference is significant.
+
+---
+
+### S90: Pipeline Construction & Preprocessing
+
+**Problem**: Chain preprocessing steps (scaling, encoding, imputation) with model fitting into a reproducible pipeline.
+**T**: Sum of individual step complexities | **S**: Sum of individual step storage
+**Lib**: `sklearn.pipeline.Pipeline()`, `sklearn.compose.ColumnTransformer()`
+**Guarantee**: Prevents data leakage (preprocessing fitted only on training data within each CV fold).
+
+```python
+from sklearn.pipeline import Pipeline
+from sklearn.compose import ColumnTransformer
+from sklearn.preprocessing import StandardScaler, OneHotEncoder
+from sklearn.impute import SimpleImputer
+from sklearn.ensemble import RandomForestClassifier
+
+def build_pipeline(numeric_features: list, categorical_features: list) -> Pipeline:
+    """Build preprocessing + model pipeline."""
+    numeric_transformer = Pipeline([
+        ('imputer', SimpleImputer(strategy='median')),
+        ('scaler', StandardScaler()),
+    ])
+    categorical_transformer = Pipeline([
+        ('imputer', SimpleImputer(strategy='most_frequent')),
+        ('encoder', OneHotEncoder(handle_unknown='ignore')),
+    ])
+    preprocessor = ColumnTransformer([
+        ('num', numeric_transformer, numeric_features),
+        ('cat', categorical_transformer, categorical_features),
+    ])
+    return Pipeline([
+        ('preprocessor', preprocessor),
+        ('classifier', RandomForestClassifier(n_estimators=100, random_state=42)),
+    ])
+```
+
+**Use when**: Always use pipelines in production ML. Prevents data leakage in cross-validation. Enables easy model serialization (pickle the whole pipeline). Use ColumnTransformer for mixed feature types.
+
+---
+
 ## Algorithm Selection Flowchart
 
 ```
@@ -2184,7 +2884,7 @@ Question about data?
 │   ├── Both categorical? → S10 (Chi-squared) or S11 (Fisher's exact)
 │   └── Mixed? → S12 (ANOVA) or S25 (Logistic regression)
 │
-├── Predict outcome?
+├── Predict outcome? (statistical inference emphasis)
 │   ├── Continuous Y?
 │   │   ├── 1 predictor → S23 (Simple regression)
 │   │   ├── Many predictors → S24 (Multiple regression)
@@ -2192,6 +2892,39 @@ Question about data?
 │   │   ├── Regularization needed? → S27 (Ridge/Lasso)
 │   │   └── Outliers? → S30 (Robust regression)
 │   └── Binary Y? → S25 (Logistic regression)
+│
+├── Classify / predict class? (ML emphasis)
+│   ├── Need interpretable rules? → S70 (Decision Tree)
+│   ├── Best accuracy on tabular data? → S74 (Gradient Boosting) or S71 (Random Forest)
+│   ├── Small dataset, simple baseline? → S69 (k-NN) or S73 (Naive Bayes)
+│   ├── High-dimensional, clear margin? → S72 (SVM)
+│   ├── Complex nonlinear patterns? → S75 (MLP Neural Network)
+│   └── Compare all? → S89 (Model Comparison)
+│
+├── Predict continuous value? (ML emphasis)
+│   ├── Nonlinear relationships? → S76 (RF Regressor) or S77 (GB Regressor)
+│   └── Need feature importances? → S76 (RF) with S87 (Feature Selection)
+│
+├── Find groups / clusters?
+│   ├── Know number of clusters?
+│   │   ├── Spherical clusters → S78 (K-Means)
+│   │   ├── Elliptical / overlapping → S81 (GMM)
+│   │   └── Non-convex shapes → S82 (Spectral Clustering)
+│   └── Unknown number?
+│       ├── Noise / outliers present → S79 (DBSCAN)
+│       └── Want hierarchy / dendrogram → S80 (Agglomerative)
+│
+├── Reduce dimensions / visualize?
+│   ├── Linear reduction → S83 (PCA)
+│   ├── 2D visualization (small data) → S84 (t-SNE)
+│   ├── 2D visualization (large data) → S85 (UMAP)
+│   └── Latent constructs → S86 (Factor Analysis)
+│
+├── Feature selection / model tuning?
+│   ├── Too many features → S87 (Feature Selection)
+│   ├── Tune hyperparameters → S88 (Grid/Random/Bayesian Search)
+│   ├── Compare models → S89 (Model Comparison)
+│   └── Build production pipeline → S90 (Pipeline Construction)
 │
 ├── Forecast over time?
 │   ├── Single series?

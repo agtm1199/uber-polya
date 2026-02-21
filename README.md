@@ -134,26 +134,29 @@ Each skill's output feeds the next. The pipeline is Socratic: uber-polya asks qu
 | [Sales Forecast](examples/sales-forecast/) | Time series analysis | SARIMA + Holt-Winters (statsmodels) |
 | [Anomaly Detection](examples/anomaly-detection/) | Time series analysis | Z-score + PELT change point (ruptures) |
 | [Customer Survival](examples/customer-survival/) | Survival analysis | Kaplan-Meier + Cox PH (lifelines) |
+| [Customer Churn Classification](examples/classification/) | Machine learning | Random Forest + Gradient Boosting (scikit-learn) |
+| [Customer Segmentation](examples/clustering/) | Machine learning | K-Means + DBSCAN + GMM (scikit-learn) |
+| [Feature Importance](examples/feature-importance/) | Machine learning | PCA + Feature Selection + Model Comparison |
 
 ## What's Under the Hood
 
 ### The Knowledge Base
 
-232 algorithms, 70 structures, 17 heuristics, 22 solver libraries -- curated, cross-referenced, and organized for rapid problem-solving.
+254 algorithms, 75 structures, 17 heuristics, 24 solver libraries -- curated, cross-referenced, and organized for rapid problem-solving.
 
 | Catalog | Entries |
 |---------|---------|
 | Polya's Heuristics | 17 heuristics with Socratic questions |
-| Structure Catalog | 70 structures across 19 mathematical domains |
+| Structure Catalog | 75 structures across 20 mathematical domains |
 | Problem Classification | Decision tree + pattern table for rapid matching |
-| Algorithm Catalogs | 232 algorithms (discrete math, continuous optimization, statistics, time series, stochastic processes, survival analysis, linear algebra, calculus, geometry, financial math, game theory, decision analysis, multi-objective optimization) |
-| Solver Ecosystem | 22 Python libraries (NetworkX, PuLP, Z3, SymPy, SciPy, OR-Tools, cvxpy, statsmodels, PyMC, shapely, numpy-financial, nashpy, pymoo, prophet, arch, ruptures, and more) |
+| Algorithm Catalogs | 254 algorithms (discrete math, continuous optimization, statistics, time series, stochastic processes, survival analysis, machine learning, linear algebra, calculus, geometry, financial math, game theory, decision analysis, multi-objective optimization) |
+| Solver Ecosystem | 24 Python libraries (NetworkX, PuLP, Z3, SymPy, SciPy, OR-Tools, cvxpy, statsmodels, PyMC, shapely, numpy-financial, nashpy, pymoo, prophet, arch, ruptures, lifelines, scikit-learn, xgboost, umap-learn, and more) |
 | Interpretation Patterns | Domain-specific math-to-reality translation |
-| Visualization Guide | 27 chart types with matplotlib templates |
+| Visualization Guide | 30 chart types with matplotlib templates |
 
 ### Domains Covered
 
-Graph Theory, Combinatorics, Set Theory, Logic, Number Theory, Relations & Orders, Optimization, Discrete Probability, Continuous Optimization, Statistical Inference, Time Series Analysis, Stochastic Processes, Survival Analysis, Linear Algebra, Calculus, Geometry & Trigonometry, Financial Mathematics, Game Theory, Decision Analysis, Multi-Objective Optimization.
+Graph Theory, Combinatorics, Set Theory, Logic, Number Theory, Relations & Orders, Optimization, Discrete Probability, Continuous Optimization, Statistical Inference, Time Series Analysis, Stochastic Processes, Survival Analysis, Machine Learning, Linear Algebra, Calculus, Geometry & Trigonometry, Financial Mathematics, Game Theory, Decision Analysis, Multi-Objective Optimization.
 
 ### Expansion Roadmap
 
@@ -172,7 +175,7 @@ Graph Theory, Combinatorics, Set Theory, Logic, Number Theory, Relations & Order
 | Time Series Analysis | Shipped | 15 algorithms, 3 structures, prophet/arch/ruptures |
 | Stochastic Processes | Shipped | 5 algorithms, 3 structures, scipy |
 | Survival Analysis | Shipped | 5 algorithms (3 new + 2 existing), lifelines |
-| Machine Learning | Planned | Classification, clustering, dimensionality reduction |
+| Machine Learning | Shipped | 22 algorithms, 5 structures, scikit-learn/xgboost/umap-learn |
 | Simulation | Planned | Monte Carlo, discrete-event, agent-based |
 
 New domains plug in as reference files without changing the core Polya workflow. Contributions welcome -- see [CONTRIBUTING.md](CONTRIBUTING.md).
@@ -185,7 +188,7 @@ New domains plug in as reference files without changing the core Polya workflow.
 Optional Python packages (installed as needed):
 
 ```bash
-pip install networkx pulp z3-solver sympy scipy matplotlib numpy cvxpy statsmodels shapely numpy-financial nashpy pymoo prophet arch ruptures lifelines
+pip install networkx pulp z3-solver sympy scipy matplotlib numpy cvxpy statsmodels shapely numpy-financial nashpy pymoo prophet arch ruptures lifelines scikit-learn xgboost umap-learn
 ```
 
 ## Design Principles

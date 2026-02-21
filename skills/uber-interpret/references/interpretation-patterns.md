@@ -934,6 +934,90 @@ Survival analysis:
 
 ---
 
+## 17. Machine Learning Results
+
+### 17.1 Classification Results
+
+**When you have**: Predictions from a classifier (Random Forest, SVM, Gradient Boosting, etc.), confusion matrix, ROC curve, feature importances.
+
+**Translate to real-world language**:
+- Accuracy: "The model correctly identifies [X]% of cases overall"
+- Precision: "When the model predicts [positive], it's right [X]% of the time"
+- Recall: "The model catches [X]% of actual [positive] cases"
+- F1 score: "Balancing precision and recall, the model scores [X]%"
+- ROC-AUC: "The model distinguishes [positive] from [negative] with [X]% discriminative power"
+- Feature importance: "The strongest predictors are [feature 1] ([X]%), [feature 2] ([Y]%), ..."
+
+**Template**:
+```
+Model: [algorithm name] (e.g., Random Forest, 100 trees)
+Performance (5-fold CV):
+  Accuracy:  [X]% ± [Y]%
+  Precision: [X]% | Recall: [X]% | F1: [X]%
+  ROC-AUC:   [X]%
+Confusion matrix: [TP] true positives, [FP] false positives, [FN] false negatives, [TN] true negatives
+Top features: [feature1] ([X]%), [feature2] ([Y]%), [feature3] ([Z]%)
+```
+
+**Sensitivity**: "Changing the classification threshold from 0.5 to [X] improves recall to [Y]% at the cost of precision dropping to [Z]%."
+
+**Caveats**: Accuracy is misleading for imbalanced classes — always report precision/recall. Feature importance shows correlation, not causation. Cross-validated metrics are more trustworthy than train/test split.
+
+---
+
+### 17.2 Clustering Results
+
+**When you have**: Cluster assignments from K-Means, DBSCAN, GMM, etc., with silhouette scores and cluster profiles.
+
+**Translate to real-world language**:
+- K clusters found: "The data naturally groups into [K] distinct segments"
+- Silhouette score: "Cluster separation quality is [good/moderate/poor] (score: [X])"
+- Cluster profile: "Segment [N] is characterized by [high feature A], [low feature B]"
+- Noise points (DBSCAN): "[X]% of data points don't fit neatly into any group"
+
+**Template**:
+```
+Method: [algorithm] with [K] clusters
+Quality: Silhouette = [X] (>0.5 = good, 0.25-0.5 = moderate, <0.25 = poor)
+Segments:
+  Cluster 1 (n=[N], [X]%): [profile description]
+  Cluster 2 (n=[N], [X]%): [profile description]
+  ...
+Noise: [N] points ([X]%) unassigned
+```
+
+**Sensitivity**: "Changing K from [X] to [Y] [merges/splits] the [description] cluster."
+
+**Caveats**: Clustering is unsupervised — there's no "correct" answer. Cluster labels are arbitrary (Cluster 1 ≠ "best"). Always interpret clusters with domain knowledge. Silhouette score depends on the distance metric used.
+
+---
+
+### 17.3 Dimensionality Reduction Results
+
+**When you have**: PCA components, explained variance, t-SNE/UMAP embeddings, factor loadings.
+
+**Translate to real-world language**:
+- PCA: "[K] components explain [X]% of the total variance"
+- Component loading: "Component 1 is most influenced by [feature A] and [feature B]"
+- Scree plot: "There's a natural break at [K] components — beyond that, each new component adds little"
+- t-SNE/UMAP: "The 2D visualization shows [K] distinct clusters / a gradient from [A] to [B]"
+
+**Template**:
+```
+Method: PCA with [K] components
+Explained variance: [X]% cumulative
+  PC1: [X]% — driven by [features] ("interpretation label")
+  PC2: [Y]% — driven by [features] ("interpretation label")
+  ...
+For 95% variance: need [N] components out of [P] original features
+```
+
+**Sensitivity**: "Removing [feature] changes the explained variance from [X]% to [Y]%."
+
+**Caveats**: PCA components are linear combinations — may not capture nonlinear patterns. t-SNE/UMAP distances between distant points are NOT meaningful. Don't over-interpret 2D visualizations.
+
+---
+
 ## Cross-Reference Index
 
 Which visualization to use for each result type, and where results come from.
@@ -975,5 +1059,8 @@ Which visualization to use for each result type, and where results come from.
 | §16.1 Time Series Forecast | §26 Forecast Plot (CI bands) | algorithms-statistics.md S46-S55 | §18 Time Series |
 | §16.2 Decomposition/Trend | §25 Decomposition Plot | algorithms-statistics.md S49, S56-S59 | §18 Time Series |
 | §16.3 Survival/Events | §27 Survival Curve | algorithms-statistics.md S39-S40, S66-S68 | §10 Statistical Inference, §19 Stochastic Processes |
+| §17.1 Classification | §28 Confusion Matrix, §29 ROC/PR Curve | algorithms-statistics.md S69-S75 | §20.1 Classification Model |
+| §17.2 Clustering | §30 Cluster Scatter Plot | algorithms-statistics.md S78-S82 | §20.3 Cluster Structure |
+| §17.3 Dim. Reduction | §18 Scree Plot, §30 Scatter (embedding) | algorithms-statistics.md S83-S86 | §20.4 Low-Dim Embedding |
 
 Also see: **common-mistakes.md** §I1-I6 for interpretation pitfalls.

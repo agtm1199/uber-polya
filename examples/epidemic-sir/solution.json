@@ -1,0 +1,77 @@
+{
+  "instance": {
+    "N": 10000,
+    "beta": 0.3,
+    "gamma": 0.1,
+    "I0": 10,
+    "t_max": 200.0
+  },
+  "R0": 2.9999999999999996,
+  "peak_infected": 3007.942952113705,
+  "peak_time": 38.31915957978989,
+  "final_infected_frac_numerical": 0.9405508841313951,
+  "final_infected_frac_theory": 0.9404797907073597,
+  "herd_immunity_threshold": 0.6666666666666666,
+  "vaccination_analysis": [
+    {
+      "vaccination_rate": 0.0,
+      "R0_effective": 2.9999999999999996,
+      "epidemic_occurs": true,
+      "peak_infected": 3014.625009502288,
+      "peak_time": 38.31915957978989,
+      "final_infected_frac": 0.9416953489597134
+    },
+    {
+      "vaccination_rate": 0.3,
+      "R0_effective": 2.0999999999999996,
+      "epidemic_occurs": true,
+      "peak_infected": 1203.5410494733894,
+      "peak_time": 59.2296148074037,
+      "final_infected_frac": 0.5769650663707429
+    },
+    {
+      "vaccination_rate": 0.5,
+      "R0_effective": 1.4999999999999998,
+      "epidemic_occurs": true,
+      "peak_infected": 325.116306299728,
+      "peak_time": 99.2496248124062,
+      "final_infected_frac": 0.28803142631503187
+    },
+    {
+      "vaccination_rate": 0.67,
+      "R0_effective": 0.9899999999999998,
+      "epidemic_occurs": false,
+      "peak_infected": 10.0,
+      "peak_time": 0.0,
+      "final_infected_frac": 0.015487270418372555
+    },
+    {
+      "vaccination_rate": 0.8,
+      "R0_effective": 0.5999999999999998,
+      "epidemic_occurs": false,
+      "peak_infected": 10.0,
+      "peak_time": 0.0,
+      "final_infected_frac": 0.0024853605689961113
+    }
+  ],
+  "equilibrium": {
+    "eigenvalues": [
+      "0.0",
+      "0.0",
+      "0.19999999999999998"
+    ],
+    "dfe_stable": false
+  },
+  "algorithm": "Runge-Kutta 4(5) adaptive ODE integration (scipy.integrate.solve_ivp)",
+  "time_seconds": 0.14701269095530733,
+  "verification": {
+    "population_conserved": true,
+    "R0_correct": true,
+    "peak_occurs": true,
+    "peak_time_reasonable": true,
+    "final_size_matches_theory": true,
+    "herd_immunity_correct": true,
+    "vaccination_prevents_epidemic": true,
+    "all_compartments_nonneg": true
+  }
+}

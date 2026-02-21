@@ -4,6 +4,38 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.9.0] - 2026-02-20
+
+### Added
+
+- **Simulation & ODEs domain** seeded end-to-end:
+  - 8 new structures in structures.md (§21: ODE/dynamical system, queuing system, simulation model, discrete-event system, epidemic/compartmental model, predator-prey/population system, birth-death process, random walk/stochastic trajectory)
+  - 10 new algorithms in algorithms.md (A165-A174: §29 Numerical ODEs & Dynamical Systems -- Euler, RK4, stiff ODE solver, phase portrait, equilibrium & stability, bifurcation, ODE parameter estimation, ODE sensitivity, SIR/SEIR, Lotka-Volterra)
+  - 13 new algorithms in algorithms-statistics.md (S91-S103):
+    - §16 Monte Carlo Methods (S91-S95): MC integration, risk simulation, importance sampling, variance reduction, scenario generation
+    - §17 Queuing Theory (S96-S100): M/M/1, M/M/c, M/G/1, Little's Law, Jackson network
+    - §18 Discrete-Event Simulation (S101-S103): event-driven engine, resource allocation, warm-up detection
+  - simpy solver reference in solvers-statistics.md (§12)
+  - 5 new interpretation patterns (§18.1: ODE/dynamics, §18.2: epidemic model, §18.3: queuing system, §18.4: Monte Carlo, §18.5: DES results)
+  - 4 new chart types in visualization.md (§31 phase portrait, §32 epidemic curve, §33 queue performance dashboard, §34 Monte Carlo convergence)
+  - **Call Center Queuing Analysis** worked example (examples/queuing-system/)
+  - **SIR Epidemic Model** worked example (examples/epidemic-sir/)
+  - **Monte Carlo Project Risk Analysis** worked example (examples/monte-carlo-risk/)
+- Problem classification decision tree expanded with 3 new branches (SIMULATE/WHAT-IF, ANALYZE QUEUE, MODEL DYNAMICS/ODE) and 12 new quick-lookup patterns
+- 8 new complexity quick-check entries in problem-classification.md
+- 5 new disambiguation tips in problem-classification.md
+- Cross-reference indexes updated in all modified reference files
+
+### Changed
+
+- algorithms.md scope: 164 → 174 algorithms (added 10 for ODEs & dynamical systems)
+- algorithms-statistics.md scope: 90 → 103 algorithms (added 13 for MC/queuing/DES)
+- structures.md scope: 75 → 83 structures (added 8 for simulation & ODEs)
+- solvers-statistics.md: 11 → 12 solver library entries (added simpy)
+- interpretation-patterns.md: 32 → 37 pattern groups (added 5 for simulation/ODE)
+- visualization.md: 30 → 34 chart types (added phase portrait, epidemic curve, queue dashboard, MC convergence)
+- Updated README: 277 algorithms, 25 solver libraries, 83 structures, 21 domains, 32 examples
+
 ## [0.8.0] - 2026-02-20
 
 ### Added

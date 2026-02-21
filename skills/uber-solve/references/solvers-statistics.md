@@ -624,6 +624,70 @@ embedding = reducer.fit_transform(X, y=labels)
 
 ---
 
+## 12. simpy -- Discrete-Event Simulation
+
+**Install**: `pip install simpy`
+**Import**: `import simpy`
+
+### Key APIs
+
+| Function | Purpose |
+|---|---|
+| `simpy.Environment()` | Create simulation environment |
+| `env.process(generator)` | Register a process (generator function) |
+| `env.run(until=T)` | Run simulation until time T |
+| `env.timeout(duration)` | Delay a process for a duration |
+| `simpy.Resource(env, capacity=c)` | Shared resource with limited capacity |
+| `resource.request()` | Request access to a resource (blocks if full) |
+| `resource.release(req)` | Release a resource |
+| `simpy.Store(env, capacity=c)` | FIFO buffer for passing items between processes |
+| `simpy.PriorityResource(env, capacity=c)` | Resource with priority-based queuing |
+| `simpy.PreemptiveResource(env, capacity=c)` | Resource that allows preemption |
+
+### Typical Usage
+
+```python
+import simpy
+import numpy as np
+
+def customer(env, name, server, service_time_fn, wait_times):
+    """Customer arrives, waits for server, gets served."""
+    arrival = env.now
+    with server.request() as req:
+        yield req                          # wait for server
+        wait = env.now - arrival
+        wait_times.append(wait)
+        yield env.timeout(service_time_fn())  # service
+
+def source(env, server, arrival_rate, service_rate, wait_times, n_customers):
+    """Generate customers at Poisson arrival rate."""
+    for i in range(n_customers):
+        yield env.timeout(np.random.exponential(1.0 / arrival_rate))
+        env.process(customer(env, f"C{i}", server,
+                             lambda: np.random.exponential(1.0 / service_rate),
+                             wait_times))
+
+# Run
+env = simpy.Environment()
+server = simpy.Resource(env, capacity=1)
+wait_times = []
+env.process(source(env, server, arrival_rate=4.0, service_rate=5.0,
+                   wait_times=wait_times, n_customers=10000))
+env.run()
+print(f"Mean wait: {np.mean(wait_times):.3f}")
+```
+
+### Gotchas
+
+- Processes are Python generators (`yield` required); forgetting `yield` causes silent errors
+- `env.run()` without `until=` runs until no more events (may run forever if source is infinite)
+- Resource requests MUST use `with` block or explicit `release()`, otherwise deadlock
+- simpy is single-threaded; for parallel replications, use `multiprocessing`
+- Random number generation: set `np.random.seed()` for reproducibility per replication
+- Warm-up period: discard initial transient observations before collecting steady-state stats
+
+---
+
 ## Library Selection Guide
 
 | Question | First Choice | Alternative |
@@ -653,6 +717,11 @@ embedding = reducer.fit_transform(X, y=labels)
 | Feature selection | scikit-learn (SelectKBest, RFE) | -- |
 | Hyperparameter tuning | scikit-learn (GridSearchCV) | optuna |
 | Build ML pipeline | scikit-learn (Pipeline) | -- |
+| Monte Carlo simulation | numpy (random sampling) | scipy.stats (distributions) |
+| Queuing theory (analytical) | scipy (formulas) | custom |
+| Discrete-event simulation | simpy | custom |
+| ODE / dynamical system | scipy.integrate.solve_ivp | SymPy (dsolve, symbolic) |
+| Epidemic modeling (SIR/SEIR) | scipy.integrate.solve_ivp | custom |
 
 ### Decision Flow
 
@@ -686,6 +755,14 @@ Need to test a hypothesis or estimate a parameter?
 ├── Reduce dimensions / visualize?
 │   ├── Linear → scikit-learn (PCA)
 │   └── Nonlinear → umap-learn (UMAP) or scikit-learn (t-SNE)
-└── Build ML pipeline?
-    └── scikit-learn (Pipeline + ColumnTransformer)
+├── Build ML pipeline?
+│   └── scikit-learn (Pipeline + ColumnTransformer)
+├── Simulate / Monte Carlo?
+│   ├── Random sampling / risk → numpy + scipy.stats
+│   └── Process with queues / resources → simpy
+├── Queuing analysis (analytical)?
+│   └── scipy (closed-form M/M/1, M/M/c, M/G/1)
+└── Solve ODE / model dynamics?
+    ├── Symbolic / exact solution → SymPy (dsolve)
+    └── Numerical / complex system → scipy.integrate.solve_ivp
 ```

@@ -1,0 +1,129 @@
+{
+  "instance": {
+    "arrival_rate": 20.0,
+    "service_rate": 6.0,
+    "num_servers": 4,
+    "target_wait_minutes": 2.0,
+    "growth_factor": 1.5
+  },
+  "current_analytical": {
+    "c": 4,
+    "rho": 0.8333333333333334,
+    "p0": 0.021310181531176,
+    "erlang_c": 0.6577216521967904,
+    "lq": 3.2886082609839526,
+    "wq_hours": 0.16443041304919764,
+    "wq_minutes": 9.865824782951858,
+    "w_hours": 0.33109707971586433,
+    "w_minutes": 19.86582478295186,
+    "l": 6.621941594317287
+  },
+  "staffing_analysis": [
+    {
+      "agents": 1,
+      "wq_minutes": Infinity
+    },
+    {
+      "agents": 2,
+      "wq_minutes": Infinity
+    },
+    {
+      "agents": 3,
+      "wq_minutes": Infinity
+    },
+    {
+      "agents": 4,
+      "wq_minutes": 9.865824782951858
+    },
+    {
+      "agents": 5,
+      "wq_minutes": 1.9600156801254403
+    },
+    {
+      "agents": 6,
+      "wq_minutes": 0.5558124644280024
+    },
+    {
+      "agents": 7,
+      "wq_minutes": 0.1670761815259989
+    },
+    {
+      "agents": 8,
+      "wq_minutes": 0.049425139758083804
+    },
+    {
+      "agents": 9,
+      "wq_minutes": 0.01399046226895038
+    },
+    {
+      "agents": 10,
+      "wq_minutes": 0.003745393693108904
+    }
+  ],
+  "min_servers_for_target": 5,
+  "growth_analytical": null,
+  "growth_staffing_analysis": [
+    {
+      "agents": 1,
+      "wq_minutes": Infinity
+    },
+    {
+      "agents": 2,
+      "wq_minutes": Infinity
+    },
+    {
+      "agents": 3,
+      "wq_minutes": Infinity
+    },
+    {
+      "agents": 4,
+      "wq_minutes": Infinity
+    },
+    {
+      "agents": 5,
+      "wq_minutes": Infinity
+    },
+    {
+      "agents": 6,
+      "wq_minutes": 5.87516450460613
+    },
+    {
+      "agents": 7,
+      "wq_minutes": 1.6207497458664402
+    },
+    {
+      "agents": 8,
+      "wq_minutes": 0.5575550222058555
+    },
+    {
+      "agents": 9,
+      "wq_minutes": 0.20127586095314773
+    },
+    {
+      "agents": 10,
+      "wq_minutes": 0.07221071831664037
+    }
+  ],
+  "min_servers_for_target_growth": 7,
+  "simulation": {
+    "wq_hours": 0.16396452902063374,
+    "wq_minutes": 9.837871741238025,
+    "w_hours": 0.33053785021625587,
+    "avg_queue_length": 3.2937684210526315,
+    "customers_served": 190000
+  },
+  "verification": {
+    "utilization_below_1": true,
+    "littles_law_holds": true,
+    "wait_time_positive": true,
+    "system_time_gt_service": true,
+    "simulation_matches_theory": true,
+    "simulation_relative_error": 0.0028,
+    "staffing_reduces_wait": true,
+    "growth_needs_more_staff": true,
+    "probability_bounds": true,
+    "all_passed": true
+  },
+  "algorithm": "M/M/c Analytical + SimPy DES Verification",
+  "time_seconds": 2.8066295770113356
+}

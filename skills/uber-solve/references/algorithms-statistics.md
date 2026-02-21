@@ -1,8 +1,8 @@
 # Statistical Inference Algorithm Catalog
 
-Comprehensive catalog of 90 algorithms for statistical inference, time series analysis, stochastic processes, survival analysis, and machine learning. Organized by problem type, each entry includes complexity, solver library, correctness guarantee, and implementation guidance.
+Comprehensive catalog of 103 algorithms for statistical inference, time series analysis, stochastic processes, survival analysis, machine learning, Monte Carlo simulation, queuing theory, and discrete-event simulation. Organized by problem type, each entry includes complexity, solver library, correctness guarantee, and implementation guidance.
 
-**Scope**: Statistical Inference (45 algorithms), Time Series Analysis (15 algorithms), Stochastic Processes (5 algorithms), Survival Analysis (3 new + 2 existing = 5 algorithms), Machine Learning (22 algorithms).
+**Scope**: Statistical Inference (45 algorithms), Time Series Analysis (15 algorithms), Stochastic Processes (5 algorithms), Survival Analysis (3 new algorithms), Machine Learning (22 algorithms), Monte Carlo Methods (5 algorithms), Queuing Theory (5 algorithms), Discrete-Event Simulation (3 algorithms).
 
 **Legend**:
 - **T**: Time complexity | **S**: Space complexity
@@ -2864,6 +2864,439 @@ def build_pipeline(numeric_features: list, categorical_features: list) -> Pipeli
 
 ---
 
+## 16. Monte Carlo Methods
+
+### S91: Monte Carlo Integration
+
+**Problem**: Estimate integrals or expected values by random sampling: E[f(X)] ≈ (1/N)Σf(xᵢ).
+**T**: O(N·f_eval) | **S**: O(N) for samples
+**Lib**: `numpy.random`, `scipy.stats`
+**Guarantee**: Converges at O(1/√N) regardless of dimension (curse of dimensionality avoided).
+
+```python
+import numpy as np
+
+def monte_carlo_integrate(f, bounds: list[tuple], n_samples: int = 100000, seed: int = 42) -> dict:
+    """Monte Carlo integration over hyperrectangle."""
+    rng = np.random.default_rng(seed)
+    dim = len(bounds)
+    volume = np.prod([b[1] - b[0] for b in bounds])
+    samples = np.column_stack([rng.uniform(lo, hi, n_samples) for lo, hi in bounds])
+    values = np.array([f(x) for x in samples])
+    estimate = volume * np.mean(values)
+    std_err = volume * np.std(values) / np.sqrt(n_samples)
+    return {"estimate": float(estimate), "std_error": float(std_err),
+            "n_samples": n_samples, "ci_95": [float(estimate - 1.96*std_err), float(estimate + 1.96*std_err)]}
+```
+
+**Use when**: High-dimensional integrals (d > 3), irregular domains, expected value computations. Standard error decreases as 1/√N regardless of dimensionality.
+
+---
+
+### S92: Monte Carlo Risk Simulation
+
+**Problem**: Estimate distribution of outcomes (profit, loss, NPV) by simulating many scenarios with random inputs.
+**T**: O(N·model_eval) | **S**: O(N·outputs)
+**Lib**: `numpy.random`, `scipy.stats`
+**Guarantee**: Approx (convergence at 1/√N). Percentiles converge slower than means.
+
+```python
+import numpy as np
+from scipy import stats
+
+def risk_simulation(model_func, param_distributions: dict, n_simulations: int = 10000, seed: int = 42) -> dict:
+    """Monte Carlo risk simulation with correlated inputs."""
+    rng = np.random.default_rng(seed)
+    results = []
+    for _ in range(n_simulations):
+        params = {name: dist.rvs(random_state=rng) for name, dist in param_distributions.items()}
+        results.append(model_func(**params))
+    results = np.array(results)
+    return {
+        "mean": float(np.mean(results)), "std": float(np.std(results)),
+        "percentiles": {str(p): float(np.percentile(results, p)) for p in [5, 25, 50, 75, 95]},
+        "prob_negative": float(np.mean(results < 0)),
+        "var_95": float(np.percentile(results, 5)),  # Value at Risk
+        "cvar_95": float(np.mean(results[results <= np.percentile(results, 5)])),
+    }
+```
+
+**Use when**: Project risk analysis, financial modeling, "what-if" scenarios, insurance pricing, portfolio risk (VaR/CVaR). Always report confidence intervals and tail risk.
+
+---
+
+### S93: Importance Sampling
+
+**Problem**: Reduce variance of Monte Carlo estimates by sampling from a proposal distribution that emphasizes important regions.
+**T**: O(N·f_eval) | **S**: O(N)
+**Lib**: `numpy.random`, `scipy.stats`
+**Guarantee**: Unbiased if proposal has support everywhere target does. Variance reduction depends on proposal quality.
+
+```python
+import numpy as np
+from scipy import stats
+
+def importance_sampling(f, target_dist, proposal_dist, n_samples: int = 100000, seed: int = 42) -> dict:
+    """Importance sampling: E_target[f(X)] using samples from proposal."""
+    rng = np.random.default_rng(seed)
+    samples = proposal_dist.rvs(n_samples, random_state=rng)
+    weights = target_dist.pdf(samples) / proposal_dist.pdf(samples)
+    weighted_values = f(samples) * weights
+    estimate = float(np.mean(weighted_values))
+    ess = float(np.sum(weights)**2 / np.sum(weights**2))  # effective sample size
+    return {"estimate": estimate, "effective_sample_size": ess,
+            "std_error": float(np.std(weighted_values) / np.sqrt(n_samples))}
+```
+
+**Use when**: Estimating rare event probabilities (P < 0.01), tail risk, where standard MC is inefficient. Choose proposal to concentrate samples where f(x)·p(x) is large.
+
+---
+
+### S94: Variance Reduction Techniques
+
+**Problem**: Improve MC efficiency using antithetic variates, control variates, or stratified sampling.
+**T**: O(N·f_eval) same as basic MC | **S**: O(N)
+**Lib**: `numpy.random`
+**Guarantee**: Provably reduces variance (antithetic: up to 2x; control variate: depends on correlation).
+
+```python
+import numpy as np
+
+def antithetic_mc(f, n_samples: int = 50000, seed: int = 42) -> dict:
+    """Antithetic variates: use pairs (U, 1-U) to reduce variance."""
+    rng = np.random.default_rng(seed)
+    u = rng.uniform(0, 1, n_samples)
+    y1 = np.array([f(ui) for ui in u])
+    y2 = np.array([f(1 - ui) for ui in u])
+    estimate = float(np.mean((y1 + y2) / 2))
+    std_err = float(np.std((y1 + y2) / 2) / np.sqrt(n_samples))
+    return {"estimate": estimate, "std_error": std_err,
+            "variance_reduction": float(np.var(y1) / np.var((y1 + y2) / 2))}
+```
+
+**Use when**: Need more precision from same number of samples. Antithetic for monotone functions. Control variate when a correlated analytical quantity is available.
+
+---
+
+### S95: Scenario Generation (Correlated Random Variables)
+
+**Problem**: Generate random scenarios with specified marginal distributions and correlation structure (Copula/Cholesky).
+**T**: O(N·d²) for Cholesky, O(N·d) for sampling | **S**: O(N·d)
+**Lib**: `numpy.random`, `scipy.stats`, `scipy.linalg.cholesky`
+**Guarantee**: Exact correlation for normal marginals; approximate for non-normal (via Gaussian copula).
+
+```python
+import numpy as np
+from scipy.stats import norm
+from scipy.linalg import cholesky
+
+def generate_correlated_scenarios(means, stds, correlation_matrix, n_scenarios: int = 10000, seed: int = 42) -> dict:
+    """Generate correlated scenarios via Cholesky decomposition."""
+    rng = np.random.default_rng(seed)
+    d = len(means)
+    L = cholesky(correlation_matrix, lower=True)
+    Z = rng.standard_normal((n_scenarios, d))
+    correlated = Z @ L.T
+    scenarios = correlated * np.array(stds) + np.array(means)
+    return {
+        "scenarios": scenarios.tolist(),
+        "realized_means": scenarios.mean(axis=0).tolist(),
+        "realized_corr": np.corrcoef(scenarios.T).tolist(),
+    }
+```
+
+**Use when**: Financial portfolio simulation (correlated asset returns), supply chain (correlated demands), multi-factor risk models. Use Gaussian copula for non-normal marginals.
+
+---
+
+## 17. Queuing Theory
+
+### S96: M/M/1 Queue
+
+**Problem**: Single-server queue with Poisson arrivals (rate λ) and exponential service (rate μ). Compute steady-state metrics.
+**T**: O(1) closed-form | **S**: O(1)
+**Lib**: Custom (closed-form formulas)
+**Guarantee**: Exact (steady-state, requires ρ = λ/μ < 1 for stability).
+
+```python
+def mm1_queue(arrival_rate: float, service_rate: float) -> dict:
+    """M/M/1 queue: Poisson arrivals, exponential service, 1 server."""
+    rho = arrival_rate / service_rate
+    if rho >= 1:
+        return {"error": "Unstable: arrival rate >= service rate", "utilization": rho}
+    L = rho / (1 - rho)           # avg number in system
+    Lq = rho**2 / (1 - rho)      # avg number in queue
+    W = 1 / (service_rate - arrival_rate)  # avg time in system
+    Wq = rho / (service_rate - arrival_rate)  # avg wait time
+    return {
+        "utilization": rho, "avg_in_system": L, "avg_in_queue": Lq,
+        "avg_time_in_system": W, "avg_wait_time": Wq,
+        "prob_idle": 1 - rho, "prob_n_or_more": lambda n: rho**n,
+    }
+```
+
+**Use when**: Single checkout lane, single help desk agent, single machine processing jobs. Simplest queue model; use for quick estimates.
+
+---
+
+### S97: M/M/c Queue (Multi-Server)
+
+**Problem**: c identical servers, Poisson arrivals, exponential service. Compute metrics including Erlang C formula.
+**T**: O(c) for Erlang C computation | **S**: O(1)
+**Lib**: Custom (Erlang C formula)
+**Guarantee**: Exact (steady-state, requires ρ = λ/(cμ) < 1).
+
+```python
+import math
+
+def mmc_queue(arrival_rate: float, service_rate: float, c: int) -> dict:
+    """M/M/c queue with Erlang C formula."""
+    rho = arrival_rate / (c * service_rate)
+    if rho >= 1:
+        return {"error": "Unstable", "utilization": rho}
+    a = arrival_rate / service_rate  # offered load
+    # Erlang C: P(wait) = probability of queueing
+    sum_terms = sum(a**k / math.factorial(k) for k in range(c))
+    last_term = (a**c / math.factorial(c)) * (1 / (1 - rho))
+    erlang_c = last_term / (sum_terms + last_term)
+    Wq = erlang_c / (c * service_rate - arrival_rate)
+    W = Wq + 1 / service_rate
+    Lq = arrival_rate * Wq
+    L = arrival_rate * W
+    return {
+        "servers": c, "utilization": rho, "erlang_c": erlang_c,
+        "avg_wait_time": Wq, "avg_time_in_system": W,
+        "avg_in_queue": Lq, "avg_in_system": L,
+        "prob_waiting": erlang_c,
+    }
+```
+
+**Use when**: Call center staffing, hospital ER, bank tellers, multi-lane toll booth. "How many servers do I need to keep wait time under X?"
+
+---
+
+### S98: M/G/1 Queue (General Service)
+
+**Problem**: Single server with general (non-exponential) service time distribution. Uses Pollaczek-Khinchine formula.
+**T**: O(1) closed-form | **S**: O(1)
+**Lib**: Custom (P-K formula)
+**Guarantee**: Exact (steady-state, uses only mean and variance of service time).
+
+```python
+def mg1_queue(arrival_rate: float, service_mean: float, service_var: float) -> dict:
+    """M/G/1 queue using Pollaczek-Khinchine formula."""
+    rho = arrival_rate * service_mean
+    if rho >= 1:
+        return {"error": "Unstable", "utilization": rho}
+    # P-K formula: Lq = (λ²σ² + ρ²) / (2(1 - ρ))
+    Lq = (arrival_rate**2 * service_var + rho**2) / (2 * (1 - rho))
+    Wq = Lq / arrival_rate
+    W = Wq + service_mean
+    L = arrival_rate * W
+    return {
+        "utilization": rho, "avg_in_queue": Lq, "avg_in_system": L,
+        "avg_wait_time": Wq, "avg_time_in_system": W,
+        "service_cv": (service_var**0.5) / service_mean,
+    }
+```
+
+**Use when**: Service times are not exponential (e.g., deterministic, uniform, bimodal). The P-K formula only needs mean and variance of service time.
+
+---
+
+### S99: Little's Law
+
+**Problem**: Relate average number in system (L), average arrival rate (λ), and average time in system (W): L = λW.
+**T**: O(1) | **S**: O(1)
+**Lib**: Custom
+**Guarantee**: Exact (holds for any stable queue, regardless of arrival/service distribution).
+
+```python
+def littles_law(known: dict) -> dict:
+    """Apply Little's Law: L = λW. Provide any two of {L, lambda, W}."""
+    L = known.get("L")
+    lam = known.get("lambda")
+    W = known.get("W")
+    if L is not None and lam is not None:
+        W = L / lam
+    elif L is not None and W is not None:
+        lam = L / W
+    elif lam is not None and W is not None:
+        L = lam * W
+    else:
+        return {"error": "Provide exactly two of L, lambda, W"}
+    return {"L": L, "lambda": lam, "W": W}
+```
+
+**Use when**: Quick sanity check on any queuing result. Remarkably general — works for any stable system in steady state. Also applies to inventory (average inventory = demand rate × lead time).
+
+---
+
+### S100: Jackson Network (Network of Queues)
+
+**Problem**: Network of M/M/c queues where output of one feeds into another. Solve for steady-state via traffic equations.
+**T**: O(n³) for traffic equations (n = number of nodes) | **S**: O(n²)
+**Lib**: `numpy.linalg.solve()`, custom
+**Guarantee**: Exact (product-form solution under Jackson's theorem: independent queues in steady state).
+
+```python
+import numpy as np
+
+def jackson_network(external_arrivals: list, routing_matrix: list, service_rates: list, servers: list) -> dict:
+    """Solve Jackson network for total arrival rates and per-node metrics."""
+    n = len(external_arrivals)
+    P = np.array(routing_matrix)
+    gamma = np.array(external_arrivals, dtype=float)
+    # Traffic equations: λ = γ + P^T λ  =>  (I - P^T)λ = γ
+    lam = np.linalg.solve(np.eye(n) - P.T, gamma)
+    nodes = {}
+    for i in range(n):
+        rho_i = lam[i] / (servers[i] * service_rates[i])
+        nodes[f"node_{i}"] = {
+            "total_arrival_rate": float(lam[i]),
+            "utilization": float(rho_i),
+            "stable": rho_i < 1,
+        }
+    return {"arrival_rates": lam.tolist(), "nodes": nodes}
+```
+
+**Use when**: Manufacturing lines, computer networks, supply chains with multiple stages. Each stage modeled as a queue; outputs route to next stages.
+
+---
+
+## 18. Discrete-Event Simulation
+
+### S101: Event-Driven Simulation Engine
+
+**Problem**: Simulate a system by processing events in time order: arrivals, service completions, failures, etc.
+**T**: O(E·log E) for E events (priority queue) | **S**: O(E)
+**Lib**: `simpy`
+**Guarantee**: Exact (given the model). Results converge as simulation length → ∞.
+
+```python
+import simpy
+import numpy as np
+
+def simulate_queue(arrival_rate, service_rate, n_servers, sim_time, seed=42):
+    """Simulate M/M/c queue with SimPy."""
+    rng = np.random.default_rng(seed)
+    wait_times = []
+
+    def customer(env, server):
+        arrive = env.now
+        with server.request() as req:
+            yield req
+            wait = env.now - arrive
+            wait_times.append(wait)
+            yield env.timeout(rng.exponential(1/service_rate))
+
+    def arrivals(env, server):
+        while True:
+            yield env.timeout(rng.exponential(1/arrival_rate))
+            env.process(customer(env, server))
+
+    env = simpy.Environment()
+    server = simpy.Resource(env, capacity=n_servers)
+    env.process(arrivals(env, server))
+    env.run(until=sim_time)
+    return {
+        "n_served": len(wait_times),
+        "avg_wait": float(np.mean(wait_times)) if wait_times else 0,
+        "max_wait": float(np.max(wait_times)) if wait_times else 0,
+        "pct_waited": float(np.mean([w > 0 for w in wait_times])) if wait_times else 0,
+    }
+```
+
+**Use when**: Complex systems that don't have closed-form solutions: multi-stage manufacturing, hospitals with different patient types, airports, logistics hubs. SimPy handles resource contention, priorities, and preemption.
+
+---
+
+### S102: Resource Allocation Simulation
+
+**Problem**: Simulate resource contention with multiple resource types, priorities, and preemption.
+**T**: O(E·log E) | **S**: O(E + R) where R = resource states
+**Lib**: `simpy` (Resource, PriorityResource, PreemptiveResource)
+**Guarantee**: Exact (given the model). Report utilization, throughput, bottleneck identification.
+
+```python
+import simpy
+import numpy as np
+
+def simulate_manufacturing(n_machines, n_inspectors, processing_time, inspection_time,
+                           arrival_rate, sim_time, seed=42):
+    """Simulate manufacturing line with machine + inspector resources."""
+    rng = np.random.default_rng(seed)
+    throughput_times = []
+
+    def job(env, machines, inspectors):
+        arrive = env.now
+        with machines.request() as req:
+            yield req
+            yield env.timeout(rng.exponential(processing_time))
+        with inspectors.request() as req:
+            yield req
+            yield env.timeout(rng.exponential(inspection_time))
+        throughput_times.append(env.now - arrive)
+
+    def source(env, machines, inspectors):
+        while True:
+            yield env.timeout(rng.exponential(1/arrival_rate))
+            env.process(job(env, machines, inspectors))
+
+    env = simpy.Environment()
+    machines = simpy.Resource(env, capacity=n_machines)
+    inspectors = simpy.Resource(env, capacity=n_inspectors)
+    env.process(source(env, machines, inspectors))
+    env.run(until=sim_time)
+    return {
+        "n_completed": len(throughput_times),
+        "avg_throughput_time": float(np.mean(throughput_times)) if throughput_times else 0,
+        "throughput_rate": len(throughput_times) / sim_time,
+    }
+```
+
+**Use when**: Multi-stage processes, shared resources (machines, staff, rooms), bottleneck identification, capacity planning.
+
+---
+
+### S103: Warm-Up Period Detection
+
+**Problem**: Detect when a simulation reaches steady state; discard transient initial data.
+**T**: O(n) for MSER (marginal standard error rule) | **S**: O(n)
+**Lib**: Custom (numpy)
+**Guarantee**: Heuristic (MSER minimizes MSE of mean estimate; Welch's graphical method for visual check).
+
+```python
+import numpy as np
+
+def detect_warmup(data: list, method: str = "mser") -> dict:
+    """Detect warm-up period using MSER-5 rule."""
+    y = np.array(data)
+    n = len(y)
+    if method == "mser":
+        # MSER-5: batch into groups of 5, find d that minimizes var of truncated mean
+        batch_size = 5
+        batched = [np.mean(y[i:i+batch_size]) for i in range(0, n - batch_size + 1, batch_size)]
+        batched = np.array(batched)
+        m = len(batched)
+        mser_values = []
+        for d in range(m // 2):
+            truncated = batched[d:]
+            mser_values.append(np.var(truncated) / len(truncated))
+        warmup_batches = int(np.argmin(mser_values))
+        warmup_obs = warmup_batches * batch_size
+    return {
+        "warmup_observations": warmup_obs,
+        "warmup_fraction": warmup_obs / n,
+        "steady_state_mean": float(np.mean(y[warmup_obs:])),
+        "steady_state_std": float(np.std(y[warmup_obs:])),
+    }
+```
+
+**Use when**: Any simulation that starts empty. Discard warm-up period before computing performance statistics. Critical for reliable simulation output analysis.
+
+---
+
 ## Algorithm Selection Flowchart
 
 ```
@@ -2967,9 +3400,34 @@ Question about data?
 │   ├── Stationary? → S51 (ADF + KPSS)
 │   └── Equal variance? → Levene's test (in S7)
 │
-└── Validate model?
-    ├── Prediction accuracy → S43 (Cross-validation)
-    ├── Sample size needed → S44 (Power analysis)
-    ├── Uncertainty of statistic → S41 (Bootstrap) or S42 (Jackknife)
-    └── Smooth noisy data → S58 (Moving Average) + S59 (Spectral Analysis)
+├── Simulate / what-if analysis?
+│   ├── Estimate integral or probability → S91 (Monte Carlo Integration)
+│   ├── Risk / uncertainty propagation → S92 (Monte Carlo Risk Simulation)
+│   ├── Rare event estimation → S93 (Importance Sampling)
+│   ├── Reduce variance of MC estimate → S94 (Variance Reduction)
+│   ├── Generate future scenarios → S95 (Scenario Generation)
+│   └── Model process with resources / queues → S101-S103 (Discrete-Event Simulation)
+│
+├── Analyze queuing / service system?
+│   ├── Single server, Poisson arrivals → S96 (M/M/1)
+│   ├── Multiple servers → S97 (M/M/c)
+│   ├── General service times → S98 (M/G/1)
+│   ├── Relate throughput, time, inventory → S99 (Little's Law)
+│   └── Network of queues → S100 (Jackson Network)
+│
+├── Validate model?
+│   ├── Prediction accuracy → S43 (Cross-validation)
+│   ├── Sample size needed → S44 (Power analysis)
+│   ├── Uncertainty of statistic → S41 (Bootstrap) or S42 (Jackknife)
+│   └── Smooth noisy data → S58 (Moving Average) + S59 (Spectral Analysis)
+│
+└── Model dynamics / ODEs? → See algorithms.md §29 (A165-A174)
+    ├── Simple initial-value problem → A165 (Euler) or A166 (RK4)
+    ├── Stiff system → A167 (BDF/Radau)
+    ├── Visualize trajectories → A168 (Phase Portrait)
+    ├── Find / classify equilibria → A169 (Equilibrium & Stability)
+    ├── Parameter changes behavior → A170 (Bifurcation)
+    ├── Fit ODE to data → A171 (Parameter Estimation)
+    ├── Epidemic modeling → A173 (SIR/SEIR)
+    └── Predator-prey dynamics → A174 (Lotka-Volterra)
 ```

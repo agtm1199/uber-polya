@@ -200,11 +200,36 @@ What is the user trying to do?
 │  ├─ 2D visualization (large data)? ──────────── UMAP (S85)
 │  └─ Latent constructs / survey data? ────────── Factor Analysis (S86)
 │
-└─ SELECT FEATURES / TUNE MODEL
-   ├─ Too many features? ──────────────────────── Feature Selection (S87)
-   ├─ Optimize hyperparameters? ───────────────── Hyperparameter Tuning (S88)
-   ├─ Compare models fairly? ──────────────────── Model Comparison (S89)
-   └─ Build production workflow? ──────────────── Pipeline Construction (S90)
+├─ SELECT FEATURES / TUNE MODEL
+│  ├─ Too many features? ──────────────────────── Feature Selection (S87)
+│  ├─ Optimize hyperparameters? ───────────────── Hyperparameter Tuning (S88)
+│  ├─ Compare models fairly? ──────────────────── Model Comparison (S89)
+│  └─ Build production workflow? ──────────────── Pipeline Construction (S90)
+│
+├─ SIMULATE / WHAT-IF analysis
+│  ├─ Estimate probability / integral? ────────── Monte Carlo Integration (S91)
+│  ├─ Assess risk / uncertainty? ──────────────── Monte Carlo Risk Simulation (S92)
+│  ├─ Rare event probability? ─────────────────── Importance Sampling (S93)
+│  ├─ Reduce simulation variance? ─────────────── Variance Reduction (S94)
+│  ├─ Generate future scenarios? ──────────────── Scenario Generation (S95)
+│  └─ Model process with queues? ──────────────── Discrete-Event Simulation (S101-S103)
+│
+├─ ANALYZE QUEUE / SERVICE SYSTEM
+│  ├─ Single server, Poisson arrivals? ────────── M/M/1 (S96)
+│  ├─ Multiple parallel servers? ──────────────── M/M/c (S97)
+│  ├─ General service distribution? ───────────── M/G/1 (S98)
+│  ├─ Relate throughput/time/inventory? ────────── Little's Law (S99)
+│  └─ Network of queues? ─────────────────────── Jackson Network (S100)
+│
+└─ MODEL DYNAMICS / SOLVE ODE
+   ├─ Simple growth/decay/trajectory? ─────────── Euler (A165) or RK4 (A166)
+   ├─ Stiff system (chemical/biological)? ──────── BDF/Radau (A167)
+   ├─ Visualize state-space behavior? ──────────── Phase Portrait (A168)
+   ├─ Find steady states & stability? ──────────── Equilibrium Analysis (A169)
+   ├─ Parameter causes behavior change? ────────── Bifurcation (A170)
+   ├─ Fit ODE model to data? ──────────────────── Parameter Estimation (A171)
+   ├─ Epidemic / disease spread? ──────────────── SIR/SEIR (A173)
+   └─ Predator-prey / population cycles? ──────── Lotka-Volterra (A174)
 ```
 
 ---
@@ -314,6 +339,17 @@ One-line lookup from problem description to solution approach.
 | "which features matter" | Feature selection | ML Pipeline | Feature Selection (S87) | scikit-learn |
 | "tune / optimize parameters" | Hyperparameter tuning | ML Pipeline | Grid/Random Search (S88) | scikit-learn |
 | "too many variables" | Feature reduction | ML Pipeline | PCA (S83) / Selection (S87) | scikit-learn |
+| "simulate / what if" | Monte Carlo | Simulation model | MC Simulation (S92) | numpy |
+| "risk analysis / VaR" | Monte Carlo risk | Simulation model | Risk Simulation (S92) | numpy/scipy |
+| "how long will they wait" | Queuing | Queuing system | M/M/1 (S96) / M/M/c (S97) | scipy |
+| "how many servers needed" | Queuing staffing | Queuing system | M/M/c (S97) | scipy |
+| "throughput / bottleneck" | DES | Discrete-event system | simpy DES (S101) | simpy |
+| "factory / process flow" | DES | Discrete-event system | Resource Alloc (S102) | simpy |
+| "epidemic / disease spread" | SIR model | Epidemic model | SIR/SEIR (A173) | scipy |
+| "population growth / decay" | ODE | Dynamical system | RK4 (A166) / solve_ivp | scipy |
+| "predator prey / ecosystem" | Lotka-Volterra | Population system | Lotka-Volterra (A174) | scipy |
+| "equilibrium / steady state (ODE)" | Stability analysis | Dynamical system | Equilib. (A169) | scipy |
+| "rate of change / trajectory" | ODE | Dynamical system | Euler (A165) / RK4 (A166) | scipy |
 
 ---
 
@@ -382,6 +418,13 @@ Before committing to an approach, verify the computational feasibility.
 | t-SNE | O(n² log n) | ~10K | Barnes-Hut approximation |
 | UMAP | O(n^1.14) empirical | ~1M | N/A |
 | Grid search (k params) | O(grid^k · CV) | ~100 combinations | RandomizedSearchCV |
+| Monte Carlo simulation | O(N · cost_per_sample) | Any N (scales linearly) | Variance reduction |
+| M/M/1 queue (analytical) | O(1) | Any size | N/A (closed form) |
+| M/M/c queue (Erlang-C) | O(c) | Any size | N/A |
+| Discrete-event simulation | O(N_events · log(queue)) | ~10M events | Parallel replications |
+| ODE (RK4 / solve_ivp) | O(n_steps · dim) | Any size (adaptive) | N/A |
+| ODE stiff (BDF) | O(n_steps · dim³) | Any size (adaptive) | N/A |
+| SIR/SEIR epidemic | O(n_steps · compartments) | Any size | N/A |
 
 ---
 
@@ -445,6 +488,16 @@ When two patterns seem equally likely, use these tiebreakers:
 
 **Feature Selection vs. PCA**: Feature selection keeps original features (interpretable). PCA creates new features as linear combinations (less interpretable). Use feature selection when you need to explain which original variables matter.
 
+**Analytical Queuing vs. Simulation**: Use analytical formulas (M/M/1, M/M/c) when assumptions hold (Poisson arrivals, exponential service). Use discrete-event simulation (simpy) when the system has complex routing, non-standard distributions, or multiple resource types.
+
+**Monte Carlo vs. Analytical**: If a closed-form or numerical solution exists, prefer it (faster, exact). Use Monte Carlo when the problem involves complex dependencies, high dimensions, or no tractable formula (e.g., correlated risk factors, path-dependent options).
+
+**ODE vs. Simulation**: Use ODEs for deterministic systems with continuous state variables and known rate equations. Use simulation when randomness is inherent (stochastic arrivals, random failures) or the system has discrete events.
+
+**SIR vs. Agent-Based**: Use SIR/SEIR (ODEs) for large, well-mixed populations where individual contacts are homogeneous. Use agent-based models when contact networks, spatial structure, or individual heterogeneity matter.
+
+**Queuing vs. Scheduling**: Queuing theory analyzes steady-state performance of systems with random arrivals (how long will people wait?). Scheduling optimizes a deterministic plan to minimize makespan or meet deadlines (when should each job run?).
+
 ---
 
 ## Cross-Reference Index
@@ -480,5 +533,10 @@ After identifying the problem type here, consult the corresponding reference fil
 | CLUSTER/SEGMENT | §20.3 Cluster Structure | algorithms-statistics.md S78-S82 | (scikit-learn) |
 | REDUCE DIMENSIONS | §20.4 Low-Dim Embedding | algorithms-statistics.md S83-S86 | (scikit-learn / umap-learn) |
 | SELECT FEATURES/TUNE | §20.5 ML Pipeline | algorithms-statistics.md S87-S90 | (scikit-learn) |
+| SIMULATE/WHAT-IF | §21.3 Simulation Model | algorithms-statistics.md S91-S95 | (numpy / scipy) |
+| ANALYZE QUEUE | §21.2 Queuing System | algorithms-statistics.md S96-S100 | (scipy / simpy) |
+| DISCRETE-EVENT SIM | §21.4 Discrete-Event System | algorithms-statistics.md S101-S103 | (simpy) |
+| MODEL DYNAMICS/ODE | §21.1 ODE/Dynamical System | algorithms.md §29 (A165-A174) | (scipy.integrate) |
+| EPIDEMIC MODEL | §21.5 Epidemic/Compartmental | algorithms.md A173-A174 | (scipy.integrate) |
 
 Also see: **common-mistakes.md** for pitfalls specific to each problem category.

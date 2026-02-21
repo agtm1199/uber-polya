@@ -1,6 +1,6 @@
 # Mathematical Structure Catalog
 
-**Scope**: Discrete Mathematics (32 structures), Continuous Optimization (5 structures), Statistical Inference (6 structures), Linear Algebra (4 structures), Calculus (3 structures), Geometry & Trigonometry (4 structures), Financial Mathematics (1 structure), Game Theory (3 structures), Decision Analysis (3 structures), Multi-Objective Optimization (3 structures), Time Series (3 structures), Stochastic Processes (3 structures), Machine Learning (5 structures)
+**Scope**: Discrete Mathematics (32 structures), Continuous Optimization (5 structures), Statistical Inference (6 structures), Linear Algebra (4 structures), Calculus (3 structures), Geometry & Trigonometry (4 structures), Financial Mathematics (1 structure), Game Theory (3 structures), Decision Analysis (3 structures), Multi-Objective Optimization (3 structures), Time Series (3 structures), Stochastic Processes (3 structures), Machine Learning (5 structures), Simulation & ODEs (8 structures)
 
 A catalog of mathematical structures organized by domain. Use this to match real-world problems to mathematical models during Phase 2 of the uber-model skill.
 
@@ -1862,6 +1862,186 @@ Prevents: data leakage (transforms fitted only on training fold)
 
 ---
 
+## 21. Simulation & ODEs
+
+### 21.1 ODE / Dynamical System
+
+**Definition**: A system of first-order ordinary differential equations dy/dt = f(t, y) with initial conditions y(t₀) = y₀.
+
+**Indicators**: "rate of change," "growth/decay over time," "population dynamics," "differential equation," "trajectory," "equilibrium point," "stability"
+
+**Template**:
+```
+State variables: y₁(t), y₂(t), ...
+dy₁/dt = f₁(t, y₁, y₂, ...)
+dy₂/dt = f₂(t, y₁, y₂, ...)
+Initial conditions: y(0) = y₀
+Time domain: t ∈ [0, T]
+```
+
+**Examples**: SIR epidemic model (dS/dt = -βSI, dI/dt = βSI - γI, dR/dt = γI), predator-prey (Lotka-Volterra), radioactive decay, pharmacokinetics, chemical reactions, mechanical oscillations
+
+**Key problems**: Euler Method (A165), RK4 (A166), Stiff ODE (A167), Phase Portrait (A168), Equilibrium & Stability (A169), Bifurcation (A170), Parameter Estimation (A171), SIR/SEIR (A173), Lotka-Volterra (A174)
+
+---
+
+### 21.2 Queuing System
+
+**Definition**: An arrival process, service mechanism, and queue discipline describing entities waiting for and receiving service. Characterized by Kendall notation A/S/c/K/N/D.
+
+**Indicators**: "waiting time," "queue length," "service rate," "arrival rate," "throughput," "utilization," "customers in system," "how many servers needed"
+
+**Template**:
+```
+Kendall notation: A/S/c  (arrivals/service/servers)
+Arrival rate: λ (customers/unit time)
+Service rate: μ (customers/unit time per server)
+Servers: c
+Capacity: K (finite or ∞)
+Discipline: FIFO, priority, etc.
+Performance measures: Lq (queue length), Wq (wait time), ρ (utilization)
+```
+
+**Examples**: Call center staffing, hospital ER wait times, checkout lanes, network packet buffering, restaurant seating, manufacturing bottlenecks, tech support ticketing
+
+**Key problems**: M/M/1 (S96), M/M/c (S97), M/G/1 (S98), Little's Law (S99), Jackson Network (S100)
+
+---
+
+### 21.3 Simulation Model
+
+**Definition**: A stochastic model where system behavior is observed by generating random samples and tracking state evolution over time, rather than by closed-form analysis.
+
+**Indicators**: "simulate," "what-if scenarios," "Monte Carlo," "uncertainty propagation," "risk analysis," "probability of outcome," "random events," "run many trials"
+
+**Template**:
+```
+Type: Monte Carlo / Discrete-Event / Agent-Based
+Random inputs: X₁ ~ Dist₁(params), X₂ ~ Dist₂(params), ...
+System logic: f(X₁, X₂, ...) → output metric
+Number of replications: N
+Output: E[metric], Var[metric], P(metric > threshold), CI
+```
+
+**Examples**: Financial risk (VaR), project completion time, insurance loss estimation, reliability analysis, option pricing, clinical trial simulation, supply chain disruption
+
+**Key problems**: Monte Carlo Integration (S91), Risk Simulation (S92), Importance Sampling (S93), Variance Reduction (S94), Scenario Generation (S95)
+
+---
+
+### 21.4 Discrete-Event System
+
+**Definition**: A system where state changes occur at discrete points in time driven by events, with resources that are acquired, held, and released by entities.
+
+**Indicators**: "process flow," "resource contention," "entities and resources," "discrete events," "factory simulation," "service process," "batch processing"
+
+**Template**:
+```
+Entities: customers, jobs, packets, ...
+Resources: servers, machines, beds, ...
+Events: arrive, start_service, finish_service, ...
+Queue discipline: FIFO, priority, shortest-job-first
+Random durations: inter-arrival ~ Exp(λ), service ~ Dist(params)
+Metrics: throughput, utilization, wait time, queue length
+Warm-up period: discard initial transient
+Run length: N events or T time units × R replications
+```
+
+**Examples**: Manufacturing line simulation, hospital patient flow, airport security screening, call center operations, warehouse order processing
+
+**Key problems**: Event-Driven Simulation Engine (S101), Resource Allocation Simulation (S102), Warm-Up Period Detection (S103)
+
+---
+
+### 21.5 Epidemic / Compartmental Model
+
+**Definition**: A population partitioned into compartments (Susceptible, Infected, Recovered, etc.) with transition rates between compartments governed by ODEs.
+
+**Indicators**: "disease spread," "epidemic," "infection rate," "basic reproduction number," "herd immunity," "SIR," "SEIR," "outbreak"
+
+**Template**:
+```
+Compartments: S, I, R (or S, E, I, R, etc.)
+Population: N = S + I + R
+Transmission rate: β (contact rate × transmission probability)
+Recovery rate: γ (1 / infectious period)
+R₀ = β/γ (basic reproduction number)
+dS/dt = -βSI/N
+dI/dt = βSI/N - γI
+dR/dt = γI
+Initial conditions: S(0), I(0), R(0)
+```
+
+**Examples**: COVID-19 modeling, flu season forecasting, vaccination strategy optimization, disease eradication threshold
+
+**Key problems**: SIR/SEIR Epidemic Model (A173), ODE solvers (A165-A167), Parameter Estimation (A171)
+
+---
+
+### 21.6 Predator-Prey / Population System
+
+**Definition**: A system of coupled ODEs modeling interacting populations with competition, predation, or cooperation dynamics.
+
+**Indicators**: "predator and prey," "population cycles," "ecological equilibrium," "species interaction," "carrying capacity," "Lotka-Volterra"
+
+**Template**:
+```
+Populations: x(t) (prey), y(t) (predator)
+dx/dt = αx - βxy       (prey growth minus predation)
+dy/dt = δxy - γy        (predator growth from predation minus death)
+Parameters: α (prey growth), β (predation), γ (predator death), δ (conversion efficiency)
+Initial conditions: x(0), y(0)
+```
+
+**Examples**: Wolf-deer ecosystems, fish-plankton dynamics, pest-predator biocontrol, competitive market dynamics (analogy)
+
+**Key problems**: Lotka-Volterra (A174), Phase Portrait (A168), Equilibrium & Stability (A169)
+
+---
+
+### 21.7 Birth-Death Process
+
+**Definition**: A continuous-time Markov chain on non-negative integers where transitions are limited to ±1, with state-dependent birth rates λₙ and death rates μₙ.
+
+**Indicators**: "arrivals and departures," "population growth and decline," "birth rate and death rate," "steady-state distribution," "absorption probability"
+
+**Template**:
+```
+State space: {0, 1, 2, ...}
+Birth rate in state n: λₙ
+Death rate in state n: μₙ
+Balance equations: πₙ₊₁ μₙ₊₁ = πₙ λₙ
+Steady-state: πₙ = π₀ ∏(λᵢ/μᵢ₊₁, i=0..n-1)
+```
+
+**Examples**: M/M/1 queue (λₙ=λ, μₙ=μ), immigration-emigration, population in limited habitat, machine repair (finite population)
+
+**Key problems**: M/M/1 (S96), M/M/c (S97), CTMC (S61), Birth-Death Process (S62)
+
+---
+
+### 21.8 Random Walk / Stochastic Trajectory
+
+**Definition**: A sequence of random steps, where the position at each time is the cumulative sum of independent increments.
+
+**Indicators**: "random walk," "Brownian motion," "diffusion," "stock price path," "gambler's ruin," "first passage time," "drift"
+
+**Template**:
+```
+Position: Xₜ = X₀ + Σᵢ Zᵢ
+Increments: Zᵢ ~ Dist(μ, σ²)
+Drift: μ (mean step)
+Volatility: σ (step std dev)
+Absorbing barriers: optional (e.g., ruin at 0)
+Metrics: E[Xₜ], Var[Xₜ], P(first passage ≤ t)
+```
+
+**Examples**: Stock price modeling (geometric Brownian motion), polymer chain length, particle diffusion, gambler's ruin, random search
+
+**Key problems**: Random Walk Analysis (S64), Monte Carlo Risk Simulation (S92)
+
+---
+
 ## Cross-Reference Index
 
 Where to go next after identifying a structure.
@@ -1888,5 +2068,6 @@ Where to go next after identifying a structure.
 | 18. Time Series | algorithms-statistics.md S46-S60 | statsmodels, prophet | §16 Time Series Results |
 | 19. Stochastic Processes | algorithms-statistics.md S61-S65 | scipy.linalg, scipy.stats | §16.3 Survival/Process Results |
 | 20. Machine Learning | algorithms-statistics.md S69-S90 | scikit-learn, xgboost, umap-learn | §17 Machine Learning Results |
+| 21. Simulation & ODEs | algorithms.md §29 (A165-A174), algorithms-statistics.md S91-S103 | scipy.integrate, simpy, numpy | §18 Simulation & ODE Results |
 
 Also see: **problem-classification.md** for rapid pattern matching from natural language to structure, **common-mistakes.md** for modeling pitfalls by structure type.

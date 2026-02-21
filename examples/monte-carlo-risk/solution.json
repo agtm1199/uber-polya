@@ -1,0 +1,122 @@
+{
+  "instance": {
+    "phases": [
+      {
+        "name": "Phase 1",
+        "min": 5.0,
+        "mode": 8.0,
+        "max": 14.0,
+        "dependencies": []
+      },
+      {
+        "name": "Phase 2",
+        "min": 3.0,
+        "mode": 5.0,
+        "max": 10.0,
+        "dependencies": [
+          0
+        ]
+      },
+      {
+        "name": "Phase 3",
+        "min": 7.0,
+        "mode": 10.0,
+        "max": 18.0,
+        "dependencies": [
+          1
+        ]
+      },
+      {
+        "name": "Phase 4",
+        "min": 4.0,
+        "mode": 6.0,
+        "max": 12.0,
+        "dependencies": [
+          2
+        ]
+      },
+      {
+        "name": "Phase 5",
+        "min": 6.0,
+        "mode": 9.0,
+        "max": 15.0,
+        "dependencies": [
+          2
+        ]
+      }
+    ],
+    "n_simulations": 100000,
+    "deadline": 50.0,
+    "seed": 42
+  },
+  "statistics": {
+    "mean_duration": 36.869644771231016,
+    "std_duration": 3.750512755178524,
+    "median_duration": 36.73976859454021,
+    "ci_95_low": 36.846398852339256,
+    "ci_95_high": 36.892890690122776
+  },
+  "risk_metrics": {
+    "prob_finish_by_deadline": 0.9998,
+    "var95": 43.275905448865544,
+    "cvar95": 44.89420050149805,
+    "deadline": 50.0
+  },
+  "convergence": {
+    "sample_sizes": [
+      100,
+      500,
+      1000,
+      5000,
+      10000,
+      50000,
+      100000
+    ],
+    "running_means": [
+      36.93154481057797,
+      37.002438599069606,
+      36.736457321204725,
+      36.78930460968613,
+      36.78748248393733,
+      36.863118822356014,
+      36.869644771231016
+    ]
+  },
+  "sensitivity": {
+    "phase_names": [
+      "Phase 1",
+      "Phase 2",
+      "Phase 3",
+      "Phase 4",
+      "Phase 5"
+    ],
+    "correlations": [
+      0.4908432471202319,
+      0.3934665284484663,
+      0.6189898678091434,
+      0.0832278771236241,
+      0.4437637340355302
+    ],
+    "critical_risk_driver": "Phase 3"
+  },
+  "analytical_crosscheck": {
+    "analytical_mean": 36.666666666666664,
+    "mc_mean": 36.869644771231016,
+    "difference": 0.20297810456435172
+  },
+  "verification": {
+    "mean_reasonable": true,
+    "std_positive": true,
+    "ci_contains_mean": true,
+    "var95_gt_mean": true,
+    "cvar95_ge_var95": true,
+    "prob_deadline_between_0_1": true,
+    "convergence_stabilizes": true,
+    "analytical_close": true,
+    "sensitivity_sums_reasonable": true,
+    "simulation_count_correct": true,
+    "all_passed": true
+  },
+  "algorithm": "Monte Carlo simulation with triangular distributions",
+  "time_seconds": 0.06406388903269544
+}

@@ -1018,6 +1018,104 @@ For 95% variance: need [N] components out of [P] original features
 
 ---
 
+## 18. Simulation & ODE Results
+
+### 18.1 ODE / Dynamical System Results
+
+**What to report**:
+- **Trajectories**: Time series of each state variable y₁(t), y₂(t), ... over [0, T]
+- **Equilibria**: Fixed points where dy/dt = 0, classified as stable/unstable/saddle
+- **Stability**: Eigenvalues of Jacobian at each equilibrium; negative real parts = stable
+- **Phase portrait**: Trajectories in state space (y₁ vs y₂), direction field, nullclines
+- **Bifurcation**: How equilibria and stability change as a parameter varies
+
+**Audience adaptation**:
+- *Technical*: Eigenvalue analysis, Jacobian matrix, stability classification, sensitivity to initial conditions
+- *Decision-maker*: "The system naturally tends toward [equilibrium]. If [parameter] exceeds [threshold], behavior shifts qualitatively."
+- *General*: "Starting from [initial state], the system settles to [steady state] after about [time]. Small changes in [parameter] can cause a dramatic shift."
+
+**Sensitivity checks**:
+1. Vary initial conditions — do all trajectories converge to the same equilibrium?
+2. Vary key parameters — where do qualitative changes (bifurcations) occur?
+3. Solver tolerance — do results change with tighter rtol/atol?
+
+---
+
+### 18.2 Epidemic Model Results
+
+**What to report**:
+- **Peak infection**: Maximum number of infected individuals and when it occurs
+- **R₀** (basic reproduction number): β/γ; R₀ > 1 means epidemic spreads
+- **Herd immunity threshold**: 1 - 1/R₀
+- **Final epidemic size**: Total fraction of population eventually infected
+- **Intervention impact**: How vaccination rate or social distancing shifts peak/R₀
+
+**Audience adaptation**:
+- *Technical*: R₀ = β/γ = [value], peak I(t) at t = [day], final size from transcendental equation
+- *Decision-maker*: "Without intervention, [X%] will be infected, peaking at [date]. Vaccinating [Y%] prevents an epidemic."
+- *General*: "The outbreak peaks in [N] weeks with [X] people sick at once. Reducing contact by [Z%] cuts the peak in half."
+
+---
+
+### 18.3 Queuing System Results
+
+**What to report**:
+- **Utilization** (ρ): fraction of time servers are busy; ρ = λ/(cμ)
+- **Mean queue length** (Lq): average number waiting (not counting those being served)
+- **Mean system size** (L): average number in system (waiting + being served)
+- **Mean wait time** (Wq): average time spent waiting in queue
+- **Mean system time** (W): average total time in system (wait + service)
+- **Little's Law verification**: L = λW, Lq = λWq
+- **Probability of waiting**: P(wait > 0) for M/M/c systems
+- **Staffing recommendation**: minimum c such that ρ < target (e.g., 0.85)
+
+**Audience adaptation**:
+- *Technical*: ρ = [value], Lq = [formula result], Erlang-C for P(wait), sensitivity to λ and μ
+- *Decision-maker*: "With [c] servers, average wait is [Wq] minutes. Adding 1 server reduces wait by [X%]. At current growth, you'll need another server when arrivals reach [threshold]."
+- *General*: "You'll wait about [Wq] minutes on average. During peak hours, the wait doubles."
+
+**Sensitivity checks**:
+1. Vary arrival rate λ ±20% — how does wait time change?
+2. Vary service rate μ — marginal benefit of faster service
+3. Add/remove servers — diminishing returns analysis
+4. Verify Little's Law: L = λW (analytical or simulation)
+
+---
+
+### 18.4 Monte Carlo Simulation Results
+
+**What to report**:
+- **Point estimate**: Mean of simulated outcomes
+- **Confidence interval**: CI based on N replications (e.g., 95% CI = mean ± 1.96·SE)
+- **Distribution of outcomes**: Histogram or KDE of simulated values
+- **Tail risk**: P(outcome > threshold), VaR, CVaR
+- **Convergence**: How estimate stabilizes as N increases
+- **Standard error**: SE = σ/√N; report relative to estimate magnitude
+
+**Audience adaptation**:
+- *Technical*: N = [replications], estimate = [value] ± [SE], convergence rate O(1/√N), variance reduction technique used
+- *Decision-maker*: "There's a [X%] chance of losing more than [$Y]. The expected outcome is [$Z] (95% confident it's between [$A] and [$B])."
+- *General*: "We ran [N] simulations. On average, [outcome]. In the worst [5%] of cases, [worst case]."
+
+---
+
+### 18.5 Discrete-Event Simulation Results
+
+**What to report**:
+- **Throughput**: Entities processed per time unit
+- **Utilization**: Per-resource busy fraction
+- **Queue statistics**: Mean/max queue length, mean/max wait time
+- **Bottleneck identification**: Resource with highest utilization
+- **Warm-up period**: Time until steady-state (discard initial transient)
+- **Replications**: Number of independent runs, CI across replications
+
+**Audience adaptation**:
+- *Technical*: Warm-up detection method (MSER/Welch), N replications, CI for each metric
+- *Decision-maker*: "The bottleneck is [resource X] at [Y%] utilization. Adding one more [resource] increases throughput by [Z%]."
+- *General*: "The system handles [N] customers per hour. The longest wait happens at [stage]."
+
+---
+
 ## Cross-Reference Index
 
 Which visualization to use for each result type, and where results come from.
@@ -1062,5 +1160,10 @@ Which visualization to use for each result type, and where results come from.
 | §17.1 Classification | §28 Confusion Matrix, §29 ROC/PR Curve | algorithms-statistics.md S69-S75 | §20.1 Classification Model |
 | §17.2 Clustering | §30 Cluster Scatter Plot | algorithms-statistics.md S78-S82 | §20.3 Cluster Structure |
 | §17.3 Dim. Reduction | §18 Scree Plot, §30 Scatter (embedding) | algorithms-statistics.md S83-S86 | §20.4 Low-Dim Embedding |
+| §18.1 ODE/Dynamics | §31 Phase Portrait, §19 Function Plot | algorithms.md §29 (A165-A174) | §21.1 ODE/Dynamical System |
+| §18.2 Epidemic Model | §32 Epidemic Curve | algorithms.md A173-A174 | §21.5 Epidemic/Compartmental |
+| §18.3 Queuing | §33 Queue Performance Dashboard | algorithms-statistics.md S96-S100 | §21.2 Queuing System |
+| §18.4 Monte Carlo | §6 Distribution Bar Chart, §34 Convergence Plot | algorithms-statistics.md S91-S95 | §21.3 Simulation Model |
+| §18.5 DES | §33 Queue Performance Dashboard | algorithms-statistics.md S101-S103 | §21.4 Discrete-Event System |
 
 Also see: **common-mistakes.md** §I1-I6 for interpretation pitfalls.

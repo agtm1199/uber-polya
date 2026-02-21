@@ -54,6 +54,11 @@ Which chart for which result type. matplotlib/seaborn/NetworkX templates for com
 | Cluster assignments | 2D scatter (PCA/UMAP) | Cluster profiles | Radar/bar chart per cluster |
 | Feature importance | Horizontal bar chart | Comparison | Grouped bar (multiple models) |
 | Explained variance | Scree plot | Cumulative view | Cumulative variance line |
+| ODE trajectory | Phase portrait (dual-panel) | Single variable focus | Time series line plot |
+| Epidemic model (SIR) | Epidemic curve (S/I/R lines) | Peak annotation | Bar chart (final sizes) |
+| Queuing performance | Queue dashboard (2x2) | Single metric focus | Sensitivity line plot |
+| Monte Carlo estimate | Convergence plot + histogram | Tail risk focus | CDF / VaR line |
+| DES results | Queue dashboard | Bottleneck focus | Utilization bar chart |
 
 ---
 
@@ -1466,3 +1471,218 @@ plt.savefig('cluster_scatter.png', dpi=150, bbox_inches='tight')
 ```
 
 **Key elements**: PCA 2D projection with explained variance on axes, distinct colors per cluster, noise points as gray X markers (DBSCAN), centroids as red stars, cluster sizes in legend, grid for readability.
+
+---
+
+## 31. Phase Portrait / ODE Trajectory Plot
+
+**When to use**: Visualizing ODE solutions — state variable trajectories over time, or phase-space plots (y₁ vs y₂).
+
+**Template (dual-panel: time series + phase portrait)**:
+
+```python
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+import numpy as np
+from scipy.integrate import solve_ivp
+
+# Example: solve dy/dt = f(t, y) and plot
+# t_span, y0, sol assumed already computed via solve_ivp
+
+fig, axes = plt.subplots(1, 2, figsize=(14, 6))
+
+# Panel 1: Time series
+for i, label in enumerate(state_labels):
+    axes[0].plot(sol.t, sol.y[i], linewidth=2, label=label)
+axes[0].set_xlabel('Time', fontsize=12)
+axes[0].set_ylabel('Population', fontsize=12)
+axes[0].set_title('State Variables vs Time', fontsize=14)
+axes[0].legend(fontsize=11)
+axes[0].grid(True, alpha=0.3)
+
+# Panel 2: Phase portrait (2D)
+axes[1].plot(sol.y[0], sol.y[1], 'b-', linewidth=1.5, alpha=0.8)
+axes[1].plot(sol.y[0][0], sol.y[1][0], 'go', markersize=10, label='Start')
+axes[1].plot(sol.y[0][-1], sol.y[1][-1], 'rs', markersize=10, label='End')
+# Mark equilibria
+for eq in equilibria:
+    axes[1].plot(eq[0], eq[1], 'k*', markersize=15, zorder=5)
+axes[1].set_xlabel(state_labels[0], fontsize=12)
+axes[1].set_ylabel(state_labels[1], fontsize=12)
+axes[1].set_title('Phase Portrait', fontsize=14)
+axes[1].legend(fontsize=11)
+axes[1].grid(True, alpha=0.3)
+
+plt.tight_layout()
+plt.savefig('phase_portrait.png', dpi=150, bbox_inches='tight')
+```
+
+**Key elements**: Dual-panel (time series + phase space), state variables as colored lines, start/end markers, equilibria as black stars, direction arrows optional (quiver), grid for readability.
+
+---
+
+## 32. Epidemic Curve (SIR/SEIR)
+
+**When to use**: Visualizing compartmental epidemic model results — S, I, R populations over time.
+
+**Template**:
+
+```python
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+
+fig, ax = plt.subplots(figsize=(10, 6))
+
+ax.plot(t, S, 'b-', linewidth=2, label='Susceptible (S)')
+ax.plot(t, I, 'r-', linewidth=2, label='Infected (I)')
+ax.plot(t, R, 'g-', linewidth=2, label='Recovered (R)')
+
+# Mark peak infection
+peak_idx = np.argmax(I)
+ax.axvline(t[peak_idx], color='red', linestyle='--', alpha=0.5)
+ax.annotate(f'Peak: {I[peak_idx]:.0f}\nt = {t[peak_idx]:.1f}',
+            xy=(t[peak_idx], I[peak_idx]),
+            xytext=(t[peak_idx] + 5, I[peak_idx] * 1.1),
+            fontsize=11, arrowprops=dict(arrowstyle='->', color='red'),
+            bbox=dict(boxstyle='round', facecolor='lightyellow'))
+
+# Herd immunity threshold line (optional)
+if R0 is not None:
+    herd_pct = 1 - 1/R0
+    ax.axhline(N * herd_pct, color='purple', linestyle=':', alpha=0.5,
+               label=f'Herd immunity ({herd_pct:.0%})')
+
+ax.set_xlabel('Time (days)', fontsize=12)
+ax.set_ylabel('Population', fontsize=12)
+ax.set_title(f'SIR Epidemic Model (R₀ = {R0:.2f})', fontsize=14)
+ax.legend(fontsize=11, loc='right')
+ax.grid(True, alpha=0.3)
+plt.tight_layout()
+plt.savefig('epidemic_curve.png', dpi=150, bbox_inches='tight')
+```
+
+**Key elements**: S/I/R as distinct colored lines, peak infection annotated with arrow, herd immunity threshold line, R₀ in title, time axis in meaningful units.
+
+---
+
+## 33. Queue Performance Dashboard
+
+**When to use**: Summarizing queuing system performance — utilization, wait times, queue lengths.
+
+**Template (2x2 dashboard)**:
+
+```python
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+import numpy as np
+
+fig, axes = plt.subplots(2, 2, figsize=(12, 10))
+
+# Panel 1: Utilization by server count
+servers = range(1, max_c + 1)
+utils = [lam / (c * mu) for c in servers]
+colors = ['#d73027' if u > 0.9 else '#fee08b' if u > 0.7 else '#1a9850' for u in utils]
+axes[0, 0].bar(servers, utils, color=colors, edgecolor='black', alpha=0.8)
+axes[0, 0].axhline(1.0, color='red', linestyle='--', label='Max (ρ=1)')
+axes[0, 0].set_xlabel('Number of Servers')
+axes[0, 0].set_ylabel('Utilization (ρ)')
+axes[0, 0].set_title('Server Utilization')
+axes[0, 0].legend()
+
+# Panel 2: Mean wait time vs arrival rate
+lambdas = np.linspace(0.1, max_lam, 50)
+waits = [compute_Wq(l, mu, c) for l in lambdas]
+axes[0, 1].plot(lambdas, waits, 'b-', linewidth=2)
+axes[0, 1].axvline(lam, color='red', linestyle='--', label=f'Current λ={lam:.1f}')
+axes[0, 1].set_xlabel('Arrival Rate (λ)')
+axes[0, 1].set_ylabel('Mean Wait Time (Wq)')
+axes[0, 1].set_title('Wait Time Sensitivity')
+axes[0, 1].legend()
+
+# Panel 3: Queue length distribution (from simulation)
+axes[1, 0].hist(queue_lengths, bins=30, color='steelblue', edgecolor='black', alpha=0.7)
+axes[1, 0].axvline(np.mean(queue_lengths), color='red', linestyle='--',
+                   label=f'Mean={np.mean(queue_lengths):.1f}')
+axes[1, 0].set_xlabel('Queue Length')
+axes[1, 0].set_ylabel('Frequency')
+axes[1, 0].set_title('Queue Length Distribution')
+axes[1, 0].legend()
+
+# Panel 4: Summary metrics table
+metrics = [['Utilization (ρ)', f'{rho:.3f}'],
+           ['Mean Queue (Lq)', f'{Lq:.2f}'],
+           ['Mean System (L)', f'{L:.2f}'],
+           ['Mean Wait (Wq)', f'{Wq:.2f} min'],
+           ['Mean System Time (W)', f'{W:.2f} min'],
+           ['P(wait > 0)', f'{P_wait:.3f}']]
+axes[1, 1].axis('off')
+table = axes[1, 1].table(cellText=metrics, colLabels=['Metric', 'Value'],
+                         loc='center', cellLoc='center')
+table.auto_set_font_size(False)
+table.set_fontsize(12)
+table.scale(1, 1.5)
+axes[1, 1].set_title('Performance Summary', fontsize=14, pad=20)
+
+plt.suptitle(f'Queuing Analysis: M/M/{c} (λ={lam}, μ={mu})', fontsize=16, y=1.02)
+plt.tight_layout()
+plt.savefig('queue_dashboard.png', dpi=150, bbox_inches='tight')
+```
+
+**Key elements**: 2x2 layout (utilization bar, sensitivity curve, distribution histogram, summary table), color-coded utilization (green/yellow/red), current operating point marked, Little's Law verification.
+
+---
+
+## 34. Monte Carlo Convergence Plot
+
+**When to use**: Showing how a Monte Carlo estimate stabilizes as the number of replications increases.
+
+**Template**:
+
+```python
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+import numpy as np
+
+fig, axes = plt.subplots(1, 2, figsize=(14, 6))
+
+# Panel 1: Running mean with CI band
+ns = np.arange(1, len(samples) + 1)
+running_mean = np.cumsum(samples) / ns
+running_std = np.array([np.std(samples[:i+1], ddof=1) for i in range(len(samples))])
+running_se = running_std / np.sqrt(ns)
+ci_lo = running_mean - 1.96 * running_se
+ci_hi = running_mean + 1.96 * running_se
+
+axes[0].plot(ns, running_mean, 'b-', linewidth=1.5, label='Running Mean')
+axes[0].fill_between(ns, ci_lo, ci_hi, alpha=0.2, color='blue', label='95% CI')
+if true_value is not None:
+    axes[0].axhline(true_value, color='red', linestyle='--', label=f'True = {true_value:.4f}')
+axes[0].set_xlabel('Number of Replications', fontsize=12)
+axes[0].set_ylabel('Estimate', fontsize=12)
+axes[0].set_title('Convergence of Monte Carlo Estimate', fontsize=14)
+axes[0].legend(fontsize=11)
+axes[0].grid(True, alpha=0.3)
+
+# Panel 2: Histogram of outcomes
+axes[1].hist(samples, bins=50, color='steelblue', edgecolor='black', alpha=0.7, density=True)
+axes[1].axvline(np.mean(samples), color='red', linestyle='--', linewidth=2,
+                label=f'Mean = {np.mean(samples):.4f}')
+# Tail risk
+q95 = np.percentile(samples, 95)
+axes[1].axvline(q95, color='orange', linestyle='--', linewidth=2,
+                label=f'95th pctl = {q95:.4f}')
+axes[1].set_xlabel('Outcome', fontsize=12)
+axes[1].set_ylabel('Density', fontsize=12)
+axes[1].set_title('Distribution of Simulated Outcomes', fontsize=14)
+axes[1].legend(fontsize=11)
+axes[1].grid(True, alpha=0.3)
+
+plt.tight_layout()
+plt.savefig('mc_convergence.png', dpi=150, bbox_inches='tight')
+```
+
+**Key elements**: Running mean with shrinking CI band showing convergence, true value line (if known), outcome histogram with mean and tail percentile marked, dual-panel layout.

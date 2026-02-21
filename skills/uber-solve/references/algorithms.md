@@ -1,6 +1,6 @@
 # Algorithm Catalog
 
-**Scope**: Discrete Mathematics (86 algorithms), Continuous Optimization (8 algorithms), Linear Algebra (12 algorithms), Calculus (10 algorithms), Geometry & Trigonometry (10 algorithms), Financial Mathematics (8 algorithms), Game Theory (12 algorithms), Decision Analysis (10 algorithms), Multi-Objective Optimization (8 algorithms)
+**Scope**: Discrete Mathematics (86 algorithms), Continuous Optimization (8 algorithms), Linear Algebra (12 algorithms), Calculus (10 algorithms), Geometry & Trigonometry (10 algorithms), Financial Mathematics (8 algorithms), Game Theory (12 algorithms), Decision Analysis (10 algorithms), Multi-Objective Optimization (8 algorithms), Numerical ODEs & Dynamical Systems (10 algorithms)
 
 Comprehensive catalog of algorithms for mathematical problem solving. Organized by domain, each entry includes complexity, solver library, correctness guarantee, and implementation guidance.
 
@@ -3104,6 +3104,326 @@ print(f"Closest Pareto point to {ref}: objectives = {[round(f,3) for f in f_vals
 
 ---
 
+## 29. Numerical ODEs & Dynamical Systems
+
+### A165: Euler Method (Forward)
+
+**Problem**: Solve y' = f(t, y), y(t₀) = y₀ by simple forward stepping: y_{n+1} = y_n + h·f(t_n, y_n).
+**T**: O(n) where n = steps | **S**: O(n·s) storing trajectory
+**Lib**: Custom (educational); use `scipy.integrate.solve_ivp` for production
+**Guarantee**: First-order accurate, O(h) local error. Unstable for stiff systems.
+
+```python
+import numpy as np
+
+def euler_method(f, t_span, y0, h: float = 0.01):
+    """Forward Euler for dy/dt = f(t, y)."""
+    t_start, t_end = t_span
+    t = np.arange(t_start, t_end + h, h)
+    y = np.zeros((len(t), len(y0)))
+    y[0] = y0
+    for i in range(len(t) - 1):
+        y[i + 1] = y[i] + h * np.array(f(t[i], y[i]))
+    return {"t": t.tolist(), "y": y.tolist()}
+```
+
+**Use when**: Educational demonstrations, understanding ODE numerics. For production code, use solve_ivp (A116) with adaptive step size.
+
+---
+
+### A166: Runge-Kutta 4th Order (RK4)
+
+**Problem**: Solve y' = f(t, y) with fourth-order accuracy using weighted average of four slope evaluations per step.
+**T**: O(4n) function evaluations | **S**: O(n·s)
+**Lib**: Custom or `scipy.integrate.solve_ivp(method='RK45')` (adaptive RK4/5)
+**Guarantee**: Fourth-order accurate, O(h⁴) local error. Much better than Euler for smooth problems.
+
+```python
+import numpy as np
+
+def rk4(f, t_span, y0, h: float = 0.01):
+    """Classic Runge-Kutta 4th order method."""
+    t_start, t_end = t_span
+    t = np.arange(t_start, t_end + h, h)
+    y = np.zeros((len(t), len(y0)))
+    y[0] = y0
+    for i in range(len(t) - 1):
+        k1 = h * np.array(f(t[i], y[i]))
+        k2 = h * np.array(f(t[i] + h/2, y[i] + k1/2))
+        k3 = h * np.array(f(t[i] + h/2, y[i] + k2/2))
+        k4 = h * np.array(f(t[i] + h, y[i] + k3))
+        y[i + 1] = y[i] + (k1 + 2*k2 + 2*k3 + k4) / 6
+    return {"t": t.tolist(), "y": y.tolist()}
+```
+
+**Use when**: Fixed-step integration where fourth-order accuracy is sufficient. For adaptive step size, use solve_ivp with RK45 (default).
+
+---
+
+### A167: Stiff ODE Solver (BDF / Radau)
+
+**Problem**: Solve stiff ODE systems where explicit methods (Euler, RK4) require impractically small time steps.
+**T**: O(n·s³) per step (implicit methods require solving nonlinear systems) | **S**: O(n·s)
+**Lib**: `scipy.integrate.solve_ivp(method='BDF')` or `method='Radau'`
+**Guarantee**: BDF: variable-order (1-5), A-stable for orders 1-2. Radau: 5th-order, L-stable.
+
+```python
+from scipy.integrate import solve_ivp
+
+def solve_stiff_ode(f, t_span, y0, method: str = "BDF", rtol: float = 1e-8):
+    """Solve stiff ODE system using implicit methods."""
+    sol = solve_ivp(f, t_span, y0, method=method, rtol=rtol, dense_output=True)
+    return {
+        "t": sol.t.tolist(),
+        "y": sol.y.tolist(),
+        "n_steps": len(sol.t),
+        "success": sol.success,
+        "message": sol.message,
+    }
+```
+
+**Use when**: Chemical kinetics (fast/slow reactions), electrical circuits (small RC constants), combustion, any system with widely separated time scales. If RK45 takes too many steps or diverges, switch to BDF or Radau.
+
+---
+
+### A168: Phase Portrait Analysis
+
+**Problem**: Visualize a 2D dynamical system dx/dt = f(x,y), dy/dt = g(x,y) via vector field and trajectories.
+**T**: O(grid² + n_traj·steps) | **S**: O(grid² + n_traj·steps)
+**Lib**: `scipy.integrate.solve_ivp()`, `matplotlib.pyplot.streamplot()`
+**Guarantee**: Qualitative correctness depends on grid resolution and trajectory time span.
+
+```python
+import numpy as np
+from scipy.integrate import solve_ivp
+
+def phase_portrait(f, x_range, y_range, grid_n: int = 20, trajectories: list = None):
+    """Compute vector field and trajectories for a 2D system."""
+    x = np.linspace(*x_range, grid_n)
+    y = np.linspace(*y_range, grid_n)
+    X, Y = np.meshgrid(x, y)
+    U = np.zeros_like(X)
+    V = np.zeros_like(Y)
+    for i in range(grid_n):
+        for j in range(grid_n):
+            dxdt = f(0, [X[i,j], Y[i,j]])
+            U[i,j], V[i,j] = dxdt[0], dxdt[1]
+    trajs = []
+    for y0 in (trajectories or []):
+        sol = solve_ivp(f, [0, 50], y0, max_step=0.1)
+        trajs.append({"y0": y0, "x": sol.y[0].tolist(), "y": sol.y[1].tolist()})
+    return {"X": X.tolist(), "Y": Y.tolist(), "U": U.tolist(), "V": V.tolist(), "trajectories": trajs}
+```
+
+**Use when**: Understanding qualitative behavior of 2D systems: predator-prey, competing species, oscillators, mechanical systems. Identify fixed points, limit cycles, separatrices.
+
+---
+
+### A169: Equilibrium & Stability Analysis
+
+**Problem**: Find fixed points of dx/dt = f(x) and classify them via eigenvalues of the Jacobian.
+**T**: O(s³) per fixed point (eigenvalue computation) | **S**: O(s²) for Jacobian
+**Lib**: `scipy.optimize.fsolve()`, `numpy.linalg.eig()`
+**Guarantee**: Local classification is exact (Hartman-Grobman theorem for hyperbolic fixed points).
+
+```python
+import numpy as np
+from scipy.optimize import fsolve
+
+def stability_analysis(f, jacobian, fixed_point_guesses: list):
+    """Find fixed points and classify via Jacobian eigenvalues."""
+    results = []
+    for guess in fixed_point_guesses:
+        fp = fsolve(lambda x: f(0, x), guess, full_output=True)
+        if fp[2] == 1:  # converged
+            x_star = fp[0]
+            J = jacobian(x_star)
+            eigenvalues = np.linalg.eig(J)[0]
+            real_parts = eigenvalues.real
+            if all(r < 0 for r in real_parts):
+                stability = "stable (sink)"
+            elif all(r > 0 for r in real_parts):
+                stability = "unstable (source)"
+            elif any(r < 0 for r in real_parts) and any(r > 0 for r in real_parts):
+                stability = "saddle"
+            else:
+                stability = "center or nonlinear analysis needed"
+            results.append({
+                "fixed_point": x_star.tolist(),
+                "eigenvalues": eigenvalues.tolist(),
+                "stability": stability,
+            })
+    return results
+```
+
+**Use when**: Determine long-term behavior of systems: will populations stabilize? Will oscillations damp out? Is the equilibrium reachable? Prerequisite for control system design.
+
+---
+
+### A170: Bifurcation Analysis
+
+**Problem**: Track how equilibria and their stability change as a parameter varies; detect bifurcation points.
+**T**: O(n_params · (root_finding + eigenvalue)) | **S**: O(n_params · s)
+**Lib**: `scipy.optimize.fsolve()`, `numpy.linalg.eig()`
+**Guarantee**: Detects standard bifurcations (saddle-node, transcritical, pitchfork, Hopf) via eigenvalue crossing.
+
+```python
+import numpy as np
+from scipy.optimize import fsolve
+
+def bifurcation_diagram(f_param, jacobian_param, param_range, guess, param_name: str = "r"):
+    """Sweep parameter and track fixed points + stability."""
+    results = []
+    x_guess = np.array(guess)
+    for p in param_range:
+        try:
+            fp = fsolve(lambda x: f_param(x, p), x_guess, full_output=True)
+            if fp[2] == 1:
+                x_star = fp[0]
+                J = jacobian_param(x_star, p)
+                eigs = np.linalg.eig(J)[0]
+                stable = all(e.real < 0 for e in eigs)
+                results.append({
+                    "param": float(p), "fixed_point": x_star.tolist(),
+                    "eigenvalues": [complex(e) for e in eigs], "stable": stable,
+                })
+                x_guess = x_star  # continuation
+        except Exception:
+            pass
+    return results
+```
+
+**Use when**: Understanding how system behavior changes with temperature, growth rate, disease transmissibility, policy parameter. "What parameter value causes the system to switch behavior?"
+
+---
+
+### A171: ODE Parameter Estimation (Inverse Problem)
+
+**Problem**: Given observed data y_obs(t), find parameters θ that minimize ‖y(t; θ) - y_obs(t)‖².
+**T**: O(n_eval · ODE_solve) where n_eval = optimizer iterations | **S**: O(n·s)
+**Lib**: `scipy.optimize.minimize()` + `scipy.integrate.solve_ivp()`
+**Guarantee**: Finds local optimum; use multi-start for global. Sensitive to initial guess.
+
+```python
+from scipy.integrate import solve_ivp
+from scipy.optimize import minimize
+import numpy as np
+
+def estimate_ode_params(ode_func, t_obs, y_obs, param_bounds, x0_guess):
+    """Fit ODE parameters to observed data via least squares."""
+    def objective(params):
+        try:
+            sol = solve_ivp(lambda t, y: ode_func(t, y, *params),
+                           [t_obs[0], t_obs[-1]], x0_guess, t_eval=t_obs)
+            if not sol.success:
+                return 1e10
+            return float(np.sum((sol.y[0] - y_obs) ** 2))
+        except Exception:
+            return 1e10
+    result = minimize(objective, x0=[b[0] for b in param_bounds],
+                     bounds=param_bounds, method='L-BFGS-B')
+    return {"params": result.x.tolist(), "residual": float(result.fun), "success": result.success}
+```
+
+**Use when**: Fitting epidemiological models to outbreak data, calibrating pharmacokinetic models, estimating chemical reaction rates from concentration measurements.
+
+---
+
+### A172: ODE Sensitivity Analysis
+
+**Problem**: Determine how sensitive the ODE solution is to parameter perturbations: ∂y/∂θ.
+**T**: O(s·p · ODE_solve) for forward sensitivity | **S**: O(n·s·p)
+**Lib**: `scipy.integrate.solve_ivp()` (augmented system)
+**Guarantee**: Exact (for the numerical solution) via forward sensitivity equations.
+
+```python
+from scipy.integrate import solve_ivp
+import numpy as np
+
+def ode_sensitivity(f, df_dp, t_span, y0, params, param_names, dp: float = 0.01):
+    """Finite-difference sensitivity analysis for ODE parameters."""
+    base_sol = solve_ivp(lambda t, y: f(t, y, *params), t_span, y0, max_step=0.1)
+    sensitivities = {}
+    for i, name in enumerate(param_names):
+        perturbed = list(params)
+        perturbed[i] += dp
+        pert_sol = solve_ivp(lambda t, y: f(t, y, *perturbed), t_span, y0,
+                            t_eval=base_sol.t, max_step=0.1)
+        sens = (pert_sol.y - base_sol.y) / dp
+        sensitivities[name] = {
+            "max_sensitivity": float(np.max(np.abs(sens))),
+            "mean_sensitivity": float(np.mean(np.abs(sens))),
+        }
+    return {"base_solution": base_sol.y.tolist(), "t": base_sol.t.tolist(), "sensitivities": sensitivities}
+```
+
+**Use when**: Which parameters matter most? Uncertainty propagation in ODE models. Guides data collection (measure what's sensitive).
+
+---
+
+### A173: SIR / SEIR Epidemic Model
+
+**Problem**: Model disease spread in a population using compartmental ODEs: Susceptible → Infected → Recovered (± Exposed).
+**T**: O(n) time steps | **S**: O(n)
+**Lib**: `scipy.integrate.solve_ivp()`
+**Guarantee**: Exact (for the ODE model). R₀ = β/γ determines outbreak threshold.
+
+```python
+from scipy.integrate import solve_ivp
+import numpy as np
+
+def sir_model(t_span, S0, I0, R0, beta: float, gamma: float):
+    """SIR epidemic model: dS/dt = -βSI, dI/dt = βSI - γI, dR/dt = γI."""
+    N = S0 + I0 + R0
+    def sir(t, y):
+        S, I, R = y
+        return [-beta * S * I / N, beta * S * I / N - gamma * I, gamma * I]
+    sol = solve_ivp(sir, t_span, [S0, I0, R0], max_step=0.1, dense_output=True)
+    R0_value = beta / gamma
+    peak_infected = float(np.max(sol.y[1]))
+    peak_time = float(sol.t[np.argmax(sol.y[1])])
+    return {
+        "t": sol.t.tolist(), "S": sol.y[0].tolist(), "I": sol.y[1].tolist(), "R": sol.y[2].tolist(),
+        "R0": R0_value, "peak_infected": peak_infected, "peak_time": peak_time,
+        "final_size": float(sol.y[2][-1]),
+    }
+```
+
+**Use when**: Disease outbreak modeling, vaccination strategy analysis, pandemic preparedness. R₀ > 1 → epidemic grows. Extend to SEIR (add Exposed) for diseases with incubation period.
+
+---
+
+### A174: Lotka-Volterra Predator-Prey Model
+
+**Problem**: Model oscillating predator-prey populations: dx/dt = αx - βxy, dy/dt = δxy - γy.
+**T**: O(n) time steps | **S**: O(n)
+**Lib**: `scipy.integrate.solve_ivp()`
+**Guarantee**: Exact (for the ODE model). Produces periodic orbits in the classical case.
+
+```python
+from scipy.integrate import solve_ivp
+import numpy as np
+
+def lotka_volterra(t_span, prey0, pred0, alpha=1.0, beta=0.1, delta=0.075, gamma=1.5):
+    """Lotka-Volterra predator-prey model."""
+    def lv(t, y):
+        x, z = y  # prey, predator
+        return [alpha*x - beta*x*z, delta*x*z - gamma*z]
+    sol = solve_ivp(lv, t_span, [prey0, pred0], max_step=0.1, dense_output=True)
+    equilibrium_prey = gamma / delta
+    equilibrium_pred = alpha / beta
+    return {
+        "t": sol.t.tolist(), "prey": sol.y[0].tolist(), "predator": sol.y[1].tolist(),
+        "equilibrium": {"prey": equilibrium_prey, "predator": equilibrium_pred},
+        "prey_range": [float(np.min(sol.y[0])), float(np.max(sol.y[0]))],
+        "pred_range": [float(np.min(sol.y[1])), float(np.max(sol.y[1]))],
+    }
+```
+
+**Use when**: Ecology (predator-prey, competing species), chemical oscillations (Belousov-Zhabotinsky), market dynamics. Shows how coupled systems produce oscillations.
+
+---
+
 ## Cross-Reference Index
 
 Where each algorithm section connects to structures and solvers.
@@ -3135,5 +3455,6 @@ Where each algorithm section connects to structures and solvers.
 | §26 Game Theory (A135-A146) | §15 Game Theory (15.1-15.3) | §13 nashpy | §13 Game Theory Results |
 | §27 Decision Analysis (A147-A156) | §16 Decision Analysis (16.1-16.3) | numpy, scipy, §2 PuLP | §14 Decision Analysis Results |
 | §28 Multi-Objective Opt (A157-A164) | §17 Multi-Objective Opt (17.1-17.3) | §14 pymoo, §2 PuLP, §5 SciPy | §15 Multi-Objective Results |
+| §29 ODEs & Dynamical Systems (A165-A174) | §21 ODE/Dynamical System (21.1-21.3) | §5 SciPy (solve_ivp) | §18 Simulation & ODE Results |
 
 Also see: **problem-classification.md** for decision-tree algorithm selection, **solving-protocols.md** for domain-specific solving workflows, **common-mistakes.md** §S1-S6 for solving pitfalls.

@@ -4,6 +4,31 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.3.0] - 2026-02-21
+
+### Added
+
+- **Test infrastructure**: 168 automated tests across 2 test suites
+  - `tests/test_solvers.py`: 36 smoke tests (subprocess exit code), 13 verification tests (solution.json checks), 3 feasibility tests
+  - `tests/test_structure.py`: 116 structural tests (skill dirs, SKILL.md frontmatter, example READMEs, solver scripts, HTML nav bars, root files)
+  - `tests/conftest.py`: Shared fixtures for path resolution
+  - `pytest.ini`: Test configuration with 120s timeout and slow marker
+- **GitHub Actions CI** (`.github/workflows/ci.yml`): Python 3.11 + 3.12 matrix, pip caching, 3-stage test pipeline
+- **`requirements.txt`**: All 25 Python dependencies (21 solver libs + pandas + simpy + pytest + pytest-timeout)
+
+### Changed
+
+- Tutorial reframed around `/uber-polya` as single entry point (both `getting-started.md` and `getting-started.html`)
+  - Phase headers: "Understand & Model", "Solve & Verify", "Interpret & Recommend"
+  - Removed separate `/uber-solve` and `/uber-interpret` invocation steps
+  - Sub-skills referenced only as "under the hood" detail
+- Footer navigation links removed from all 7 HTML pages (top nav bar is sole navigation)
+- "Install Free" button text changed to "Start Now" in `index.html`
+
+### Fixed
+
+- `examples/meal-planning/meal_solver.py`: TypeError crash when PuLP returns infeasible (None objective formatted with f-string)
+
 ## [0.2.0] - 2026-02-21
 
 ### Added

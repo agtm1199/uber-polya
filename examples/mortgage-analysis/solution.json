@@ -26,5 +26,5 @@
     }
   ],
   "algorithm": "Annuity PMT + Amortization Schedule + Break-Even Search",
-  "time_seconds": 0.0013215130311436951
+  "time_seconds": 0.002336381992790848
 }

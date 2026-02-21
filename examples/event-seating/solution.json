@@ -1,0 +1,33 @@
+{
+  "tables": {
+    "0": [
+      "Carol",
+      "Dan",
+      "Grace",
+      "Henry"
+    ],
+    "1": [
+      "Iris",
+      "Jack",
+      "Karen",
+      "Leo"
+    ],
+    "2": [
+      "Alice",
+      "Ben",
+      "Eve",
+      "Frank"
+    ]
+  },
+  "objective": 88.0,
+  "is_optimal": true,
+  "is_feasible": true,
+  "algorithm": "ILP (PuLP/CBC, Branch & Bound)",
+  "time_seconds": 0.6494897590018809,
+  "must_together_satisfied": true,
+  "must_apart_satisfied": true,
+  "model_stats": {
+    "total_variables": 234,
+    "total_constraints": 630
+  }
+}

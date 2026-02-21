@@ -1,0 +1,71 @@
+{
+  "instance": {
+    "n_a": 1500,
+    "conv_a": 60,
+    "n_b": 1500,
+    "conv_b": 85,
+    "alpha": 0.05
+  },
+  "frequentist": {
+    "z_statistic": 2.1282055852819846,
+    "p_value": 0.033320041955540315,
+    "ci_diff": [
+      0.0013291454823585944,
+      0.03200418785097473
+    ],
+    "cohens_h": 0.07799452467188234,
+    "is_significant": "True"
+  },
+  "bayesian": {
+    "prob_b_better": 0.98358,
+    "expected_lift": 0.01667995575138821,
+    "credible_interval_lift": [
+      0.0013591549836792134,
+      0.03226977645045321
+    ]
+  },
+  "bootstrap": {
+    "ci_diff": [
+      0.0013333333333333322,
+      0.031999999999999994
+    ]
+  },
+  "power": {
+    "observed": 0.569875640064676,
+    "n_for_80pct": 2581
+  },
+  "recommendation": "CAUTIOUS: Statistically significant but small effect. Consider practical impact.",
+  "verification": {
+    "fisher_exact_p": 0.040709256943574336,
+    "fisher_agrees": "True",
+    "chi2_statistic": 4.174165106588561,
+    "chi2_p": 0.04104478051500051,
+    "chi2_agrees": "True",
+    "rate_a_correct": true,
+    "rate_b_correct": true,
+    "bayesian_direction_agrees": true,
+    "all_methods_agree": true
+  },
+  "sensitivity": {
+    "double_sample_size": {
+      "p_value": 0.002614738195565865,
+      "power": 0.8555987713340226,
+      "significant": true
+    },
+    "half_effect": {
+      "hypothetical_rate_b": 0.04833333333333333,
+      "n_per_group_needed": 9523
+    },
+    "power_curve": {
+      "100": 0.086,
+      "250": 0.141,
+      "500": 0.234,
+      "1000": 0.415,
+      "2000": 0.694,
+      "5000": 0.974,
+      "10000": 1.0
+    }
+  },
+  "algorithm": "Two-proportion z-test + Bayesian Beta-Binomial + Bootstrap",
+  "time_seconds": 0.20763929595705122
+}

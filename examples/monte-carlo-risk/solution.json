@@ -91,8 +91,8 @@
       "Phase 5"
     ],
     "correlations": [
-      0.4908432471202319,
-      0.3934665284484663,
+      0.49084324712023186,
+      0.3934665284484664,
       0.6189898678091434,
       0.0832278771236241,
       0.4437637340355302
@@ -118,5 +118,5 @@
     "all_passed": true
   },
   "algorithm": "Monte Carlo simulation with triangular distributions",
-  "time_seconds": 0.06406388903269544
+  "time_seconds": 0.04585076100192964
 }

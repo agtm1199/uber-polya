@@ -663,9 +663,9 @@
       <div class="sidebar-section">
         <div class="sidebar-section-title">First Problem</div>
         <a href="#first-problem">Your First Problem</a>
-        <a href="#phase-1" class="sub">Phase 1: /uber-model</a>
-        <a href="#phase-2" class="sub">Phase 2: /uber-solve</a>
-        <a href="#phase-3" class="sub">Phase 3: /uber-interpret</a>
+        <a href="#phase-1" class="sub">Understand &amp; Model</a>
+        <a href="#phase-2" class="sub">Solve &amp; Verify</a>
+        <a href="#phase-3" class="sub">Interpret &amp; Recommend</a>
       </div>
       <div class="sidebar-section">
         <div class="sidebar-section-title">Next</div>
@@ -691,7 +691,7 @@
 
       <ul class="prereq-list">
         <li><strong>Claude Code</strong> &mdash; Anthropic's CLI for Claude (<a href="https://docs.anthropic.com/en/docs/claude-code">installation guide</a>)</li>
-        <li><strong>Python 3.10+</strong> &mdash; for running the solver code that <code>/uber-solve</code> generates</li>
+        <li><strong>Python 3.10+</strong> &mdash; for running the solver code that uber-polya generates</li>
       </ul>
 
       <p>Optional Python packages (installed automatically when needed):</p>
@@ -741,14 +741,16 @@
           <div class="terminal-dot"></div>
         </div>
         <div class="terminal-body">
-          <div><span class="prompt">$</span> <span class="cmd">/uber-model I need to schedule 4 exams (A, B, C, D) into the fewest</span></div>
+          <div><span class="prompt">$</span> <span class="cmd">/uber-polya I need to schedule 4 exams (A, B, C, D) into the fewest</span></div>
           <div><span class="cmd">  time slots so that no student has two exams at the same time.</span></div>
           <div><span class="cmd">  Students are enrolled in: {A,B}, {A,C}, {B,D}, {C,D}.</span></div>
         </div>
       </div>
 
+      <p>That's it &mdash; one command. <code>/uber-polya</code> handles the entire pipeline automatically. Here's what happens:</p>
+
       <!-- PHASE 1 -->
-      <h3 id="phase-1">Phase 1 &mdash; /uber-model builds the formal model</h3>
+      <h3 id="phase-1">Phase 1 &mdash; Understand &amp; Model</h3>
 
       <p>Claude walks through Polya's "Understanding" and "Planning" phases. It asks clarifying questions, then produces a formal model. Representative output:</p>
 
@@ -759,27 +761,12 @@
         <div class="sub">Vertices V = {A, B, C, D} (exams)</div>
         <div class="sub">Edges E = {(A,B), (A,C), (B,D), (C,D)} (student enrolled in both)</div>
         <div><span class="label">Objective:</span> <span class="value">Minimize k such that a proper k-coloring of G exists</span></div>
-        <br>
-        <div><span class="label">Next Steps (for /uber-solve):</span> <span class="value">Graph coloring. NP-hard in general, but greedy is exact for small instances and perfect graphs. This graph is bipartite (cycle of length 4), so chromatic number = 2.</span></div>
       </div>
 
       <!-- PHASE 2 -->
-      <h3 id="phase-2">Phase 2 &mdash; /uber-solve finds the answer</h3>
+      <h3 id="phase-2">Phase 2 &mdash; Solve &amp; Verify</h3>
 
-      <p>Type:</p>
-
-      <div class="terminal">
-        <div class="terminal-header">
-          <div class="terminal-dot"></div>
-          <div class="terminal-dot"></div>
-          <div class="terminal-dot"></div>
-        </div>
-        <div class="terminal-body">
-          <div><span class="prompt">$</span> <span class="cmd">/uber-solve</span></div>
-        </div>
-      </div>
-
-      <p>Claude classifies the problem, selects an algorithm, writes a solver script, runs it, and verifies the result. Representative output:</p>
+      <p>Claude automatically classifies the problem, selects an algorithm, writes a solver script, runs it, and verifies the result. Representative output:</p>
 
       <div class="representative-output">
         <div><span class="label">Named Problem:</span> <span class="value">Graph Coloring (k-coloring)</span></div>
@@ -795,20 +782,7 @@
       </div>
 
       <!-- PHASE 3 -->
-      <h3 id="phase-3">Phase 3 &mdash; /uber-interpret explains what it means</h3>
-
-      <p>Type:</p>
-
-      <div class="terminal">
-        <div class="terminal-header">
-          <div class="terminal-dot"></div>
-          <div class="terminal-dot"></div>
-          <div class="terminal-dot"></div>
-        </div>
-        <div class="terminal-body">
-          <div><span class="prompt">$</span> <span class="cmd">/uber-interpret</span></div>
-        </div>
-      </div>
+      <h3 id="phase-3">Phase 3 &mdash; Interpret &amp; Recommend</h3>
 
       <p>Claude translates the math back into your world. Representative output:</p>
 
@@ -831,34 +805,31 @@
       <!-- WHAT JUST HAPPENED -->
       <h2 id="what-happened">What Just Happened?</h2>
 
-      <p>You used three skills that implement George Polya's four-phase problem-solving cycle:</p>
+      <p>You typed one command and <code>/uber-polya</code> orchestrated the entire Polya problem-solving cycle:</p>
 
       <div class="table-wrapper">
         <table>
           <thead>
-            <tr><th>Polya Phase</th><th>Skill</th><th>What it does</th></tr>
+            <tr><th>Polya Phase</th><th>What uber-polya does</th></tr>
           </thead>
           <tbody>
             <tr>
               <td><span class="polya-phase phase-understand">1-2</span> Understand &amp; Plan</td>
-              <td><code>/uber-model</code></td>
               <td>Translates your real-world problem into a formal mathematical model</td>
             </tr>
             <tr>
               <td><span class="polya-phase phase-solve">3</span> Execute</td>
-              <td><code>/uber-solve</code></td>
               <td>Classifies the problem, selects the right algorithm, solves it, verifies the answer</td>
             </tr>
             <tr>
               <td><span class="polya-phase phase-interpret">4</span> Look Back</td>
-              <td><code>/uber-interpret</code></td>
               <td>Translates the solution back into actionable insight with sensitivity analysis</td>
             </tr>
           </tbody>
         </table>
       </div>
 
-      <p>Each skill's output feeds the next. You can also run them independently &mdash; <code>/uber-solve</code> accepts any well-specified math problem, and <code>/uber-interpret</code> can explain any solution you hand it.</p>
+      <p>Under the hood, <code>/uber-polya</code> chains three internal skills (<code>/uber-model</code>, <code>/uber-solve</code>, <code>/uber-interpret</code>). You can also use these individually for finer control &mdash; for example, <code>/uber-solve</code> accepts any well-specified math problem, and <code>/uber-interpret</code> can explain any solution you hand it.</p>
 
       <!-- NEXT STEPS -->
       <h2 id="next-steps">Next Steps</h2>
@@ -1028,7 +999,7 @@
       <!-- TRY YOUR OWN -->
       <h3 id="try-your-own">Try your own problem</h3>
 
-      <p><strong>Good candidates for <code>/uber-model</code>:</strong></p>
+      <p><strong>Good candidates for <code>/uber-polya</code>:</strong></p>
 
       <ul class="category-list">
         <li><strong>Scheduling</strong> (exams, meetings, shifts) &mdash; graph coloring or ILP</li>
@@ -1039,15 +1010,15 @@
         <li><strong>Optimization</strong> (minimize cost, maximize profit) &mdash; continuous optimization, convex QP</li>
         <li><strong>Comparing groups</strong> ("Is A better than B?") &mdash; hypothesis testing, A/B tests</li>
         <li><strong>Prediction</strong> (forecast outcomes from data) &mdash; regression, Bayesian inference</li>
-            <li>Time series (forecasting, anomaly detection) -- SARIMA, change point detection</li>
-            <li>Survival analysis (churn, equipment failure) -- Kaplan-Meier, Cox PH</li>
-            <li>Machine learning (classification, clustering, feature selection) -- Random Forest, K-Means, PCA</li>
-            <li>Simulation (queuing, epidemics, Monte Carlo risk) -- DES, SIR ODE, MC sampling</li>
-            <li>Causal inference (treatment effects, policy evaluation) -- propensity matching, DiD</li>
-            <li>Operations research (inventory, bin packing, lot sizing) -- EOQ, newsvendor, first-fit decreasing</li>
+            <li><strong>Time series</strong> (forecasting, anomaly detection) &mdash; SARIMA, change point detection</li>
+            <li><strong>Survival analysis</strong> (churn, equipment failure) &mdash; Kaplan-Meier, Cox PH</li>
+            <li><strong>Machine learning</strong> (classification, clustering, feature selection) &mdash; Random Forest, K-Means, PCA</li>
+            <li><strong>Simulation</strong> (queuing, epidemics, Monte Carlo risk) &mdash; DES, SIR ODE, MC sampling</li>
+            <li><strong>Causal inference</strong> (treatment effects, policy evaluation) &mdash; propensity matching, DiD</li>
+            <li><strong>Operations research</strong> (inventory, bin packing, lot sizing) &mdash; EOQ, newsvendor, first-fit decreasing</li>
       </ul>
 
-      <p>Start with <code>/uber-model &lt;describe your problem in plain English&gt;</code> and let Claude guide you from there.</p>
+      <p>Start with <code>/uber-polya &lt;describe your problem in plain English&gt;</code> and let Claude handle the rest.</p>
 
     </main>
   </div>
@@ -1060,12 +1031,6 @@
           <div class="footer-brand">uber-polya</div>
           <p>Apache 2.0 Licensed. Free forever.</p>
         </div>
-        <ul class="footer-links">
-          <li><a href="https://github.com/agtm1199/uber-polya">GitHub</a></li>
-          <li><a href="guide.html">Guide</a></li>
-          <li><a href="manifesto.html">Manifesto</a></li>
-          <li><a href="https://github.com/agtm1199/uber-polya/blob/main/CONTRIBUTING.md">Contributing</a></li>
-        </ul>
       </div>
     </div>
   </footer>

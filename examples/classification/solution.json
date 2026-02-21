@@ -79,5 +79,5 @@
     "all_passed": true
   },
   "algorithm": "Logistic Regression + Random Forest (100) + Gradient Boosting (100)",
-  "time_seconds": 0.4055803510127589
+  "time_seconds": 0.34118065395159647
 }

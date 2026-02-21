@@ -1,0 +1,19 @@
+{
+  "plan": {
+    "Salmon Fillet": 23,
+    "Bean Chili": 12,
+    "Steak & Veggies": 7
+  },
+  "objective": null,
+  "is_optimal": false,
+  "is_feasible": false,
+  "nutrition_totals": {
+    "calories": 20980.0,
+    "protein": 1917.0,
+    "fiber": 250.0,
+    "cost": 379.0
+  },
+  "lp_relaxation": 188.99999749999998,
+  "algorithm": "ILP (PuLP/CBC, Branch & Bound)",
+  "time_seconds": 0.0038686369662173092
+}

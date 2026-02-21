@@ -237,5 +237,5 @@
   "is_optimal": true,
   "is_feasible": true,
   "algorithm": "FFD heuristic + ILP (PuLP/CBC, Branch & Bound)",
-  "time_seconds": 0.031444437976460904
+  "time_seconds": 0.029225589998532087
 }

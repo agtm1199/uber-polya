@@ -63,7 +63,7 @@
     "dfe_stable": false
   },
   "algorithm": "Runge-Kutta 4(5) adaptive ODE integration (scipy.integrate.solve_ivp)",
-  "time_seconds": 0.14701269095530733,
+  "time_seconds": 0.13489555899286643,
   "verification": {
     "population_conserved": true,
     "R0_correct": true,

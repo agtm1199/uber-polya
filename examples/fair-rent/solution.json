@@ -1,0 +1,17 @@
+{
+  "assignment": {
+    "Alice": "master",
+    "Bob": "medium",
+    "Carol": "small"
+  },
+  "rents": {
+    "Alice": 1200.0,
+    "Bob": 942.86,
+    "Carol": 857.14
+  },
+  "objective": 3500,
+  "is_optimal": true,
+  "is_feasible": true,
+  "algorithm": "Hungarian assignment + envy-free rent adjustment",
+  "time_seconds": 4.438101314008236e-05
+}

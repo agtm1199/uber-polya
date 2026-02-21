@@ -1,0 +1,30 @@
+{
+  "assignment": {
+    "Linear Algebra": "Morning (8-10)",
+    "Abstract Algebra": "Afternoon (1-3)",
+    "Probability": "Morning (8-10)",
+    "Statistics": "Afternoon (1-3)",
+    "Real Analysis": "Afternoon (1-3)",
+    "Discrete Math": "Morning (8-10)"
+  },
+  "color_map": {
+    "Linear Algebra": 0,
+    "Abstract Algebra": 2,
+    "Probability": 0,
+    "Statistics": 2,
+    "Real Analysis": 2,
+    "Discrete Math": 0
+  },
+  "objective": 3,
+  "is_optimal": true,
+  "is_feasible": true,
+  "algorithm": "Backtracking Distance-2 Graph Coloring",
+  "time_seconds": 2.6030989829450846e-05,
+  "certificate": "Exact backtracking search, colors used = 3",
+  "graph_stats": {
+    "vertices": 6,
+    "edges": 5,
+    "max_degree": 2,
+    "clique_number": 2
+  }
+}

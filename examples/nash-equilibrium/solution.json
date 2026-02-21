@@ -142,7 +142,7 @@
       "all_checks_pass": true
     },
     "algorithm": "Support Enumeration (nashpy)",
-    "time_seconds": 0.01663307601120323
+    "time_seconds": 0.004860992019530386
   },
   "game_2_3x3": {
     "name": "3x3 Coffee Shop Pricing (Circular Dominance with Loyalty)",
@@ -245,6 +245,6 @@
       "all_checks_pass": true
     },
     "algorithm": "Support Enumeration (nashpy)",
-    "time_seconds": 0.008231530024204403
+    "time_seconds": 0.007058450952172279
   }
 }

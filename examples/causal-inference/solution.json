@@ -35,5 +35,5 @@
     "all_passed": true
   },
   "algorithm": "Naive + Propensity Score Matching + Difference-in-Differences + Doubly Robust (AIPW)",
-  "time_seconds": 0.008804242999758571
+  "time_seconds": 0.009365651989355683
 }

@@ -1,0 +1,32 @@
+{
+  "tour": [
+    0,
+    8,
+    2,
+    1,
+    5,
+    6,
+    3,
+    4,
+    7,
+    0
+  ],
+  "tour_names": [
+    "Warehouse",
+    "Industrial Zone",
+    "Airport",
+    "Downtown",
+    "Mall",
+    "Stadium",
+    "University",
+    "Hospital",
+    "Park",
+    "Warehouse"
+  ],
+  "objective": 117,
+  "heuristic_distance": 120.0,
+  "is_optimal": true,
+  "is_feasible": true,
+  "algorithm": "Held-Karp DP (exact, O(n^2 * 2^n), n=9)",
+  "time_seconds": 0.0013229419710114598
+}

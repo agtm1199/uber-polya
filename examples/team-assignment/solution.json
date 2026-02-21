@@ -1,0 +1,29 @@
+{
+  "assignment": {
+    "Alice": "ML Model",
+    "Bob": "Mobile App",
+    "Carol": "Data Pipeline",
+    "Dave": "DevOps CI/CD",
+    "Eve": "API Gateway",
+    "Frank": "Frontend UI"
+  },
+  "objective": 52,
+  "is_optimal": true,
+  "is_feasible": true,
+  "bounds": {
+    "row_max_bound": 53,
+    "col_max_bound": 53,
+    "upper_bound": 53,
+    "lower_bound": 16,
+    "random_expected": 33.833333333333336
+  },
+  "random_stats": {
+    "mean": 33.8905,
+    "std": 5.628508661270763,
+    "min": 18,
+    "max": 52,
+    "p95": 43.0
+  },
+  "algorithm": "Hungarian Algorithm (scipy.optimize.linear_sum_assignment)",
+  "time_seconds": 7.345003541558981e-05
+}

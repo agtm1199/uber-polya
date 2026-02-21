@@ -5,7 +5,7 @@ A zero-to-hero tutorial. By the end, you will have modeled, solved, and interpre
 ## Prerequisites
 
 - **Claude Code** -- Anthropic's CLI for Claude ([installation guide](https://docs.anthropic.com/en/docs/claude-code))
-- **Python 3.10+** -- for running the solver code that `/uber-solve` generates
+- **Python 3.10+** -- for running the solver code that uber-polya generates
 
 Optional Python packages (installed automatically when needed):
 
@@ -33,12 +33,14 @@ That is it. No virtual environment, no build step. The skills are plain markdown
 Open Claude Code in any project directory and type:
 
 ```
-/uber-model I need to schedule 4 exams (A, B, C, D) into the fewest time
+/uber-polya I need to schedule 4 exams (A, B, C, D) into the fewest time
 slots so that no student has two exams at the same time. Students are
 enrolled in these pairs of courses: {A,B}, {A,C}, {B,D}, {C,D}.
 ```
 
-### Phase 1 -- /uber-model builds the formal model
+That's it -- one command. `/uber-polya` handles the entire pipeline automatically. Here's what happens:
+
+### Phase 1 -- Understand & Model
 
 Claude walks through Polya's "Understanding" and "Planning" phases. It asks clarifying questions, then produces a formal model. Representative output:
 
@@ -48,18 +50,10 @@ Claude walks through Polya's "Understanding" and "Planning" phases. It asks clar
 >   - Vertices V = {A, B, C, D} (exams)
 >   - Edges E = {(A,B), (A,C), (B,D), (C,D)} (student enrolled in both)
 > **Objective**: Minimize k such that a proper k-coloring of G exists
->
-> **Next Steps (for /uber-solve)**: Graph coloring. NP-hard in general, but greedy is exact for small instances and perfect graphs. This graph is bipartite (cycle of length 4), so chromatic number = 2.
 
-### Phase 2 -- /uber-solve finds the answer
+### Phase 2 -- Solve & Verify
 
-Type:
-
-```
-/uber-solve
-```
-
-Claude classifies the problem, selects an algorithm, writes a solver script, runs it, and verifies the result. Representative output:
+Claude automatically classifies the problem, selects an algorithm, writes a solver script, runs it, and verifies the result. Representative output:
 
 > **Named Problem**: Graph Coloring (k-coloring)
 > **Complexity**: NP-hard in general; O(V + E) for bipartite detection
@@ -72,13 +66,7 @@ Claude classifies the problem, selects an algorithm, writes a solver script, run
 >
 > **Verification**: All 4 edges checked -- no two adjacent vertices share a color. PASS.
 
-### Phase 3 -- /uber-interpret explains what it means
-
-Type:
-
-```
-/uber-interpret
-```
+### Phase 3 -- Interpret & Recommend
 
 Claude translates the math back into your world. Representative output:
 
@@ -96,15 +84,15 @@ Claude translates the math back into your world. Representative output:
 
 ## What Just Happened?
 
-You used three skills that implement George Polya's four-phase problem-solving cycle:
+You typed one command and `/uber-polya` orchestrated the entire Polya problem-solving cycle:
 
-| Polya Phase | Skill | What it does |
-|-------------|-------|-------------|
-| 1-2: Understand and Plan | `/uber-model` | Translates your real-world problem into a formal discrete math model |
-| 3: Execute | `/uber-solve` | Classifies the problem, selects the right algorithm, solves it, verifies the answer |
-| 4: Look Back | `/uber-interpret` | Translates the solution back into actionable insight with sensitivity analysis |
+| Polya Phase | What uber-polya does |
+|-------------|---------------------|
+| 1-2: Understand & Plan | Translates your real-world problem into a formal mathematical model |
+| 3: Execute | Classifies the problem, selects the right algorithm, solves it, verifies the answer |
+| 4: Look Back | Translates the solution back into actionable insight with sensitivity analysis |
 
-Each skill's output feeds the next. You can also run them independently -- `/uber-solve` accepts any well-specified math problem, and `/uber-interpret` can explain any solution you hand it.
+Under the hood, `/uber-polya` chains three internal skills (`/uber-model`, `/uber-solve`, `/uber-interpret`). You can also use these individually for finer control -- for example, `/uber-solve` accepts any well-specified math problem, and `/uber-interpret` can explain any solution you hand it.
 
 ## Next Steps
 
@@ -152,7 +140,7 @@ Each skill's output feeds the next. You can also run them independently -- `/ube
 - **[Inventory Optimization](../../examples/inventory-optimization/)** -- EOQ + newsvendor + safety stock (scipy)
 - **[Bin Packing](../../examples/bin-packing/)** -- First Fit Decreasing + ILP optimal (PuLP)
 
-**Try your own problem.** Good candidates for `/uber-model`:
+**Try your own problem.** Good candidates for `/uber-polya`:
 
 - Scheduling (exams, meetings, shifts) -- graph coloring or ILP
 - Assignment (people to tasks, resources to jobs) -- bipartite matching or ILP
@@ -169,4 +157,4 @@ Each skill's output feeds the next. You can also run them independently -- `/ube
 - Causal inference (treatment effects, policy evaluation) -- propensity matching, DiD
 - Operations research (inventory, bin packing, lot sizing) -- EOQ, newsvendor, first-fit decreasing
 
-Start with `/uber-model <describe your problem in plain English>` and let Claude guide you from there.
+Start with `/uber-polya <describe your problem in plain English>` and let Claude handle the rest.

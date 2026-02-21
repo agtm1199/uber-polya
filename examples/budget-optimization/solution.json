@@ -1,0 +1,18 @@
+{
+  "selected": [
+    "Mobile App Redesign",
+    "Data Pipeline Upgrade",
+    "Security Audit",
+    "Cloud Migration",
+    "Analytics Dashboard",
+    "API Gateway",
+    "DevOps Automation"
+  ],
+  "objective": 50.0,
+  "total_cost": 490,
+  "budget": 500,
+  "is_optimal": true,
+  "is_feasible": true,
+  "algorithm": "0/1 Knapsack ILP (PuLP/CBC, Branch & Bound)",
+  "time_seconds": 0.007456578954588622
+}

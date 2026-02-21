@@ -151,5 +151,5 @@
     "all_passed": true
   },
   "algorithm": "Z-score (rolling) + IQR + PELT (L2, BIC penalty)",
-  "time_seconds": 3.3472226309822872
+  "time_seconds": 3.1975480560213327
 }

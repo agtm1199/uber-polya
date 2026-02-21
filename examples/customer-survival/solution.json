@@ -55,5 +55,5 @@
     "all_passed": true
   },
   "algorithm": "Kaplan-Meier + Log-Rank Test + Cox Proportional Hazards",
-  "time_seconds": 0.10243359499145299
+  "time_seconds": 0.09642017504666
 }

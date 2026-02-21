@@ -74,7 +74,7 @@
     "gaussian_quad": 4879.250398724083
   },
   "algorithm": "Cubic Spline + Brent/Bisection/Newton/Secant root finding",
-  "time_seconds": 0.018176484969444573,
+  "time_seconds": 0.011280923965387046,
   "verification": {
     "all_methods_find_root": true,
     "roots_agree": true,

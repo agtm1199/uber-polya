@@ -1,0 +1,214 @@
+{
+  "product": "SmartWidget Pro",
+  "breakeven_quantity": 1087,
+  "breakeven_exact": 1086.9565217391305,
+  "breakeven_revenue": 38045.0,
+  "contribution_margin": 23.0,
+  "symbolic_formula": "Q* = F / (P - V) =   F  \n\u2500\u2500\u2500\u2500\u2500\nP - V",
+  "is_feasible": true,
+  "profit_table": [
+    {
+      "quantity": 0,
+      "revenue": 0.0,
+      "cost": 25000.0,
+      "profit": -25000.0
+    },
+    {
+      "quantity": 250,
+      "revenue": 8750.0,
+      "cost": 28000.0,
+      "profit": -19250.0
+    },
+    {
+      "quantity": 500,
+      "revenue": 17500.0,
+      "cost": 31000.0,
+      "profit": -13500.0
+    },
+    {
+      "quantity": 750,
+      "revenue": 26250.0,
+      "cost": 34000.0,
+      "profit": -7750.0
+    },
+    {
+      "quantity": 1000,
+      "revenue": 35000.0,
+      "cost": 37000.0,
+      "profit": -2000.0
+    },
+    {
+      "quantity": 1087,
+      "revenue": 38045.0,
+      "cost": 38044.0,
+      "profit": 1.0
+    },
+    {
+      "quantity": 1250,
+      "revenue": 43750.0,
+      "cost": 40000.0,
+      "profit": 3750.0
+    },
+    {
+      "quantity": 1500,
+      "revenue": 52500.0,
+      "cost": 43000.0,
+      "profit": 9500.0
+    },
+    {
+      "quantity": 2000,
+      "revenue": 70000.0,
+      "cost": 49000.0,
+      "profit": 21000.0
+    },
+    {
+      "quantity": 2500,
+      "revenue": 87500.0,
+      "cost": 55000.0,
+      "profit": 32500.0
+    }
+  ],
+  "sensitivity": {
+    "price_changes": [
+      {
+        "price_change_pct": -20,
+        "new_price": 28.0,
+        "new_breakeven": 1563,
+        "contribution_margin": 16.0
+      },
+      {
+        "price_change_pct": -15,
+        "new_price": 29.75,
+        "new_breakeven": 1409,
+        "contribution_margin": 17.75
+      },
+      {
+        "price_change_pct": -10,
+        "new_price": 31.5,
+        "new_breakeven": 1283,
+        "contribution_margin": 19.5
+      },
+      {
+        "price_change_pct": -5,
+        "new_price": 33.25,
+        "new_breakeven": 1177,
+        "contribution_margin": 21.25
+      },
+      {
+        "price_change_pct": 0,
+        "new_price": 35.0,
+        "new_breakeven": 1087,
+        "contribution_margin": 23.0
+      },
+      {
+        "price_change_pct": 5,
+        "new_price": 36.75,
+        "new_breakeven": 1011,
+        "contribution_margin": 24.75
+      },
+      {
+        "price_change_pct": 10,
+        "new_price": 38.5,
+        "new_breakeven": 944,
+        "contribution_margin": 26.5
+      },
+      {
+        "price_change_pct": 15,
+        "new_price": 40.25,
+        "new_breakeven": 885,
+        "contribution_margin": 28.25
+      },
+      {
+        "price_change_pct": 20,
+        "new_price": 42.0,
+        "new_breakeven": 834,
+        "contribution_margin": 30.0
+      }
+    ],
+    "variable_cost_changes": [
+      {
+        "vc_change_pct": -20,
+        "new_vc": 9.6,
+        "new_breakeven": 985,
+        "contribution_margin": 25.4
+      },
+      {
+        "vc_change_pct": -10,
+        "new_vc": 10.8,
+        "new_breakeven": 1034,
+        "contribution_margin": 24.2
+      },
+      {
+        "vc_change_pct": 0,
+        "new_vc": 12.0,
+        "new_breakeven": 1087,
+        "contribution_margin": 23.0
+      },
+      {
+        "vc_change_pct": 10,
+        "new_vc": 13.2,
+        "new_breakeven": 1147,
+        "contribution_margin": 21.8
+      },
+      {
+        "vc_change_pct": 20,
+        "new_vc": 14.4,
+        "new_breakeven": 1214,
+        "contribution_margin": 20.6
+      },
+      {
+        "vc_change_pct": 30,
+        "new_vc": 15.6,
+        "new_breakeven": 1289,
+        "contribution_margin": 19.4
+      },
+      {
+        "vc_change_pct": 50,
+        "new_vc": 18.0,
+        "new_breakeven": 1471,
+        "contribution_margin": 17.0
+      }
+    ],
+    "worst_case": {
+      "scenario": "Price -10% AND Variable Cost +20%",
+      "price": 31.5,
+      "variable_cost": 14.4,
+      "contribution_margin": 17.1,
+      "breakeven": 1462
+    },
+    "fixed_cost_changes": [
+      {
+        "fixed_cost": 12500.0,
+        "multiplier": 0.5,
+        "breakeven": 544
+      },
+      {
+        "fixed_cost": 18750.0,
+        "multiplier": 0.75,
+        "breakeven": 816
+      },
+      {
+        "fixed_cost": 25000.0,
+        "multiplier": 1.0,
+        "breakeven": 1087
+      },
+      {
+        "fixed_cost": 31250.0,
+        "multiplier": 1.25,
+        "breakeven": 1359
+      },
+      {
+        "fixed_cost": 37500.0,
+        "multiplier": 1.5,
+        "breakeven": 1631
+      },
+      {
+        "fixed_cost": 50000.0,
+        "multiplier": 2.0,
+        "breakeven": 2174
+      }
+    ]
+  },
+  "algorithm": "Symbolic (SymPy) + Numerical (NumPy) Break-Even Analysis",
+  "time_seconds": 0.11466744501376525
+}

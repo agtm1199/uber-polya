@@ -57,6 +57,6 @@
     "perturbation_count": 8
   },
   "algorithm": "AHP (eigenvalue method) + TOPSIS (ideal-point distance)",
-  "time_seconds": 0.0017995950183831155,
+  "time_seconds": 0.0014144759625196457,
   "is_feasible": true
 }

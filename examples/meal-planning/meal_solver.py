@@ -286,89 +286,93 @@ if __name__ == "__main__":
     log.step("SOLVER RESULTS")
     log.metric("Status:", "Optimal" if sol.is_optimal else "Suboptimal", tag="RESULT")
     log.metric("Feasible:", str(sol.is_feasible), tag="RESULT")
-    log.metric("Total cost:", f"${sol.objective:.2f}", tag="RESULT")
-    log.metric("LP Relaxation:", f"${sol.lp_relaxation:.2f}", tag="RESULT")
-    integrality_gap = sol.objective - sol.lp_relaxation if sol.lp_relaxation else 0
+    log.metric("Total cost:", f"${sol.objective:.2f}" if sol.objective is not None else "N/A (infeasible)", tag="RESULT")
+    log.metric("LP Relaxation:", f"${sol.lp_relaxation:.2f}" if sol.lp_relaxation is not None else "N/A", tag="RESULT")
+    integrality_gap = (sol.objective - sol.lp_relaxation) if (sol.objective is not None and sol.lp_relaxation) else 0
     log.metric("Integrality gap:", f"${integrality_gap:.2f}", tag="RESULT")
     log.metric("Algorithm:", sol.algorithm, tag="SOLVE")
     log.metric("Time:", f"{sol.time_seconds:.6f}s", tag="TIMING")
     log.blank()
 
-    # Optimal plan
-    log.step("OPTIMAL MEAL PLAN")
-    log.table_row(
-        f"{'Meal':<22} {'Count':>6} {'Cost':>8} {'Cal':>7} {'Prot':>7} {'Fiber':>7}",
-        tag="TABLE",
-    )
-    log.divider()
-
-    meal_lookup = {m.name: m for m in instance.meals}
-    for name, count in sorted(sol.plan.items(), key=lambda x: -x[1]):
-        m = meal_lookup[name]
+    if sol.is_optimal and sol.plan:
+        # Optimal plan
+        log.step("OPTIMAL MEAL PLAN")
         log.table_row(
-            f"{name:<22} {count:>5}x  ${m.cost * count:>6.2f} "
-            f"{m.calories * count:>6} {m.protein * count:>6.1f}g {m.fiber * count:>6.1f}g",
-            tag="ASSIGN",
+            f"{'Meal':<22} {'Count':>6} {'Cost':>8} {'Cal':>7} {'Prot':>7} {'Fiber':>7}",
+            tag="TABLE",
         )
+        log.divider()
 
-    log.divider()
-    n = sol.nutrition_totals
-    log.table_row(
-        f"{'WEEKLY TOTAL':<22} {sum(sol.plan.values()):>5}   ${n['cost']:>6.2f} "
-        f"{n['calories']:>6.0f} {n['protein']:>6.1f}g {n['fiber']:>6.1f}g",
-        tag="RESULT",
-    )
-    log.blank()
-
-    # Constraint satisfaction
-    log.step("NUTRITION TARGETS vs ACTUAL")
-    log.table_row(f"{'Nutrient':<15} {'Target':>15} {'Actual':>12} {'Status':>10}", tag="TABLE")
-    log.divider()
-    log.table_row(
-        f"{'Protein':<15} {'>= ' + str(instance.min_protein) + 'g':>15} "
-        f"{n['protein']:>10.1f}g  {'PASS' if n['protein'] >= instance.min_protein else 'FAIL':>6}",
-        tag="CHECK",
-    )
-    log.table_row(
-        f"{'Calories':<15} {'<= ' + str(instance.max_calories):>15} "
-        f"{n['calories']:>10.0f}   {'PASS' if n['calories'] <= instance.max_calories else 'FAIL':>6}",
-        tag="CHECK",
-    )
-    log.table_row(
-        f"{'Fiber':<15} {'>= ' + str(instance.min_fiber) + 'g':>15} "
-        f"{n['fiber']:>10.1f}g  {'PASS' if n['fiber'] >= instance.min_fiber else 'FAIL':>6}",
-        tag="CHECK",
-    )
-    log.blank()
-
-    # Cost per day and per nutrient
-    log.step("COST EFFICIENCY")
-    log.metric("Cost per day:", f"${n['cost'] / instance.total_days:.2f}", tag="STATS")
-    log.metric("Cost per g protein:", f"${n['cost'] / n['protein']:.3f}", tag="STATS")
-    log.metric("Cost per g fiber:", f"${n['cost'] / n['fiber']:.3f}", tag="STATS")
-    log.metric("Cal per dollar:", f"{n['calories'] / n['cost']:.0f} kcal/$", tag="STATS")
-    log.blank()
-
-    # Sensitivity: What if nutrition targets change?
-    log.step("SENSITIVITY: Varying Protein Target")
-    for protein_target in [300, 350, 400, 450, 500]:
-        modified = Instance(
-            meals=instance.meals,
-            total_days=instance.total_days,
-            min_protein=protein_target,
-            max_calories=instance.max_calories,
-            min_fiber=instance.min_fiber,
-        )
-        msol = solve(modified)
-        if msol.is_optimal:
-            log.info(
-                f"Protein >= {protein_target}g: cost = ${msol.objective:.2f} "
-                f"(delta ${msol.objective - sol.objective:+.2f})",
-                tag="SENSITIVITY",
+        meal_lookup = {m.name: m for m in instance.meals}
+        for name, count in sorted(sol.plan.items(), key=lambda x: -x[1]):
+            m = meal_lookup[name]
+            log.table_row(
+                f"{name:<22} {count:>5}x  ${m.cost * count:>6.2f} "
+                f"{m.calories * count:>6} {m.protein * count:>6.1f}g {m.fiber * count:>6.1f}g",
+                tag="ASSIGN",
             )
-        else:
-            log.warning(f"Protein >= {protein_target}g: INFEASIBLE", tag="SENSITIVITY")
-    log.blank()
+
+        log.divider()
+        n = sol.nutrition_totals
+        log.table_row(
+            f"{'WEEKLY TOTAL':<22} {sum(sol.plan.values()):>5}   ${n['cost']:>6.2f} "
+            f"{n['calories']:>6.0f} {n['protein']:>6.1f}g {n['fiber']:>6.1f}g",
+            tag="RESULT",
+        )
+        log.blank()
+
+        # Constraint satisfaction
+        log.step("NUTRITION TARGETS vs ACTUAL")
+        log.table_row(f"{'Nutrient':<15} {'Target':>15} {'Actual':>12} {'Status':>10}", tag="TABLE")
+        log.divider()
+        log.table_row(
+            f"{'Protein':<15} {'>= ' + str(instance.min_protein) + 'g':>15} "
+            f"{n['protein']:>10.1f}g  {'PASS' if n['protein'] >= instance.min_protein else 'FAIL':>6}",
+            tag="CHECK",
+        )
+        log.table_row(
+            f"{'Calories':<15} {'<= ' + str(instance.max_calories):>15} "
+            f"{n['calories']:>10.0f}   {'PASS' if n['calories'] <= instance.max_calories else 'FAIL':>6}",
+            tag="CHECK",
+        )
+        log.table_row(
+            f"{'Fiber':<15} {'>= ' + str(instance.min_fiber) + 'g':>15} "
+            f"{n['fiber']:>10.1f}g  {'PASS' if n['fiber'] >= instance.min_fiber else 'FAIL':>6}",
+            tag="CHECK",
+        )
+        log.blank()
+
+        # Cost per day and per nutrient
+        log.step("COST EFFICIENCY")
+        log.metric("Cost per day:", f"${n['cost'] / instance.total_days:.2f}", tag="STATS")
+        log.metric("Cost per g protein:", f"${n['cost'] / n['protein']:.3f}", tag="STATS")
+        log.metric("Cost per g fiber:", f"${n['cost'] / n['fiber']:.3f}", tag="STATS")
+        log.metric("Cal per dollar:", f"{n['calories'] / n['cost']:.0f} kcal/$", tag="STATS")
+        log.blank()
+
+        # Sensitivity: What if nutrition targets change?
+        log.step("SENSITIVITY: Varying Protein Target")
+        for protein_target in [300, 350, 400, 450, 500]:
+            modified = Instance(
+                meals=instance.meals,
+                total_days=instance.total_days,
+                min_protein=protein_target,
+                max_calories=instance.max_calories,
+                min_fiber=instance.min_fiber,
+            )
+            msol = solve(modified)
+            if msol.is_optimal and msol.objective is not None:
+                delta = f" (delta ${msol.objective - sol.objective:+.2f})" if sol.objective is not None else ""
+                log.info(
+                    f"Protein >= {protein_target}g: cost = ${msol.objective:.2f}{delta}",
+                    tag="SENSITIVITY",
+                )
+            else:
+                log.warning(f"Protein >= {protein_target}g: INFEASIBLE", tag="SENSITIVITY")
+        log.blank()
+    else:
+        log.warning("Solver returned infeasible -- skipping detailed report", tag="WARNING")
+        log.blank()
 
     # Independent verification
     log.step("INDEPENDENT VERIFICATION")

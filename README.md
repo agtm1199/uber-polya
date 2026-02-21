@@ -35,6 +35,16 @@ Every problem in this table has a mathematical structure. uber-polya finds it an
 | A/B testing | "Is this test result statistically real?" | Hypothesis testing | Yes/no + confidence + power analysis |
 | Portfolio allocation | "Allocate investments to minimize risk" | Quadratic programming | Efficient frontier + allocation |
 | Build vs. buy | "Should we build or buy this component?" | Decision tree / expected value | Recommendation + break-even |
+| Sales forecasting | "Forecast next quarter's revenue" | Time series (SARIMA / Holt-Winters) | Forecast + confidence intervals |
+| Customer churn | "Predict which customers will leave" | Classification (Random Forest) | Risk scores + key factors |
+| Training impact | "Did our training program boost sales?" | Causal inference (DiD / propensity) | Effect size + confidence interval |
+| Call center staffing | "How many agents for 95% SLA?" | Queuing theory (M/M/c) | Staffing table + cost analysis |
+| Subscriber retention | "When will customers cancel?" | Survival analysis (Cox PH) | Survival curves + risk factors |
+| Inventory ordering | "How much to order, when to reorder?" | Inventory optimization (EOQ) | Order quantity + reorder point |
+| Container loading | "Pack 50 shipments into fewest trucks" | Bin packing (ILP) | Packing plan + utilization |
+| Vendor ranking | "Rank vendors balancing cost, quality, speed" | Multi-objective optimization (Pareto) | Pareto frontier + trade-offs |
+| Product configuration | "Can we build this with all customer requirements?" | SAT / constraint satisfaction | Valid configuration or proof of infeasibility |
+| Demand patterns | "Model customer arrival patterns for staffing" | Stochastic processes (Markov / Poisson) | Arrival model + peak hours |
 
 ### Personal Problems
 
@@ -46,6 +56,15 @@ Every problem in this table has a mathematical structure. uber-polya finds it an
 | Apartment ranking | "Pick the best apartment from these 10" | Multi-criteria decision analysis | Ranked list + trade-offs |
 | Expense splitting | "Split trip expenses among friends" | Fair allocation | Split table |
 | Refinancing | "Should I refinance my mortgage?" | NPV / break-even analysis | Yes/no + savings timeline |
+| Budget forecasting | "Will I stay within budget this year?" | Time series forecasting | Monthly forecast + alerts |
+| Garden fencing | "Maximize garden area with 100 ft of fence" | Calculus optimization | Optimal dimensions + layout |
+| Room painting | "How much paint for these oddly-shaped rooms?" | Computational geometry | Quantity + cost estimate |
+| Solar payback | "When does my solar panel investment pay off?" | Root finding / break-even | Payback date + savings curve |
+| Recipe scaling | "Scale this recipe for 50 people" | Linear algebra (systems of equations) | Adjusted ingredient quantities |
+| Raffle odds | "What are my chances of winning this raffle?" | Discrete probability | Probability + expected value |
+| Medication timing | "When do drug levels peak and trough?" | ODE modeling (pharmacokinetics) | Dosing schedule + level chart |
+| Moving logistics | "Fit all furniture into fewest truck loads" | Bin packing | Loading plan + trips needed |
+| House hunting | "Balance commute, price, and schools across 15 houses" | Multi-objective optimization (Pareto) | Shortlist of non-dominated options |
 
 ## Installation
 
@@ -65,16 +84,15 @@ Open Claude Code and type:
 /uber-polya I need to schedule 4 exams into time slots so no student has two exams at the same time.
 ```
 
-uber-polya guides you through the complete pipeline:
+uber-polya handles the entire pipeline automatically:
 1. **Understand** -- Socratic dialogue to extract what you really need
 2. **Model** -- Classifies as graph coloring on a conflict graph
 3. **Solve** -- Selects the right algorithm, writes verified solver code, runs it
 4. **Interpret** -- Translates the answer, sensitivity analysis, visualizations, recommendations
 
-Or use individual skills for more control:
-- `/uber-model` -- formalize a problem into a mathematical model
-- `/uber-solve` -- solve a mathematical model with the right algorithm
-- `/uber-interpret` -- interpret and visualize a solution for stakeholders
+That's it. One command, one conversation, one verified result.
+
+Under the hood, `/uber-polya` orchestrates three internal skills (`/uber-model`, `/uber-solve`, `/uber-interpret`) that you can also use individually if you want finer control.
 
 ## How It Works
 

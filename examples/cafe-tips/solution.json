@@ -33,14 +33,14 @@
       "normal": "True"
     },
     "equal_variance": {
-      "levene_p": 0.38048328446745394,
+      "levene_p": 0.38048328446745316,
       "equal": "True"
     },
     "parametric_ok": "True"
   },
   "primary_test": {
     "t_statistic": 3.0856503854027157,
-    "p_value": 0.003484153592511439,
+    "p_value": 0.003484153592511434,
     "mean_diff": 2.3000000000000007,
     "ci_diff": [
       0.7983288567949629,
@@ -77,7 +77,7 @@
     ]
   },
   "power": {
-    "observed": 0.8561993518397821,
+    "observed": 0.8561993518397822,
     "n_for_80pct": 22
   },
   "sensitivity": {
@@ -93,7 +93,7 @@
       "100": 1.0
     },
     "current_n": 25,
-    "current_power": 0.8561993518397821,
+    "current_power": 0.8561993518397822,
     "stricter_alpha": {
       "alpha": 0.01,
       "still_significant": true

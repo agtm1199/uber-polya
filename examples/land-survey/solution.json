@@ -55,5 +55,5 @@
   },
   "is_feasible": true,
   "algorithm": "Shoelace + ConvexHull(Qhull) + Shapely containment",
-  "time_seconds": 2.037083
+  "time_seconds": 1.864808
 }

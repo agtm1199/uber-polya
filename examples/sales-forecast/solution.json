@@ -152,5 +152,5 @@
     "all_passed": true
   },
   "algorithm": "SARIMA(1,1,1)(1,1,1,12) + Holt-Winters (additive seasonal)",
-  "time_seconds": 0.3137015899992548
+  "time_seconds": 0.2748677630443126
 }

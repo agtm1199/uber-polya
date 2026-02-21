@@ -277,5 +277,5 @@
   ],
   "is_verified": true,
   "algorithm": "Epsilon-constraint + Pareto filter (scipy L-BFGS-B)",
-  "time_seconds": 2.7485161190270446
+  "time_seconds": 2.315410837996751
 }

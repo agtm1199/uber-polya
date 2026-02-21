@@ -168,5 +168,5 @@
     "all_passed": true
   },
   "algorithm": "EOQ + (s,Q) reorder point + Newsvendor",
-  "time_seconds": 0.002817382977809757
+  "time_seconds": 0.0019171980093233287
 }

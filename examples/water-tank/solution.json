@@ -23,7 +23,7 @@
   },
   "lagrange_multiplier": 2.9291837750911043,
   "algorithm": "Symbolic Differentiation + Critical Point Analysis (SymPy)",
-  "time_seconds": 0.2988955990294926,
+  "time_seconds": 0.2833153899991885,
   "verification": {
     "volume_constraint_satisfied": true,
     "surface_area_recomputed_matches": true,

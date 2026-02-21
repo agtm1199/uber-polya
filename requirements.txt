@@ -1,0 +1,41 @@
+# uber-polya Python dependencies
+# Core solver libraries
+networkx
+pulp
+z3-solver
+sympy
+scipy
+matplotlib
+numpy
+cvxpy
+statsmodels
+
+# Geometry & financial
+shapely
+numpy-financial
+
+# Game theory & optimization
+nashpy
+pymoo
+
+# Time series
+prophet
+arch
+ruptures
+
+# Survival analysis
+lifelines
+
+# Machine learning
+scikit-learn
+xgboost
+umap-learn
+pandas
+
+# Simulation & causal
+simpy
+dowhy
+
+# Testing
+pytest
+pytest-timeout

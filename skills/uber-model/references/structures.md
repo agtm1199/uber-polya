@@ -1,6 +1,6 @@
 # Mathematical Structure Catalog
 
-**Scope**: Discrete Mathematics (32 structures), Continuous Optimization (5 structures), Statistical Inference (6 structures), Linear Algebra (4 structures), Calculus (3 structures), Geometry & Trigonometry (4 structures), Financial Mathematics (1 structure)
+**Scope**: Discrete Mathematics (32 structures), Continuous Optimization (5 structures), Statistical Inference (6 structures), Linear Algebra (4 structures), Calculus (3 structures), Geometry & Trigonometry (4 structures), Financial Mathematics (1 structure), Game Theory (3 structures), Decision Analysis (3 structures), Multi-Objective Optimization (3 structures)
 
 A catalog of mathematical structures organized by domain. Use this to match real-world problems to mathematical models during Phase 2 of the uber-model skill.
 
@@ -785,6 +785,18 @@ Quick lookup: match a real-world pattern to its primary discrete math structure.
 | Investment comparison | Cash flow stream | NPV / IRR | Financial Math |
 | Loan / mortgage payment | Cash flow stream | PMT / amortization | Financial Math |
 | Savings / retirement planning | Cash flow stream | Compound interest / FV | Financial Math |
+| Pricing / bidding competition | Strategic-form game | Nash equilibrium | Game Theory |
+| Negotiate / bargain | Extensive-form game | Bargaining solution | Game Theory |
+| Divide fairly / share costs | Cooperative game | Shapley value | Game Theory |
+| Auction / procurement | Strategic-form game | Vickrey / VCG mechanism | Game Theory |
+| Voting power analysis | Cooperative game | Shapley-Shubik index | Game Theory |
+| Choose best option under risk | Decision tree | Expected value / EMV | Decision Analysis |
+| Rank alternatives by criteria | Multi-criteria problem | AHP / TOPSIS | Decision Analysis |
+| Risk tolerance / insurance | Utility function | Expected utility | Decision Analysis |
+| Decide with no probabilities | Decision tree | Minimax regret | Decision Analysis |
+| Balance cost vs. quality | Pareto set | Pareto frontier | Multi-Objective Opt |
+| Meet multiple targets | Goal model | Goal programming | Multi-Objective Opt |
+| Explore design trade-offs | Objective space | NSGA-II / MOEA/D | Multi-Objective Opt |
 
 ---
 
@@ -1348,6 +1360,237 @@ FV = PV · (1+r)^n
 
 ---
 
+## 15. Game Theory
+
+### 15.1 Strategic-Form (Normal-Form) Game
+
+**Definition**: A simultaneous-move game defined by: N players, action sets A_1, ..., A_N, and payoff functions u_i: A_1 × ... × A_N → R for each player.
+
+**Indicators**: "compete", "pricing war", "negotiate", "strategic interaction", "players choose simultaneously", "payoff matrix", "best response"
+
+**Template**:
+```
+Players: {1, 2, ..., N}
+Actions: A_i for each player i
+Payoffs: u_i(a_1, ..., a_N) for each player i
+Nash equilibrium: no player can unilaterally improve
+  u_i(a_i*, a_{-i}*) ≥ u_i(a_i, a_{-i}*) for all a_i in A_i
+```
+
+**Examples**:
+- Pricing competition: two firms set prices simultaneously
+- Market entry: firms decide whether to enter a market
+- Resource sharing: players choose how much to contribute to public good
+- Bidding strategy: bidders choose bids in a sealed-bid auction
+
+**Key problems**: Nash equilibrium, dominant strategies, mixed strategies, minimax (zero-sum)
+
+---
+
+### 15.2 Extensive-Form Game
+
+**Definition**: A sequential game represented as a game tree: nodes (decision points), edges (actions), information sets (what a player knows), and terminal payoffs.
+
+**Indicators**: "sequential", "moves first", "observes", "game tree", "bluff", "perfect/imperfect information", "backward induction"
+
+**Template**:
+```
+Game tree: T = (V, E) with root
+Players: assigned to decision nodes
+Information sets: partition of each player's nodes
+Actions: edges from each node
+Payoffs: at terminal nodes
+Solve by backward induction (perfect info) or sequential equilibrium (imperfect info)
+```
+
+**Examples**:
+- Ultimatum game: proposer offers split, responder accepts or rejects
+- Stackelberg competition: leader commits to quantity, follower responds
+- Negotiation rounds: alternating offers over multiple rounds
+- Entry deterrence: incumbent threatens, entrant decides
+
+**Key problems**: Subgame-perfect equilibrium, backward induction, commitment strategies
+
+---
+
+### 15.3 Coalition / Cooperative Game
+
+**Definition**: A game where players can form binding coalitions. Defined by a set N of players and a characteristic function v: 2^N → R mapping each coalition to its worth.
+
+**Indicators**: "coalition", "alliance", "cooperate", "share costs", "divide profits", "voting power", "fair allocation"
+
+**Template**:
+```
+Players: N = {1, 2, ..., n}
+Characteristic function: v(S) for each coalition S ⊆ N
+Core: allocations (x_1, ..., x_n) with Σx_i = v(N) and Σ_{i∈S} x_i ≥ v(S) for all S
+Shapley value: φ_i = Σ_S [|S|!(n-|S|-1)!/n!] [v(S∪{i}) - v(S)]
+```
+
+**Examples**:
+- Airport landing fees: airlines share runway costs by coalition value
+- Joint venture: partners allocate profit based on contributions
+- Voting power: Shapley-Shubik index for weighted voting systems
+- Cost sharing: municipalities share infrastructure costs
+
+**Key problems**: Shapley value, nucleolus, core, fair division
+
+---
+
+## 16. Decision Analysis
+
+### 16.1 Decision Tree / Influence Diagram
+
+**Definition**: A graphical model of sequential decisions under uncertainty. Decision nodes (squares), chance nodes (circles), and value nodes (diamonds) connected by arcs showing information flow.
+
+**Indicators**: "decide", "then observe", "if...then", "risk", "uncertainty", "what should I do", "sequential choice", "stages"
+
+**Template**:
+```
+Decision tree:
+  Decision node → action edges → chance nodes → outcome edges → payoffs
+  Solve by backward induction (fold back):
+    At chance nodes: E[V] = Σ p_i · V_i
+    At decision nodes: V* = max_a E[V | action a]
+Value of information: VOI = E[V | with info] - E[V | without info]
+```
+
+**Examples**:
+- R&D investment: invest → test result (success/fail) → commercialize or abandon
+- Medical treatment: test → diagnosis → treatment choice → outcome
+- Litigation: settle now vs. go to trial (win/lose) with discovery stages
+- Market entry: enter → demand (high/low) → expand or contract
+
+**Key problems**: Expected value, decision tree evaluation, value of perfect information, value of imperfect information
+
+---
+
+### 16.2 Preference Model / Utility Function
+
+**Definition**: A function u: X → R representing a decision-maker's preferences over outcomes, possibly under risk. Captures risk attitude (risk-averse: concave, risk-neutral: linear, risk-seeking: convex).
+
+**Indicators**: "prefer", "risk averse", "risk tolerance", "utility", "certainty equivalent", "indifferent between"
+
+**Template**:
+```
+Utility function: u(x) (monotonic)
+Risk aversion: u concave → risk-averse (Jensen's inequality: u(E[X]) > E[u(X)])
+Certainty equivalent: CE where u(CE) = E[u(X)]
+Risk premium: RP = E[X] - CE
+Common forms:
+  CRRA: u(x) = x^(1-γ) / (1-γ) (constant relative risk aversion)
+  CARA: u(x) = -e^(-αx) (constant absolute risk aversion)
+```
+
+**Examples**:
+- Insurance pricing: willingness to pay above expected loss
+- Investment choice: selecting between risky and safe assets
+- Salary negotiation: guaranteed vs. variable compensation
+- Medical decision: certain outcome vs. risky treatment
+
+**Key problems**: Expected utility, certainty equivalent, risk premium, utility elicitation
+
+---
+
+### 16.3 Multi-Criteria Problem
+
+**Definition**: A decision with multiple competing objectives evaluated across several criteria, where alternatives are ranked by aggregating scores.
+
+**Indicators**: "trade-off", "rank", "compare options", "criteria", "weighted score", "best overall", "vendor selection"
+
+**Template**:
+```
+Alternatives: A = {a_1, ..., a_m}
+Criteria: C = {c_1, ..., c_n} with weights w = (w_1, ..., w_n), Σw_i = 1
+Performance matrix: P[i,j] = score of alternative i on criterion j
+Aggregation: TOPSIS, AHP, ELECTRE, weighted sum, or MAUT
+Result: ranking or outranking relation
+```
+
+**Examples**:
+- Vendor selection: evaluate suppliers on cost, quality, delivery, service
+- Site selection: compare locations on cost, access, labor, zoning
+- Technology evaluation: compare platforms on features, cost, scalability, support
+- Apartment ranking: compare units on rent, commute, size, amenities
+
+**Key problems**: AHP, TOPSIS, ELECTRE, MAUT, sensitivity analysis
+
+---
+
+## 17. Multi-Objective Optimization
+
+### 17.1 Pareto Set / Efficient Frontier
+
+**Definition**: The set of all feasible solutions where no objective can be improved without worsening another. Also called the Pareto front or efficient frontier.
+
+**Indicators**: "trade-off", "multiple objectives", "balance", "Pareto", "efficient frontier", "no solution dominates all"
+
+**Template**:
+```
+Objectives: f_1(x), ..., f_k(x) (all minimized without loss of generality)
+Pareto dominance: x dominates y iff f_i(x) ≤ f_i(y) for all i and f_j(x) < f_j(y) for some j
+Pareto front: {x : no feasible y dominates x}
+Trade-off rate: df_i/df_j along the Pareto front (marginal rate of substitution)
+```
+
+**Examples**:
+- Cost vs. quality: cheaper products sacrifice quality
+- Risk vs. return: efficient frontier in portfolio optimization
+- Speed vs. fuel: faster delivery uses more fuel
+- Accuracy vs. interpretability: complex models are harder to explain
+
+**Key problems**: Pareto frontier enumeration, scalarization, NSGA-II
+
+---
+
+### 17.2 Objective Space
+
+**Definition**: The image of the feasible set under the objective functions. Each feasible solution x maps to a point (f_1(x), ..., f_k(x)) in R^k.
+
+**Indicators**: "objective values", "feasible region in objective space", "attainable set", "utopia point"
+
+**Template**:
+```
+Objective space: Y = {(f_1(x), ..., f_k(x)) : x ∈ X}
+Utopia point: y* = (min f_1, ..., min f_k) — ideal but usually infeasible
+Nadir point: worst values on Pareto front per objective
+Mapping: decision space X → objective space Y via f
+```
+
+**Examples**:
+- Scatter plot of cost vs. quality for all design alternatives
+- Risk-return plot in portfolio optimization
+- Performance-price plot for product comparison
+- Emissions-cost plot for energy policy alternatives
+
+**Key problems**: Reference point method, achievement scalarizing, utopia/nadir estimation
+
+---
+
+### 17.3 Goal / Aspiration Model
+
+**Definition**: A multi-objective model where the decision-maker specifies target levels (goals) for each objective, and the solver minimizes deviations from these goals.
+
+**Indicators**: "target", "aspiration", "goal", "at least X for objective 1 and at most Y for objective 2", "satisfice"
+
+**Template**:
+```
+Goals: g_1, ..., g_k (target level for each objective)
+Deviations: d_i^+ (over-achievement), d_i^- (under-achievement)
+f_i(x) - d_i^+ + d_i^- = g_i for all i
+Minimize: Σ w_i · (d_i^+ + d_i^-) or lexicographic over priority levels
+```
+
+**Examples**:
+- Budget planning: meet profit target, don't exceed spending
+- Manufacturing: meet production target, minimize defects, don't exceed overtime
+- Urban planning: house enough residents, maintain green space, limit costs
+- Scheduling: meet deadlines, balance workload, minimize overtime
+
+**Key problems**: Goal programming, lexicographic optimization, satisficing
+
+---
+
 ## Cross-Reference Index
 
 Where to go next after identifying a structure.
@@ -1368,5 +1611,8 @@ Where to go next after identifying a structure.
 | 12. Calculus | §23 Calculus (A107-A116) | §4 SymPy, §5 SciPy | §10 Calculus Results |
 | 13. Geometry & Trigonometry | §24 Geometry & Trig (A117-A126) | shapely, scipy.spatial | §11 Geometry Results |
 | 14. Financial Mathematics | §25 Financial Math (A127-A134) | numpy-financial | §12 Financial Results |
+| 15. Game Theory | §26 Game Theory (A135-A146) | §13 nashpy | §13 Game Theory Results |
+| 16. Decision Analysis | §27 Decision Analysis (A147-A156) | numpy, scipy, §2 PuLP | §14 Decision Analysis Results |
+| 17. Multi-Objective Optimization | §28 Multi-Objective Opt (A157-A164) | §14 pymoo, §2 PuLP, §5 SciPy | §15 Multi-Objective Results |
 
 Also see: **problem-classification.md** for rapid pattern matching from natural language to structure, **common-mistakes.md** for modeling pitfalls by structure type.

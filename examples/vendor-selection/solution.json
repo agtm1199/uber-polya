@@ -1,0 +1,62 @@
+{
+  "recommended_vendor": "CoreVault",
+  "topsis_ranking": [
+    {
+      "vendor": "CoreVault",
+      "score": 0.615648
+    },
+    {
+      "vendor": "DataSphere",
+      "score": 0.572444
+    },
+    {
+      "vendor": "SkyGrid",
+      "score": 0.531459
+    },
+    {
+      "vendor": "NimbusForge",
+      "score": 0.440333
+    },
+    {
+      "vendor": "CloudPeak",
+      "score": 0.368113
+    }
+  ],
+  "weighted_sum_ranking": [
+    {
+      "vendor": "NimbusForge",
+      "score": 0.62213
+    },
+    {
+      "vendor": "SkyGrid",
+      "score": 0.609188
+    },
+    {
+      "vendor": "CloudPeak",
+      "score": 0.57959
+    },
+    {
+      "vendor": "CoreVault",
+      "score": 0.539163
+    },
+    {
+      "vendor": "DataSphere",
+      "score": 0.241314
+    }
+  ],
+  "ahp_weights": {
+    "Cost": 0.241314,
+    "Performance": 0.351615,
+    "Security": 0.241314,
+    "Support": 0.165757
+  },
+  "consistency_ratio": 0.000642,
+  "lambda_max": 4.001735,
+  "sensitivity": {
+    "any_top_change": true,
+    "perturbation_count": 8
+  },
+  "algorithm": "AHP (eigenvalue method) + TOPSIS (ideal-point distance)",
+  "time_seconds": 0.0017995950183831155,
+  "is_feasible": true
+}

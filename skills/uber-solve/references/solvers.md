@@ -618,6 +618,16 @@ for gamma in [0.1, 0.5, 1.0, 5.0, 10.0]:
 | Nearest neighbors | scipy.spatial.KDTree | sklearn.neighbors |
 | NPV / IRR / PMT | numpy-financial | custom |
 | Amortization | numpy-financial (ppmt, ipmt) | custom |
+| Nash equilibrium (2-player) | nashpy | custom LP |
+| Mixed strategy | nashpy | scipy.optimize.linprog |
+| Zero-sum game (minimax) | nashpy | scipy.optimize.linprog |
+| Shapley value | custom (itertools) | -- |
+| Decision tree evaluation | custom (recursive) | -- |
+| AHP / pairwise ranking | numpy.linalg.eig | custom |
+| TOPSIS / MCDA | numpy | custom |
+| Multi-objective (2-3 obj) | pymoo (NSGA2) | scipy + Pareto filter |
+| Multi-objective (many obj) | pymoo (MOEAD) | -- |
+| Goal programming | PuLP | cvxpy |
 
 ## §10: shapely — Computational Geometry
 
@@ -708,7 +718,7 @@ print(f"NPV: ${npv:,.0f}, IRR: {irr:.1%}, Monthly: ${pmt:,.2f}")
 ## Installation One-Liner
 
 ```bash
-pip install networkx pulp z3-solver sympy scipy ortools numpy cvxpy shapely numpy-financial
+pip install networkx pulp z3-solver sympy scipy ortools numpy cvxpy shapely numpy-financial nashpy pymoo
 ```
 
 ## Dependency Check Script
@@ -727,6 +737,8 @@ libs = {
     'cvxpy': 'cvxpy',
     'shapely': 'shapely',
     'numpy-financial': 'numpy_financial',
+    'nashpy': 'nashpy',
+    'pymoo': 'pymoo',
 }
 for name, module in libs.items():
     try:
@@ -736,6 +748,82 @@ for name, module in libs.items():
     except ImportError:
         print(f"  [MISSING] {name} -- pip install {name}")
 ```
+
+---
+
+## §13: nashpy — Game Theory (Nash Equilibrium Computation)
+
+**Install**: `pip install nashpy`
+**Import**: `import nashpy as nash`
+
+**Core API**:
+
+| Function | What It Does | Example |
+|---|---|---|
+| `Game(A, B)` | Create 2-player game from payoff matrices | `game = nash.Game(A, B)` |
+| `.support_enumeration()` | Find all Nash equilibria | `list(game.support_enumeration())` |
+| `.lemke_howson_enumeration()` | Find equilibria via Lemke-Howson | `list(game.lemke_howson_enumeration())` |
+| `.vertex_enumeration()` | Find equilibria via vertex enumeration | `list(game.vertex_enumeration())` |
+
+**Typical usage**:
+```python
+import nashpy as nash
+import numpy as np
+
+A = np.array([[3, 0], [5, 1]])  # row player
+B = np.array([[3, 5], [0, 1]])  # column player
+game = nash.Game(A, B)
+for eq in game.support_enumeration():
+    print(f"Row: {eq[0].round(3)}, Col: {eq[1].round(3)}")
+    print(f"Row payoff: {eq[0] @ A @ eq[1]:.3f}")
+```
+
+**Gotchas**:
+- Only supports 2-player games; for N-player, use custom LP formulation
+- Support enumeration is exponential in strategy count; fine for n ≤ ~20
+- Zero-sum games: pass `Game(A, -A)` for automatic minimax
+
+---
+
+## §14: pymoo — Multi-Objective Optimization
+
+**Install**: `pip install pymoo`
+**Import**: `from pymoo.optimize import minimize`
+
+**Core API**:
+
+| Function | What It Does | Example |
+|---|---|---|
+| `NSGA2(pop_size=N)` | Non-dominated Sorting GA II | `algorithm = NSGA2(pop_size=100)` |
+| `MOEAD(ref_dirs, ...)` | Decomposition-based MOEA | `algorithm = MOEAD(ref_dirs)` |
+| `minimize(problem, algo, term)` | Run optimization | `res = minimize(prob, algo, ('n_gen', 200))` |
+| `get_reference_directions(...)` | Generate weight vectors | `ref_dirs = get_reference_directions("das-dennis", 3, n_partitions=12)` |
+| `get_problem(name)` | Load benchmark problem | `problem = get_problem("zdt1")` |
+
+**Defining a custom problem**:
+```python
+from pymoo.core.problem import ElementwiseProblem
+import numpy as np
+
+class MyProblem(ElementwiseProblem):
+    def __init__(self):
+        super().__init__(n_var=2, n_obj=2, n_ieq_constr=0,
+                         xl=np.array([0, 0]), xu=np.array([5, 5]))
+    def _evaluate(self, x, out, *args, **kwargs):
+        out["F"] = [x[0]**2 + x[1]**2, (x[0]-3)**2 + (x[1]-3)**2]
+
+from pymoo.algorithms.moo.nsga2 import NSGA2
+from pymoo.optimize import minimize as pymoo_minimize
+
+res = pymoo_minimize(MyProblem(), NSGA2(pop_size=100), ('n_gen', 200), seed=1, verbose=False)
+print(f"Found {len(res.F)} Pareto-optimal points")
+```
+
+**Gotchas**:
+- `res.X` = decision variables, `res.F` = objective values on Pareto front
+- For many objectives (≥3), prefer MOEA/D over NSGA-II
+- Population size should be ≥ 4× number of variables
+- Set `seed` for reproducibility
 
 ---
 
@@ -755,6 +843,8 @@ for name, module in libs.items():
 | §10 shapely | §13 Geometry (13.1-13.3) | §24 Geometry (A117, A119, A124) |
 | §11 scipy.spatial | §13 Geometry (13.3) | §24 Geometry (A120-A123) |
 | §12 numpy-financial | §14 Financial Math (14.1) | §25 Financial Math (A127-A134) |
+| §13 nashpy | §15 Game Theory (15.1-15.2) | §26 Game Theory (A135-A137, A145) |
+| §14 pymoo | §17 Multi-Objective Opt (17.1-17.2) | §28 Multi-Objective Opt (A160-A161) |
 
 Note: numpy.linalg and scipy.linalg (used for §22 Linear Algebra, A95-A106) are submodules of numpy and scipy (§5, §8) — no separate install needed. SymPy (§4) handles §23 Calculus (A107-A116).
 

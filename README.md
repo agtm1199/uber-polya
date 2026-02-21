@@ -128,26 +128,29 @@ Each skill's output feeds the next. The pipeline is Socratic: uber-polya asks qu
 | [Traffic Flow](examples/traffic-flow/) | Linear algebra | Gaussian elimination (numpy) |
 | [Water Tank](examples/water-tank/) | Calculus optimization | Symbolic differentiation (SymPy) |
 | [Land Survey](examples/land-survey/) | Computational geometry | Shoelace + convex hull (shapely) |
+| [Nash Equilibrium](examples/nash-equilibrium/) | Game theory | Support enumeration (nashpy) |
+| [Vendor Selection](examples/vendor-selection/) | Decision analysis (MCDA) | AHP + TOPSIS (numpy) |
+| [Pareto Optimization](examples/pareto-optimization/) | Multi-objective optimization | Epsilon-constraint + Pareto filter |
 
 ## What's Under the Hood
 
 ### The Knowledge Base
 
-179 algorithms, 55 structures, 17 heuristics, 17 solver libraries -- curated, cross-referenced, and organized for rapid problem-solving.
+209 algorithms, 64 structures, 17 heuristics, 19 solver libraries -- curated, cross-referenced, and organized for rapid problem-solving.
 
 | Catalog | Entries |
 |---------|---------|
 | Polya's Heuristics | 17 heuristics with Socratic questions |
-| Structure Catalog | 55 structures across 14 mathematical domains |
+| Structure Catalog | 64 structures across 17 mathematical domains |
 | Problem Classification | Decision tree + pattern table for rapid matching |
-| Algorithm Catalogs | 179 algorithms (discrete math, continuous optimization, statistics, linear algebra, calculus, geometry, financial math) |
-| Solver Ecosystem | 17 Python libraries (NetworkX, PuLP, Z3, SymPy, SciPy, OR-Tools, cvxpy, statsmodels, PyMC, shapely, numpy-financial, and more) |
+| Algorithm Catalogs | 209 algorithms (discrete math, continuous optimization, statistics, linear algebra, calculus, geometry, financial math, game theory, decision analysis, multi-objective optimization) |
+| Solver Ecosystem | 19 Python libraries (NetworkX, PuLP, Z3, SymPy, SciPy, OR-Tools, cvxpy, statsmodels, PyMC, shapely, numpy-financial, nashpy, pymoo, and more) |
 | Interpretation Patterns | Domain-specific math-to-reality translation |
-| Visualization Guide | 21 chart types with matplotlib templates |
+| Visualization Guide | 24 chart types with matplotlib templates |
 
 ### Domains Covered
 
-Graph Theory, Combinatorics, Set Theory, Logic, Number Theory, Relations & Orders, Optimization, Discrete Probability, Continuous Optimization, Statistical Inference, Linear Algebra, Calculus, Geometry & Trigonometry, Financial Mathematics.
+Graph Theory, Combinatorics, Set Theory, Logic, Number Theory, Relations & Orders, Optimization, Discrete Probability, Continuous Optimization, Statistical Inference, Linear Algebra, Calculus, Geometry & Trigonometry, Financial Mathematics, Game Theory, Decision Analysis, Multi-Objective Optimization.
 
 ### Expansion Roadmap
 
@@ -160,11 +163,12 @@ Graph Theory, Combinatorics, Set Theory, Logic, Number Theory, Relations & Order
 | Calculus | Shipped | 10 algorithms, 3 structures, SymPy/scipy.integrate |
 | Geometry & Trigonometry | Shipped | 10 algorithms, 4 structures, shapely/scipy.spatial |
 | Financial Mathematics | Shipped | 8 algorithms, 1 structure, numpy-financial |
-| Game Theory | Planned | Nash equilibrium, fair division, mechanism design |
+| Game Theory | Shipped | 12 algorithms, 3 structures, nashpy |
+| Decision Analysis | Shipped | 10 algorithms, 3 structures, numpy/scipy |
+| Multi-Objective Optimization | Shipped | 8 algorithms, 3 structures, pymoo |
 | Machine Learning | Planned | Classification, clustering, dimensionality reduction |
 | Simulation | Planned | Monte Carlo, discrete-event, agent-based |
 | Time Series | Planned | ARIMA, forecasting, anomaly detection |
-| Decision Analysis | Planned | Multi-criteria, decision trees, utility theory |
 
 New domains plug in as reference files without changing the core Polya workflow. Contributions welcome -- see [CONTRIBUTING.md](CONTRIBUTING.md).
 
@@ -176,7 +180,7 @@ New domains plug in as reference files without changing the core Polya workflow.
 Optional Python packages (installed as needed):
 
 ```bash
-pip install networkx pulp z3-solver sympy scipy matplotlib numpy cvxpy statsmodels shapely numpy-financial
+pip install networkx pulp z3-solver sympy scipy matplotlib numpy cvxpy statsmodels shapely numpy-financial nashpy pymoo
 ```
 
 ## Design Principles

@@ -4,6 +4,45 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.6.0] - 2026-02-20
+
+### Added
+
+- **Game Theory domain** seeded end-to-end:
+  - 3 new structures in structures.md (§15: strategic-form game, extensive-form game, coalition/cooperative game)
+  - 12 new algorithms in algorithms.md (A135-A146: Nash equilibrium, mixed strategy, minimax, Shapley value, fair division, Vickrey auction, repeated games, ESS, nucleolus, Nash bargaining, VCG mechanism)
+  - nashpy solver reference in solvers.md (§13)
+  - 2 new interpretation patterns (§13: Nash equilibrium results, Shapley value/fair division results)
+  - 1 new chart type in visualization.md (§22 payoff matrix heatmap)
+  - **Nash Equilibrium — Coffee Shop Pricing** worked example (examples/nash-equilibrium/)
+- **Decision Analysis domain** seeded end-to-end:
+  - 3 new structures in structures.md (§16: decision tree/influence diagram, preference model/utility function, multi-criteria problem)
+  - 10 new algorithms in algorithms.md (A147-A156: EMV, expected utility, decision tree evaluation, sensitivity/tornado, AHP, TOPSIS, ELECTRE, Bayesian decision, minimax regret, MAUT)
+  - 2 new interpretation patterns (§14: EMV/decision tree results, MCDA ranking results)
+  - 1 new chart type in visualization.md (§23 tornado/sensitivity chart)
+  - **Vendor Selection — Cloud Infrastructure** worked example (examples/vendor-selection/)
+- **Multi-Objective Optimization domain** seeded end-to-end:
+  - 3 new structures in structures.md (§17: Pareto set/efficient frontier, objective space, goal/aspiration model)
+  - 8 new algorithms in algorithms.md (A157-A164: Pareto frontier enumeration, weighted sum, epsilon-constraint, NSGA-II, MOEA/D, goal programming, lexicographic optimization, reference point method)
+  - pymoo solver reference in solvers.md (§14)
+  - 2 new interpretation patterns (§15: Pareto frontier results, goal programming results)
+  - 1 new chart type in visualization.md (§24 Pareto frontier plot)
+  - **Pareto Optimization — Product Design** worked example (examples/pareto-optimization/)
+- Problem classification decision tree expanded with 3 new branches (COMPETE/NEGOTIATE, DECIDE/CHOOSE, OPTIMIZE MULTIPLE) and 19 new quick-lookup patterns
+- 10 new complexity quick-check entries in problem-classification.md
+- 6 new disambiguation tips in problem-classification.md
+- 13 new entries in cross-domain pattern table (structures.md)
+- Cross-reference indexes updated in all modified reference files
+
+### Changed
+
+- algorithms.md scope: 134 → 164 algorithms (added 30 across 3 new domains)
+- structures.md scope: 55 → 64 structures (added 9 across 3 new domains)
+- solvers.md: 12 → 14 solver library entries (added nashpy, pymoo)
+- interpretation-patterns.md: 20 → 26 pattern groups (added 6 across 3 new domains)
+- visualization.md: 21 → 24 chart types (added payoff matrix heatmap, tornado/sensitivity chart, Pareto frontier plot)
+- Updated README: 209 algorithms, 19 solver libraries, 64 structures, 17 domains, 23 examples
+
 ## [0.5.0] - 2026-02-20
 
 ### Added

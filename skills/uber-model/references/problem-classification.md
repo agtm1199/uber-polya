@@ -103,14 +103,43 @@ What is the user trying to do?
 │  ├─ Triangle problem (sides/angles)? ──── Law of Cosines/Sines (A125)
 │  └─ Spatial partition / zones? ─────────── Voronoi (A121)
 │
-└─ EVALUATE finances (investment, loan, savings)
-   ├─ Is an investment worth it? ──────────── NPV (A127) / IRR (A128)
-   ├─ What's my loan payment? ─────────────── PMT (A129)
-   ├─ Amortization breakdown? ─────────────── Amortization Schedule (A130)
-   ├─ How much will savings grow? ─────────── Compound Interest (A131) / FV
-   ├─ Value of regular payments? ──────────── Annuity Valuation (A132)
-   ├─ When do I break even? ───────────────── Break-Even (A133)
-   └─ Should I refinance? ─────────────────── Refinancing Comparison (A134)
+├─ EVALUATE finances (investment, loan, savings)
+│  ├─ Is an investment worth it? ──────────── NPV (A127) / IRR (A128)
+│  ├─ What's my loan payment? ─────────────── PMT (A129)
+│  ├─ Amortization breakdown? ─────────────── Amortization Schedule (A130)
+│  ├─ How much will savings grow? ─────────── Compound Interest (A131) / FV
+│  ├─ Value of regular payments? ──────────── Annuity Valuation (A132)
+│  ├─ When do I break even? ───────────────── Break-Even (A133)
+│  └─ Should I refinance? ─────────────────── Refinancing Comparison (A134)
+│
+├─ COMPETE / NEGOTIATE (strategic interaction)
+│  ├─ Two players, simultaneous moves? ────── Nash Equilibrium (A135-A136)
+│  ├─ Zero-sum competition? ───────────────── Minimax (A137)
+│  ├─ Share costs / divide profits? ────────── Shapley Value (A138) / Nucleolus (A144)
+│  ├─ Divide items fairly? ────────────────── Fair Division (A139-A140)
+│  ├─ Design an auction? ──────────────────── Vickrey / VCG (A141, A146)
+│  ├─ Repeated interaction? ───────────────── Tit-for-Tat / Repeated Games (A142)
+│  ├─ Population dynamics / evolution? ─────── ESS (A143)
+│  └─ Negotiate a deal? ──────────────────── Nash Bargaining (A145)
+│
+├─ DECIDE / CHOOSE (decision analysis)
+│  ├─ Simple choice under risk? ───────────── EMV (A147) / Expected Utility (A148)
+│  ├─ Sequential decisions? ───────────────── Decision Tree (A149)
+│  ├─ Which parameters matter most? ────────── Sensitivity / Tornado (A150)
+│  ├─ Rank options by criteria? ───────────── AHP (A151) / TOPSIS (A152)
+│  ├─ Eliminate dominated options? ─────────── ELECTRE (A153)
+│  ├─ Update beliefs with evidence? ────────── Bayesian Decision (A154)
+│  ├─ No probabilities available? ──────────── Minimax Regret (A155)
+│  └─ Multiple attributes with utilities? ─── MAUT (A156)
+│
+└─ OPTIMIZE MULTIPLE objectives (multi-objective)
+   ├─ Find all trade-offs? ────────────────── Pareto Frontier (A157)
+   ├─ Known importance weights? ───────────── Weighted Sum (A158)
+   ├─ Non-convex trade-offs? ──────────────── Epsilon-Constraint (A159)
+   ├─ Complex / black-box objectives? ──────── NSGA-II (A160) / MOEA/D (A161)
+   ├─ Meet target levels? ─────────────────── Goal Programming (A162)
+   ├─ Strict priority ordering? ───────────── Lexicographic (A163)
+   └─ Decision-maker has aspirations? ──────── Reference Point (A164)
 ```
 
 ---
@@ -169,6 +198,24 @@ One-line lookup from problem description to solution approach.
 | "compound interest / savings" | Time value of money | Cash flow stream | FV (A131) | numpy-financial |
 | "refinance / compare loans" | Refinancing | Cash flow stream | Comparison (A134) | numpy-financial |
 | "break even / payback period" | Break-even | Cash flow stream | Break-even (A133) | numpy/SymPy |
+| "compete / pricing war" | Nash equilibrium | Strategic-form game | Support enum (A135) | nashpy |
+| "zero-sum / minimax" | Minimax | Strategic-form game | Minimax (A137) | nashpy |
+| "fair share / cost allocation" | Shapley value | Cooperative game | Shapley (A138) | Custom |
+| "divide fairly / split" | Fair division | Cooperative game | Adjusted winner (A139) | Custom |
+| "auction / bidding" | Mechanism design | Strategic-form game | Vickrey/VCG (A141/A146) | Custom |
+| "negotiate / bargain" | Bargaining | Extensive-form game | Nash bargaining (A145) | scipy |
+| "voting power" | Shapley-Shubik | Cooperative game | Shapley (A138) | Custom |
+| "expected value / best bet" | Decision under risk | Decision tree | EMV (A147) | numpy |
+| "risk averse / utility" | Expected utility | Preference model | Utility (A148) | numpy |
+| "decision tree / stages" | Sequential decision | Decision tree | Backward induction (A149) | Custom |
+| "which parameters matter" | Sensitivity analysis | Decision tree | Tornado (A150) | matplotlib |
+| "rank options / criteria" | Multi-criteria | Multi-criteria problem | AHP (A151) / TOPSIS (A152) | numpy |
+| "best vendor / supplier" | MCDA ranking | Multi-criteria problem | TOPSIS (A152) | numpy |
+| "no probabilities / uncertainty" | Minimax regret | Decision tree | Minimax regret (A155) | numpy |
+| "trade-off / Pareto" | Multi-objective | Pareto set | Pareto front (A157) | pymoo |
+| "balance cost vs quality" | Multi-objective | Objective space | NSGA-II (A160) | pymoo |
+| "meet multiple targets" | Goal programming | Goal model | Goal LP (A162) | PuLP |
+| "priority ordering of goals" | Lexicographic | Goal model | Lex. opt (A163) | PuLP |
 
 ---
 
@@ -205,6 +252,15 @@ Before committing to an approach, verify the computational feasibility.
 | Polygon area / geometry | P | Any size | N/A |
 | Convex hull | P (O(n log n)) | Any size | N/A |
 | Financial (NPV/IRR/PMT) | P | Any size | N/A |
+| Nash equilibrium (2-player) | PPAD-complete | ~20 strategies (support enum) | Lemke-Howson (one equilibrium) |
+| Nash equilibrium (N-player) | PPAD-complete | ~5 players, ~10 strategies | Approximate Nash |
+| Shapley value | O(2^n) | ~20 players (exact) | Sampling approximation |
+| Fair division (N players) | P (round-robin) | Any size | Proportional guarantee |
+| Decision tree evaluation | P | Any size (O(nodes)) | N/A |
+| AHP / TOPSIS | P | Any size (O(mn)) | N/A |
+| NSGA-II | Heuristic | ~100 vars, 2-3 obj | Always finds feasible front |
+| MOEA/D | Heuristic | ~100 vars, many obj | Well-distributed front |
+| Goal programming | P (LP) | Any size (via LP solver) | N/A |
 
 ---
 
@@ -234,6 +290,16 @@ When two patterns seem equally likely, use these tiebreakers:
 
 **NPV vs. Break-Even**: NPV answers "is this investment worth it at a given rate?" Break-even answers "when does this investment pay for itself?" Use both together for a complete picture.
 
+**Game Theory vs. Decision Analysis**: If there's an opponent who reacts strategically (their payoff depends on your choice AND vice versa), it's game theory. If there's uncertainty but no strategic opponent (nature, market), it's decision analysis.
+
+**Nash Equilibrium vs. Optimization**: If you're finding the best strategy GIVEN that others also optimize, it's Nash. If you're optimizing from a single decision-maker's perspective, it's optimization.
+
+**MCDA vs. Multi-Objective Optimization**: If you have a fixed set of alternatives to rank, it's MCDA (AHP/TOPSIS). If you can generate new solutions by optimizing, it's multi-objective optimization (NSGA-II/goal programming).
+
+**Fair Division vs. Assignment**: If items are indivisible and players have preferences, it's fair division. If the goal is to minimize total cost or maximize total utility (no fairness concern), it's assignment.
+
+**Sensitivity vs. Multi-Objective**: If you're varying one parameter at a time to see impact, it's sensitivity analysis. If you're optimizing multiple objectives simultaneously, it's multi-objective optimization.
+
 ---
 
 ## Cross-Reference Index
@@ -257,5 +323,8 @@ After identifying the problem type here, consult the corresponding reference fil
 | DIFFERENTIATE/INTEGRATE | §12 Calculus | §23 Calculus (A107-A116) | (Symbolic/Numerical) |
 | MEASURE geometry | §13 Geometry | §24 Geometry (A117-A126) | (Direct compute) |
 | EVALUATE finances | §14 Financial Math | §25 Financial Math (A127-A134) | (Direct compute) |
+| COMPETE/NEGOTIATE | §15 Game Theory | §26 Game Theory (A135-A146) | (Custom / nashpy) |
+| DECIDE/CHOOSE | §16 Decision Analysis | §27 Decision Analysis (A147-A156) | (Custom / numpy) |
+| OPTIMIZE MULTIPLE | §17 Multi-Objective Opt | §28 Multi-Objective (A157-A164) | (pymoo / PuLP) |
 
 Also see: **common-mistakes.md** for pitfalls specific to each problem category.

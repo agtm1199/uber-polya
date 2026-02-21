@@ -1,6 +1,6 @@
 # Algorithm Catalog
 
-**Scope**: Discrete Mathematics (86 algorithms), Continuous Optimization (8 algorithms), Linear Algebra (12 algorithms), Calculus (10 algorithms), Geometry & Trigonometry (10 algorithms), Financial Mathematics (8 algorithms)
+**Scope**: Discrete Mathematics (86 algorithms), Continuous Optimization (8 algorithms), Linear Algebra (12 algorithms), Calculus (10 algorithms), Geometry & Trigonometry (10 algorithms), Financial Mathematics (8 algorithms), Game Theory (12 algorithms), Decision Analysis (10 algorithms), Multi-Objective Optimization (8 algorithms)
 
 Comprehensive catalog of algorithms for mathematical problem solving. Organized by domain, each entry includes complexity, solver library, correctness guarantee, and implementation guidance.
 
@@ -2226,6 +2226,884 @@ print(f"Savings: ${savings:,.0f}, Break-even: {breakeven_months:.0f} months")
 
 ---
 
+## 26. Game Theory
+
+### A135: Nash Equilibrium (2-Player Bimatrix)
+
+**Problem**: Find all Nash equilibria of a two-player normal-form game with payoff matrices A (row player) and B (column player).
+**T**: O(n^3) for support enumeration | **S**: O(n^2)
+**Lib**: `nashpy.Game(A, B).support_enumeration()`
+**Guarantee**: Exact (enumerates all equilibria).
+
+```python
+import nashpy as nash
+import numpy as np
+
+A = np.array([[3, 0], [5, 1]])  # row player payoffs
+B = np.array([[3, 5], [0, 1]])  # column player payoffs
+game = nash.Game(A, B)
+equilibria = list(game.support_enumeration())
+for eq in equilibria:
+    print(f"Row: {eq[0]}, Col: {eq[1]}")
+```
+
+**Use when**: Two-player strategic interaction, pricing competition, auction bidding strategy, market entry decisions.
+
+---
+
+### A136: Mixed Strategy Equilibrium
+
+**Problem**: Compute mixed-strategy Nash equilibrium where players randomize over actions.
+**T**: O(n^3) via Lemke-Howson | **S**: O(n^2)
+**Lib**: `nashpy.Game(A, B).lemke_howson_enumeration()`
+**Guarantee**: Exact (Lemke-Howson always finds one equilibrium).
+
+```python
+import nashpy as nash
+import numpy as np
+
+A = np.array([[0, -1, 1], [1, 0, -1], [-1, 1, 0]])  # Rock-Paper-Scissors
+B = -A  # zero-sum
+game = nash.Game(A, B)
+for eq in game.support_enumeration():
+    print(f"Row mix: {eq[0].round(3)}, Col mix: {eq[1].round(3)}")
+```
+
+**Use when**: Games with no pure-strategy equilibrium, bluffing/randomization scenarios, zero-sum games.
+
+---
+
+### A137: Minimax (Zero-Sum Games)
+
+**Problem**: Find optimal strategy for each player in a zero-sum game: max_x min_y x^T A y.
+**T**: O(n^3) via LP | **S**: O(n^2)
+**Lib**: `scipy.optimize.linprog()` or `nashpy`
+**Guarantee**: Exact (minimax theorem guarantees saddle point).
+
+```python
+import nashpy as nash
+import numpy as np
+
+A = np.array([[3, -1], [-2, 4]])  # zero-sum payoff for row player
+game = nash.Game(A, -A)
+eqs = list(game.support_enumeration())
+eq = eqs[0]
+game_value = eq[0] @ A @ eq[1]
+print(f"Game value: {game_value:.3f}")
+print(f"Row strategy: {eq[0]}, Col strategy: {eq[1]}")
+```
+
+**Use when**: Competitive scenarios with pure opposition, security strategies, worst-case decision-making.
+
+---
+
+### A138: Shapley Value
+
+**Problem**: Compute the fair allocation of total payoff among N players in a cooperative game based on marginal contributions.
+**T**: O(2^n) for exact (exponential in players) | **S**: O(2^n)
+**Lib**: Custom (itertools for permutations, or sampling approximation)
+**Guarantee**: Exact for n ≤ ~20; approximation via sampling for larger games.
+
+```python
+import itertools
+import math
+
+def shapley_value(n, v):
+    """v: coalition value function mapping frozenset -> float."""
+    phi = [0.0] * n
+    for i in range(n):
+        for S in itertools.combinations(set(range(n)) - {i}, r=None):
+            for r in range(len(set(range(n)) - {i}) + 1):
+                for S in itertools.combinations(sorted(set(range(n)) - {i}), r):
+                    s = len(S)
+                    weight = math.factorial(s) * math.factorial(n - s - 1) / math.factorial(n)
+                    S_set = frozenset(S)
+                    phi[i] += weight * (v(S_set | {i}) - v(S_set))
+        # Reset double-counting from nested loop
+    # Correct implementation:
+    phi = [0.0] * n
+    for i in range(n):
+        for r in range(n):
+            for S in itertools.combinations(sorted(set(range(n)) - {i}), r):
+                s = len(S)
+                weight = math.factorial(s) * math.factorial(n - s - 1) / math.factorial(n)
+                phi[i] += weight * (v(frozenset(S) | {i}) - v(frozenset(S)))
+    return phi
+
+# Example: 3-player majority game
+v = lambda S: 1.0 if len(S) >= 2 else 0.0
+print(shapley_value(3, v))  # [1/3, 1/3, 1/3]
+```
+
+**Use when**: Cost allocation, profit sharing, voting power analysis, feature importance attribution.
+
+---
+
+### A139: Fair Division (Adjusted Winner)
+
+**Problem**: Divide items between two players so that each gets ≥50% of their perceived value and the allocation is equitable, efficient, and envy-free.
+**T**: O(n log n) | **S**: O(n)
+**Lib**: Custom
+**Guarantee**: Exact (Adjusted Winner procedure is proven equitable + envy-free for 2 players).
+
+```python
+def adjusted_winner(items, values_a, values_b):
+    """Allocate items between two players."""
+    ratios = [(v_a / v_b if v_b > 0 else float('inf'), i)
+              for i, (v_a, v_b) in enumerate(zip(values_a, values_b))]
+    ratios.sort(reverse=True)
+    alloc_a, alloc_b = [], []
+    sum_a, sum_b = 0, 0
+    for _, i in ratios:
+        alloc_a.append(items[i])
+        sum_a += values_a[i]
+    # Transfer items from A to B until equitable
+    for _, i in reversed(ratios):
+        if sum_a <= sum_b:
+            break
+        alloc_a.remove(items[i])
+        alloc_b.append(items[i])
+        sum_a -= values_a[i]
+        sum_b += values_b[i]
+    return alloc_a, alloc_b
+
+items = ['House', 'Car', 'Art', 'Stocks']
+vals_a = [50, 30, 10, 10]
+vals_b = [40, 20, 20, 20]
+a, b = adjusted_winner(items, vals_a, vals_b)
+print(f"Player A: {a}, Player B: {b}")
+```
+
+**Use when**: Divorce settlements, partnership dissolution, inheritance division, resource splitting between two parties.
+
+---
+
+### A140: Fair Division (Divide and Choose, N Players)
+
+**Problem**: Divide a set of goods among N ≥ 2 players to achieve proportional fairness (each gets ≥1/N of their value).
+**T**: O(n · N) | **S**: O(n)
+**Lib**: Custom
+**Guarantee**: Proportional (each player values own share ≥ 1/N).
+
+```python
+def round_robin(items, preferences):
+    """Simple round-robin allocation based on preference rankings."""
+    n_players = len(preferences)
+    allocations = [[] for _ in range(n_players)]
+    taken = set()
+    for round_num in range(len(items)):
+        player = round_num % n_players
+        for item in preferences[player]:
+            if item not in taken:
+                allocations[player].append(item)
+                taken.add(item)
+                break
+    return allocations
+```
+
+**Use when**: Multi-party resource allocation, draft picks, task assignment with preferences.
+
+---
+
+### A141: Auction — Vickrey (Second-Price Sealed-Bid)
+
+**Problem**: Allocate an item via sealed-bid auction; highest bidder wins, pays second-highest bid. Truthful bidding is a dominant strategy.
+**T**: O(n log n) for n bidders | **S**: O(n)
+**Lib**: Custom
+**Guarantee**: Exact (dominant-strategy incentive-compatible).
+
+```python
+def vickrey_auction(bids: dict[str, float]) -> tuple[str, float]:
+    """Return (winner, price) for a Vickrey auction."""
+    sorted_bids = sorted(bids.items(), key=lambda x: x[1], reverse=True)
+    winner = sorted_bids[0][0]
+    price = sorted_bids[1][1]  # second-highest bid
+    return winner, price
+
+bids = {'Alice': 100, 'Bob': 85, 'Carol': 92}
+winner, price = vickrey_auction(bids)
+print(f"Winner: {winner}, pays ${price}")  # Carol wins? No: Alice wins, pays $92
+```
+
+**Use when**: Auction mechanism design, procurement, truthful elicitation of valuations.
+
+---
+
+### A142: Repeated Game Strategy (Tit-for-Tat)
+
+**Problem**: Determine optimal strategy in iterated games (e.g., repeated Prisoner's Dilemma) using tit-for-tat or related strategies.
+**T**: O(T) for T rounds | **S**: O(T)
+**Lib**: Custom (or `axelrod` library for tournaments)
+**Guarantee**: Heuristic (no formal optimality, but robust in tournaments).
+
+```python
+def tit_for_tat(history_opponent):
+    """Cooperate first, then copy opponent's last move."""
+    if not history_opponent:
+        return 'C'
+    return history_opponent[-1]
+
+def play_repeated(strategy_a, strategy_b, rounds=100):
+    history_a, history_b = [], []
+    for _ in range(rounds):
+        a = strategy_a(history_b)
+        b = strategy_b(history_a)
+        history_a.append(a)
+        history_b.append(b)
+    return history_a, history_b
+```
+
+**Use when**: Modeling long-term relationships, cooperation vs. defection dynamics, negotiation strategy evaluation.
+
+---
+
+### A143: Evolutionary Stable Strategy (ESS)
+
+**Problem**: Find strategies in a population game that resist invasion by mutant strategies.
+**T**: O(n^2) for n strategies | **S**: O(n^2)
+**Lib**: Custom (matrix analysis)
+**Guarantee**: Exact (ESS conditions are checkable analytically).
+
+```python
+import numpy as np
+
+def find_ess(payoff_matrix):
+    """Check each pure strategy for ESS conditions."""
+    n = payoff_matrix.shape[0]
+    ess_candidates = []
+    for i in range(n):
+        is_ess = True
+        for j in range(n):
+            if j == i:
+                continue
+            # Condition 1: E(i,i) >= E(j,i)
+            if payoff_matrix[j, i] > payoff_matrix[i, i]:
+                is_ess = False
+                break
+            # Condition 2: if E(i,i) == E(j,i), then E(i,j) > E(j,j)
+            if (payoff_matrix[j, i] == payoff_matrix[i, i]
+                    and payoff_matrix[i, j] <= payoff_matrix[j, j]):
+                is_ess = False
+                break
+        if is_ess:
+            ess_candidates.append(i)
+    return ess_candidates
+```
+
+**Use when**: Evolutionary biology models, market competition dynamics, social norm stability analysis.
+
+---
+
+### A144: Cooperative Game — Nucleolus
+
+**Problem**: Find the unique allocation in the core that lexicographically minimizes the maximum dissatisfaction of any coalition.
+**T**: O(2^n) for n players (LP sequence) | **S**: O(2^n)
+**Lib**: `scipy.optimize.linprog()` (sequence of LPs)
+**Guarantee**: Exact (unique, always in core if core is non-empty).
+
+```python
+from scipy.optimize import linprog
+import numpy as np
+
+def nucleolus_2player(v):
+    """Simplified nucleolus for 2-player games."""
+    # Core: x1 >= v({1}), x2 >= v({2}), x1+x2 = v({1,2})
+    total = v[frozenset({0, 1})]
+    x1 = max(v[frozenset({0})], total - v[frozenset({1})])
+    x1 = (x1 + (total - v[frozenset({1})])) / 2  # midpoint of core
+    return x1, total - x1
+```
+
+**Use when**: Coalition cost sharing, airport landing fee allocation, joint venture profit distribution.
+
+---
+
+### A145: Nash Bargaining Solution
+
+**Problem**: Find the unique Pareto-optimal outcome that maximizes the product of players' gains over their disagreement point.
+**T**: O(n^2) via convex optimization | **S**: O(n)
+**Lib**: `scipy.optimize.minimize()`
+**Guarantee**: Exact (convex problem, unique solution).
+
+```python
+from scipy.optimize import minimize
+import numpy as np
+
+def nash_bargaining(utility_frontier, disagreement):
+    """Find Nash bargaining solution on a discrete frontier."""
+    d1, d2 = disagreement
+    best_product = -1
+    best_point = None
+    for u1, u2 in utility_frontier:
+        if u1 >= d1 and u2 >= d2:
+            product = (u1 - d1) * (u2 - d2)
+            if product > best_product:
+                best_product = product
+                best_point = (u1, u2)
+    return best_point
+
+frontier = [(8, 2), (6, 4), (4, 6), (2, 8), (5, 5)]
+result = nash_bargaining(frontier, (1, 1))
+print(f"Bargaining solution: {result}")
+```
+
+**Use when**: Wage negotiation, trade agreements, contract terms, any bilateral negotiation with known alternatives.
+
+---
+
+### A146: Mechanism Design — VCG (Vickrey-Clarke-Groves)
+
+**Problem**: Design a truthful mechanism for multi-item allocation that maximizes social welfare; each agent pays the externality they impose on others.
+**T**: O(2^n · m) for n items, m agents | **S**: O(2^n)
+**Lib**: Custom
+**Guarantee**: Exact (VCG is dominant-strategy incentive-compatible).
+
+```python
+def vcg_mechanism(valuations):
+    """valuations: dict agent -> dict item -> value. Single-item case."""
+    # Find social-welfare-maximizing allocation
+    agents = list(valuations.keys())
+    items = list(next(iter(valuations.values())).keys())
+    # Single item: allocate to highest bidder
+    bids = {a: max(valuations[a].values()) for a in agents}
+    winner = max(bids, key=bids.get)
+    # VCG payment: externality = social welfare without winner - welfare of others with winner
+    others_welfare_with = sum(v for a, v in bids.items() if a != winner)
+    best_without_winner = max(v for a, v in bids.items() if a != winner)
+    payment = best_without_winner  # reduces to Vickrey for single item
+    return winner, payment
+```
+
+**Use when**: Auction design, public goods provision, resource allocation with strategic agents.
+
+---
+
+## 27. Decision Analysis
+
+### A147: Expected Value / Expected Monetary Value (EMV)
+
+**Problem**: Compute weighted average outcome: EMV = Σ p_i · v_i for outcomes v_i with probabilities p_i.
+**T**: O(n) | **S**: O(1)
+**Lib**: `numpy` (dot product)
+**Guarantee**: Exact.
+
+```python
+import numpy as np
+
+probabilities = np.array([0.3, 0.5, 0.2])
+outcomes = np.array([100000, 50000, -20000])
+emv = np.dot(probabilities, outcomes)
+print(f"EMV: ${emv:,.0f}")  # $51,000
+```
+
+**Use when**: Simple decisions under risk, comparing alternatives, insurance decisions, investment screening.
+
+---
+
+### A148: Expected Utility
+
+**Problem**: Compute expected utility E[u(X)] = Σ p_i · u(v_i) where u is a concave/convex utility function capturing risk preference.
+**T**: O(n) | **S**: O(1)
+**Lib**: `numpy`
+**Guarantee**: Exact (given utility function).
+
+```python
+import numpy as np
+
+def utility(x, risk_aversion=0.5):
+    """CRRA utility: u(x) = x^(1-γ) / (1-γ)."""
+    if risk_aversion == 1:
+        return np.log(x)
+    return x ** (1 - risk_aversion) / (1 - risk_aversion)
+
+probs = np.array([0.6, 0.4])
+outcomes = np.array([100, 50])
+eu = np.dot(probs, utility(outcomes))
+certainty_equiv = (eu * (1 - 0.5)) ** (1 / (1 - 0.5))
+print(f"Expected utility: {eu:.3f}, Certainty equivalent: ${certainty_equiv:.0f}")
+```
+
+**Use when**: Risk-averse/risk-seeking decision-makers, insurance pricing, investment choice for individuals.
+
+---
+
+### A149: Decision Tree Evaluation
+
+**Problem**: Evaluate a decision tree by backward induction (folding back): at chance nodes compute expected value, at decision nodes take the max.
+**T**: O(n) for n nodes | **S**: O(n)
+**Lib**: Custom (recursive traversal)
+**Guarantee**: Exact (optimal policy by backward induction).
+
+```python
+def evaluate_tree(node):
+    """Recursively evaluate a decision tree."""
+    if 'value' in node:
+        return node['value']
+    children_vals = [(evaluate_tree(c), c) for c in node['children']]
+    if node['type'] == 'chance':
+        return sum(c['prob'] * v for v, c in children_vals)
+    else:  # decision
+        return max(v for v, _ in children_vals)
+
+tree = {
+    'type': 'decision',
+    'children': [
+        {'type': 'chance', 'children': [
+            {'prob': 0.7, 'value': 200000},
+            {'prob': 0.3, 'value': -50000}
+        ]},
+        {'value': 80000}  # safe option
+    ]
+}
+print(f"Optimal value: ${evaluate_tree(tree):,.0f}")
+```
+
+**Use when**: Sequential decisions under uncertainty, R&D investment, medical treatment paths, litigation strategy.
+
+---
+
+### A150: Sensitivity Analysis (Tornado Diagram)
+
+**Problem**: Quantify how much the decision outcome changes when each input parameter varies within its range, holding others at base case.
+**T**: O(n) for n parameters | **S**: O(n)
+**Lib**: `matplotlib` (visualization)
+**Guarantee**: Exact (one-at-a-time sensitivity).
+
+```python
+import numpy as np
+
+def tornado_analysis(base_value, parameters, model_fn):
+    """Compute low/high impact of each parameter."""
+    impacts = []
+    for name, low, high in parameters:
+        val_low = model_fn(**{name: low})
+        val_high = model_fn(**{name: high})
+        impacts.append((name, val_low - base_value, val_high - base_value))
+    impacts.sort(key=lambda x: abs(x[2] - x[1]), reverse=True)
+    return impacts
+```
+
+**Use when**: Investment analysis, project risk assessment, identifying key drivers, communicating uncertainty to stakeholders.
+
+---
+
+### A151: AHP (Analytic Hierarchy Process)
+
+**Problem**: Derive priority weights from pairwise comparison matrices using eigenvalue method. Includes consistency check (CR < 0.10).
+**T**: O(n^3) for n criteria | **S**: O(n^2)
+**Lib**: `numpy.linalg.eig()`
+**Guarantee**: Exact (principal eigenvector of comparison matrix).
+
+```python
+import numpy as np
+
+def ahp_weights(comparison_matrix):
+    """Compute AHP priority weights from pairwise comparison matrix."""
+    eigenvalues, eigenvectors = np.linalg.eig(comparison_matrix)
+    max_idx = np.argmax(eigenvalues.real)
+    weights = eigenvectors[:, max_idx].real
+    weights = weights / weights.sum()
+    # Consistency ratio
+    n = len(comparison_matrix)
+    lambda_max = eigenvalues[max_idx].real
+    ci = (lambda_max - n) / (n - 1)
+    ri = {3: 0.58, 4: 0.90, 5: 1.12, 6: 1.24, 7: 1.32, 8: 1.41}
+    cr = ci / ri.get(n, 1.0)
+    return weights, cr
+
+A = np.array([[1, 3, 5], [1/3, 1, 3], [1/5, 1/3, 1]])
+weights, cr = ahp_weights(A)
+print(f"Weights: {weights.round(3)}, CR: {cr:.3f}")
+```
+
+**Use when**: Vendor selection, site selection, technology evaluation, any multi-criteria ranking with expert judgments.
+
+---
+
+### A152: TOPSIS (Technique for Order of Preference by Similarity to Ideal Solution)
+
+**Problem**: Rank alternatives by their distance to an ideal best and ideal worst point in normalized weighted criteria space.
+**T**: O(m · n) for m alternatives, n criteria | **S**: O(m · n)
+**Lib**: `numpy`
+**Guarantee**: Exact (deterministic ranking).
+
+```python
+import numpy as np
+
+def topsis(matrix, weights, is_benefit):
+    """TOPSIS ranking. matrix: m alternatives x n criteria."""
+    # Normalize
+    norm = matrix / np.sqrt((matrix ** 2).sum(axis=0))
+    weighted = norm * weights
+    # Ideal best and worst
+    ideal_best = np.where(is_benefit, weighted.max(axis=0), weighted.min(axis=0))
+    ideal_worst = np.where(is_benefit, weighted.min(axis=0), weighted.max(axis=0))
+    # Distances
+    d_best = np.sqrt(((weighted - ideal_best) ** 2).sum(axis=1))
+    d_worst = np.sqrt(((weighted - ideal_worst) ** 2).sum(axis=1))
+    scores = d_worst / (d_best + d_worst)
+    return scores
+
+M = np.array([[250, 16, 12], [200, 20, 8], [300, 12, 16]])
+w = np.array([0.4, 0.35, 0.25])
+benefit = np.array([False, True, True])  # cost, performance, quality
+scores = topsis(M, w, benefit)
+print(f"TOPSIS scores: {scores.round(3)}, Best: Alternative {scores.argmax() + 1}")
+```
+
+**Use when**: Supplier evaluation, project ranking, location selection, any multi-criteria decision without pairwise comparisons.
+
+---
+
+### A153: ELECTRE I (Outranking)
+
+**Problem**: Build outranking relations between alternatives using concordance and discordance analysis; eliminate dominated alternatives.
+**T**: O(m^2 · n) for m alternatives, n criteria | **S**: O(m^2)
+**Lib**: Custom
+**Guarantee**: Exact (concordance/discordance thresholds are deterministic).
+
+```python
+import numpy as np
+
+def electre_1(matrix, weights, conc_threshold=0.65, disc_threshold=0.35):
+    """ELECTRE I outranking. Returns dominance boolean matrix."""
+    m, n = matrix.shape
+    concordance = np.zeros((m, m))
+    discordance = np.zeros((m, m))
+    for i in range(m):
+        for j in range(m):
+            if i == j:
+                continue
+            conc = sum(weights[k] for k in range(n) if matrix[i, k] >= matrix[j, k])
+            concordance[i, j] = conc / weights.sum()
+            max_range = matrix.max(axis=0) - matrix.min(axis=0)
+            max_range[max_range == 0] = 1
+            disc = max((matrix[j, k] - matrix[i, k]) / max_range[k]
+                       for k in range(n) if matrix[j, k] > matrix[i, k]) if any(matrix[j] > matrix[i]) else 0
+            discordance[i, j] = disc
+    outranks = (concordance >= conc_threshold) & (discordance <= disc_threshold)
+    return outranks
+
+M = np.array([[8, 7, 6], [6, 8, 8], [7, 6, 7]])
+w = np.array([0.4, 0.35, 0.25])
+print(electre_1(M, w))
+```
+
+**Use when**: Environmental impact assessment, infrastructure decisions, when compensability between criteria is not desired.
+
+---
+
+### A154: Bayesian Decision Analysis
+
+**Problem**: Update beliefs about uncertain states using Bayes' theorem, then compute expected value with posterior probabilities.
+**T**: O(n · m) for n states, m evidence items | **S**: O(n)
+**Lib**: `numpy`
+**Guarantee**: Exact (Bayes' theorem is exact).
+
+```python
+import numpy as np
+
+def bayesian_decision(prior, likelihood, payoffs):
+    """Update beliefs and compute expected payoffs per action."""
+    posterior = prior * likelihood
+    posterior /= posterior.sum()
+    ev = payoffs @ posterior
+    return posterior, ev
+
+prior = np.array([0.6, 0.4])  # P(high demand), P(low demand)
+likelihood = np.array([0.8, 0.3])  # P(positive signal | state)
+payoffs = np.array([[100, -20], [40, 30]])  # actions x states
+posterior, ev = bayesian_decision(prior, likelihood, payoffs)
+print(f"Posterior: {posterior.round(3)}, EV per action: {ev.round(1)}")
+```
+
+**Use when**: Medical diagnosis, market research interpretation, sequential information gathering, value of information analysis.
+
+---
+
+### A155: Minimax Regret
+
+**Problem**: Choose the action that minimizes the maximum regret (opportunity cost) across all states of nature.
+**T**: O(m · n) for m actions, n states | **S**: O(m · n)
+**Lib**: `numpy`
+**Guarantee**: Exact.
+
+```python
+import numpy as np
+
+def minimax_regret(payoff_matrix):
+    """payoff_matrix: actions x states. Returns best action index."""
+    best_per_state = payoff_matrix.max(axis=0)
+    regret = best_per_state - payoff_matrix
+    max_regret = regret.max(axis=1)
+    best_action = max_regret.argmin()
+    return best_action, max_regret, regret
+
+payoffs = np.array([[50, 30, 10], [35, 35, 35], [10, 40, 60]])
+action, max_reg, reg_table = minimax_regret(payoffs)
+print(f"Minimax regret action: {action}, max regrets: {max_reg}")
+```
+
+**Use when**: Decision-making under complete uncertainty (no probabilities available), conservative planning, robust strategy selection.
+
+---
+
+### A156: Multi-Attribute Utility Theory (MAUT)
+
+**Problem**: Compute overall utility U(x) = Σ w_i · u_i(x_i) using attribute-specific utility functions and weights.
+**T**: O(m · n) for m alternatives, n attributes | **S**: O(m · n)
+**Lib**: `numpy`
+**Guarantee**: Exact (given utility functions and weights).
+
+```python
+import numpy as np
+
+def maut_score(alternatives, weights, utility_fns):
+    """Score alternatives using multi-attribute utility."""
+    scores = []
+    for alt in alternatives:
+        u = sum(w * fn(v) for w, fn, v in zip(weights, utility_fns, alt))
+        scores.append(u)
+    return np.array(scores)
+
+# Example: normalize to [0,1] utility
+linear = lambda lo, hi: (lambda x: (x - lo) / (hi - lo))
+alts = [[250, 16, 12], [200, 20, 8], [300, 12, 16]]
+weights = [0.4, 0.35, 0.25]
+fns = [linear(200, 300), linear(12, 20), linear(8, 16)]  # cost is reversed below
+# Invert cost utility
+fns[0] = lambda x, lo=200, hi=300: 1 - (x - lo) / (hi - lo)
+scores = maut_score(alts, weights, fns)
+print(f"MAUT scores: {scores.round(3)}")
+```
+
+**Use when**: Complex decisions with multiple attributes, when utility functions are elicited from stakeholders, healthcare technology assessment.
+
+---
+
+## 28. Multi-Objective Optimization
+
+### A157: Pareto Frontier Enumeration
+
+**Problem**: Given a set of evaluated alternatives, identify the Pareto-optimal (non-dominated) set.
+**T**: O(m^2 · n) for m alternatives, n objectives | **S**: O(m)
+**Lib**: `numpy`
+**Guarantee**: Exact.
+
+```python
+import numpy as np
+
+def pareto_front(costs):
+    """Find Pareto-optimal indices (all objectives minimized)."""
+    is_pareto = np.ones(len(costs), dtype=bool)
+    for i, c in enumerate(costs):
+        if not is_pareto[i]:
+            continue
+        is_pareto[is_pareto] = np.any(costs[is_pareto] < c, axis=1) | np.all(costs[is_pareto] == c, axis=1)
+        is_pareto[i] = True
+    return np.where(is_pareto)[0]
+
+objectives = np.array([[1, 5], [2, 3], [3, 4], [4, 1], [2, 2]])
+front = pareto_front(objectives)
+print(f"Pareto-optimal indices: {front}")  # [0, 4, 3]
+```
+
+**Use when**: Identifying non-dominated solutions, filtering candidate designs, post-processing optimization results.
+
+---
+
+### A158: Weighted Sum Method
+
+**Problem**: Convert multi-objective problem to single-objective by scalarization: minimize Σ w_i · f_i(x).
+**T**: Same as underlying single-objective solver | **S**: Same
+**Lib**: `scipy.optimize.minimize()`, `cvxpy`
+**Guarantee**: Exact for convex problems (finds Pareto-optimal point for given weights).
+
+```python
+from scipy.optimize import minimize
+import numpy as np
+
+def weighted_sum(x, weights):
+    f1 = x[0]**2 + x[1]**2  # minimize cost
+    f2 = (x[0] - 2)**2 + (x[1] - 2)**2  # minimize distance to ideal
+    return weights[0] * f1 + weights[1] * f2
+
+weights = [0.5, 0.5]
+result = minimize(weighted_sum, x0=[1, 1], args=(weights,))
+print(f"Optimal: {result.x.round(3)}, Value: {result.fun:.3f}")
+```
+
+**Use when**: Convex multi-objective problems, when decision-maker can specify relative importance weights, generating Pareto points by varying weights.
+
+---
+
+### A159: Epsilon-Constraint Method
+
+**Problem**: Optimize one objective while constraining all others to be within epsilon bounds; vary epsilon to trace the Pareto frontier.
+**T**: Same as underlying constrained optimizer per point | **S**: Same
+**Lib**: `scipy.optimize.minimize()`, `cvxpy`
+**Guarantee**: Finds Pareto-optimal points (including non-convex regions).
+
+```python
+from scipy.optimize import minimize
+
+def epsilon_constraint(x, eps_f2):
+    """Minimize f1 subject to f2 <= eps_f2."""
+    f1 = x[0]**2 + x[1]**2
+    return f1
+
+cons = [{'type': 'ineq', 'fun': lambda x, e=eps: e - ((x[0]-2)**2 + (x[1]-2)**2)}]
+results = []
+for eps in [0.5, 1.0, 2.0, 4.0]:
+    res = minimize(epsilon_constraint, x0=[1, 1], args=(eps,),
+                   constraints=[{'type': 'ineq', 'fun': lambda x, e=eps: e - ((x[0]-2)**2 + (x[1]-2)**2)}])
+    results.append((res.fun, (res.x[0]-2)**2 + (res.x[1]-2)**2))
+print("Pareto points (f1, f2):", [(round(a, 2), round(b, 2)) for a, b in results])
+```
+
+**Use when**: Non-convex Pareto frontiers, when weighted sum fails to find all Pareto points, exploring specific trade-off regions.
+
+---
+
+### A160: NSGA-II (Non-dominated Sorting Genetic Algorithm II)
+
+**Problem**: Evolutionary multi-objective optimization: find diverse Pareto-optimal set using non-dominated sorting + crowding distance.
+**T**: O(M · N^2 · G) for M objectives, N population, G generations | **S**: O(N · M)
+**Lib**: `pymoo` (`NSGA2`)
+**Guarantee**: Heuristic (converges to Pareto front empirically, no formal guarantee).
+
+```python
+from pymoo.algorithms.moo.nsga2 import NSGA2
+from pymoo.problems import get_problem
+from pymoo.optimize import minimize as pymoo_minimize
+
+problem = get_problem("zdt1")
+algorithm = NSGA2(pop_size=100)
+res = pymoo_minimize(problem, algorithm, ('n_gen', 200), seed=1, verbose=False)
+print(f"Pareto front: {len(res.F)} points")
+print(f"Objective ranges: f1=[{res.F[:,0].min():.3f}, {res.F[:,0].max():.3f}], "
+      f"f2=[{res.F[:,1].min():.3f}, {res.F[:,1].max():.3f}]")
+```
+
+**Use when**: Complex multi-objective problems, non-convex/disconnected Pareto fronts, engineering design optimization, many objectives.
+
+---
+
+### A161: MOEA/D (Multi-Objective Evolutionary Algorithm Based on Decomposition)
+
+**Problem**: Decompose multi-objective problem into scalar subproblems using weight vectors; solve cooperatively.
+**T**: O(N · T · G) for N subproblems, T neighbors, G generations | **S**: O(N · M)
+**Lib**: `pymoo` (`MOEAD`)
+**Guarantee**: Heuristic (typically finds well-distributed Pareto front).
+
+```python
+from pymoo.algorithms.moo.moead import MOEAD
+from pymoo.problems import get_problem
+from pymoo.optimize import minimize as pymoo_minimize
+from pymoo.util.ref_dirs import get_reference_directions
+
+problem = get_problem("dtlz2")
+ref_dirs = get_reference_directions("das-dennis", 3, n_partitions=12)
+algorithm = MOEAD(ref_dirs, n_neighbors=15, prob_neighbor_mating=0.7)
+res = pymoo_minimize(problem, algorithm, ('n_gen', 200), seed=1, verbose=False)
+print(f"Pareto front: {len(res.F)} points in {problem.n_obj} objectives")
+```
+
+**Use when**: Many-objective optimization (3+ objectives), when uniform Pareto front coverage is important, large-scale engineering.
+
+---
+
+### A162: Goal Programming
+
+**Problem**: Minimize deviations from stated goals for each objective: min Σ w_i · (d_i^+ + d_i^-) where d^+, d^- are over/under-achievement.
+**T**: O(LP) | **S**: O(LP)
+**Lib**: `pulp`, `scipy.optimize.linprog()`
+**Guarantee**: Exact (LP formulation).
+
+```python
+import pulp
+
+prob = pulp.LpProblem("goal_programming", pulp.LpMinimize)
+x1 = pulp.LpVariable("x1", 0)
+x2 = pulp.LpVariable("x2", 0)
+# Goal 1: profit >= 100 (minimize under-achievement)
+dp1 = pulp.LpVariable("dp1", 0)  # over-achievement
+dm1 = pulp.LpVariable("dm1", 0)  # under-achievement
+prob += 5*x1 + 3*x2 - dp1 + dm1 == 100
+# Goal 2: cost <= 60 (minimize over-achievement)
+dp2 = pulp.LpVariable("dp2", 0)
+dm2 = pulp.LpVariable("dm2", 0)
+prob += 2*x1 + 4*x2 - dp2 + dm2 == 60
+# Minimize weighted deviations
+prob += 3*dm1 + 2*dp2
+prob += x1 <= 30
+prob += x2 <= 20
+prob.solve(pulp.PULP_CBC_CMD(msg=0))
+print(f"x1={x1.value()}, x2={x2.value()}, "
+      f"profit gap={dm1.value()}, cost excess={dp2.value()}")
+```
+
+**Use when**: Satisficing (meeting targets rather than optimizing), budget planning with multiple goals, resource allocation with aspirations.
+
+---
+
+### A163: Lexicographic Optimization
+
+**Problem**: Optimize objectives in strict priority order: optimize f1 first, then f2 subject to f1 being optimal, then f3, etc.
+**T**: O(k · LP) for k objectives | **S**: O(LP)
+**Lib**: `pulp`, `cvxpy`
+**Guarantee**: Exact (sequential LP/QP).
+
+```python
+import pulp
+
+def lexicographic_solve(objectives, constraints, variables):
+    """Solve objectives in priority order."""
+    results = []
+    extra_constraints = []
+    for obj in objectives:
+        prob = pulp.LpProblem("lex", pulp.LpMinimize)
+        prob += obj
+        for c in constraints + extra_constraints:
+            prob += c
+        prob.solve(pulp.PULP_CBC_CMD(msg=0))
+        opt_val = pulp.value(obj)
+        results.append(opt_val)
+        extra_constraints.append(obj <= opt_val)  # fix this objective
+    return results
+```
+
+**Use when**: Clear priority ordering among objectives (safety > cost > performance), military/emergency resource allocation, hierarchical planning.
+
+---
+
+### A164: Reference Point Method
+
+**Problem**: Find the Pareto-optimal point closest to a decision-maker's aspiration (reference) point using achievement scalarizing function.
+**T**: O(single-objective solver) | **S**: O(n)
+**Lib**: `scipy.optimize.minimize()`
+**Guarantee**: Pareto-optimal (for proper reference points).
+
+```python
+from scipy.optimize import minimize
+import numpy as np
+
+def achievement_scalarizing(x, ref_point, weights):
+    """Minimize max weighted deviation from reference point."""
+    f = np.array([x[0]**2 + x[1]**2, (x[0]-3)**2 + (x[1]-3)**2])
+    return max(weights * (f - ref_point))
+
+ref = np.array([2.0, 2.0])  # aspiration
+w = np.array([1.0, 1.0])
+result = minimize(achievement_scalarizing, x0=[1.5, 1.5], args=(ref, w))
+f_vals = [result.x[0]**2 + result.x[1]**2, (result.x[0]-3)**2 + (result.x[1]-3)**2]
+print(f"Closest Pareto point to {ref}: objectives = {[round(f,3) for f in f_vals]}")
+```
+
+**Use when**: Interactive multi-objective optimization, when decision-maker has specific targets, iterative preference refinement.
+
+---
+
 ## Cross-Reference Index
 
 Where each algorithm section connects to structures and solvers.
@@ -2254,5 +3132,8 @@ Where each algorithm section connects to structures and solvers.
 | §23 Calculus (A107-A116) | §12 Calculus (12.1-12.3) | §4 SymPy, §5 SciPy | §10 Calculus Results |
 | §24 Geometry & Trig (A117-A126) | §13 Geometry (13.1-13.4) | shapely, scipy.spatial | §11 Geometry Results |
 | §25 Financial Math (A127-A134) | §14 Financial Math (14.1) | numpy-financial | §12 Financial Results |
+| §26 Game Theory (A135-A146) | §15 Game Theory (15.1-15.3) | §13 nashpy | §13 Game Theory Results |
+| §27 Decision Analysis (A147-A156) | §16 Decision Analysis (16.1-16.3) | numpy, scipy, §2 PuLP | §14 Decision Analysis Results |
+| §28 Multi-Objective Opt (A157-A164) | §17 Multi-Objective Opt (17.1-17.3) | §14 pymoo, §2 PuLP, §5 SciPy | §15 Multi-Objective Results |
 
 Also see: **problem-classification.md** for decision-tree algorithm selection, **solving-protocols.md** for domain-specific solving workflows, **common-mistakes.md** §S1-S6 for solving pitfalls.

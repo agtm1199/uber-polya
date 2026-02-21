@@ -41,6 +41,9 @@ Which chart for which result type. matplotlib/seaborn/NetworkX templates for com
 | Geometry / spatial | Annotated geometric diagram | 3D view | Matplotlib 3D projection |
 | Cash flow / investment | Cash flow bar chart | Cumulative view | Running NPV line |
 | Amortization | Stacked area (principal vs. interest) | Comparison | Side-by-side schedules |
+| Payoff matrix / game | Heatmap with annotations | Strategy comparison | Bar chart of payoffs |
+| Sensitivity / tornado | Horizontal bar chart (low/high) | Many parameters | Spider/radar chart |
+| Pareto frontier | Scatter plot (objective space) | Knee point highlight | Parallel coordinates |
 
 ---
 
@@ -1037,3 +1040,124 @@ plt.savefig('amortization_chart.png', dpi=150, bbox_inches='tight')
 ```
 
 **Key elements**: Stacked area (principal grows, interest shrinks over time), clear year axis, dollar labels, total payment line optional.
+
+---
+
+## 22. Payoff Matrix / Game Theory Heatmap
+
+**When to use**: Visualize payoff matrices for 2-player games, Nash equilibrium highlighting, strategy comparison.
+
+**Template**:
+```python
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+import seaborn as sns
+import numpy as np
+
+A = np.array([[3, 0], [5, 1]])  # row player payoffs
+B = np.array([[3, 5], [0, 1]])  # column player payoffs
+row_labels = ['Cooperate', 'Defect']
+col_labels = ['Cooperate', 'Defect']
+
+fig, axes = plt.subplots(1, 2, figsize=(12, 4))
+for ax, matrix, title in [(axes[0], A, 'Row Player Payoffs'),
+                           (axes[1], B, 'Column Player Payoffs')]:
+    sns.heatmap(matrix, annot=True, fmt='.1f', cmap='RdYlGn', center=0,
+                xticklabels=col_labels, yticklabels=row_labels, ax=ax,
+                linewidths=1, linecolor='white', cbar_kws={'shrink': 0.8})
+    ax.set_title(title, fontsize=13, fontweight='bold')
+    ax.set_xlabel('Column Player')
+    ax.set_ylabel('Row Player')
+    # Highlight Nash equilibrium cell
+    eq_row, eq_col = 1, 1  # example: (Defect, Defect)
+    ax.add_patch(plt.Rectangle((eq_col, eq_row), 1, 1,
+                               fill=False, edgecolor='red', linewidth=3))
+plt.suptitle('Game Payoff Matrix (Nash Equilibrium in red)', fontsize=14)
+plt.tight_layout()
+plt.savefig('payoff_matrix.png', dpi=150, bbox_inches='tight')
+```
+
+**Key elements**: Side-by-side heatmaps for each player, annotated cell values, Nash equilibrium highlighted with red border, diverging colormap centered at 0.
+
+---
+
+## 23. Tornado / Sensitivity Chart
+
+**When to use**: Show which parameters have the most impact on a decision outcome; horizontal bars extending from base case.
+
+**Template**:
+```python
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+import numpy as np
+
+params = ['Market size', 'Price', 'Cost', 'Discount rate', 'Growth rate']
+low_impact = [-30000, -20000, -15000, -8000, -5000]
+high_impact = [35000, 25000, 12000, 10000, 7000]
+base_value = 100000
+
+fig, ax = plt.subplots(figsize=(10, 5))
+y_pos = np.arange(len(params))
+ax.barh(y_pos, high_impact, align='center', color='#3fb950', alpha=0.8, label='High')
+ax.barh(y_pos, low_impact, align='center', color='#f85149', alpha=0.8, label='Low')
+ax.set_yticks(y_pos)
+ax.set_yticklabels(params)
+ax.set_xlabel(f'Change from Base Case (${base_value:,})')
+ax.set_title('Sensitivity Analysis — Tornado Diagram', fontsize=14)
+ax.axvline(x=0, color='black', linewidth=0.8)
+ax.legend(loc='lower right')
+for i, (lo, hi) in enumerate(zip(low_impact, high_impact)):
+    ax.text(lo - 1000, i, f'${base_value+lo:,}', ha='right', va='center', fontsize=8)
+    ax.text(hi + 1000, i, f'${base_value+hi:,}', ha='left', va='center', fontsize=8)
+plt.tight_layout()
+plt.savefig('tornado_chart.png', dpi=150, bbox_inches='tight')
+```
+
+**Key elements**: Horizontal bars sorted by total impact (widest at top), base case line at x=0, red/green for negative/positive impact, value labels at bar ends.
+
+---
+
+## 24. Pareto Frontier Plot
+
+**When to use**: Visualize trade-offs between competing objectives; highlight non-dominated solutions and knee points.
+
+**Template**:
+```python
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+import numpy as np
+
+# Objectives for all evaluated solutions
+all_f1 = np.random.uniform(0, 10, 50)
+all_f2 = 10 - all_f1 + np.random.normal(0, 1.5, 50)
+# Pareto front (sorted)
+pareto_f1 = np.sort(np.random.uniform(0, 10, 12))
+pareto_f2 = 10 - pareto_f1 + np.random.normal(0, 0.3, 12)
+
+fig, ax = plt.subplots(figsize=(8, 6))
+ax.scatter(all_f1, all_f2, c='#8b949e', alpha=0.4, s=30, label='Dominated')
+ax.scatter(pareto_f1, pareto_f2, c='#58a6ff', s=60, zorder=3, label='Pareto front')
+ax.plot(pareto_f1, pareto_f2, c='#58a6ff', linewidth=1.5, alpha=0.7)
+# Highlight knee point
+knee_idx = len(pareto_f1) // 2
+ax.scatter([pareto_f1[knee_idx]], [pareto_f2[knee_idx]],
+           c='#f0883e', s=120, zorder=4, marker='*', label='Knee point')
+ax.annotate('Knee', (pareto_f1[knee_idx], pareto_f2[knee_idx]),
+            textcoords='offset points', xytext=(10, 10), fontsize=10,
+            arrowprops=dict(arrowstyle='->', color='#f0883e'))
+# Utopia point
+ax.scatter([pareto_f1.min()], [pareto_f2.min()], c='#3fb950', s=80,
+           marker='D', zorder=4, label='Utopia (infeasible)')
+ax.set_xlabel('Objective 1 (Cost)', fontsize=12)
+ax.set_ylabel('Objective 2 (Time)', fontsize=12)
+ax.set_title('Pareto Frontier — Cost vs. Time Trade-off', fontsize=14)
+ax.legend(loc='upper right')
+ax.grid(True, alpha=0.3)
+plt.tight_layout()
+plt.savefig('pareto_frontier.png', dpi=150, bbox_inches='tight')
+```
+
+**Key elements**: Dominated points (grey), Pareto front (blue connected), knee point (star), utopia point (diamond), axis labels matching objectives, grid.

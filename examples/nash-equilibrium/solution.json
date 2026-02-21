@@ -1,0 +1,250 @@
+{
+  "game_1_2x2": {
+    "name": "2x2 Coffee Shop Pricing (Anti-coordination)",
+    "payoff_A": [
+      [
+        2.0,
+        5.0
+      ],
+      [
+        3.0,
+        4.0
+      ]
+    ],
+    "payoff_B": [
+      [
+        2.0,
+        3.0
+      ],
+      [
+        5.0,
+        4.0
+      ]
+    ],
+    "row_labels": [
+      "Discount",
+      "Hold"
+    ],
+    "col_labels": [
+      "Discount",
+      "Hold"
+    ],
+    "equilibria": [
+      {
+        "sigma_1": [
+          1.0,
+          0.0
+        ],
+        "sigma_2": [
+          0.0,
+          1.0
+        ],
+        "payoff_1": 5.0,
+        "payoff_2": 3.0,
+        "is_pure": "True",
+        "support_1": [
+          "Discount"
+        ],
+        "support_2": [
+          "Hold"
+        ]
+      },
+      {
+        "sigma_1": [
+          0.0,
+          1.0
+        ],
+        "sigma_2": [
+          1.0,
+          0.0
+        ],
+        "payoff_1": 3.0,
+        "payoff_2": 5.0,
+        "is_pure": "True",
+        "support_1": [
+          "Hold"
+        ],
+        "support_2": [
+          "Discount"
+        ]
+      },
+      {
+        "sigma_1": [
+          0.5,
+          0.5
+        ],
+        "sigma_2": [
+          0.5,
+          0.5
+        ],
+        "payoff_1": 3.5,
+        "payoff_2": 3.5,
+        "is_pure": "False",
+        "support_1": [
+          "Discount",
+          "Hold"
+        ],
+        "support_2": [
+          "Discount",
+          "Hold"
+        ]
+      }
+    ],
+    "num_equilibria": 3,
+    "dominant_strategies": {
+      "Shop 1": null,
+      "Shop 2": null
+    },
+    "is_zero_sum": false,
+    "minimax_value_1": 3.0,
+    "minimax_value_2": 3.0,
+    "verification": {
+      "eq0_probs_sum_1_p1": true,
+      "eq0_probs_sum_1_p2": true,
+      "eq0_nonneg_p1": true,
+      "eq0_nonneg_p2": true,
+      "eq0_payoff_p1_correct": true,
+      "eq0_payoff_p2_correct": true,
+      "eq0_no_profitable_deviation_p1": true,
+      "eq0_max_deviation_gain_p1": 0.0,
+      "eq0_no_profitable_deviation_p2": true,
+      "eq0_max_deviation_gain_p2": 0.0,
+      "eq0_indifference_condition_p1": true,
+      "eq0_indifference_condition_p2": true,
+      "eq1_probs_sum_1_p1": true,
+      "eq1_probs_sum_1_p2": true,
+      "eq1_nonneg_p1": true,
+      "eq1_nonneg_p2": true,
+      "eq1_payoff_p1_correct": true,
+      "eq1_payoff_p2_correct": true,
+      "eq1_no_profitable_deviation_p1": true,
+      "eq1_max_deviation_gain_p1": 0.0,
+      "eq1_no_profitable_deviation_p2": true,
+      "eq1_max_deviation_gain_p2": 0.0,
+      "eq1_indifference_condition_p1": true,
+      "eq1_indifference_condition_p2": true,
+      "eq2_probs_sum_1_p1": true,
+      "eq2_probs_sum_1_p2": true,
+      "eq2_nonneg_p1": true,
+      "eq2_nonneg_p2": true,
+      "eq2_payoff_p1_correct": true,
+      "eq2_payoff_p2_correct": true,
+      "eq2_no_profitable_deviation_p1": true,
+      "eq2_max_deviation_gain_p1": 0.0,
+      "eq2_no_profitable_deviation_p2": true,
+      "eq2_max_deviation_gain_p2": 0.0,
+      "eq2_indifference_condition_p1": true,
+      "eq2_indifference_condition_p2": true,
+      "num_equilibria_positive": true,
+      "vertex_enum_count": 3,
+      "support_enum_found_all": true,
+      "zero_sum_correct": true,
+      "all_checks_pass": true
+    },
+    "algorithm": "Support Enumeration (nashpy)",
+    "time_seconds": 0.01663307601120323
+  },
+  "game_2_3x3": {
+    "name": "3x3 Coffee Shop Pricing (Circular Dominance with Loyalty)",
+    "payoff_A": [
+      [
+        3.0,
+        6.0,
+        2.0
+      ],
+      [
+        1.0,
+        5.0,
+        7.0
+      ],
+      [
+        5.0,
+        2.0,
+        4.0
+      ]
+    ],
+    "payoff_B": [
+      [
+        3.0,
+        1.0,
+        5.0
+      ],
+      [
+        6.0,
+        5.0,
+        2.0
+      ],
+      [
+        2.0,
+        7.0,
+        4.0
+      ]
+    ],
+    "row_labels": [
+      "Discount",
+      "Hold",
+      "Loyalty"
+    ],
+    "col_labels": [
+      "Discount",
+      "Hold",
+      "Loyalty"
+    ],
+    "equilibria": [
+      {
+        "sigma_1": [
+          0.42857142857142855,
+          0.3333333333333333,
+          0.2380952380952381
+        ],
+        "sigma_2": [
+          0.42857142857142855,
+          0.3333333333333333,
+          0.2380952380952381
+        ],
+        "payoff_1": 3.7619047619047614,
+        "payoff_2": 3.761904761904762,
+        "is_pure": "False",
+        "support_1": [
+          "Discount",
+          "Hold",
+          "Loyalty"
+        ],
+        "support_2": [
+          "Discount",
+          "Hold",
+          "Loyalty"
+        ]
+      }
+    ],
+    "num_equilibria": 1,
+    "dominant_strategies": {
+      "Shop 1": null,
+      "Shop 2": null
+    },
+    "is_zero_sum": false,
+    "minimax_value_1": 3.7619047619047614,
+    "minimax_value_2": 3.7619047619047614,
+    "verification": {
+      "eq0_probs_sum_1_p1": true,
+      "eq0_probs_sum_1_p2": true,
+      "eq0_nonneg_p1": true,
+      "eq0_nonneg_p2": true,
+      "eq0_payoff_p1_correct": true,
+      "eq0_payoff_p2_correct": true,
+      "eq0_no_profitable_deviation_p1": true,
+      "eq0_max_deviation_gain_p1": 0.0,
+      "eq0_no_profitable_deviation_p2": true,
+      "eq0_max_deviation_gain_p2": 0.0,
+      "eq0_indifference_condition_p1": true,
+      "eq0_indifference_condition_p2": true,
+      "num_equilibria_positive": true,
+      "vertex_enum_count": 1,
+      "support_enum_found_all": true,
+      "zero_sum_correct": true,
+      "all_checks_pass": true
+    },
+    "algorithm": "Support Enumeration (nashpy)",
+    "time_seconds": 0.008231530024204403
+  }
+}

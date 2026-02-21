@@ -768,6 +768,95 @@ Bayesian A/B Test Results:
 
 ---
 
+## 13. Game Theory Solutions
+
+### §13.1 Nash Equilibrium Results
+
+**What the math says**: Strategy profile (σ_1*, σ_2*) where no player benefits from unilateral deviation; game value for zero-sum games.
+
+**Translation**:
+- Pure strategy equilibrium: "Both players' best responses coincide. Player 1 should choose action X, Player 2 should choose action Y."
+- Mixed strategy: "Player 1 should randomize: action A with probability p, action B with probability 1-p. This makes Player 2 indifferent."
+- Game value: "The expected outcome is $V. Neither player can do better against a rational opponent."
+- Multiple equilibria: "There are N equilibria — coordination on which one to play requires communication or convention."
+
+**What-if**: "If Player 1 commits first (Stackelberg), the outcome changes to X. If both cooperate instead, the joint payoff increases by Y."
+
+---
+
+### §13.2 Shapley Value / Fair Division Results
+
+**What the math says**: Allocation vector φ = (φ_1, ..., φ_n) representing each player's expected marginal contribution across all coalition orderings.
+
+**Translation**:
+- Shapley value: "Player A's fair share is $X, based on their average contribution across all possible coalitions."
+- Nucleolus: "This allocation minimizes the worst complaint any coalition can make."
+- Core membership: "This allocation is stable — no subset of players can break away and do better on their own."
+- Fair division: "This split is envy-free — each party prefers their own share to anyone else's."
+
+**What-if**: "If player C leaves the coalition, the remaining players' shares change to X, Y."
+
+---
+
+## 14. Decision Analysis Solutions
+
+### §14.1 Expected Value / Decision Tree Results
+
+**What the math says**: EMV = Σ p_i · v_i; optimal policy from backward induction on decision tree.
+
+**Translation**:
+- EMV: "The expected outcome is $X. On average, over many similar decisions, this is the best choice."
+- Decision tree: "The recommended path is: first do A, then if B occurs do C, otherwise do D."
+- Value of perfect information: "Knowing the outcome in advance is worth $X. If the information costs less than that, acquire it."
+- Value of imperfect information: "The test/survey is worth $X based on its accuracy. Since it costs $Y, it is [worth it / not worth it]."
+
+**What-if**: "If the probability of success increases from 30% to 50%, the recommended action changes from X to Y."
+
+---
+
+### §14.2 MCDA / Ranking Results
+
+**What the math says**: Score vector S = (s_1, ..., s_m) ranking m alternatives by weighted criteria.
+
+**Translation**:
+- TOPSIS: "Alternative X is ranked first — it's closest to the ideal on all criteria and farthest from the worst."
+- AHP: "The criteria weights are: cost 40%, quality 35%, delivery 25%. Consistency ratio = 0.04 (acceptable < 0.10)."
+- Sensitivity: "The ranking is robust: Alternative X stays first unless the weight on cost exceeds 60%."
+- Outranking (ELECTRE): "Alternative A outranks B on 3 of 4 criteria. B never strongly beats A on any single criterion."
+
+**What-if**: "If you increase the weight on quality from 35% to 50%, Alternative Y overtakes X."
+
+---
+
+## 15. Multi-Objective Optimization Solutions
+
+### §15.1 Pareto Frontier Results
+
+**What the math says**: Set of non-dominated solutions F = {(f_1(x), ..., f_k(x)) : x is Pareto-optimal}.
+
+**Translation**:
+- Pareto front: "There are N efficient solutions. No solution beats another on all objectives — every gain in one objective costs something in another."
+- Trade-off rate: "Moving from solution A to B saves $X in cost but adds Y minutes of delay."
+- Knee point: "Solution C is the 'sweet spot' — the point where you get the most improvement per unit of sacrifice."
+- Extreme points: "The cheapest option costs $X but has quality score Y. The highest-quality option scores Z but costs $W."
+
+**What-if**: "If you tighten the quality constraint to ≥ Q, the achievable cost range narrows from [$A, $B] to [$C, $D]."
+
+---
+
+### §15.2 Goal Programming Results
+
+**What the math says**: Minimized deviation vector d = (d_1^+, d_1^-, ..., d_k^+, d_k^-) from goal levels g_1, ..., g_k.
+
+**Translation**:
+- Goals met: "Goals 1 and 3 are fully achieved. Goal 2 falls short by X units."
+- Trade-offs: "Achieving Goal 2 would require relaxing Goal 1 by Y units."
+- Priority levels: "All priority-1 goals (safety) are met. Priority-2 goals (cost) achieved 85% of target."
+
+**What-if**: "If you relax the budget goal from $100K to $110K, the quality target can be fully met."
+
+---
+
 ## Cross-Reference Index
 
 Which visualization to use for each result type, and where results come from.
@@ -800,5 +889,11 @@ Which visualization to use for each result type, and where results come from.
 | §11.1 Spatial | §20 Geometric Diagram | §24 Geometry (A117-A126) | §13 Geometry |
 | §12.1 Investment | §4 Tornado (sensitivity), §21 Cash Flow Chart | §25 Financial (A127-A128) | §14.1 Cash Flow Stream |
 | §12.2 Loan/Amort. | §21 Amortization Chart | §25 Financial (A129-A134) | §14.1 Cash Flow Stream |
+| §13.1 Nash Equilibrium | §22 Payoff Matrix Heatmap | §26 Game Theory (A135-A137) | §15.1 Strategic-Form Game |
+| §13.2 Shapley/Fair Division | §6 Bar Chart (allocations) | §26 Game Theory (A138-A146) | §15.3 Cooperative Game |
+| §14.1 EMV/Decision Tree | §23 Tornado/Sensitivity Chart | §27 Decision Analysis (A147-A150) | §16.1 Decision Tree |
+| §14.2 MCDA Ranking | §23 Tornado, §5 Scenario Comparison | §27 Decision Analysis (A151-A156) | §16.3 Multi-Criteria Problem |
+| §15.1 Pareto Frontier | §24 Pareto Frontier Plot | §28 Multi-Objective (A157-A161) | §17.1 Pareto Set |
+| §15.2 Goal Programming | §5 Scenario Comparison | §28 Multi-Objective (A162-A164) | §17.3 Goal Model |
 
 Also see: **common-mistakes.md** §I1-I6 for interpretation pitfalls.

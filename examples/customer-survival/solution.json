@@ -1,0 +1,59 @@
+{
+  "instance": {
+    "n_total": 500,
+    "n_basic": 300,
+    "n_pro": 200,
+    "n_events": 348,
+    "n_censored": 152,
+    "censoring_rate": 0.30400000000000005
+  },
+  "kaplan_meier": {
+    "median_basic": 10.48,
+    "median_pro": 18.0
+  },
+  "logrank_test": {
+    "statistic": 48.98558245073675,
+    "p_value": 2.578508781898838e-12
+  },
+  "cox_ph": {
+    "plan_basic": {
+      "coef": 0.5812522157705513,
+      "hazard_ratio": 1.7882763371182648,
+      "hr_95ci": [
+        1.380095496097473,
+        2.3171818667186317
+      ],
+      "p_value": 1.0981037444468198e-05
+    },
+    "tickets": {
+      "coef": 0.12126465012716915,
+      "hazard_ratio": 1.1289236426216847,
+      "hr_95ci": [
+        1.0642090796035157,
+        1.1975734987574362
+      ],
+      "p_value": 5.6699409279525446e-05
+    },
+    "concordance_index": 0.6309517114158127
+  },
+  "ph_assumption": {
+    "plan_schoenfeld_p": 0.8374049899869218,
+    "tickets_schoenfeld_p": 0.3229670126365956,
+    "holds": true
+  },
+  "verification": {
+    "km_basic_monotonic": true,
+    "km_pro_monotonic": true,
+    "km_basic_in_01": true,
+    "km_pro_in_01": true,
+    "logrank_significant": true,
+    "cox_plan_hr_gt_1": true,
+    "cox_tickets_hr_gt_1": true,
+    "concordance_gt_055": true,
+    "median_basic_lt_pro": true,
+    "censoring_rate_approx_30pct": true,
+    "all_passed": true
+  },
+  "algorithm": "Kaplan-Meier + Log-Rank Test + Cox Proportional Hazards",
+  "time_seconds": 0.10243359499145299
+}

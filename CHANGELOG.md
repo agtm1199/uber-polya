@@ -4,6 +4,41 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.7.0] - 2026-02-21
+
+### Added
+
+- **Time Series Analysis domain** seeded end-to-end:
+  - 3 new structures in structures.md (§18: time series/temporal sequence, seasonal/cyclical pattern, trend component)
+  - 15 new algorithms in algorithms-statistics.md (S46-S60: ARIMA, SARIMA, exponential smoothing, decomposition, ACF/PACF, stationarity tests, Granger causality, VAR, GARCH, Prophet, change point detection, anomaly detection, moving average, spectral analysis, intervention analysis)
+  - prophet solver reference in solvers-statistics.md (§7), arch solver (§8), ruptures solver (§9)
+  - 2 new interpretation patterns (§16.1: time series forecast results, §16.2: decomposition/trend results)
+  - 2 new chart types in visualization.md (§25 time series decomposition plot, §26 forecast plot with CI bands)
+  - **Sales Forecast — Monthly Retail Revenue** worked example (examples/sales-forecast/)
+  - **Anomaly Detection — Server Response Times** worked example (examples/anomaly-detection/)
+- **Stochastic Processes domain** seeded end-to-end:
+  - 3 new structures in structures.md (§19: continuous-time Markov chain, point process, random walk/diffusion)
+  - 5 new algorithms in algorithms-statistics.md (S61-S65: CTMC, birth-death process, Poisson process, random walk analysis, renewal process)
+- **Survival Analysis domain** completed:
+  - 3 new algorithms in algorithms-statistics.md (S66-S68: log-rank test, accelerated failure time, competing risks)
+  - 1 new interpretation pattern (§16.3: survival/time-to-event results)
+  - 1 new chart type in visualization.md (§27 survival curve / Kaplan-Meier)
+  - **Customer Survival — SaaS Subscription Churn** worked example (examples/customer-survival/)
+- Problem classification decision tree expanded with 4 new branches (FORECAST/PREDICT, DETECT CHANGE/ANOMALY, MODEL RANDOM EVENTS, SURVIVAL/TIME-TO-EVENT) and 20 new quick-lookup patterns
+- 13 new complexity quick-check entries in problem-classification.md
+- 7 new disambiguation tips in problem-classification.md
+- 6 new entries in cross-domain pattern table (structures.md)
+- Cross-reference indexes updated in all modified reference files
+
+### Changed
+
+- algorithms-statistics.md scope: 45 → 68 algorithms (added 23 across 3 domains)
+- structures.md scope: 64 → 70 structures (added 6 across 2 new domains)
+- solvers-statistics.md: 6 → 9 solver library entries (added prophet, arch, ruptures)
+- interpretation-patterns.md: 26 → 29 pattern groups (added 3 for time series/survival)
+- visualization.md: 24 → 27 chart types (added decomposition plot, forecast plot, survival curve)
+- Updated README: 232 algorithms, 22 solver libraries, 70 structures, 19 domains, 26 examples
+
 ## [0.6.0] - 2026-02-20
 
 ### Added

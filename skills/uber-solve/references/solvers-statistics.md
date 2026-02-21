@@ -363,6 +363,140 @@ cph.concordance_index_                      # predictive accuracy (C-index)
 
 ---
 
+## 7. prophet -- Time Series Forecasting with Decomposable Models
+
+**Solves**: Time series forecasting with trend, multiple seasonalities, holidays, and changepoints. Designed for business forecasting at scale with interpretable components.
+
+**Install**: `pip install prophet`
+
+**When to use**: Business time series with daily/weekly data, holidays, and multiple seasonal patterns. When interpretability matters more than maximum accuracy. Handles missing data and outliers gracefully.
+
+### Key APIs
+
+```python
+from prophet import Prophet
+import pandas as pd
+
+# --- Basic Forecasting ---
+df = pd.DataFrame({"ds": dates, "y": values})  # MUST use 'ds' and 'y' columns
+model = Prophet()
+model.fit(df)
+future = model.make_future_dataframe(periods=30)    # 30 days ahead
+forecast = model.predict(future)
+forecast[["ds", "yhat", "yhat_lower", "yhat_upper"]]  # point forecast + CI
+
+# --- Seasonality Control ---
+model = Prophet(
+    yearly_seasonality=True,       # annual pattern
+    weekly_seasonality=True,       # day-of-week pattern
+    daily_seasonality=False,       # sub-daily pattern (for hourly data)
+    seasonality_mode="multiplicative",  # vs "additive"
+    changepoint_prior_scale=0.05,  # flexibility of trend changes (lower=smoother)
+)
+
+# --- Add Custom Seasonality ---
+model.add_seasonality(name="monthly", period=30.5, fourier_order=5)
+
+# --- Add Holidays ---
+holidays = pd.DataFrame({
+    "holiday": ["christmas", "christmas"],
+    "ds": pd.to_datetime(["2025-12-25", "2024-12-25"]),
+    "lower_window": -1, "upper_window": 1,  # days around holiday
+})
+model = Prophet(holidays=holidays)
+
+# --- Components ---
+model.plot_components(forecast)           # trend, weekly, yearly, holidays
+model.plot(forecast)                      # data + forecast + CI
+
+# --- Cross-Validation ---
+from prophet.diagnostics import cross_validation, performance_metrics
+cv = cross_validation(model, initial="365 days", period="90 days", horizon="30 days")
+metrics = performance_metrics(cv)
+metrics[["horizon", "mape", "rmse", "mae"]]
+```
+
+**Performance note**: Fits in seconds for <100K observations. Scales to millions with `stan_backend="CMDSTANPY"`. Cross-validation is the bottleneck for large datasets.
+
+**Gotchas**:
+- Input DataFrame MUST have columns named `ds` (datetime) and `y` (numeric) -- not negotiable
+- Returns a DataFrame with many columns; key ones are `yhat`, `yhat_lower`, `yhat_upper`
+- `changepoint_prior_scale` is the main tuning knob: lower=smoother, higher=more flexible
+- For sub-daily data, set `daily_seasonality=True` and use `freq="H"` in `make_future_dataframe`
+- Prophet may install its own C++ backend (cmdstan); installation can be tricky on some systems
+
+---
+
+## 8. arch -- Volatility Modeling (GARCH)
+
+**Solves**: Time-varying volatility modeling, GARCH family models, value-at-risk estimation for financial return series.
+
+**Install**: `pip install arch`
+
+**When to use**: Financial return series with volatility clustering. Risk management, option pricing, VaR estimation.
+
+### Key APIs
+
+```python
+from arch import arch_model
+
+# --- GARCH(1,1) ---
+model = arch_model(returns, vol="Garch", p=1, q=1, mean="Constant")
+result = model.fit(disp="off")
+result.summary()                               # coefficients, standard errors
+result.conditional_volatility                  # time-varying volatility estimate
+result.forecast(horizon=5)                     # 5-step ahead volatility forecast
+
+# --- EGARCH (asymmetric) ---
+model = arch_model(returns, vol="EGARCH", p=1, o=1, q=1)
+
+# --- GJR-GARCH (leverage effect) ---
+model = arch_model(returns, vol="Garch", p=1, o=1, q=1)
+```
+
+**Gotchas**:
+- Input should be returns (percentage changes), not prices
+- Returns should be multiplied by 100 for numerical stability
+- Check persistence (alpha + beta < 1 for stationarity)
+
+---
+
+## 9. ruptures -- Change Point Detection
+
+**Solves**: Detecting abrupt changes in the statistical properties of a time series (mean shifts, variance changes, trend breaks).
+
+**Install**: `pip install ruptures`
+
+**When to use**: "When did the trend change?" Manufacturing quality control, regime detection, A/B test timing validation.
+
+### Key APIs
+
+```python
+import ruptures as rpt
+
+# --- PELT (exact, fast for large n) ---
+algo = rpt.Pelt(model="rbf", min_size=2).fit(signal)
+bkps = algo.predict(pen=10)                   # penalty controls number of changes
+
+# --- Binary Segmentation (faster, approximate) ---
+algo = rpt.Binseg(model="l2").fit(signal)
+bkps = algo.predict(n_bkps=3)                 # specify number of change points
+
+# --- Bottom-Up (merging approach) ---
+algo = rpt.BottomUp(model="l2").fit(signal)
+bkps = algo.predict(n_bkps=3)
+
+# --- Visualization ---
+rpt.display(signal, bkps)
+```
+
+**Gotchas**:
+- Penalty (`pen`) or number of breakpoints (`n_bkps`) must be specified -- there's no automatic selection
+- Model options: `"l2"` (mean shift), `"l1"` (median shift), `"rbf"` (general), `"linear"` (trend)
+- PELT is optimal but only works with penalty, not `n_bkps`
+
+---
+
 ## Library Selection Guide
 
 | Question | First Choice | Alternative |
@@ -378,6 +512,12 @@ cph.concordance_index_                      # predictive accuracy (C-index)
 | Bootstrap confidence interval | scipy.stats.bootstrap | custom numpy |
 | Multiple testing correction | statsmodels.multipletests | -- |
 | Power analysis / sample size | statsmodels.stats.power | pingouin |
+| Forecast univariate time series | statsmodels (ARIMA/ETS) | prophet (holidays/multi-seasonal) |
+| Business forecast with holidays | prophet | statsmodels (SARIMAX with exog) |
+| Multi-series forecasting | statsmodels (VAR) | -- |
+| Volatility / risk modeling | arch (GARCH) | -- |
+| Change point detection | ruptures | -- |
+| Spectral analysis / frequencies | scipy.signal | -- |
 
 ### Decision Flow
 
@@ -393,6 +533,13 @@ Need to test a hypothesis or estimate a parameter?
 ├── Bayesian analysis?
 │   ├── Conjugate prior → scipy.stats (manual)
 │   └── Complex model → PyMC
-└── Survival analysis?
-    └── lifelines
+├── Survival analysis?
+│   └── lifelines
+├── Forecast time series?
+│   ├── Simple trend/seasonal → statsmodels (ARIMA, ETS)
+│   ├── Multiple seasonalities / holidays → prophet
+│   ├── Multiple related series → statsmodels (VAR)
+│   └── Volatility → arch (GARCH)
+└── Detect changes?
+    └── ruptures
 ```

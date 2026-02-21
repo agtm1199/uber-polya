@@ -132,14 +132,45 @@ What is the user trying to do?
 │  ├─ No probabilities available? ──────────── Minimax Regret (A155)
 │  └─ Multiple attributes with utilities? ─── MAUT (A156)
 │
-└─ OPTIMIZE MULTIPLE objectives (multi-objective)
-   ├─ Find all trade-offs? ────────────────── Pareto Frontier (A157)
-   ├─ Known importance weights? ───────────── Weighted Sum (A158)
-   ├─ Non-convex trade-offs? ──────────────── Epsilon-Constraint (A159)
-   ├─ Complex / black-box objectives? ──────── NSGA-II (A160) / MOEA/D (A161)
-   ├─ Meet target levels? ─────────────────── Goal Programming (A162)
-   ├─ Strict priority ordering? ───────────── Lexicographic (A163)
-   └─ Decision-maker has aspirations? ──────── Reference Point (A164)
+├─ OPTIMIZE MULTIPLE objectives (multi-objective)
+│  ├─ Find all trade-offs? ────────────────── Pareto Frontier (A157)
+│  ├─ Known importance weights? ───────────── Weighted Sum (A158)
+│  ├─ Non-convex trade-offs? ──────────────── Epsilon-Constraint (A159)
+│  ├─ Complex / black-box objectives? ──────── NSGA-II (A160) / MOEA/D (A161)
+│  ├─ Meet target levels? ─────────────────── Goal Programming (A162)
+│  ├─ Strict priority ordering? ───────────── Lexicographic (A163)
+│  └─ Decision-maker has aspirations? ──────── Reference Point (A164)
+│
+├─ FORECAST / PREDICT OVER TIME
+│  ├─ Single time series, no seasonality? ── ARIMA (S46)
+│  ├─ Single series with seasonality? ──────── SARIMA (S47) / Holt-Winters (S48)
+│  ├─ Multiple seasonalities / holidays? ──── Prophet (S55)
+│  ├─ Multiple related series? ─────────────── VAR (S53)
+│  ├─ Understand components? ───────────────── Decomposition (S49)
+│  ├─ Volatility / financial risk? ─────────── GARCH (S54)
+│  ├─ Is it predictable at all? ────────────── Stationarity tests (S51) / Random walk (S64)
+│  └─ What drives what? ────────────────────── Granger causality (S52)
+│
+├─ DETECT CHANGE / ANOMALY in time series
+│  ├─ When did the trend shift? ────────────── Change Point Detection (S56)
+│  ├─ What observations are unusual? ────────── Anomaly Detection (S57)
+│  ├─ Did an intervention have effect? ──────── Intervention Analysis (S60)
+│  ├─ What's the dominant cycle? ────────────── Spectral Analysis (S59)
+│  └─ Smooth out noise? ────────────────────── Moving Average (S58)
+│
+├─ MODEL RANDOM EVENTS over time
+│  ├─ Events at constant rate? ─────────────── Poisson Process (S63)
+│  ├─ System switching between states? ──────── CTMC (S61)
+│  ├─ Queue with arrivals/departures? ──────── Birth-Death Process (S62)
+│  ├─ Recurring events (non-exponential)? ──── Renewal Process (S65)
+│  └─ Is it a random walk? ─────────────────── Random Walk Analysis (S64)
+│
+└─ SURVIVAL / TIME-TO-EVENT analysis
+   ├─ Estimate time until event? ────────────── Kaplan-Meier (S39)
+   ├─ Compare survival between groups? ──────── Log-Rank Test (S66)
+   ├─ Effect of factors on hazard? ──────────── Cox PH (S40)
+   ├─ Effect of factors on time? ────────────── AFT Model (S67)
+   └─ Multiple possible events? ─────────────── Competing Risks (S68)
 ```
 
 ---
@@ -216,6 +247,25 @@ One-line lookup from problem description to solution approach.
 | "balance cost vs quality" | Multi-objective | Objective space | NSGA-II (A160) | pymoo |
 | "meet multiple targets" | Goal programming | Goal model | Goal LP (A162) | PuLP |
 | "priority ordering of goals" | Lexicographic | Goal model | Lex. opt (A163) | PuLP |
+| "forecast / predict next month" | Time series forecast | Time series | ARIMA (S46) / SARIMA (S47) | statsmodels |
+| "seasonal pattern / monthly cycle" | Seasonal decomposition | Seasonal pattern | STL (S49) / SARIMA (S47) | statsmodels |
+| "trend over time / growing" | Trend analysis | Trend component | Decomposition (S49) | statsmodels |
+| "predict with holidays" | Business forecast | Time series | Prophet (S55) | prophet |
+| "multiple series together" | Multivariate forecast | Time series | VAR (S53) | statsmodels |
+| "volatility / risk of returns" | Volatility modeling | Time series | GARCH (S54) | arch |
+| "when did trend change" | Change point | Time series | PELT (S56) | ruptures |
+| "detect outliers / anomalies" | Anomaly detection | Time series | Z-score / IQR (S57) | scipy |
+| "did intervention help" | Intervention analysis | Time series | ARIMA + exog (S60) | statsmodels |
+| "what's the cycle length" | Spectral analysis | Seasonal pattern | Periodogram (S59) | scipy |
+| "does X predict Y over time" | Granger causality | Time series | Granger test (S52) | statsmodels |
+| "is it random / unpredictable" | Random walk | Random walk | ADF + var ratio (S64) | statsmodels |
+| "arrival rate / events per hour" | Poisson process | Point process | Poisson fit (S63) | scipy |
+| "queue / waiting time" | Queuing model | CTMC | Birth-death (S62) | scipy |
+| "system up/down states" | Reliability | CTMC | Matrix exp (S61) | scipy |
+| "time until failure / churn" | Survival analysis | Survival | Kaplan-Meier (S39) | lifelines |
+| "compare survival curves" | Group comparison | Survival | Log-rank (S66) | lifelines |
+| "risk factors for event" | Hazard modeling | Survival | Cox PH (S40) | lifelines |
+| "multiple ways to leave" | Competing risks | Survival | Aalen-Johansen (S68) | lifelines |
 
 ---
 
@@ -261,6 +311,18 @@ Before committing to an approach, verify the computational feasibility.
 | NSGA-II | Heuristic | ~100 vars, 2-3 obj | Always finds feasible front |
 | MOEA/D | Heuristic | ~100 vars, many obj | Well-distributed front |
 | Goal programming | P (LP) | Any size (via LP solver) | N/A |
+| ARIMA fitting | P (O(n·p²)) | Any size | N/A |
+| SARIMA fitting | P (O(n·(p+P)²)) | Any size | N/A |
+| Exponential smoothing | P (O(n)) | Any size | N/A |
+| Prophet | P (O(n·iter)) | ~1M observations | N/A |
+| Change point (PELT) | P (O(n²)) | ~100K observations | BinSeg (O(n log n)) |
+| Spectral analysis (FFT) | P (O(n log n)) | Any size | N/A |
+| GARCH fitting | P (O(n·iter)) | Any size | N/A |
+| CTMC steady-state | P (O(k³)) | ~1000 states | Iterative methods |
+| Poisson process MLE | P (O(n)) | Any size | N/A |
+| Kaplan-Meier | P (O(n log n)) | Any size | N/A |
+| Cox PH regression | P (O(n·p·iter)) | ~100K subjects | Penalized/regularized |
+| Log-rank test | P (O(n log n)) | Any size | N/A |
 
 ---
 
@@ -300,6 +362,18 @@ When two patterns seem equally likely, use these tiebreakers:
 
 **Sensitivity vs. Multi-Objective**: If you're varying one parameter at a time to see impact, it's sensitivity analysis. If you're optimizing multiple objectives simultaneously, it's multi-objective optimization.
 
+**ARIMA vs. Exponential Smoothing**: Both forecast univariate time series. ARIMA models autocorrelation explicitly (good for complex patterns); exponential smoothing is simpler and often competitive for short horizons. When in doubt, try both and compare AIC.
+
+**ARIMA vs. Prophet**: ARIMA is better for clean, regular time series. Prophet handles irregular dates, missing data, holidays, and multiple seasonalities better. Prophet is easier for non-statisticians.
+
+**Change Point vs. Anomaly**: Change points are persistent shifts (the process changes). Anomalies are temporary outliers (the process stays the same). A price regime change is a change point; a flash crash is an anomaly.
+
+**Poisson Process vs. Renewal Process**: If inter-arrival times are exponential (memoryless), it's Poisson. If inter-arrival times follow another distribution, it's a renewal process. Test exponentiality of inter-arrivals.
+
+**Kaplan-Meier vs. Cox PH**: Kaplan-Meier estimates the survival curve nonparametrically (no covariates). Cox PH models how covariates affect hazard. Use KM for description, Cox PH for explanation.
+
+**Cox PH vs. AFT**: Cox PH models the hazard ratio (multiplicative effect on risk). AFT models the acceleration factor (multiplicative effect on time). AFT is more intuitive ("this factor doubles the time to event") but Cox PH is more flexible.
+
 ---
 
 ## Cross-Reference Index
@@ -326,5 +400,9 @@ After identifying the problem type here, consult the corresponding reference fil
 | COMPETE/NEGOTIATE | §15 Game Theory | §26 Game Theory (A135-A146) | (Custom / nashpy) |
 | DECIDE/CHOOSE | §16 Decision Analysis | §27 Decision Analysis (A147-A156) | (Custom / numpy) |
 | OPTIMIZE MULTIPLE | §17 Multi-Objective Opt | §28 Multi-Objective (A157-A164) | (pymoo / PuLP) |
+| FORECAST/PREDICT | §18 Time Series | algorithms-statistics.md S46-S60 | (statsmodels / prophet) |
+| DETECT CHANGE/ANOMALY | §18 Time Series | algorithms-statistics.md S56-S60 | (ruptures / scipy) |
+| MODEL RANDOM EVENTS | §19 Stochastic Processes | algorithms-statistics.md S61-S65 | (scipy / custom) |
+| SURVIVAL/TIME-TO-EVENT | §10 Statistical Inference | algorithms-statistics.md S39-S40, S66-S68 | (lifelines) |
 
 Also see: **common-mistakes.md** for pitfalls specific to each problem category.

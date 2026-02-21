@@ -1,6 +1,8 @@
 # Statistical Inference Algorithm Catalog
 
-Comprehensive catalog of 45+ algorithms for statistical inference. Organized by problem type, each entry includes complexity, solver library, correctness guarantee, and implementation guidance.
+Comprehensive catalog of 68 algorithms for statistical inference, time series analysis, stochastic processes, and survival analysis. Organized by problem type, each entry includes complexity, solver library, correctness guarantee, and implementation guidance.
+
+**Scope**: Statistical Inference (45 algorithms), Time Series Analysis (15 algorithms), Stochastic Processes (5 algorithms), Survival Analysis (3 new + 2 existing = 5 algorithms).
 
 **Legend**:
 - **T**: Time complexity | **S**: Space complexity
@@ -1367,6 +1369,801 @@ def _interpret_d(d: float) -> str:
 
 ---
 
+## 8. Time Series Analysis
+
+### S46: ARIMA (AutoRegressive Integrated Moving Average)
+
+**Problem**: Forecast a univariate time series using autoregressive, differencing, and moving average components.
+**T**: O(n · p²) for fitting via MLE | **S**: O(n)
+**Lib**: `statsmodels.tsa.arima.model.ARIMA`
+**Guarantee**: MLE estimates are asymptotically efficient. Forecast uncertainty via analytic confidence intervals.
+
+```python
+from statsmodels.tsa.arima.model import ARIMA
+import numpy as np
+
+def arima_forecast(data: np.ndarray, order: tuple[int,int,int] = (1,1,1),
+                   steps: int = 12) -> dict:
+    """Fit ARIMA(p,d,q) and produce forecasts with confidence intervals."""
+    model = ARIMA(data, order=order)
+    result = model.fit()
+    forecast = result.get_forecast(steps=steps)
+    ci = forecast.conf_int(alpha=0.05)
+    return {
+        "order": order, "aic": result.aic, "bic": result.bic,
+        "forecast_mean": forecast.predicted_mean.values,
+        "ci_lower": ci.iloc[:, 0].values,
+        "ci_upper": ci.iloc[:, 1].values,
+        "residual_std": np.std(result.resid),
+        "ljung_box_pvalue": float(result.test_serial_correlation("ljungbox")[0][0, 1]),
+    }
+```
+
+**Use when**: Univariate time series with trend and/or autocorrelation. First-line forecasting method. Use AIC/BIC for order selection or `pmdarima.auto_arima()` for automatic selection.
+
+---
+
+### S47: SARIMA (Seasonal ARIMA)
+
+**Problem**: Forecast a univariate time series with both trend and seasonal patterns.
+**T**: O(n · (p+P)²) for fitting | **S**: O(n)
+**Lib**: `statsmodels.tsa.statespace.sarimax.SARIMAX`
+**Guarantee**: MLE estimates; analytic forecast intervals account for both trend and seasonal uncertainty.
+
+```python
+from statsmodels.tsa.statespace.sarimax import SARIMAX
+import numpy as np
+
+def sarima_forecast(data: np.ndarray, order: tuple = (1,1,1),
+                    seasonal_order: tuple = (1,1,1,12),
+                    steps: int = 12) -> dict:
+    """Fit SARIMA(p,d,q)(P,D,Q,s) and forecast."""
+    model = SARIMAX(data, order=order, seasonal_order=seasonal_order,
+                    enforce_stationarity=False, enforce_invertibility=False)
+    result = model.fit(disp=False)
+    forecast = result.get_forecast(steps=steps)
+    ci = forecast.conf_int(alpha=0.05)
+    return {
+        "order": order, "seasonal_order": seasonal_order,
+        "aic": result.aic, "bic": result.bic,
+        "forecast_mean": forecast.predicted_mean.values,
+        "ci_lower": ci.iloc[:, 0].values,
+        "ci_upper": ci.iloc[:, 1].values,
+    }
+```
+
+**Use when**: Monthly/quarterly/weekly data with clear seasonality (sales, temperature, energy usage). The `s` parameter is the seasonal period (12=monthly, 4=quarterly, 7=daily-weekly).
+
+---
+
+### S48: Exponential Smoothing (SES, Holt, Holt-Winters)
+
+**Problem**: Forecast a time series using weighted averages of past observations with exponentially decaying weights.
+**T**: O(n) per iteration, O(n · iterations) total | **S**: O(n)
+**Lib**: `statsmodels.tsa.holtwinters.ExponentialSmoothing`
+**Guarantee**: MLE/least-squares parameter estimation. Prediction intervals via simulation or analytical approximation.
+
+```python
+from statsmodels.tsa.holtwinters import ExponentialSmoothing, SimpleExpSmoothing
+import numpy as np
+
+def exponential_smoothing_forecast(data: np.ndarray, seasonal_periods: int | None = 12,
+                                    trend: str | None = "add",
+                                    seasonal: str | None = "add",
+                                    steps: int = 12) -> dict:
+    """Fit Holt-Winters exponential smoothing and forecast."""
+    if seasonal_periods and seasonal:
+        model = ExponentialSmoothing(data, trend=trend, seasonal=seasonal,
+                                      seasonal_periods=seasonal_periods)
+    elif trend:
+        model = ExponentialSmoothing(data, trend=trend, seasonal=None)
+    else:
+        model = SimpleExpSmoothing(data)
+    result = model.fit(optimized=True)
+    fcast = result.forecast(steps)
+    return {
+        "smoothing_level": result.params.get("smoothing_level"),
+        "smoothing_trend": result.params.get("smoothing_trend"),
+        "smoothing_seasonal": result.params.get("smoothing_seasonal"),
+        "aic": result.aic, "bic": result.bic,
+        "forecast": fcast.values,
+        "sse": result.sse,
+    }
+```
+
+**Use when**: Simple, interpretable forecasts. SES for level-only data, Holt for trend, Holt-Winters for trend+seasonality. Often competitive with ARIMA for short horizons.
+
+---
+
+### S49: Time Series Decomposition
+
+**Problem**: Decompose a time series into trend, seasonal, and residual components.
+**T**: O(n · window) for classical, O(n log n) for STL | **S**: O(n)
+**Lib**: `statsmodels.tsa.seasonal.seasonal_decompose`, `statsmodels.tsa.seasonal.STL`
+**Guarantee**: Deterministic decomposition. STL is robust to outliers.
+
+```python
+from statsmodels.tsa.seasonal import seasonal_decompose, STL
+import numpy as np
+
+def decompose_series(data, period: int = 12, method: str = "stl") -> dict:
+    """Decompose time series into trend, seasonal, residual."""
+    if method == "stl":
+        stl = STL(data, period=period, robust=True)
+        result = stl.fit()
+    else:
+        result = seasonal_decompose(data, model="additive", period=period)
+    return {
+        "trend": result.trend, "seasonal": result.seasonal,
+        "residual": result.resid, "method": method,
+        "seasonal_strength": 1 - np.nanvar(result.resid) / np.nanvar(result.seasonal + result.resid),
+        "trend_strength": 1 - np.nanvar(result.resid) / np.nanvar(result.trend + result.resid),
+    }
+```
+
+**Use when**: Understanding what drives a time series before modeling. STL (Seasonal and Trend decomposition using LOESS) is preferred over classical decomposition -- handles varying seasonality and is robust.
+
+---
+
+### S50: ACF / PACF Analysis
+
+**Problem**: Identify autocorrelation structure to determine appropriate model orders (p, q for ARIMA).
+**T**: O(n · max_lag) | **S**: O(max_lag)
+**Lib**: `statsmodels.tsa.stattools.acf`, `statsmodels.tsa.stattools.pacf`
+**Guarantee**: Exact sample autocorrelation. Confidence bands under white noise null.
+
+```python
+from statsmodels.tsa.stattools import acf, pacf
+import numpy as np
+
+def autocorrelation_analysis(data: np.ndarray, nlags: int = 40) -> dict:
+    """Compute ACF and PACF with confidence intervals."""
+    acf_vals, acf_ci = acf(data, nlags=nlags, alpha=0.05)
+    pacf_vals, pacf_ci = pacf(data, nlags=nlags, alpha=0.05)
+    n = len(data)
+    sig_threshold = 1.96 / np.sqrt(n)
+    significant_acf = [i for i in range(1, nlags+1) if abs(acf_vals[i]) > sig_threshold]
+    significant_pacf = [i for i in range(1, nlags+1) if abs(pacf_vals[i]) > sig_threshold]
+    return {
+        "acf": acf_vals, "pacf": pacf_vals,
+        "acf_ci": acf_ci, "pacf_ci": pacf_ci,
+        "significant_acf_lags": significant_acf,
+        "significant_pacf_lags": significant_pacf,
+        "suggested_q": max(significant_acf) if significant_acf else 0,
+        "suggested_p": max(significant_pacf) if significant_pacf else 0,
+    }
+```
+
+**Use when**: Before fitting ARIMA. ACF tailing off + PACF cutting off at lag p → AR(p). ACF cutting off at lag q + PACF tailing off → MA(q). Both tailing off → ARMA(p,q).
+
+---
+
+### S51: Stationarity Tests (ADF, KPSS)
+
+**Problem**: Test whether a time series is stationary (constant mean and variance over time).
+**T**: O(n · max_lag) | **S**: O(n)
+**Lib**: `statsmodels.tsa.stattools.adfuller`, `statsmodels.tsa.stattools.kpss`
+**Guarantee**: Asymptotic p-values. ADF tests null=unit root; KPSS tests null=stationary. Use both for confirmation.
+
+```python
+from statsmodels.tsa.stattools import adfuller, kpss
+import numpy as np
+
+def stationarity_tests(data: np.ndarray) -> dict:
+    """Run ADF and KPSS tests for stationarity."""
+    adf_stat, adf_p, adf_lags, adf_nobs, adf_cv, _ = adfuller(data, autolag="AIC")
+    kpss_stat, kpss_p, kpss_lags, kpss_cv = kpss(data, regression="c", nlags="auto")
+    return {
+        "adf_statistic": adf_stat, "adf_pvalue": adf_p, "adf_lags": adf_lags,
+        "adf_critical_values": adf_cv,
+        "adf_stationary": adf_p < 0.05,
+        "kpss_statistic": kpss_stat, "kpss_pvalue": kpss_p,
+        "kpss_critical_values": kpss_cv,
+        "kpss_stationary": kpss_p > 0.05,
+        "consensus": "stationary" if (adf_p < 0.05 and kpss_p > 0.05)
+                     else "non-stationary" if (adf_p >= 0.05 and kpss_p <= 0.05)
+                     else "trend-stationary" if (adf_p < 0.05 and kpss_p <= 0.05)
+                     else "inconclusive",
+    }
+```
+
+**Use when**: Before fitting ARIMA. If non-stationary, difference the series (d=1 or d=2). ADF and KPSS can disagree -- the consensus logic resolves this.
+
+---
+
+### S52: Granger Causality Test
+
+**Problem**: Test whether one time series is useful for forecasting another (predictive causality, not true causality).
+**T**: O(n · max_lag · k²) for VAR estimation | **S**: O(n · k)
+**Lib**: `statsmodels.tsa.stattools.grangercausalitytests`
+**Guarantee**: Asymptotic F-test or chi-squared test. Requires stationarity.
+
+```python
+from statsmodels.tsa.stattools import grangercausalitytests
+import numpy as np
+
+def granger_causality(x: np.ndarray, y: np.ndarray, max_lag: int = 12) -> dict:
+    """Test if x Granger-causes y (i.e., past x helps predict y)."""
+    data = np.column_stack([y, x])  # target first, predictor second
+    results = grangercausalitytests(data, maxlag=max_lag, verbose=False)
+    best_lag = min(results, key=lambda k: results[k][0]["ssr_ftest"][1])
+    f_stat, p_value, df_denom, df_num = results[best_lag][0]["ssr_ftest"]
+    return {
+        "best_lag": best_lag, "f_statistic": f_stat, "p_value": p_value,
+        "granger_causes": p_value < 0.05,
+        "all_lags": {k: results[k][0]["ssr_ftest"][1] for k in results},
+    }
+```
+
+**Use when**: "Does advertising spend predict sales?" "Does weather predict energy usage?" Requires both series to be stationary first. Does NOT imply true causation.
+
+---
+
+### S53: Vector Autoregression (VAR)
+
+**Problem**: Model and forecast multiple interrelated time series simultaneously.
+**T**: O(n · k² · p) for fitting k series with p lags | **S**: O(n · k)
+**Lib**: `statsmodels.tsa.api.VAR`
+**Guarantee**: OLS estimates are consistent and asymptotically normal for stationary data.
+
+```python
+from statsmodels.tsa.api import VAR
+import numpy as np
+import pandas as pd
+
+def var_forecast(data: pd.DataFrame, max_lag: int = 12, steps: int = 12) -> dict:
+    """Fit VAR model and forecast all variables jointly."""
+    model = VAR(data)
+    lag_order = model.select_order(maxlags=max_lag)
+    best_p = lag_order.selected_orders["aic"]
+    result = model.fit(best_p)
+    forecast = result.forecast(data.values[-best_p:], steps=steps)
+    irf = result.irf(periods=20)
+    return {
+        "lag_order": best_p, "aic": result.aic, "bic": result.bic,
+        "forecast": pd.DataFrame(forecast, columns=data.columns),
+        "granger_causality": {col: result.test_causality(col, verbose=False).pvalue
+                              for col in data.columns},
+        "impulse_response": irf.irfs,
+    }
+```
+
+**Use when**: Multiple related time series where cross-variable effects matter. "Sales and advertising," "GDP, inflation, interest rates." All series must be stationary.
+
+---
+
+### S54: GARCH (Generalized Autoregressive Conditional Heteroskedasticity)
+
+**Problem**: Model and forecast time-varying volatility (variance) in a time series.
+**T**: O(n · iterations) for MLE | **S**: O(n)
+**Lib**: `arch.arch_model`
+**Guarantee**: Quasi-MLE estimates. Robust standard errors available.
+
+```python
+from arch import arch_model
+import numpy as np
+
+def garch_volatility(returns: np.ndarray, p: int = 1, q: int = 1) -> dict:
+    """Fit GARCH(p,q) model to return series and forecast volatility."""
+    model = arch_model(returns, vol="Garch", p=p, q=q, mean="Constant")
+    result = model.fit(disp="off")
+    forecast = result.forecast(horizon=5)
+    return {
+        "omega": result.params["omega"],
+        "alpha": [result.params[f"alpha[{i+1}]"] for i in range(q)],
+        "beta": [result.params[f"beta[{i+1}]"] for i in range(p)],
+        "conditional_volatility": result.conditional_volatility.values,
+        "forecast_variance": forecast.variance.values[-1],
+        "aic": result.aic, "bic": result.bic,
+        "persistence": sum(result.params[f"alpha[{i+1}]"] for i in range(q))
+                      + sum(result.params[f"beta[{i+1}]"] for i in range(p)),
+    }
+```
+
+**Use when**: Financial return series, risk management. Volatility clustering ("calm and stormy periods"). Persistence close to 1 = highly persistent volatility.
+
+---
+
+### S55: Prophet (Time Series Forecasting)
+
+**Problem**: Forecast time series with strong seasonal effects and multiple seasonalities, handling missing data and holidays.
+**T**: O(n · iterations) for MAP estimation | **S**: O(n)
+**Lib**: `prophet.Prophet`
+**Guarantee**: Bayesian MAP estimation. Uncertainty intervals via posterior sampling.
+
+```python
+from prophet import Prophet
+import pandas as pd
+
+def prophet_forecast(df: pd.DataFrame, periods: int = 30,
+                     freq: str = "D") -> dict:
+    """Forecast with Prophet. Input df must have 'ds' (date) and 'y' (value) columns."""
+    model = Prophet(yearly_seasonality=True, weekly_seasonality=True,
+                    daily_seasonality=False, changepoint_prior_scale=0.05)
+    model.fit(df)
+    future = model.make_future_dataframe(periods=periods, freq=freq)
+    forecast = model.predict(future)
+    return {
+        "forecast": forecast[["ds", "yhat", "yhat_lower", "yhat_upper"]],
+        "trend": forecast["trend"],
+        "seasonal_components": {col: forecast[col] for col in forecast.columns
+                                if "weekly" in col or "yearly" in col},
+        "changepoints": model.changepoints.tolist(),
+        "growth": model.growth,
+    }
+```
+
+**Use when**: Business forecasting with daily/weekly data, holidays, and multiple seasonalities. Handles missing data and outliers gracefully. Good for non-technical stakeholders (interpretable components).
+
+---
+
+### S56: Change Point Detection
+
+**Problem**: Identify points in a time series where the statistical properties (mean, variance, trend) change abruptly.
+**T**: O(n²) for exact (PELT), O(n log n) for approximate | **S**: O(n)
+**Lib**: `ruptures` (PELT, BinSeg, BottomUp, Window)
+**Guarantee**: PELT finds exact solution for penalized cost. BinSeg is approximate but faster.
+
+```python
+import ruptures as rpt
+import numpy as np
+
+def detect_changepoints(data: np.ndarray, method: str = "pelt",
+                        model: str = "rbf", pen: float | None = None) -> dict:
+    """Detect change points using ruptures library."""
+    n = len(data)
+    if pen is None:
+        pen = np.log(n) * np.var(data)  # BIC-like penalty
+    if method == "pelt":
+        algo = rpt.Pelt(model=model, min_size=2).fit(data)
+        bkps = algo.predict(pen=pen)
+    elif method == "binseg":
+        algo = rpt.Binseg(model=model).fit(data)
+        bkps = algo.predict(pen=pen)
+    else:
+        algo = rpt.BottomUp(model=model).fit(data)
+        bkps = algo.predict(pen=pen)
+    return {
+        "changepoints": bkps[:-1],  # exclude last (= n)
+        "n_changes": len(bkps) - 1,
+        "segments": [(0 if i == 0 else bkps[i-1], bkps[i])
+                     for i in range(len(bkps))],
+        "method": method, "penalty": pen,
+    }
+```
+
+**Use when**: "When did the trend shift?" "When did the process go out of control?" Manufacturing quality control, website traffic regime changes, financial regime detection.
+
+---
+
+### S57: Time Series Anomaly Detection
+
+**Problem**: Identify unusual observations (outliers) or unusual segments in a time series.
+**T**: O(n) for statistical methods, O(n log n) for Isolation Forest | **S**: O(n)
+**Lib**: `scipy.stats`, `sklearn.ensemble.IsolationForest`, custom
+**Guarantee**: Statistical methods have known false positive rates. ML methods are approximate.
+
+```python
+import numpy as np
+from scipy import stats
+
+def detect_anomalies(data: np.ndarray, window: int = 20,
+                     z_threshold: float = 3.0) -> dict:
+    """Detect anomalies using rolling statistics and z-scores."""
+    rolling_mean = np.convolve(data, np.ones(window)/window, mode="same")
+    rolling_std = np.array([np.std(data[max(0,i-window):i+1]) for i in range(len(data))])
+    rolling_std[rolling_std < 1e-10] = 1e-10  # avoid division by zero
+    z_scores = (data - rolling_mean) / rolling_std
+    anomaly_mask = np.abs(z_scores) > z_threshold
+    # IQR method
+    q1, q3 = np.percentile(data, [25, 75])
+    iqr = q3 - q1
+    iqr_mask = (data < q1 - 1.5 * iqr) | (data > q3 + 1.5 * iqr)
+    return {
+        "z_score_anomalies": np.where(anomaly_mask)[0].tolist(),
+        "iqr_anomalies": np.where(iqr_mask)[0].tolist(),
+        "z_scores": z_scores,
+        "n_zscore_anomalies": int(anomaly_mask.sum()),
+        "n_iqr_anomalies": int(iqr_mask.sum()),
+    }
+```
+
+**Use when**: Monitoring systems (server metrics, sensor data, fraud detection). Combine statistical methods (z-score, IQR) with ML methods (Isolation Forest) for robustness.
+
+---
+
+### S58: Moving Average / Smoothing
+
+**Problem**: Smooth a noisy time series to reveal underlying trends and patterns.
+**T**: O(n · window) for simple, O(n) for exponential | **S**: O(n)
+**Lib**: `pandas.Series.rolling`, `scipy.signal.savgol_filter`
+**Guarantee**: Deterministic transformation. Window size controls bias-variance tradeoff.
+
+```python
+import numpy as np
+import pandas as pd
+from scipy.signal import savgol_filter
+
+def smooth_series(data: np.ndarray, window: int = 7,
+                  method: str = "sma") -> dict:
+    """Smooth time series using various methods."""
+    series = pd.Series(data)
+    if method == "sma":
+        smoothed = series.rolling(window=window, center=True).mean().values
+    elif method == "ema":
+        smoothed = series.ewm(span=window, adjust=False).mean().values
+    elif method == "savgol":
+        smoothed = savgol_filter(data, window_length=window if window % 2 == 1 else window+1,
+                                  polyorder=2)
+    else:
+        raise ValueError(f"Unknown method: {method}")
+    residual = data - np.nan_to_num(smoothed, nan=data.mean())
+    return {
+        "smoothed": smoothed, "residual": residual, "method": method,
+        "window": window, "residual_std": np.nanstd(residual),
+    }
+```
+
+**Use when**: Noise reduction before visual analysis or feature extraction. SMA for equal weighting, EMA for recency weighting, Savitzky-Golay for preserving peaks/shapes.
+
+---
+
+### S59: Spectral Analysis (Periodogram)
+
+**Problem**: Identify dominant frequencies and periodicities in a time series.
+**T**: O(n log n) via FFT | **S**: O(n)
+**Lib**: `scipy.signal.periodogram`, `scipy.signal.welch`
+**Guarantee**: Consistent spectral density estimation with Welch's method.
+
+```python
+from scipy.signal import periodogram, welch
+import numpy as np
+
+def spectral_analysis(data: np.ndarray, fs: float = 1.0) -> dict:
+    """Compute power spectral density and dominant periods."""
+    freqs, psd = welch(data, fs=fs, nperseg=min(256, len(data)))
+    # Find dominant frequencies (peaks in PSD)
+    from scipy.signal import find_peaks
+    peaks, properties = find_peaks(psd, height=np.median(psd) * 3)
+    dominant_freqs = freqs[peaks]
+    dominant_periods = 1.0 / dominant_freqs[dominant_freqs > 0]
+    return {
+        "frequencies": freqs, "psd": psd,
+        "dominant_frequencies": dominant_freqs.tolist(),
+        "dominant_periods": sorted(dominant_periods.tolist(), reverse=True),
+        "spectral_entropy": -np.sum((psd/psd.sum()) * np.log2(psd/psd.sum() + 1e-12)),
+    }
+```
+
+**Use when**: "What's the cycle length?" Identifying seasonality periods before SARIMA. Signal processing, vibration analysis, biological rhythms.
+
+---
+
+### S60: Intervention Analysis
+
+**Problem**: Assess the causal impact of a known event or intervention on a time series.
+**T**: O(n · p²) for ARIMA with intervention | **S**: O(n)
+**Lib**: `statsmodels.tsa.arima.model.ARIMA` with exogenous variables, `causalimpact`
+**Guarantee**: Conditional on correct model specification. Bayesian structural time series provides uncertainty.
+
+```python
+import numpy as np
+import pandas as pd
+from statsmodels.tsa.arima.model import ARIMA
+
+def intervention_analysis(data: np.ndarray, intervention_point: int,
+                          order: tuple = (1,0,0)) -> dict:
+    """Assess impact of intervention using ARIMA with step dummy variable."""
+    n = len(data)
+    step = np.zeros(n)
+    step[intervention_point:] = 1.0
+    model = ARIMA(data, order=order, exog=step)
+    result = model.fit()
+    intervention_effect = result.params[-1]
+    se = result.bse[-1]
+    p_value = result.pvalues[-1]
+    return {
+        "intervention_effect": intervention_effect,
+        "standard_error": se, "p_value": p_value,
+        "significant": p_value < 0.05,
+        "ci_lower": intervention_effect - 1.96 * se,
+        "ci_upper": intervention_effect + 1.96 * se,
+        "pre_mean": np.mean(data[:intervention_point]),
+        "post_mean": np.mean(data[intervention_point:]),
+        "aic": result.aic,
+    }
+```
+
+**Use when**: "Did the marketing campaign increase sales?" "Did the policy change affect crime rates?" Requires knowing WHEN the intervention happened. Pre-post comparison with temporal modeling.
+
+---
+
+## 9. Stochastic Processes
+
+### S61: Continuous-Time Markov Chain (CTMC)
+
+**Problem**: Model a system that transitions between discrete states at random times with memoryless (exponential) holding times.
+**T**: O(k³) for matrix exponential (k states) | **S**: O(k²)
+**Lib**: `scipy.linalg.expm`, `numpy.linalg.eig`
+**Guarantee**: Exact transient and steady-state probabilities via matrix exponential and generator matrix.
+
+```python
+import numpy as np
+from scipy.linalg import expm
+
+def ctmc_analysis(Q: np.ndarray, initial_state: int, t: float) -> dict:
+    """Analyze CTMC with generator matrix Q at time t."""
+    k = Q.shape[0]
+    # Transient probabilities: P(t) = exp(Qt)
+    P_t = expm(Q * t)
+    # Steady-state: solve pi @ Q = 0, sum(pi) = 1
+    A = np.vstack([Q.T, np.ones(k)])
+    b = np.zeros(k + 1)
+    b[-1] = 1.0
+    pi = np.linalg.lstsq(A, b, rcond=None)[0]
+    # Expected holding times
+    holding_times = -1.0 / np.diag(Q)
+    return {
+        "transient_probs": P_t[initial_state],
+        "steady_state": pi,
+        "holding_times": holding_times,
+        "transition_matrix_at_t": P_t,
+    }
+```
+
+**Use when**: Queuing systems (M/M/1, M/M/c), reliability (component up/down), biological models. Generator matrix Q has non-negative off-diagonals and rows summing to 0.
+
+---
+
+### S62: Birth-Death Process
+
+**Problem**: Model a population or queue that changes by +1 (birth/arrival) or -1 (death/departure) at exponential rates.
+**T**: O(k) for steady-state, O(k³) for transient | **S**: O(k)
+**Lib**: Custom + `scipy.linalg.expm`
+**Guarantee**: Exact steady-state via balance equations. Transient via matrix exponential.
+
+```python
+import numpy as np
+
+def birth_death_steady_state(birth_rates: list[float],
+                              death_rates: list[float]) -> dict:
+    """Compute steady-state distribution of a birth-death process."""
+    k = len(birth_rates) + 1  # states 0, 1, ..., k-1
+    # Balance equations: pi[n+1] = (lambda_n / mu_{n+1}) * pi[n]
+    pi = np.zeros(k)
+    pi[0] = 1.0
+    for n in range(k - 1):
+        pi[n + 1] = pi[n] * birth_rates[n] / death_rates[n]
+    pi /= pi.sum()  # normalize
+    # Performance metrics
+    mean_pop = sum(n * pi[n] for n in range(k))
+    return {
+        "steady_state": pi, "mean_population": mean_pop,
+        "prob_empty": pi[0], "prob_full": pi[-1],
+        "utilization": 1 - pi[0],
+    }
+```
+
+**Use when**: M/M/1 and M/M/c queuing models, population dynamics with immigration/emigration. Birth rates = arrival rates, death rates = service rates.
+
+---
+
+### S63: Poisson Process Analysis
+
+**Problem**: Model events occurring randomly in time at a constant (or varying) average rate.
+**T**: O(n) for estimation, O(1) for probabilities | **S**: O(n)
+**Lib**: `scipy.stats.poisson`, `scipy.stats.expon`, custom
+**Guarantee**: Exact under Poisson assumptions. Goodness-of-fit via chi-squared or KS test.
+
+```python
+import numpy as np
+from scipy import stats
+
+def poisson_process_analysis(event_times: np.ndarray,
+                              observation_period: float) -> dict:
+    """Analyze a Poisson process from observed event times."""
+    n_events = len(event_times)
+    rate = n_events / observation_period  # MLE of lambda
+    inter_arrivals = np.diff(np.sort(event_times))
+    # Test exponentiality of inter-arrival times
+    ks_stat, ks_p = stats.kstest(inter_arrivals, "expon", args=(0, 1/rate))
+    # Probability computations
+    return {
+        "estimated_rate": rate,
+        "mean_inter_arrival": 1.0 / rate if rate > 0 else float("inf"),
+        "n_events": n_events,
+        "exponentiality_test_p": ks_p,
+        "is_poisson": ks_p > 0.05,
+        "prob_0_in_unit": stats.poisson.pmf(0, rate),
+        "prob_geq_5_in_unit": 1 - stats.poisson.cdf(4, rate),
+        "rate_ci_lower": rate - 1.96 * np.sqrt(rate / observation_period),
+        "rate_ci_upper": rate + 1.96 * np.sqrt(rate / observation_period),
+    }
+```
+
+**Use when**: Customer arrivals, server requests, accidents, radioactive decay. Key assumption: events are independent and rate is constant. Test with inter-arrival exponentiality.
+
+---
+
+### S64: Random Walk Analysis
+
+**Problem**: Determine if a time series follows a random walk (unpredictable, unit root process).
+**T**: O(n) for analysis | **S**: O(n)
+**Lib**: `statsmodels.tsa.stattools.adfuller`, custom
+**Guarantee**: ADF test has known asymptotic distribution. Variance ratio test detects departures.
+
+```python
+import numpy as np
+from statsmodels.tsa.stattools import adfuller
+
+def random_walk_analysis(data: np.ndarray) -> dict:
+    """Test if series is a random walk and analyze properties."""
+    n = len(data)
+    # ADF test (null = unit root = random walk)
+    adf_stat, adf_p, _, _, _, _ = adfuller(data, autolag="AIC")
+    # Variance ratio test (ratio of var(k-diff) to k*var(1-diff) should be ~1)
+    diffs = np.diff(data)
+    var_1 = np.var(diffs)
+    ratios = {}
+    for k in [2, 4, 8, 16]:
+        if k < n // 2:
+            k_diffs = data[k:] - data[:-k]
+            var_k = np.var(k_diffs)
+            ratios[k] = var_k / (k * var_1) if var_1 > 0 else float("nan")
+    return {
+        "adf_statistic": adf_stat, "adf_pvalue": adf_p,
+        "is_random_walk": adf_p > 0.05,
+        "variance_ratios": ratios,
+        "drift": np.mean(diffs),
+        "volatility": np.std(diffs),
+        "total_displacement": data[-1] - data[0],
+    }
+```
+
+**Use when**: "Is this stock price predictable?" "Is this truly random?" Financial time series, efficient market hypothesis testing. Random walk = no predictable pattern.
+
+---
+
+### S65: Renewal Process Analysis
+
+**Problem**: Analyze a process where events occur and inter-event times are i.i.d. (generalizing Poisson process to non-exponential inter-arrivals).
+**T**: O(n log n) for distribution fitting | **S**: O(n)
+**Lib**: `scipy.stats` (distribution fitting), custom
+**Guarantee**: Asymptotic results from renewal theory. Central limit theorem for renewal counts.
+
+```python
+import numpy as np
+from scipy import stats
+
+def renewal_analysis(inter_arrival_times: np.ndarray) -> dict:
+    """Analyze a renewal process from inter-arrival times."""
+    n = len(inter_arrival_times)
+    mean_ia = np.mean(inter_arrival_times)
+    var_ia = np.var(inter_arrival_times, ddof=1)
+    cv = np.sqrt(var_ia) / mean_ia  # coefficient of variation
+    # Fit candidate distributions
+    fits = {}
+    for dist_name in ["expon", "gamma", "weibull_min", "lognorm"]:
+        dist = getattr(stats, dist_name)
+        params = dist.fit(inter_arrival_times)
+        ks_stat, ks_p = stats.kstest(inter_arrival_times, dist_name, args=params)
+        fits[dist_name] = {"params": params, "ks_stat": ks_stat, "ks_pvalue": ks_p}
+    best_fit = max(fits, key=lambda d: fits[d]["ks_pvalue"])
+    return {
+        "n_events": n, "mean_inter_arrival": mean_ia,
+        "variance": var_ia, "cv": cv,
+        "renewal_rate": 1 / mean_ia,
+        "is_poisson": abs(cv - 1.0) < 0.1,
+        "best_fit_distribution": best_fit,
+        "fits": fits,
+    }
+```
+
+**Use when**: Equipment replacements, maintenance cycles, customer returns. Generalizes Poisson: CV=1 is Poisson, CV<1 is more regular, CV>1 is more bursty.
+
+---
+
+## 10. Survival Analysis (Extended)
+
+### S66: Log-Rank Test
+
+**Problem**: Compare survival curves of two or more groups to test if they are statistically different.
+**T**: O(n log n) for sorting events | **S**: O(n)
+**Lib**: `lifelines.statistics.logrank_test`, `scipy.stats`
+**Guarantee**: Asymptotic chi-squared distribution under null (no difference). Nonparametric.
+
+```python
+from lifelines.statistics import logrank_test
+import numpy as np
+
+def compare_survival(durations_a: np.ndarray, events_a: np.ndarray,
+                     durations_b: np.ndarray, events_b: np.ndarray) -> dict:
+    """Log-rank test comparing two survival curves."""
+    result = logrank_test(durations_a, durations_b, event_observed_A=events_a,
+                          event_observed_B=events_b)
+    return {
+        "test_statistic": result.test_statistic,
+        "p_value": result.p_value,
+        "significant": result.p_value < 0.05,
+        "median_a": float(np.median(durations_a[events_a == 1])) if events_a.sum() > 0 else None,
+        "median_b": float(np.median(durations_b[events_b == 1])) if events_b.sum() > 0 else None,
+    }
+```
+
+**Use when**: "Do treatment and control groups have different survival?" The survival analog of the t-test. Use Kaplan-Meier (S39) for estimation, log-rank for comparison.
+
+---
+
+### S67: Accelerated Failure Time (AFT) Model
+
+**Problem**: Model survival time as a function of covariates, where covariates accelerate or decelerate failure.
+**T**: O(n · p · iterations) for MLE | **S**: O(n · p)
+**Lib**: `lifelines.WeibullAFTFitter`, `lifelines.LogNormalAFTFitter`, `lifelines.LogLogisticAFTFitter`
+**Guarantee**: MLE estimates with standard errors and confidence intervals.
+
+```python
+from lifelines import WeibullAFTFitter, LogNormalAFTFitter
+import pandas as pd
+
+def aft_model(df: pd.DataFrame, duration_col: str, event_col: str,
+              distribution: str = "weibull") -> dict:
+    """Fit an Accelerated Failure Time model."""
+    if distribution == "weibull":
+        fitter = WeibullAFTFitter()
+    else:
+        fitter = LogNormalAFTFitter()
+    fitter.fit(df, duration_col=duration_col, event_col=event_col)
+    return {
+        "coefficients": fitter.params_.to_dict(),
+        "confidence_intervals": fitter.confidence_intervals_.to_dict(),
+        "aic": fitter.AIC_,
+        "concordance_index": fitter.concordance_index_,
+        "median_survival": fitter.median_survival_time_,
+        "summary": fitter.summary.to_dict(),
+    }
+```
+
+**Use when**: When you want to model HOW MUCH covariates speed up or slow down time to event (vs. Cox PH which models hazard ratios). Coefficients are directly interpretable as acceleration factors.
+
+---
+
+### S68: Competing Risks Analysis
+
+**Problem**: Analyze time-to-event data where multiple distinct event types can occur, and occurrence of one precludes the others.
+**T**: O(n log n) for CIF estimation | **S**: O(n)
+**Lib**: `lifelines.AalenJohansenFitter`, custom
+**Guarantee**: Aalen-Johansen estimator is nonparametric and consistent.
+
+```python
+from lifelines import AalenJohansenFitter
+import numpy as np
+import pandas as pd
+
+def competing_risks(durations: np.ndarray, events: np.ndarray) -> dict:
+    """Estimate cumulative incidence functions for competing risks.
+    events: 0=censored, 1=event type 1, 2=event type 2, etc."""
+    event_types = sorted(set(events) - {0})
+    cifs = {}
+    for event_type in event_types:
+        ajf = AalenJohansenFitter()
+        ajf.fit(durations, events, event_of_interest=event_type)
+        cifs[f"event_{event_type}"] = {
+            "cumulative_incidence": ajf.cumulative_density_.values.flatten().tolist(),
+            "timeline": ajf.cumulative_density_.index.tolist(),
+        }
+    return {
+        "event_types": event_types,
+        "cumulative_incidence_functions": cifs,
+        "n_total": len(durations),
+        "n_censored": int((events == 0).sum()),
+        "n_per_event": {et: int((events == et).sum()) for et in event_types},
+    }
+```
+
+**Use when**: Customer churn (voluntary vs. involuntary), cause-specific mortality (cancer vs. heart disease), employment (quit vs. fired vs. retired). Standard Kaplan-Meier overestimates each risk.
+
+---
+
 ## Algorithm Selection Flowchart
 
 ```
@@ -1396,19 +2193,50 @@ Question about data?
 │   │   └── Outliers? → S30 (Robust regression)
 │   └── Binary Y? → S25 (Logistic regression)
 │
+├── Forecast over time?
+│   ├── Single series?
+│   │   ├── Stationary? → S51 (stationarity test) → S46 (ARIMA)
+│   │   ├── Seasonal? → S47 (SARIMA) or S48 (Holt-Winters)
+│   │   ├── Multiple seasonalities / holidays? → S55 (Prophet)
+│   │   └── Simple trend? → S48 (Exponential Smoothing)
+│   ├── Multiple related series? → S53 (VAR)
+│   ├── Volatility forecasting? → S54 (GARCH)
+│   └── Understand components? → S49 (Decomposition) + S50 (ACF/PACF)
+│
+├── Detect change or anomaly?
+│   ├── When did it change? → S56 (Change Point Detection)
+│   ├── What's unusual? → S57 (Anomaly Detection)
+│   ├── Did intervention help? → S60 (Intervention Analysis)
+│   └── Does X predict Y over time? → S52 (Granger Causality)
+│
+├── Model random events over time?
+│   ├── Events at constant rate? → S63 (Poisson Process)
+│   ├── System switching states? → S61 (CTMC) or S62 (Birth-Death)
+│   ├── Is it a random walk? → S64 (Random Walk Analysis)
+│   └── Recurring events (non-exponential)? → S65 (Renewal Process)
+│
 ├── Estimate parameter?
 │   ├── Know the distribution? → S36 (MLE) or S37 (Method of moments)
 │   ├── Want uncertainty? → S19 (t CI) or S20 (Bootstrap CI)
 │   ├── Have prior information? → S31-S35 (Bayesian methods)
 │   └── Censored data? → S39 (Kaplan-Meier) or S40 (Cox PH)
 │
+├── Survival / time-to-event?
+│   ├── Estimate survival curve → S39 (Kaplan-Meier)
+│   ├── Compare groups → S66 (Log-Rank Test)
+│   ├── Effect of covariates (hazard)? → S40 (Cox PH)
+│   ├── Effect of covariates (time)? → S67 (AFT Model)
+│   └── Multiple event types? → S68 (Competing Risks)
+│
 ├── Check assumptions?
 │   ├── Normal? → S15 (Shapiro-Wilk)
 │   ├── Distribution fit? → S14 (KS test) or S36 (MLE + GOF)
+│   ├── Stationary? → S51 (ADF + KPSS)
 │   └── Equal variance? → Levene's test (in S7)
 │
 └── Validate model?
     ├── Prediction accuracy → S43 (Cross-validation)
     ├── Sample size needed → S44 (Power analysis)
-    └── Uncertainty of statistic → S41 (Bootstrap) or S42 (Jackknife)
+    ├── Uncertainty of statistic → S41 (Bootstrap) or S42 (Jackknife)
+    └── Smooth noisy data → S58 (Moving Average) + S59 (Spectral Analysis)
 ```

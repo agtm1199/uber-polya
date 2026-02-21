@@ -857,6 +857,83 @@ Bayesian A/B Test Results:
 
 ---
 
+## 16. Time Series & Forecasting Solutions
+
+### 16.1 Time Series Forecast Results
+
+**When you have**: ARIMA/SARIMA forecasts, exponential smoothing predictions, Prophet output.
+
+**Translate to real-world language**:
+- Point forecast: "We expect [metric] to be approximately [value] in [time period]"
+- Confidence interval: "With 95% confidence, [metric] will fall between [lower] and [upper]"
+- AIC/BIC: "Model A fits the data better than Model B" (lower = better; don't report raw values to stakeholders)
+- Residuals: "The model captures [X]% of the variance; remaining uncertainty is [Y] units"
+
+**Template**:
+```
+Forecast: [metric] = [value] ± [margin] for [period]
+  95% CI: [lower, upper]
+Model: [ARIMA(p,d,q) / Holt-Winters / Prophet]
+Accuracy: MAPE = [X]%, RMSE = [Y] units
+Key drivers: [trend direction], [seasonal pattern], [recent changes]
+```
+
+**Sensitivity**: "If the recent trend continues, [metric] reaches [value] by [date]. If growth slows to [alternative rate], it reaches [lower value] instead."
+
+**Caveats**: Forecasts assume past patterns continue. Confidence intervals widen over time. External shocks (COVID, policy changes) are not captured.
+
+---
+
+### 16.2 Decomposition / Trend Analysis Results
+
+**When you have**: STL or classical decomposition, change point detection, spectral analysis output.
+
+**Translate to real-world language**:
+- Trend: "The underlying trend is [increasing/decreasing/flat] at [rate] per [period]"
+- Seasonality: "There's a regular [weekly/monthly/yearly] pattern: [description of highs/lows]"
+- Seasonal strength: "Seasonality accounts for [X]% of the variation" (0.8+ is strong)
+- Change points: "A significant shift occurred in [date]: [metric] changed from [before] to [after]"
+- Anomalies: "[N] unusual observations detected, notably [date] where [metric] was [X]% above/below expected"
+
+**Template**:
+```
+Components:
+  Trend: [direction] at [rate]/[period] (strength: [0-1])
+  Seasonal: [period]-[unit] cycle, peak in [time], trough in [time] (strength: [0-1])
+  Residual: std = [value], [N] anomalies detected
+Change points: [date1] (shift of [magnitude]), [date2] (shift of [magnitude])
+```
+
+**Sensitivity**: "Removing the [date] anomaly changes the trend estimate from [X] to [Y]."
+
+---
+
+### 16.3 Survival / Time-to-Event Results
+
+**When you have**: Kaplan-Meier curves, Cox PH hazard ratios, AFT acceleration factors, competing risks CIFs.
+
+**Translate to real-world language**:
+- Median survival: "Half of [subjects] experience [event] by [time]"
+- Survival probability: "At [time], [X]% of [subjects] have not yet experienced [event]"
+- Hazard ratio (Cox PH): "Group A has [X] times the risk of [event] compared to Group B"
+- Log-rank test: "The two groups have [significantly different / no significant difference in] survival"
+- AFT acceleration factor: "Factor A speeds up [event] by [X]% (or slows it by [X]%)"
+- Competing risks: "At [time], the probability of [event A] is [X]% and [event B] is [Y]%"
+
+**Template**:
+```
+Survival analysis:
+  Median survival: [time] [units] (95% CI: [lower, upper])
+  Survival at [key time]: [X]% (95% CI: [lower, upper])
+  Group comparison (log-rank): p = [value], [significant/not significant]
+  Key risk factor: [variable] → HR = [value] (95% CI: [lower, upper])
+    Interpretation: [X] times higher/lower risk per unit increase
+```
+
+**Caveats**: Hazard ratios assume proportional hazards (check with `cph.check_assumptions()`). Censoring means some subjects haven't experienced the event yet — they're not "survivors forever."
+
+---
+
 ## Cross-Reference Index
 
 Which visualization to use for each result type, and where results come from.
@@ -895,5 +972,8 @@ Which visualization to use for each result type, and where results come from.
 | §14.2 MCDA Ranking | §23 Tornado, §5 Scenario Comparison | §27 Decision Analysis (A151-A156) | §16.3 Multi-Criteria Problem |
 | §15.1 Pareto Frontier | §24 Pareto Frontier Plot | §28 Multi-Objective (A157-A161) | §17.1 Pareto Set |
 | §15.2 Goal Programming | §5 Scenario Comparison | §28 Multi-Objective (A162-A164) | §17.3 Goal Model |
+| §16.1 Time Series Forecast | §26 Forecast Plot (CI bands) | algorithms-statistics.md S46-S55 | §18 Time Series |
+| §16.2 Decomposition/Trend | §25 Decomposition Plot | algorithms-statistics.md S49, S56-S59 | §18 Time Series |
+| §16.3 Survival/Events | §27 Survival Curve | algorithms-statistics.md S39-S40, S66-S68 | §10 Statistical Inference, §19 Stochastic Processes |
 
 Also see: **common-mistakes.md** §I1-I6 for interpretation pitfalls.

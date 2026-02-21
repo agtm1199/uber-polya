@@ -1,6 +1,6 @@
 # Mathematical Structure Catalog
 
-**Scope**: Discrete Mathematics (32 structures), Continuous Optimization (5 structures), Statistical Inference (6 structures), Linear Algebra (4 structures), Calculus (3 structures), Geometry & Trigonometry (4 structures), Financial Mathematics (1 structure), Game Theory (3 structures), Decision Analysis (3 structures), Multi-Objective Optimization (3 structures)
+**Scope**: Discrete Mathematics (32 structures), Continuous Optimization (5 structures), Statistical Inference (6 structures), Linear Algebra (4 structures), Calculus (3 structures), Geometry & Trigonometry (4 structures), Financial Mathematics (1 structure), Game Theory (3 structures), Decision Analysis (3 structures), Multi-Objective Optimization (3 structures), Time Series (3 structures), Stochastic Processes (3 structures)
 
 A catalog of mathematical structures organized by domain. Use this to match real-world problems to mathematical models during Phase 2 of the uber-model skill.
 
@@ -1591,6 +1591,155 @@ Minimize: Σ w_i · (d_i^+ + d_i^-) or lexicographic over priority levels
 
 ---
 
+## 18. Time Series
+
+### 18.1 Time Series / Temporal Sequence
+
+**Definition**: An ordered sequence of observations indexed by time, where the ordering carries information (autocorrelation, trend, seasonality).
+
+**Indicators**: "over time", "monthly data", "daily values", "trend", "forecast", "seasonal pattern", "time-stamped", "historical data"
+
+**Template**:
+```
+Observations: y_1, y_2, ..., y_n at times t_1 < t_2 < ... < t_n
+Components: y_t = T_t + S_t + R_t (additive) or y_t = T_t × S_t × R_t (multiplicative)
+  where T = trend, S = seasonal, R = residual
+Goal: forecast y_{n+1}, ..., y_{n+h} or decompose into components
+```
+
+**Examples**:
+- Monthly sales figures over 3 years
+- Daily website traffic with weekly and yearly patterns
+- Quarterly GDP growth rates
+- Hourly temperature readings
+
+**Key problems**: ARIMA (S46-S47), exponential smoothing (S48), decomposition (S49), Prophet (S55)
+
+---
+
+### 18.2 Seasonal / Cyclical Pattern
+
+**Definition**: A regular, repeating pattern in a time series with a known period (seasonal) or unknown period (cyclical).
+
+**Indicators**: "seasonal", "monthly pattern", "weekly cycle", "holiday effect", "periodic", "same time every year"
+
+**Template**:
+```
+Period: s (12 for monthly, 7 for daily-weekly, 4 for quarterly)
+Seasonal component: S_t = S_{t+s} (repeating with period s)
+Seasonal strength: 1 - Var(R) / Var(S + R)
+```
+
+**Examples**:
+- Ice cream sales peaking in summer (s=12)
+- Restaurant traffic peaking on weekends (s=7)
+- Retail spending spiking in December (s=12)
+- Energy usage higher in winter/summer (s=12)
+
+**Key problems**: SARIMA (S47), Holt-Winters (S48), STL decomposition (S49), spectral analysis (S59)
+
+---
+
+### 18.3 Trend Component
+
+**Definition**: The long-term direction of a time series (increasing, decreasing, or level), after removing seasonal and irregular effects.
+
+**Indicators**: "growing over time", "declining trend", "upward trajectory", "long-term pattern", "year-over-year growth"
+
+**Template**:
+```
+Trend models:
+  Linear: T_t = a + b·t
+  Exponential: T_t = a · e^{bt}
+  Piecewise linear: T_t = a_i + b_i·t for t in segment i (changepoints)
+Stationarity: after removing trend, residuals should be stationary (ADF test)
+```
+
+**Examples**:
+- Population growth (exponential trend)
+- Technology adoption (S-curve / logistic trend)
+- Declining manufacturing costs (linear decreasing)
+- Stock market long-term growth (stochastic trend / random walk)
+
+**Key problems**: Stationarity tests (S51), change point detection (S56), random walk analysis (S64)
+
+---
+
+## 19. Stochastic Processes
+
+### 19.1 Continuous-Time Markov Chain
+
+**Definition**: A stochastic process on a discrete state space where transitions occur at exponentially distributed random times, with the memoryless property.
+
+**Indicators**: "states", "transition rates", "exponential waiting time", "steady state", "long-run probability", "queue", "up/down system"
+
+**Template**:
+```
+State space: {0, 1, ..., k}
+Generator matrix Q: q_ij = rate from state i to j (i≠j), q_ii = -Σ_{j≠i} q_ij
+Transient: P(t) = exp(Qt)
+Steady-state: π Q = 0, Σ π_i = 1
+```
+
+**Examples**:
+- M/M/1 queue (customer arrivals and departures)
+- Machine reliability (working/failed states with repair)
+- Chemical reaction networks
+- Call center staffing models
+
+**Key problems**: CTMC analysis (S61), birth-death process (S62)
+
+---
+
+### 19.2 Point Process
+
+**Definition**: A random process whose realizations are collections of points (events) in time or space.
+
+**Indicators**: "events over time", "arrival times", "count of occurrences", "rate of events", "inter-arrival times"
+
+**Template**:
+```
+Events: {t_1, t_2, ...} in [0, T]
+Rate function: λ(t) (intensity / hazard)
+Count: N(s,t) = number of events in (s,t]
+Inter-arrivals: X_i = t_i - t_{i-1}
+Homogeneous Poisson: X_i ~ Exp(λ), N(0,t) ~ Poisson(λt)
+```
+
+**Examples**:
+- Customer arrivals at a store
+- Earthquakes in a region
+- Server request arrivals
+- Insurance claims over time
+
+**Key problems**: Poisson process (S63), renewal process (S65)
+
+---
+
+### 19.3 Random Walk / Diffusion
+
+**Definition**: A stochastic process where changes are independent and identically distributed, producing an unpredictable trajectory.
+
+**Indicators**: "random", "unpredictable", "unit root", "stock price", "efficient market", "Brownian motion"
+
+**Template**:
+```
+Discrete: X_t = X_{t-1} + ε_t, where ε_t ~ iid(0, σ²)
+With drift: X_t = μ + X_{t-1} + ε_t
+Variance grows: Var(X_t) = σ²·t (non-stationary)
+Test: ADF unit root test (S51), variance ratio test (S64)
+```
+
+**Examples**:
+- Stock prices (geometric random walk)
+- Exchange rates under efficient market hypothesis
+- Particle diffusion (Brownian motion)
+- Random search / foraging paths
+
+**Key problems**: Random walk analysis (S64), stationarity tests (S51), GARCH for volatility (S54)
+
+---
+
 ## Cross-Reference Index
 
 Where to go next after identifying a structure.
@@ -1614,5 +1763,7 @@ Where to go next after identifying a structure.
 | 15. Game Theory | §26 Game Theory (A135-A146) | §13 nashpy | §13 Game Theory Results |
 | 16. Decision Analysis | §27 Decision Analysis (A147-A156) | numpy, scipy, §2 PuLP | §14 Decision Analysis Results |
 | 17. Multi-Objective Optimization | §28 Multi-Objective Opt (A157-A164) | §14 pymoo, §2 PuLP, §5 SciPy | §15 Multi-Objective Results |
+| 18. Time Series | algorithms-statistics.md S46-S60 | statsmodels, prophet | §16 Time Series Results |
+| 19. Stochastic Processes | algorithms-statistics.md S61-S65 | scipy.linalg, scipy.stats | §16.3 Survival/Process Results |
 
 Also see: **problem-classification.md** for rapid pattern matching from natural language to structure, **common-mistakes.md** for modeling pitfalls by structure type.

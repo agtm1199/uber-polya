@@ -44,6 +44,11 @@ Which chart for which result type. matplotlib/seaborn/NetworkX templates for com
 | Payoff matrix / game | Heatmap with annotations | Strategy comparison | Bar chart of payoffs |
 | Sensitivity / tornado | Horizontal bar chart (low/high) | Many parameters | Spider/radar chart |
 | Pareto frontier | Scatter plot (objective space) | Knee point highlight | Parallel coordinates |
+| Time series decomposition | 4-panel subplot (obs/trend/season/resid) | Single component | Line plot |
+| Time series forecast | Line + CI band | Multiple models | Multi-line overlay |
+| Survival curves | KM step plot + CI band | Group comparison | Hazard ratio forest plot |
+| Change points | Line + vertical markers | Regime coloring | Segment mean overlay |
+| Anomalies | Line + highlighted outliers | Context needed | Rolling statistics overlay |
 
 ---
 
@@ -1161,3 +1166,156 @@ plt.savefig('pareto_frontier.png', dpi=150, bbox_inches='tight')
 ```
 
 **Key elements**: Dominated points (grey), Pareto front (blue connected), knee point (star), utopia point (diamond), axis labels matching objectives, grid.
+
+---
+
+## 25. Time Series Decomposition Plot
+
+**When to use**: Showing trend, seasonal, and residual components of a time series after STL or classical decomposition.
+
+### Chart Selection Matrix Entry
+
+| Result type | Chart |
+|---|---|
+| Decomposition (trend + seasonal + residual) | Time Series Decomposition (stacked subplots) |
+
+### Template
+
+```python
+import matplotlib.pyplot as plt
+import numpy as np
+
+# --- Data: decomposition result ---
+# time, observed, trend, seasonal, residual = ...
+
+fig, axes = plt.subplots(4, 1, figsize=(12, 10), sharex=True)
+
+axes[0].plot(time, observed, color='#58a6ff', linewidth=1)
+axes[0].set_ylabel('Observed', fontsize=11)
+axes[0].set_title('Time Series Decomposition (STL)', fontsize=14)
+
+axes[1].plot(time, trend, color='#f0883e', linewidth=2)
+axes[1].set_ylabel('Trend', fontsize=11)
+
+axes[2].plot(time, seasonal, color='#3fb950', linewidth=1)
+axes[2].set_ylabel('Seasonal', fontsize=11)
+axes[2].axhline(0, color='#8b949e', linewidth=0.5, linestyle='--')
+
+axes[3].scatter(time, residual, color='#8b949e', s=8, alpha=0.5)
+axes[3].axhline(0, color='#da3633', linewidth=0.5, linestyle='--')
+axes[3].set_ylabel('Residual', fontsize=11)
+axes[3].set_xlabel('Time', fontsize=12)
+
+for ax in axes:
+    ax.grid(True, alpha=0.3)
+
+plt.tight_layout()
+plt.savefig('decomposition.png', dpi=150, bbox_inches='tight')
+```
+
+**Key elements**: Four vertically-stacked subplots sharing x-axis (time). Observed (blue), trend (orange), seasonal (green, centered on zero), residual (grey scatter, centered on zero). Shared time axis.
+
+---
+
+## 26. Forecast Plot (with Confidence Bands)
+
+**When to use**: Showing historical data, fitted values, and forecasts with uncertainty intervals.
+
+### Chart Selection Matrix Entry
+
+| Result type | Chart |
+|---|---|
+| Time series forecast (ARIMA, ETS, Prophet) | Forecast Plot with CI bands |
+
+### Template
+
+```python
+import matplotlib.pyplot as plt
+import numpy as np
+
+# --- Data ---
+# hist_time, hist_values = historical time series
+# fcast_time, fcast_mean, fcast_lower, fcast_upper = forecast with CI
+
+fig, ax = plt.subplots(figsize=(12, 6))
+
+# Historical data
+ax.plot(hist_time, hist_values, color='#58a6ff', linewidth=1.5, label='Observed')
+
+# Forecast
+ax.plot(fcast_time, fcast_mean, color='#f0883e', linewidth=2, label='Forecast')
+ax.fill_between(fcast_time, fcast_lower, fcast_upper,
+                color='#f0883e', alpha=0.2, label='95% CI')
+
+# Vertical line at forecast origin
+ax.axvline(x=hist_time[-1], color='#8b949e', linestyle='--', linewidth=1, alpha=0.7)
+ax.annotate('Forecast →', xy=(hist_time[-1], max(hist_values)),
+            xytext=(10, 5), textcoords='offset points', fontsize=10, color='#8b949e')
+
+ax.set_xlabel('Time', fontsize=12)
+ax.set_ylabel('Value', fontsize=12)
+ax.set_title('Sales Forecast — SARIMA(1,1,1)(1,1,1,12)', fontsize=14)
+ax.legend(loc='upper left')
+ax.grid(True, alpha=0.3)
+plt.tight_layout()
+plt.savefig('forecast.png', dpi=150, bbox_inches='tight')
+```
+
+**Key elements**: Historical data (blue solid), forecast (orange solid), confidence interval (orange shaded), vertical dashed line at forecast origin, axis labels, model name in title.
+
+---
+
+## 27. Survival Curve (Kaplan-Meier)
+
+**When to use**: Showing estimated survival probabilities over time, optionally comparing groups.
+
+### Chart Selection Matrix Entry
+
+| Result type | Chart |
+|---|---|
+| Survival analysis (Kaplan-Meier, Cox PH) | Survival Curve (step function with CI) |
+
+### Template
+
+```python
+import matplotlib.pyplot as plt
+import numpy as np
+
+# --- Data ---
+# timeline_a, survival_a, ci_lower_a, ci_upper_a = Group A KM estimate
+# timeline_b, survival_b, ci_lower_b, ci_upper_b = Group B KM estimate
+# p_value = log-rank test result
+
+fig, ax = plt.subplots(figsize=(10, 7))
+
+# Group A
+ax.step(timeline_a, survival_a, where='post', color='#58a6ff', linewidth=2, label='Group A')
+ax.fill_between(timeline_a, ci_lower_a, ci_upper_a, step='post',
+                color='#58a6ff', alpha=0.15)
+
+# Group B
+ax.step(timeline_b, survival_b, where='post', color='#f0883e', linewidth=2, label='Group B')
+ax.fill_between(timeline_b, ci_lower_b, ci_upper_b, step='post',
+                color='#f0883e', alpha=0.15)
+
+# Median survival reference lines
+ax.axhline(0.5, color='#8b949e', linestyle=':', linewidth=1, alpha=0.5)
+ax.annotate('Median survival', xy=(0, 0.5), xytext=(5, 5),
+            textcoords='offset points', fontsize=9, color='#8b949e')
+
+# Log-rank test annotation
+ax.text(0.95, 0.95, f'Log-rank p = {p_value:.4f}',
+        transform=ax.transAxes, ha='right', va='top', fontsize=11,
+        bbox=dict(boxstyle='round,pad=0.3', facecolor='white', edgecolor='#8b949e'))
+
+ax.set_xlabel('Time (months)', fontsize=12)
+ax.set_ylabel('Survival Probability', fontsize=12)
+ax.set_title('Kaplan-Meier Survival Curves', fontsize=14)
+ax.set_ylim(0, 1.05)
+ax.legend(loc='lower left', fontsize=11)
+ax.grid(True, alpha=0.3)
+plt.tight_layout()
+plt.savefig('survival_curve.png', dpi=150, bbox_inches='tight')
+```
+
+**Key elements**: Step function (survival is piecewise constant), confidence bands (shaded), median survival reference line at 0.5, log-rank p-value annotation, y-axis from 0 to 1, group colors for comparison.

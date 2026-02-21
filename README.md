@@ -1,6 +1,13 @@
 # uber-polya
 
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
+[![Python 3.10+](https://img.shields.io/badge/Python-3.10+-3776AB.svg)](https://www.python.org/)
+[![Version](https://img.shields.io/badge/Version-0.3.0-green.svg)](release-notes/v0.3.0.md)
+[![CI](https://github.com/agtm1199/uber-polya/actions/workflows/ci.yml/badge.svg)](https://github.com/agtm1199/uber-polya/actions/workflows/ci.yml)
+
 **Don't guess. Solve.**
+
+[Docs](https://agtm1199.github.io/uber-polya/guide.html) | [Tutorial](https://agtm1199.github.io/uber-polya/getting-started.html) | [Manifesto](https://agtm1199.github.io/uber-polya/manifesto.html)
 
 uber-polya is the first math problem-solver skill for Claude Code and 25+ compatible platforms. It's free, open-source, and turns real-world problems -- business or personal -- into mathematically verified solutions.
 

@@ -1,0 +1,39 @@
+{
+  "volume_liters": 1000.0,
+  "volume_m3": 1.0,
+  "open_top": {
+    "radius_m": 0.6827840632552957,
+    "height_m": 0.6827840632552957,
+    "surface_area_m2": 4.39377566268457,
+    "h_over_r": 1.0,
+    "radius_symbolic": "V**(1/3)/pi**(1/3)",
+    "height_symbolic": "V**(1/3)/pi**(1/3)",
+    "surface_symbolic": "3*pi**(1/3)*V**(2/3)"
+  },
+  "closed_top": {
+    "radius_m": 0.541926070139289,
+    "height_m": 1.083852140278578,
+    "surface_area_m2": 5.535810445932086,
+    "h_over_r": 2.0
+  },
+  "cube_comparison": {
+    "side_m": 1.0,
+    "area_open_m2": 5.0,
+    "material_savings_pct": 12.124486746308598
+  },
+  "lagrange_multiplier": 2.9291837750911043,
+  "algorithm": "Symbolic Differentiation + Critical Point Analysis (SymPy)",
+  "time_seconds": 0.2988955990294926,
+  "verification": {
+    "volume_constraint_satisfied": true,
+    "surface_area_recomputed_matches": true,
+    "second_derivative_positive": true,
+    "first_order_condition_dSdr_zero": true,
+    "open_top_h_equals_r": true,
+    "closed_volume_constraint": true,
+    "closed_surface_area_recomputed": true,
+    "closed_top_h_equals_2r": true,
+    "perturbation_r+0.001_gives_worse_S": true,
+    "perturbation_r-0.001_gives_worse_S": true
+  }
+}

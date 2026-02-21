@@ -608,11 +608,107 @@ for gamma in [0.1, 0.5, 1.0, 5.0, 10.0]:
 | Markov chains | numpy | scipy |
 | Monte Carlo | numpy.random | -- |
 | Generating functions | SymPy series | -- |
+| Linear system Ax=b | numpy.linalg.solve | scipy.linalg.solve |
+| Eigenvalues / SVD | numpy.linalg.eig / svd | scipy.linalg.eig |
+| Matrix decomposition | scipy.linalg (lu, qr, cholesky) | numpy.linalg |
+| Differentiation / integration | SymPy (symbolic) | scipy.integrate (numerical) |
+| ODE solving | scipy.integrate.solve_ivp | SymPy dsolve (symbolic) |
+| Polygon area / intersection | shapely | SymPy.geometry |
+| Voronoi / convex hull | scipy.spatial | shapely |
+| Nearest neighbors | scipy.spatial.KDTree | sklearn.neighbors |
+| NPV / IRR / PMT | numpy-financial | custom |
+| Amortization | numpy-financial (ppmt, ipmt) | custom |
+
+## §10: shapely — Computational Geometry
+
+**Install**: `pip install shapely`
+
+**When to use**: Polygon area/perimeter, point-in-polygon, intersection/union of shapes, buffering, convex hull, spatial predicates (contains, overlaps, touches).
+
+**Key functions**:
+- `Polygon(coords).area`, `.length` — area and perimeter
+- `Point.distance(other)` — distance between geometries
+- `geom1.intersection(geom2)` — geometric intersection
+- `geom1.union(geom2)` — geometric union
+- `MultiPoint(pts).convex_hull` — convex hull
+
+**Quick example**:
+```python
+from shapely.geometry import Polygon, Point, LineString
+
+lot = Polygon([(0,0), (100,0), (100,80), (50,100), (0,80)])
+print(f"Area: {lot.area:.0f} sq units")
+print(f"Perimeter: {lot.length:.1f} units")
+print(f"Contains (50,50)? {lot.contains(Point(50, 50))}")
+```
+
+**Performance**: Pure Python geometry engine. Fast for 2D operations. For massive point sets (>100K), combine with `scipy.spatial` for spatial indexing.
+
+---
+
+## §11: scipy.spatial — Spatial Algorithms
+
+**Install**: `pip install scipy` (usually pre-installed)
+
+**When to use**: Voronoi diagrams, Delaunay triangulation, convex hull, KD-trees for nearest neighbor, distance matrices. Complements shapely for point-set geometry.
+
+**Key functions**:
+- `ConvexHull(points)` — convex hull with vertices and volume
+- `Voronoi(points)` — Voronoi diagram
+- `Delaunay(points)` — Delaunay triangulation
+- `KDTree(points).query(x, k)` — k-nearest neighbors
+- `distance.cdist(A, B)` — pairwise distance matrix
+
+**Quick example**:
+```python
+from scipy.spatial import ConvexHull, KDTree
+import numpy as np
+
+points = np.random.rand(100, 2)
+hull = ConvexHull(points)
+tree = KDTree(points)
+d, i = tree.query([0.5, 0.5], k=3)
+print(f"Hull area: {hull.volume:.4f}, 3 nearest: {i}")
+```
+
+**Performance**: C-optimized. Handles millions of points. KDTree query is O(log n) average.
+
+---
+
+## §12: numpy-financial — Financial Calculations
+
+**Install**: `pip install numpy-financial`
+
+**When to use**: Time value of money (NPV, IRR, PMT, PV, FV), amortization schedules, loan analysis, investment evaluation.
+
+**Key functions**:
+- `npf.npv(rate, cashflows)` — net present value
+- `npf.irr(cashflows)` — internal rate of return
+- `npf.pmt(rate, nper, pv)` — periodic payment
+- `npf.fv(rate, nper, pmt, pv)` — future value
+- `npf.pv(rate, nper, pmt)` — present value
+- `npf.ppmt(rate, per, nper, pv)` — principal portion of payment
+- `npf.ipmt(rate, per, nper, pv)` — interest portion of payment
+
+**Quick example**:
+```python
+import numpy_financial as npf
+
+# Should I invest $100K for returns of $25K/yr for 5 years at 8%?
+npv = npf.npv(0.08, [-100000, 25000, 25000, 25000, 25000, 25000])
+irr = npf.irr([-100000, 25000, 25000, 25000, 25000, 25000])
+pmt = npf.pmt(0.05/12, 30*12, -300000)  # mortgage payment
+print(f"NPV: ${npv:,.0f}, IRR: {irr:.1%}, Monthly: ${pmt:,.2f}")
+```
+
+**Performance**: Vectorized numpy operations. Handles large cash flow arrays efficiently.
+
+---
 
 ## Installation One-Liner
 
 ```bash
-pip install networkx pulp z3-solver sympy scipy ortools numpy cvxpy
+pip install networkx pulp z3-solver sympy scipy ortools numpy cvxpy shapely numpy-financial
 ```
 
 ## Dependency Check Script
@@ -629,6 +725,8 @@ libs = {
     'ortools': 'ortools.sat.python.cp_model',
     'numpy': 'numpy',
     'cvxpy': 'cvxpy',
+    'shapely': 'shapely',
+    'numpy-financial': 'numpy_financial',
 }
 for name, module in libs.items():
     try:
@@ -654,5 +752,10 @@ for name, module in libs.items():
 | §7 itertools | §2 Combinatorics (2.1-2.4) | §15 Counting/Generation (A63-A65) |
 | §8 numpy | §8 Discrete Probability | §18 Probability (A78-A81), §21 Continuous (A91) |
 | §9 cvxpy | §9 Continuous Optimization (9.1-9.5) | §21 Continuous Opt (A87-A88, A94) |
+| §10 shapely | §13 Geometry (13.1-13.3) | §24 Geometry (A117, A119, A124) |
+| §11 scipy.spatial | §13 Geometry (13.3) | §24 Geometry (A120-A123) |
+| §12 numpy-financial | §14 Financial Math (14.1) | §25 Financial Math (A127-A134) |
+
+Note: numpy.linalg and scipy.linalg (used for §22 Linear Algebra, A95-A106) are submodules of numpy and scipy (§5, §8) — no separate install needed. SymPy (§4) handles §23 Calculus (A107-A116).
 
 Also see: **solving-protocols.md** for solver usage within specific problem-type workflows, **optimization-hardening.md** for solver-specific performance tuning.

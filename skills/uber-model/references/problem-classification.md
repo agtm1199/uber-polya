@@ -73,11 +73,44 @@ What is the user trying to do?
 │  ├─ Smooth, no constraints? ──────────── BFGS (A89) / Gradient Descent (A90)
 │  └─ Nonlinear constraints? ───────────── SLSQP / trust-constr (A93)
 │
-└─ ASSESS probability / risk
-   ├─ What are the odds? ────────────────── Combinatorial Probability
-   ├─ Expected outcome? ─────────────────── Expected Value (A78)
-   ├─ Long-run behavior? ────────────────── Markov Chain (A80)
-   └─ Estimate via simulation? ──────────── Monte Carlo (A81)
+├─ ASSESS probability / risk
+│  ├─ What are the odds? ────────────────── Combinatorial Probability
+│  ├─ Expected outcome? ─────────────────── Expected Value (A78)
+│  ├─ Long-run behavior? ────────────────── Markov Chain (A80)
+│  └─ Estimate via simulation? ──────────── Monte Carlo (A81)
+│
+├─ SOLVE equations / linear systems
+│  ├─ System of linear equations? ────────── Gaussian Elimination (A95) / numpy.linalg.solve
+│  ├─ Find eigenvalues / modes? ──────────── Eigenvalue Computation (A97)
+│  ├─ Reduce dimensions / compress? ──────── SVD (A98)
+│  ├─ Solve symbolically? ────────────────── SymPy solve
+│  └─ Matrix too large for direct? ──────── Iterative (scipy.sparse)
+│
+├─ DIFFERENTIATE / INTEGRATE / solve ODE
+│  ├─ Rate of change / derivative? ──────── Symbolic Differentiation (A107)
+│  ├─ Total / area under curve? ─────────── Symbolic (A108) or Numerical (A109) Integration
+│  ├─ Find critical points / optimize? ──── Set f'=0, Second Derivative Test (A107, A113)
+│  ├─ Constrained with equalities? ──────── Lagrange Multipliers (A114)
+│  ├─ ODE with exact solution? ──────────── SymPy dsolve (A115)
+│  └─ ODE (numerical / complex)? ────────── solve_ivp (A116)
+│
+├─ MEASURE geometry (area, volume, distance, shape)
+│  ├─ Area of a region / polygon? ────────── Shoelace / shapely (A117)
+│  ├─ Volume of a solid? ─────────────────── Formulas / Integration (A118)
+│  ├─ Distance between points? ───────────── Euclidean / scipy.spatial (A119)
+│  ├─ Convex hull / bounding region? ─────── ConvexHull (A120)
+│  ├─ Nearest neighbor / closest? ────────── KDTree (A123)
+│  ├─ Triangle problem (sides/angles)? ──── Law of Cosines/Sines (A125)
+│  └─ Spatial partition / zones? ─────────── Voronoi (A121)
+│
+└─ EVALUATE finances (investment, loan, savings)
+   ├─ Is an investment worth it? ──────────── NPV (A127) / IRR (A128)
+   ├─ What's my loan payment? ─────────────── PMT (A129)
+   ├─ Amortization breakdown? ─────────────── Amortization Schedule (A130)
+   ├─ How much will savings grow? ─────────── Compound Interest (A131) / FV
+   ├─ Value of regular payments? ──────────── Annuity Valuation (A132)
+   ├─ When do I break even? ───────────────── Break-Even (A133)
+   └─ Should I refinance? ─────────────────── Refinancing Comparison (A134)
 ```
 
 ---
@@ -118,6 +151,24 @@ One-line lookup from problem description to solution approach.
 | "fit a curve / regression" | Least squares | Overdetermined system | lstsq (A91) | numpy/scipy |
 | "convex constraints" | Convex program | Conic program | Interior point (A87) | cvxpy |
 | "engineering design" | Nonlinear constrained | NLP | SLSQP (A93) | scipy |
+| "solve equations / system" | Linear system | Linear system | Gaussian elim (A95) | numpy |
+| "eigenvalues / modes / PCA" | Eigenvalue problem | Eigenstructure | eig / SVD (A97-A98) | numpy |
+| "rank / independence" | Matrix rank | Matrix | Rank (A103) / SVD | numpy |
+| "derivative / rate of change" | Differentiation | Function | Symbolic diff (A107) | SymPy |
+| "integral / area under curve" | Integration | Integral | Symbolic (A108) / quad (A109) | SymPy/scipy |
+| "ODE / growth / decay" | Differential equation | Diff. equation | dsolve (A115) / solve_ivp (A116) | SymPy/scipy |
+| "area of shape / land" | Geometry | Polygon | Shoelace (A117) | shapely |
+| "volume / capacity" | Solid geometry | Polyhedron | Formulas (A118) | SymPy |
+| "distance / how far" | Distance | Point set | Euclidean (A119) | scipy.spatial |
+| "convex hull / boundary" | Convex hull | Point set | Graham scan (A120) | scipy.spatial |
+| "triangle / angle / side" | Triangle solving | Triangle | Law of cosines (A125) | math |
+| "NPV / is investment worth it" | Investment analysis | Cash flow stream | NPV (A127) | numpy-financial |
+| "IRR / return on investment" | Investment analysis | Cash flow stream | IRR (A128) | numpy-financial |
+| "mortgage / loan payment" | Loan analysis | Cash flow stream | PMT (A129) | numpy-financial |
+| "amortization / pay off" | Amortization | Cash flow stream | Schedule (A130) | numpy-financial |
+| "compound interest / savings" | Time value of money | Cash flow stream | FV (A131) | numpy-financial |
+| "refinance / compare loans" | Refinancing | Cash flow stream | Comparison (A134) | numpy-financial |
+| "break even / payback period" | Break-even | Cash flow stream | Break-even (A133) | numpy/SymPy |
 
 ---
 
@@ -146,6 +197,14 @@ Before committing to an approach, verify the computational feasibility.
 | Quadratic programming | P (if convex) | Any size | N/A |
 | Least squares | P | Any size (O(mn²)) | N/A |
 | Nonlinear constrained | NP-hard (general) | ~1000 vars (local opt) | Multi-start heuristic |
+| Linear system (Ax=b) | P | Any size (O(n³)) | N/A |
+| Eigenvalue / SVD | P | Any size (O(n³)) | N/A |
+| Symbolic differentiation | P | Any expression | N/A |
+| Symbolic integration | Undecidable (general) | Most standard forms | Numerical quadrature |
+| ODE (numerical) | P | Any size (adaptive) | N/A |
+| Polygon area / geometry | P | Any size | N/A |
+| Convex hull | P (O(n log n)) | Any size | N/A |
+| Financial (NPV/IRR/PMT) | P | Any size | N/A |
 
 ---
 
@@ -164,6 +223,16 @@ When two patterns seem equally likely, use these tiebreakers:
 **SAT vs. ILP**: If all variables are Boolean and all constraints are clauses, use SAT (faster). If variables are integers or constraints are linear inequalities, use ILP.
 
 **Counting vs. Optimization**: "How many?" is counting. "Which is best?" is optimization. "What fraction?" is probability (counting / total).
+
+**Linear System vs. Optimization**: If you need to find values satisfying equations exactly (Ax = b), it's a linear system. If you need to minimize/maximize something subject to constraints, it's optimization.
+
+**Symbolic vs. Numerical**: If an exact closed-form answer matters (proofs, formulas, education), use SymPy (symbolic). If you need a fast numerical answer to a specific instance, use numpy/scipy (numerical).
+
+**Calculus vs. Optimization**: If the user wants to find a max/min of a formula with a known expression, use calculus (set derivative = 0). If the problem has constraints or many variables, use optimization (ILP, BFGS, etc.).
+
+**Geometry vs. Calculus**: If the shape is a standard polygon/solid, use geometry formulas. If the region is bounded by curves (e.g., area between two functions), use integration.
+
+**NPV vs. Break-Even**: NPV answers "is this investment worth it at a given rate?" Break-even answers "when does this investment pay for itself?" Use both together for a complete picture.
 
 ---
 
@@ -184,5 +253,9 @@ After identifying the problem type here, consult the corresponding reference fil
 | SATISFY | §4.4 CSP | §13 SAT/SMT/CSP (A48-A52) | Protocol: SAT/SMT |
 | OPTIMIZE continuous | §9 Continuous Optimization | §21 Continuous Opt (A87-A94) | Protocol: Continuous Optimization |
 | ASSESS probability | §8 Discrete Probability | §18 Probability (A78-A81) | Protocol: Counting |
+| SOLVE equations | §11 Linear Algebra | §22 Linear Algebra (A95-A106) | (Direct solve) |
+| DIFFERENTIATE/INTEGRATE | §12 Calculus | §23 Calculus (A107-A116) | (Symbolic/Numerical) |
+| MEASURE geometry | §13 Geometry | §24 Geometry (A117-A126) | (Direct compute) |
+| EVALUATE finances | §14 Financial Math | §25 Financial Math (A127-A134) | (Direct compute) |
 
 Also see: **common-mistakes.md** for pitfalls specific to each problem category.

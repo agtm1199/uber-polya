@@ -113,6 +113,7 @@ Each skill's output feeds the next. The pipeline is Socratic: uber-polya asks qu
 | [Team Assignment](examples/team-assignment/) | Assign 6 developers to 6 projects | Hungarian algorithm (SciPy) |
 | [Break-Even Analysis](examples/break-even/) | Find break-even quantity for product launch | Symbolic algebra (SymPy) |
 | [Event Seating](examples/event-seating/) | Seat 12 wedding guests at 3 tables with constraints | ILP (PuLP/CBC) |
+| [Mortgage Comparison](examples/mortgage-analysis/) | Compare 3 mortgage options with refinancing analysis | NPV + amortization (numpy-financial) |
 
 ### Technical Showcases
 
@@ -124,26 +125,29 @@ Each skill's output feeds the next. The pipeline is Socratic: uber-polya asks qu
 | [Tournament Hamiltonian](examples/tournament-hamiltonian/) | Graph proof | Induction + Z3 |
 | [A/B Testing](examples/ab-testing/) | Statistical inference | z-test + Bayesian + bootstrap |
 | [Cafe Tips](examples/cafe-tips/) | Statistical inference | t-test + Mann-Whitney + bootstrap |
+| [Traffic Flow](examples/traffic-flow/) | Linear algebra | Gaussian elimination (numpy) |
+| [Water Tank](examples/water-tank/) | Calculus optimization | Symbolic differentiation (SymPy) |
+| [Land Survey](examples/land-survey/) | Computational geometry | Shoelace + convex hull (shapely) |
 
 ## What's Under the Hood
 
 ### The Knowledge Base
 
-139 algorithms, 43 structures, 17 heuristics, 15 solver libraries -- curated, cross-referenced, and organized for rapid problem-solving.
+179 algorithms, 55 structures, 17 heuristics, 17 solver libraries -- curated, cross-referenced, and organized for rapid problem-solving.
 
 | Catalog | Entries |
 |---------|---------|
 | Polya's Heuristics | 17 heuristics with Socratic questions |
-| Structure Catalog | 43 structures across 10 mathematical domains |
+| Structure Catalog | 55 structures across 14 mathematical domains |
 | Problem Classification | Decision tree + pattern table for rapid matching |
-| Algorithm Catalogs | 139 algorithms (discrete math, continuous optimization, statistics) |
-| Solver Ecosystem | 15 Python libraries (NetworkX, PuLP, Z3, SymPy, SciPy, OR-Tools, cvxpy, statsmodels, PyMC, and more) |
+| Algorithm Catalogs | 179 algorithms (discrete math, continuous optimization, statistics, linear algebra, calculus, geometry, financial math) |
+| Solver Ecosystem | 17 Python libraries (NetworkX, PuLP, Z3, SymPy, SciPy, OR-Tools, cvxpy, statsmodels, PyMC, shapely, numpy-financial, and more) |
 | Interpretation Patterns | Domain-specific math-to-reality translation |
-| Visualization Guide | 20+ chart types with matplotlib templates |
+| Visualization Guide | 21 chart types with matplotlib templates |
 
 ### Domains Covered
 
-Graph Theory, Combinatorics, Set Theory, Logic, Number Theory, Relations & Orders, Optimization, Discrete Probability, Continuous Optimization, Statistical Inference.
+Graph Theory, Combinatorics, Set Theory, Logic, Number Theory, Relations & Orders, Optimization, Discrete Probability, Continuous Optimization, Statistical Inference, Linear Algebra, Calculus, Geometry & Trigonometry, Financial Mathematics.
 
 ### Expansion Roadmap
 
@@ -152,6 +156,10 @@ Graph Theory, Combinatorics, Set Theory, Logic, Number Theory, Relations & Order
 | Discrete Mathematics | Shipped | 86 algorithms, 32 structures, 8 solver libraries |
 | Continuous Optimization | Shipped | 8 algorithms, 5 structures, cvxpy/scipy |
 | Statistical Inference | Shipped | 45 algorithms, 6 structures, 6 solver libraries |
+| Linear Algebra | Shipped | 12 algorithms, 4 structures, numpy.linalg/scipy.linalg |
+| Calculus | Shipped | 10 algorithms, 3 structures, SymPy/scipy.integrate |
+| Geometry & Trigonometry | Shipped | 10 algorithms, 4 structures, shapely/scipy.spatial |
+| Financial Mathematics | Shipped | 8 algorithms, 1 structure, numpy-financial |
 | Game Theory | Planned | Nash equilibrium, fair division, mechanism design |
 | Machine Learning | Planned | Classification, clustering, dimensionality reduction |
 | Simulation | Planned | Monte Carlo, discrete-event, agent-based |
@@ -168,7 +176,7 @@ New domains plug in as reference files without changing the core Polya workflow.
 Optional Python packages (installed as needed):
 
 ```bash
-pip install networkx pulp z3-solver sympy scipy matplotlib numpy cvxpy statsmodels
+pip install networkx pulp z3-solver sympy scipy matplotlib numpy cvxpy statsmodels shapely numpy-financial
 ```
 
 ## Design Principles

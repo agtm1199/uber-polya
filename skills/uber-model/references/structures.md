@@ -1,6 +1,6 @@
 # Mathematical Structure Catalog
 
-**Scope**: Discrete Mathematics (32 structures), Continuous Optimization (5 structures), Statistical Inference (6 structures)
+**Scope**: Discrete Mathematics (32 structures), Continuous Optimization (5 structures), Statistical Inference (6 structures), Linear Algebra (4 structures), Calculus (3 structures), Geometry & Trigonometry (4 structures), Financial Mathematics (1 structure)
 
 A catalog of mathematical structures organized by domain. Use this to match real-world problems to mathematical models during Phase 2 of the uber-model skill.
 
@@ -770,6 +770,21 @@ Quick lookup: match a real-world pattern to its primary discrete math structure.
 | Check if data follows pattern | Distribution / GOF test | KS test / chi-squared GOF | Statistical Inference |
 | Time-to-event with dropouts | Survival model | Kaplan-Meier / Cox PH | Statistical Inference |
 | Update belief with new evidence | Bayesian model | Prior → posterior | Statistical Inference |
+| Solve for unknowns | Linear system | Gaussian elimination | Linear Algebra |
+| Transform data | Matrix / linear map | Matrix multiplication | Linear Algebra |
+| Find dominant mode / stability | Eigenstructure | Eigenvalue problem | Linear Algebra |
+| Reduce dimensions / compress | SVD / eigenstructure | SVD / PCA | Linear Algebra |
+| Rate of change / slope | Function / curve | Differentiation | Calculus |
+| Total / accumulated quantity | Integral | Integration | Calculus |
+| Growth / decay over time | Differential equation | ODE solving | Calculus |
+| Optimize smooth function | Function / curve | Lagrange multipliers | Calculus |
+| Area of region / land | Polygon / planar region | Shoelace formula | Geometry |
+| Volume / capacity | Polyhedron / 3D solid | Volume formulas | Geometry |
+| Nearest / closest / farthest | Point set | Closest pair / Voronoi | Geometry |
+| Triangle measurement | Triangle | Law of cosines / sines | Geometry |
+| Investment comparison | Cash flow stream | NPV / IRR | Financial Math |
+| Loan / mortgage payment | Cash flow stream | PMT / amortization | Financial Math |
+| Savings / retirement planning | Cash flow stream | Compound interest / FV | Financial Math |
 
 ---
 
@@ -1037,6 +1052,302 @@ Analysis: ANOVA / regression / Bayesian (depending on design)
 
 ---
 
+## 11. Linear Algebra
+
+### 11.1 Matrix / Linear Map
+
+**Definition**: An m×n matrix A represents a linear map from R^n to R^m. Encodes systems of linear equations, transformations, and relationships.
+
+**Indicators**: "system of equations", "transform", "matrix", "linear relationship", "coefficients", "unknowns"
+
+**Template**:
+```
+A ∈ R^{m×n}
+Ax = b       -- system of linear equations
+rank(A)      -- number of independent equations
+ker(A)       -- solution space of Ax = 0
+```
+
+**Examples**:
+- Traffic flow: Conservation equations at each intersection
+- Input-output model: Industry production relationships (Leontief)
+- Circuit analysis: Kirchhoff's laws as linear system
+
+**Key problems**: Solve Ax = b, rank, null space, least squares, eigenvalues
+
+---
+
+### 11.2 Vector Space
+
+**Definition**: A set V with addition and scalar multiplication satisfying closure, associativity, identity, inverse, distributivity. Dimension = number of basis vectors.
+
+**Indicators**: "span", "basis", "dimension", "linear combination", "independent", "subspace"
+
+**Template**:
+```
+V = span{v1, v2, ..., vk}
+dim(V) = k if {v1, ..., vk} linearly independent
+Projection of u onto V: proj_V(u) = A(A^T A)^{-1} A^T u
+```
+
+**Examples**:
+- Signal space: Signals as vectors, Fourier components as basis
+- Feature space: Data points as vectors in R^n
+- Solution space: All solutions to a homogeneous system
+
+**Key problems**: Basis finding, dimension, projection, orthogonalization (Gram-Schmidt)
+
+---
+
+### 11.3 Linear System
+
+**Definition**: A set of m linear equations in n unknowns: Ax = b. May be consistent (has solutions) or inconsistent.
+
+**Indicators**: "solve for", "find unknowns", "balance equations", "system of equations", "how much of each"
+
+**Template**:
+```
+a₁₁x₁ + a₁₂x₂ + ... + a₁ₙxₙ = b₁
+a₂₁x₁ + a₂₂x₂ + ... + a₂ₙxₙ = b₂
+...
+aₘ₁x₁ + aₘ₂x₂ + ... + aₘₙxₙ = bₘ
+
+Unique solution iff rank(A) = rank([A|b]) = n
+Infinite solutions iff rank(A) = rank([A|b]) < n
+No solution iff rank(A) < rank([A|b])
+```
+
+**Examples**:
+- Recipe blending: How much of each ingredient to achieve target nutrition
+- Chemical balancing: Balance a chemical equation
+- Economic equilibrium: Supply-demand intersection
+
+**Key problems**: Gaussian elimination, LU factorization, condition number, least squares (if overdetermined)
+
+---
+
+### 11.4 Eigenstructure
+
+**Definition**: For a square matrix A, eigenvalue λ and eigenvector v satisfy Av = λv. Reveals fundamental modes, stability, and decomposition.
+
+**Indicators**: "dominant mode", "stability", "steady state", "principal component", "natural frequency", "growth rate"
+
+**Template**:
+```
+Av = λv
+det(A - λI) = 0           -- characteristic polynomial
+Spectrum: {λ₁, λ₂, ..., λₙ}
+A = PDP⁻¹                 -- diagonalization (if possible)
+```
+
+**Examples**:
+- PageRank: Dominant eigenvector of link matrix
+- Population dynamics: Growth rates as eigenvalues of Leslie matrix
+- Vibration analysis: Natural frequencies from stiffness/mass eigenvalues
+- PCA: Principal components as eigenvectors of covariance matrix
+
+**Key problems**: Eigenvalue computation, spectral decomposition, SVD, stability analysis, power method
+
+---
+
+## 12. Calculus
+
+### 12.1 Function / Curve
+
+**Definition**: A rule f: D → R assigning each input x in domain D a unique output f(x). Curves are the graph {(x, f(x)) : x ∈ D}.
+
+**Indicators**: "function", "formula", "equation", "rate of change", "slope", "tangent", "curve"
+
+**Template**:
+```
+f: D ⊂ R^n → R^m
+Derivative: f'(x) = lim_{h→0} [f(x+h) - f(x)] / h
+Integral: ∫_a^b f(x) dx = F(b) - F(a) where F' = f
+Critical points: f'(x) = 0
+```
+
+**Examples**:
+- Revenue curve: R(q) = p(q) · q where p is demand function
+- Growth model: f(t) = population at time t
+- Cost function: C(x) = fixed + variable × x
+
+**Key problems**: Differentiation, integration, optimization, root finding, Taylor approximation
+
+---
+
+### 12.2 Integral / Accumulated Quantity
+
+**Definition**: The integral ∫_a^b f(x) dx represents accumulated total — area, work, probability, total change.
+
+**Indicators**: "total", "accumulated", "area under", "over the interval", "how much altogether", "net change"
+
+**Template**:
+```
+Total = ∫_a^b f(x) dx
+Average value = (1/(b-a)) ∫_a^b f(x) dx
+Arc length = ∫_a^b √(1 + [f'(x)]²) dx
+```
+
+**Examples**:
+- Total revenue over time: ∫₀ᵀ r(t) dt
+- Probability: P(a ≤ X ≤ b) = ∫_a^b f_X(x) dx
+- Work done by force: W = ∫ F(x) dx
+- Distance traveled: ∫₀ᵀ |v(t)| dt
+
+**Key problems**: Definite integration (symbolic/numerical), improper integrals, double/triple integrals, line integrals
+
+---
+
+### 12.3 Differential Equation
+
+**Definition**: An equation involving a function y(t) and its derivatives: F(t, y, y', y'', ...) = 0. Models how quantities change over time.
+
+**Indicators**: "rate of change", "growth", "decay", "over time", "dynamics", "evolves", "approaches equilibrium"
+
+**Template**:
+```
+ODE: dy/dt = f(t, y),  y(t₀) = y₀
+Linear ODE: y' + p(t)y = q(t)
+System: dy/dt = Ay + g(t)  (matrix form)
+Equilibria: f(t, y*) = 0
+Stability: eigenvalues of Jacobian at y*
+```
+
+**Examples**:
+- Population: dP/dt = rP(1 - P/K) (logistic growth)
+- Radioactive decay: dN/dt = -λN
+- Epidemiology: SIR model (S'=-βSI, I'=βSI-γI, R'=γI)
+- Drug concentration: dC/dt = -kC (first-order elimination)
+
+**Key problems**: Analytical solution (separation, integrating factor), numerical solution (Euler, RK4), stability analysis, phase portrait
+
+---
+
+## 13. Geometry & Trigonometry
+
+### 13.1 Polygon / Planar Region
+
+**Definition**: A closed plane figure bounded by straight line segments (polygon) or curves. Characterized by vertices, edges, area, perimeter, centroid.
+
+**Indicators**: "area", "perimeter", "shape", "region", "boundary", "lot", "floor plan", "land"
+
+**Template**:
+```
+Polygon: P = {v₁, v₂, ..., vₙ} (ordered vertices)
+Area (shoelace): A = (1/2)|Σᵢ(xᵢyᵢ₊₁ - xᵢ₊₁yᵢ)|
+Perimeter: L = Σᵢ |vᵢ₊₁ - vᵢ|
+Centroid: C = (1/n)Σᵢ vᵢ  (for vertices; weighted for area)
+```
+
+**Examples**:
+- Land parcel: Compute area from surveyor coordinates
+- Floor plan: Total area, room layout
+- Coverage zone: Service area of a facility
+
+**Key problems**: Area computation, point-in-polygon test, convexity check, polygon intersection/union
+
+---
+
+### 13.2 Polyhedron / 3D Solid
+
+**Definition**: A 3D solid bounded by flat faces (polyhedron) or curved surfaces. Characterized by volume, surface area, vertices, edges, faces.
+
+**Indicators**: "volume", "capacity", "surface area", "3D", "solid", "container", "tank"
+
+**Template**:
+```
+Common formulas:
+  Box:      V = lwh,           SA = 2(lw + lh + wh)
+  Cylinder: V = πr²h,          SA = 2πr² + 2πrh
+  Sphere:   V = (4/3)πr³,      SA = 4πr²
+  Cone:     V = (1/3)πr²h,     SA = πr² + πrl
+  Solid of revolution: V = π∫ₐᵇ [f(x)]² dx
+```
+
+**Examples**:
+- Tank capacity: Volume of cylindrical or spherical tank
+- Packaging: Surface area for material cost, volume for contents
+- Construction: Concrete volume for foundations
+
+**Key problems**: Volume/surface area computation, optimization (maximize volume for given surface area)
+
+---
+
+### 13.3 Point Set / Spatial Configuration
+
+**Definition**: A collection of points in R^d. Properties include distances, nearest neighbors, convex hull, clustering, Voronoi partition.
+
+**Indicators**: "points", "locations", "closest", "farthest", "spread", "cluster", "nearest", "spatial"
+
+**Template**:
+```
+S = {p₁, p₂, ..., pₙ} ⊂ R^d
+Distance: d(pᵢ, pⱼ) = ||pᵢ - pⱼ||
+Convex hull: smallest convex set containing S
+Voronoi: partition into nearest-point regions
+```
+
+**Examples**:
+- Store locations: Find optimal placement minimizing customer travel
+- GPS points: Compute bounding region, nearest neighbor
+- Sensor network: Coverage area via Voronoi diagram
+
+**Key problems**: Convex hull, Voronoi diagram, Delaunay triangulation, closest pair, k-nearest neighbors
+
+---
+
+### 13.4 Triangle
+
+**Definition**: A 3-sided polygon defined by 3 vertices, 3 sides, and 3 angles. The fundamental unit of geometry — any polygon can be triangulated.
+
+**Indicators**: "triangle", "angle", "side", "height", "distance between three points", "surveying"
+
+**Template**:
+```
+Triangle ABC with sides a, b, c opposite angles A, B, C
+Law of cosines: c² = a² + b² - 2ab cos(C)
+Law of sines:   a/sin(A) = b/sin(B) = c/sin(C)
+Area: (1/2)ab sin(C) = √[s(s-a)(s-b)(s-c)]  (Heron's)
+  where s = (a+b+c)/2
+```
+
+**Examples**:
+- Surveying: Distance across a river using angle measurements
+- Navigation: Triangulation to determine position
+- Construction: Roof pitch, rafter lengths
+
+**Key problems**: Triangle solving (SSS, SAS, ASA, AAS, SSA), area, circumscribed/inscribed circles
+
+---
+
+## 14. Financial Mathematics
+
+### 14.1 Cash Flow Stream
+
+**Definition**: A time-indexed sequence of monetary inflows (+) and outflows (−). The foundation of all financial valuation.
+
+**Indicators**: "investment", "loan", "mortgage", "payment", "return", "interest", "present value", "future value", "annuity"
+
+**Template**:
+```
+Cash flows: CF = {C₀, C₁, C₂, ..., Cₙ} at times {0, 1, 2, ..., n}
+Discount rate: r (per period)
+NPV = Σₜ Cₜ / (1+r)^t
+IRR: rate r* such that NPV(r*) = 0
+PMT (annuity): C = PV · r / (1 - (1+r)^{-n})
+FV = PV · (1+r)^n
+```
+
+**Examples**:
+- Mortgage: PV = loan amount, C = monthly payment, r = monthly rate
+- Investment: C₀ = -initial cost, C₁..Cₙ = annual returns
+- Savings: Regular deposits growing at compound interest
+- Refinancing: Compare NPV of old vs. new loan cash flows
+
+**Key problems**: NPV, IRR, PMT, amortization, compound interest, annuity valuation, break-even period
+
+---
+
 ## Cross-Reference Index
 
 Where to go next after identifying a structure.
@@ -1053,5 +1364,9 @@ Where to go next after identifying a structure.
 | 8. Discrete Probability | §18 Probability (A78-A81) | §8 numpy, §4 SymPy | §5 Probability Results |
 | 9. Continuous Optimization | §21 Continuous Opt (A87-A94) | §9 cvxpy, §5 SciPy | §7 Continuous Opt Solutions |
 | 10. Statistical Inference | algorithms-statistics.md S1-S45 | solvers-statistics.md (scipy.stats, statsmodels, PyMC, pingouin, lifelines) | §8 Statistical Inference Solutions |
+| 11. Linear Algebra | §22 Linear Algebra (A95-A106) | numpy.linalg, scipy.linalg | §9 Linear Algebra Results |
+| 12. Calculus | §23 Calculus (A107-A116) | §4 SymPy, §5 SciPy | §10 Calculus Results |
+| 13. Geometry & Trigonometry | §24 Geometry & Trig (A117-A126) | shapely, scipy.spatial | §11 Geometry Results |
+| 14. Financial Mathematics | §25 Financial Math (A127-A134) | numpy-financial | §12 Financial Results |
 
 Also see: **problem-classification.md** for rapid pattern matching from natural language to structure, **common-mistakes.md** for modeling pitfalls by structure type.

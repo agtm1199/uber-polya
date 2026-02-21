@@ -4,6 +4,52 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.5.0] - 2026-02-20
+
+### Added
+
+- **Linear Algebra domain** seeded end-to-end:
+  - 4 new structures in structures.md (§11: matrix/linear map, vector space, linear system, eigenstructure)
+  - 12 new algorithms in algorithms.md (A95-A106: Gaussian elimination, LU, eigenvalue, SVD, QR, Cholesky, inverse, determinant, rank, null space, condition number, least squares)
+  - numpy.linalg and scipy.linalg solver references (submodules of existing libraries)
+  - 2 new interpretation patterns (§9: linear system solutions, eigenvalue/SVD results)
+  - 2 new chart types in visualization.md (§17 matrix heatmap, §18 scree/spectrum plot)
+  - **Traffic Flow Analysis** worked example (examples/traffic-flow/) -- linear system with conservation of flow
+- **Calculus domain** seeded end-to-end:
+  - 3 new structures in structures.md (§12: function/curve, integral/accumulated quantity, differential equation)
+  - 10 new algorithms in algorithms.md (A107-A116: symbolic differentiation, symbolic integration, numerical integration, limits, Taylor series, partial derivatives, gradient/Jacobian/Hessian, Lagrange multipliers, symbolic ODE, numerical ODE)
+  - SymPy (existing) and scipy.integrate (existing) as primary solvers
+  - 2 new interpretation patterns (§10: derivative/rate results, integral/accumulated results)
+  - 1 new chart type in visualization.md (§19 annotated function plot)
+  - **Water Tank Optimization** worked example (examples/water-tank/) -- calculus optimization with SymPy
+- **Geometry & Trigonometry domain** seeded end-to-end:
+  - 4 new structures in structures.md (§13: polygon/planar region, polyhedron/3D solid, point set/spatial config, triangle)
+  - 10 new algorithms in algorithms.md (A117-A126: polygon area, volume, distance, convex hull, Voronoi, Delaunay, closest pair, line intersection, triangle solver, coordinate transforms)
+  - shapely and scipy.spatial solver references in solvers.md (§10-§11)
+  - 1 new interpretation pattern (§11: spatial measurement results)
+  - 1 new chart type in visualization.md (§20 geometric diagram)
+  - **Land Survey Analysis** worked example (examples/land-survey/) -- polygon area, convex hull, containment with shapely
+- **Financial Mathematics domain** seeded end-to-end:
+  - 1 new structure in structures.md (§14: cash flow stream)
+  - 8 new algorithms in algorithms.md (A127-A134: NPV, IRR, PMT, amortization schedule, compound interest, annuity valuation, break-even, refinancing comparison)
+  - numpy-financial solver reference in solvers.md (§12)
+  - 2 new interpretation patterns (§12: investment analysis, loan/amortization results)
+  - 1 new chart type in visualization.md (§21 cash flow/amortization chart)
+  - **Mortgage Comparison Analysis** worked example (examples/mortgage-analysis/) -- 3-option mortgage comparison with numpy-financial
+- Problem classification decision tree expanded with 5 new branches (SOLVE equations, DIFFERENTIATE/INTEGRATE, MEASURE geometry, EVALUATE finances) and 19 new quick-lookup patterns
+- 6 new disambiguation tips in problem-classification.md
+- Cross-reference indexes updated in all modified reference files
+- 16 new entries in cross-domain pattern table (structures.md)
+
+### Changed
+
+- algorithms.md scope: 94 → 134 algorithms (added 40 across 4 new domains)
+- structures.md scope: 43 → 55 structures (added 12 across 4 new domains)
+- solvers.md: 9 → 12 solver library entries (added shapely, scipy.spatial, numpy-financial)
+- interpretation-patterns.md: 13 → 20 pattern groups (added 7 across 4 new domains)
+- visualization.md: 16 → 21 chart types (added matrix heatmap, scree plot, function plot, geometric diagram, cash flow chart)
+- Updated README: 179 algorithms, 17 solver libraries, 55 structures, 14 domains, 20 examples
+
 ## [0.4.0] - 2026-02-18
 
 ### Added

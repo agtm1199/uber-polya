@@ -1,6 +1,6 @@
 # Interpretation Patterns by Domain
 
-**Scope**: Discrete Mathematics (6 domains), Continuous Optimization (3 patterns)
+**Scope**: Discrete Mathematics (6 domains), Continuous Optimization (3 patterns), Statistical Inference (4 patterns), Linear Algebra (2 patterns), Calculus (2 patterns), Geometry (1 pattern), Financial Math (2 patterns)
 
 How to translate mathematical solutions back into real-world meaning. For each domain: what the solution objects represent, how to read them, what to check for robustness, and what limitations to flag.
 
@@ -662,6 +662,112 @@ Bayesian A/B Test Results:
 
 ---
 
+## 9. Linear Algebra Results
+
+### 9.1 Linear System Solutions
+
+**Math object**: Solution vector x satisfying Ax = b, possibly with rank and null space information.
+
+**Translation**:
+- Each component xᵢ answers "how much of variable i?" — map back to original quantities (amounts, flows, concentrations)
+- Unique solution: the system is fully determined; each unknown has exactly one answer
+- Infinite solutions (null space dimension > 0): there are free parameters — describe the family of solutions and what trade-offs they represent
+- No solution (inconsistent): the constraints contradict each other — identify which constraints conflict
+
+**Sensitivity**: Condition number κ(A) measures fragility. If κ > 10⁶, small input changes cause large output swings — report this and recommend regularization.
+
+**Limitations**: Numerical solutions (numpy) have floating-point error proportional to κ(A) × machine epsilon. For exact answers, use SymPy.
+
+### 9.2 Eigenvalue / SVD Results
+
+**Math object**: Eigenvalues λ₁, ..., λₙ and eigenvectors v₁, ..., vₙ (or singular values σ₁ ≥ σ₂ ≥ ... ≥ σₙ).
+
+**Translation**:
+- Eigenvalues = importance / magnitude of each mode: "the first mode explains X% of the behavior"
+- Dominant eigenvalue: the long-term growth rate, steady-state proportion, or most important component
+- Negative eigenvalues: decay modes. Complex eigenvalues: oscillatory behavior.
+- SVD singular values: data dimensionality. Sharp drop = effective rank is lower than full rank.
+- Condition number = σ_max / σ_min: how sensitive the system is to perturbations
+
+**What-if**: "If we remove the top k components, we retain Σ(σᵢ²)/Σ(σⱼ²) of the information."
+
+---
+
+## 10. Calculus Results
+
+### 10.1 Derivative / Rate of Change Results
+
+**Math object**: f'(a) = rate of change at point a; critical points where f'(x) = 0.
+
+**Translation**:
+- f'(a) > 0: the quantity is increasing at rate f'(a) per unit change in x — "revenue is growing at $500/unit"
+- f'(a) = 0: a critical point — local maximum, minimum, or inflection point. Use second derivative test.
+- f''(a) > 0 at critical point: local minimum (concave up). f''(a) < 0: local maximum.
+- Partial derivatives: "holding y constant, a 1-unit increase in x changes f by ∂f/∂x"
+
+**Sensitivity**: The magnitude of f'(a) indicates how sensitive the output is to input changes near a. Large derivative = high sensitivity.
+
+### 10.2 Integral / Accumulated Quantity Results
+
+**Math object**: ∫ₐᵇ f(x) dx = total accumulated value.
+
+**Translation**:
+- Area interpretation: "the total [revenue/cost/probability/work] from a to b is..."
+- Average value: (1/(b-a)) ∫ₐᵇ f(x) dx — "the average rate over the interval is..."
+- Cumulative: running integral F(t) = ∫ₐᵗ f(x) dx shows how total builds over time
+- For probability: P(a ≤ X ≤ b) — "there is a X% chance the value falls between a and b"
+
+**Limitations**: Numerical integration (quad) reports error bounds — always include them.
+
+---
+
+## 11. Geometry Results
+
+### 11.1 Spatial Measurement Results
+
+**Math object**: Area, perimeter, volume, surface area, distances, containment.
+
+**Translation**:
+- Area: "the [lot/region/floor plan] covers X square [units]" — always state units
+- Volume: "the [tank/container] holds X cubic [units]" — convert to practical units (gallons, liters)
+- Distance: "the distance from A to B is X [units]" — for geodesic, note straight-line vs. road distance
+- Convex hull: "the smallest enclosing region covers X area and has Y vertices" — useful for bounding boxes
+- Voronoi: "each [facility/tower] serves the region of points closest to it"
+
+**Sensitivity**: How much does area/volume change if a vertex moves by ε? Report for critical measurements.
+
+**Visualization**: Always produce a diagram. Geometry results without a picture lose most of their value.
+
+---
+
+## 12. Financial Mathematics Results
+
+### 12.1 Investment Analysis Results
+
+**Math object**: NPV, IRR, payback period.
+
+**Translation**:
+- NPV > 0: "the investment creates $X of value above the required return rate" — proceed
+- NPV < 0: "the investment destroys $X of value" — reject unless strategic reasons
+- IRR: "the investment yields X% annually" — compare to hurdle rate / opportunity cost
+- Payback period: "you recover your initial investment in X months/years"
+
+**Sensitivity**: Always run NPV at ±2% discount rate and ±10% cash flow variation. Present as tornado diagram.
+
+### 12.2 Loan / Amortization Results
+
+**Math object**: Monthly payment, total interest, amortization schedule, break-even period.
+
+**Translation**:
+- Monthly payment: "you pay $X per month for Y years"
+- Total interest: "over the life of the loan, you pay $X in interest on top of the $Y principal"
+- Amortization: "in month 1, $A goes to interest and $B goes to principal; by month N, it reverses"
+- Refinancing: "refinancing saves $X total but costs $Y in closing; break-even in Z months"
+
+**What-if**: "If you pay $100 extra per month, you save $X in interest and pay off Y months earlier."
+
+---
+
 ## Cross-Reference Index
 
 Which visualization to use for each result type, and where results come from.
@@ -687,5 +793,12 @@ Which visualization to use for each result type, and where results come from.
 | §8.2 Regression | §13 Regression Plot, §14 Residual Plot | algorithms-statistics.md S23-S30 | §10.3 Regression Model |
 | §8.3 CI/CrI | §11 Group Comparison, §15 Forest Plot | algorithms-statistics.md S18-S22 | §10.1 Random Variable |
 | §8.4 Bayesian | §16 Posterior Plot | algorithms-statistics.md S31-S35 | §10.4 Bayesian Model |
+| §9.1 Linear System | §17 Matrix Heatmap | §22 Linear Algebra (A95-A106) | §11 Linear Algebra |
+| §9.2 Eigenvalue/SVD | §18 Scree/Spectrum Plot | §22 Linear Algebra (A97-A98) | §11.4 Eigenstructure |
+| §10.1 Derivatives | §19 Function Plot (annotated) | §23 Calculus (A107, A112-A114) | §12.1 Function/Curve |
+| §10.2 Integrals | §19 Function Plot (shaded area) | §23 Calculus (A108-A109) | §12.2 Integral |
+| §11.1 Spatial | §20 Geometric Diagram | §24 Geometry (A117-A126) | §13 Geometry |
+| §12.1 Investment | §4 Tornado (sensitivity), §21 Cash Flow Chart | §25 Financial (A127-A128) | §14.1 Cash Flow Stream |
+| §12.2 Loan/Amort. | §21 Amortization Chart | §25 Financial (A129-A134) | §14.1 Cash Flow Stream |
 
 Also see: **common-mistakes.md** §I1-I6 for interpretation pitfalls.

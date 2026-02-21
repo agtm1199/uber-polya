@@ -1,6 +1,6 @@
 # Algorithm Catalog
 
-**Scope**: Discrete Mathematics (86 algorithms), Continuous Optimization (8 algorithms)
+**Scope**: Discrete Mathematics (86 algorithms), Continuous Optimization (8 algorithms), Linear Algebra (12 algorithms), Calculus (10 algorithms), Geometry & Trigonometry (10 algorithms), Financial Mathematics (8 algorithms)
 
 Comprehensive catalog of algorithms for mathematical problem solving. Organized by domain, each entry includes complexity, solver library, correctness guarantee, and implementation guidance.
 
@@ -1404,6 +1404,828 @@ result = minimize(
 
 ---
 
+## 22. Linear Algebra
+
+### A95: Gaussian Elimination (Row Reduction)
+
+**Problem**: Solve a system of linear equations Ax = b, compute rank, find null space.
+**T**: O(n³) for n×n system | **S**: O(n²)
+**Lib**: `numpy.linalg.solve()`, `sympy.Matrix.rref()`
+**Guarantee**: Exact. Partial pivoting avoids numerical instability.
+
+```python
+import numpy as np
+
+A = np.array([[2, 1, -1], [-3, -1, 2], [-2, 1, 2]], dtype=float)
+b = np.array([8, -11, -3], dtype=float)
+x = np.linalg.solve(A, b)
+print(f"Solution: {x}")
+```
+
+**Use when**: Solving linear systems, computing RREF, determining consistency of equations.
+
+---
+
+### A96: LU Decomposition
+
+**Problem**: Factor A = LU (or PA = LU with pivoting) for efficient repeated solves with different right-hand sides.
+**T**: O(n³) factorization, O(n²) per solve | **S**: O(n²)
+**Lib**: `scipy.linalg.lu()`, `scipy.linalg.lu_factor()` / `lu_solve()`
+**Guarantee**: Exact (with partial pivoting for numerical stability).
+
+```python
+from scipy.linalg import lu_factor, lu_solve
+
+A = np.array([[2, 5, 8], [4, 6, 7], [3, 1, 9]], dtype=float)
+lu, piv = lu_factor(A)
+x1 = lu_solve((lu, piv), np.array([1, 2, 3], dtype=float))
+x2 = lu_solve((lu, piv), np.array([4, 5, 6], dtype=float))  # reuse factorization
+```
+
+**Use when**: Multiple right-hand sides with the same coefficient matrix, computing determinants efficiently.
+
+---
+
+### A97: Eigenvalue / Eigenvector Computation
+
+**Problem**: Find eigenvalues λ and eigenvectors v satisfying Av = λv.
+**T**: O(n³) (QR iteration) | **S**: O(n²)
+**Lib**: `numpy.linalg.eig()`, `numpy.linalg.eigh()` (symmetric), `scipy.linalg.eig()`
+**Guarantee**: Exact for symmetric matrices (real eigenvalues). Iterative convergence for general.
+
+```python
+import numpy as np
+
+A = np.array([[4, -2], [1, 1]])
+eigenvalues, eigenvectors = np.linalg.eig(A)
+print(f"Eigenvalues: {eigenvalues}")
+print(f"Eigenvectors:\n{eigenvectors}")
+```
+
+**Use when**: Stability analysis, PCA, vibration modes, PageRank, spectral clustering, Markov chain steady state.
+
+---
+
+### A98: Singular Value Decomposition (SVD)
+
+**Problem**: Factor A = UΣVᵀ. Reveals rank, range, null space, and best low-rank approximation.
+**T**: O(min(mn², m²n)) for m×n matrix | **S**: O(mn)
+**Lib**: `numpy.linalg.svd()`, `scipy.linalg.svd()`
+**Guarantee**: Exact. Always exists for any matrix.
+
+```python
+import numpy as np
+
+A = np.array([[1, 2], [3, 4], [5, 6]])
+U, sigma, Vt = np.linalg.svd(A, full_matrices=False)
+rank = np.sum(sigma > 1e-10)
+print(f"Rank: {rank}, Singular values: {sigma}")
+```
+
+**Use when**: Dimensionality reduction, pseudoinverse, rank determination, image compression, noise filtering.
+
+---
+
+### A99: QR Decomposition
+
+**Problem**: Factor A = QR where Q is orthogonal, R is upper triangular.
+**T**: O(mn²) for m×n matrix | **S**: O(mn)
+**Lib**: `numpy.linalg.qr()`, `scipy.linalg.qr()`
+**Guarantee**: Exact. Numerically stable.
+
+```python
+import numpy as np
+
+A = np.array([[1, 1], [1, 2], [1, 3]], dtype=float)
+Q, R = np.linalg.qr(A)
+# Solve least squares via QR: x = R⁻¹Qᵀb
+```
+
+**Use when**: Least squares (numerically better than normal equations), eigenvalue algorithms (QR iteration), orthogonalization.
+
+---
+
+### A100: Cholesky Decomposition
+
+**Problem**: Factor symmetric positive-definite A = LLᵀ. Half the cost of LU.
+**T**: O(n³/3) | **S**: O(n²)
+**Lib**: `numpy.linalg.cholesky()`, `scipy.linalg.cholesky()`
+**Guarantee**: Exact. Exists iff A is symmetric positive-definite.
+
+```python
+import numpy as np
+
+A = np.array([[4, 2], [2, 3]], dtype=float)
+L = np.linalg.cholesky(A)
+# Solve Ax = b via L(Lᵀx) = b: forward then back substitution
+```
+
+**Use when**: Covariance matrices, positive-definite systems, sampling from multivariate normal, Kalman filters.
+
+---
+
+### A101: Matrix Inverse
+
+**Problem**: Compute A⁻¹ such that AA⁻¹ = I.
+**T**: O(n³) | **S**: O(n²)
+**Lib**: `numpy.linalg.inv()`, `scipy.linalg.inv()`
+**Guarantee**: Exact if A is non-singular. Prefer solve() over inv() for Ax=b.
+
+```python
+import numpy as np
+
+A = np.array([[1, 2], [3, 4]], dtype=float)
+A_inv = np.linalg.inv(A)
+```
+
+**Use when**: Explicit inverse needed (e.g., formula derivation). For solving Ax=b, prefer `np.linalg.solve()`.
+
+---
+
+### A102: Determinant
+
+**Problem**: Compute det(A). Tests invertibility, computes area/volume scaling.
+**T**: O(n³) via LU | **S**: O(n²)
+**Lib**: `numpy.linalg.det()`, `sympy.Matrix.det()`
+**Guarantee**: Exact (symbolic with SymPy, numerical with numpy).
+
+```python
+import numpy as np
+
+A = np.array([[1, 2], [3, 4]])
+d = np.linalg.det(A)
+print(f"det(A) = {d:.1f}")  # -2.0
+```
+
+**Use when**: Checking invertibility, Cramer's rule (small systems), area of parallelogram/volume of parallelepiped.
+
+---
+
+### A103: Matrix Rank
+
+**Problem**: Determine the rank of a matrix (number of linearly independent rows/columns).
+**T**: O(min(mn², m²n)) via SVD | **S**: O(mn)
+**Lib**: `numpy.linalg.matrix_rank()`, `sympy.Matrix.rank()`
+**Guarantee**: Exact (symbolic), numerical tolerance for floating point.
+
+```python
+import numpy as np
+
+A = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
+r = np.linalg.matrix_rank(A)
+print(f"Rank: {r}")  # 2 (rows are linearly dependent)
+```
+
+**Use when**: Checking system consistency (rank vs augmented rank), determining degrees of freedom, feature independence.
+
+---
+
+### A104: Null Space (Kernel)
+
+**Problem**: Find all vectors x satisfying Ax = 0.
+**T**: O(min(mn², m²n)) via SVD | **S**: O(mn)
+**Lib**: `scipy.linalg.null_space()`, `sympy.Matrix.nullspace()`
+**Guarantee**: Exact.
+
+```python
+from scipy.linalg import null_space
+
+A = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
+ns = null_space(A)
+print(f"Null space dimension: {ns.shape[1]}")
+```
+
+**Use when**: Finding free variables in underdetermined systems, homogeneous equations, constraint analysis.
+
+---
+
+### A105: Condition Number
+
+**Problem**: Measure sensitivity of a linear system to perturbations: κ(A) = ||A|| · ||A⁻¹||.
+**T**: O(min(mn², m²n)) via SVD | **S**: O(mn)
+**Lib**: `numpy.linalg.cond()`
+**Guarantee**: Exact computation. κ >> 1 means ill-conditioned.
+
+```python
+import numpy as np
+
+A = np.array([[1, 2], [1.0001, 2]])
+kappa = np.linalg.cond(A)
+print(f"Condition number: {kappa:.0f}")  # Very large = ill-conditioned
+```
+
+**Use when**: Diagnosing numerical instability, deciding between direct and iterative solvers, error analysis.
+
+---
+
+### A106: Least Squares via Normal Equations
+
+**Problem**: Solve overdetermined Ax ≈ b by minimizing ||Ax - b||² via AᵀAx = Aᵀb.
+**T**: O(mn² + n³) | **S**: O(n²)
+**Lib**: `numpy.linalg.lstsq()` (uses SVD internally), `scipy.linalg.lstsq()`
+**Guarantee**: Exact minimum-norm solution. SVD approach preferred for numerical stability.
+
+```python
+import numpy as np
+
+# Fit y = a + bx to data
+x_data = np.array([1, 2, 3, 4, 5])
+y_data = np.array([2.1, 3.9, 6.2, 7.8, 10.1])
+A = np.column_stack([np.ones_like(x_data), x_data])
+coeffs, residuals, rank, sv = np.linalg.lstsq(A, y_data, rcond=None)
+print(f"y = {coeffs[0]:.2f} + {coeffs[1]:.2f}x")
+```
+
+**Use when**: Linear regression, polynomial fitting, overdetermined systems, data fitting.
+
+---
+
+## 23. Calculus
+
+### A107: Symbolic Differentiation
+
+**Problem**: Compute exact derivative of a function expression.
+**T**: O(n) where n is expression tree size | **S**: O(n)
+**Lib**: `sympy.diff()`
+**Guarantee**: Exact symbolic result.
+
+```python
+from sympy import symbols, diff, sin, exp
+
+x = symbols('x')
+f = x**3 * sin(x) + exp(x)
+f_prime = diff(f, x)
+print(f"f'(x) = {f_prime}")
+```
+
+**Use when**: Finding rates of change, critical points, optimization conditions, sensitivity analysis.
+
+---
+
+### A108: Symbolic Integration
+
+**Problem**: Compute exact antiderivative or definite integral.
+**T**: Problem-dependent (may invoke Risch algorithm) | **S**: O(n)
+**Lib**: `sympy.integrate()`
+**Guarantee**: Exact when closed form exists. Returns unevaluated Integral if no closed form.
+
+```python
+from sympy import symbols, integrate, exp, oo
+
+x = symbols('x')
+# Indefinite
+F = integrate(x**2 * exp(x), x)
+# Definite
+area = integrate(x**2, (x, 0, 3))
+print(f"∫x²dx from 0 to 3 = {area}")  # 9
+```
+
+**Use when**: Area under curves, accumulated quantities, probability distributions, work/energy calculations.
+
+---
+
+### A109: Numerical Integration (Quadrature)
+
+**Problem**: Approximate ∫f(x)dx when no closed form exists.
+**T**: O(n) function evaluations | **S**: O(1)
+**Lib**: `scipy.integrate.quad()`, `scipy.integrate.dblquad()`, `scipy.integrate.nquad()`
+**Guarantee**: Adaptive quadrature with error estimate.
+
+```python
+from scipy.integrate import quad
+
+result, error = quad(lambda x: x**2 * np.exp(-x), 0, np.inf)
+print(f"∫₀^∞ x²e⁻ˣ dx = {result:.6f} (error: {error:.2e})")  # 2.0
+```
+
+**Use when**: Integrals without closed form, numerical probability computations, physics (work, flux).
+
+---
+
+### A110: Limits
+
+**Problem**: Compute lim_{x→a} f(x), including one-sided and at infinity.
+**T**: O(n) expression simplification | **S**: O(n)
+**Lib**: `sympy.limit()`
+**Guarantee**: Exact symbolic computation using Gruntz algorithm.
+
+```python
+from sympy import symbols, limit, sin, oo
+
+x = symbols('x')
+print(limit(sin(x)/x, x, 0))         # 1
+print(limit((1 + 1/x)**x, x, oo))    # E (Euler's number)
+```
+
+**Use when**: Asymptotic behavior, L'Hôpital's rule applications, convergence analysis.
+
+---
+
+### A111: Taylor / Maclaurin Series
+
+**Problem**: Expand f(x) as polynomial approximation around a point.
+**T**: O(n) for n terms | **S**: O(n)
+**Lib**: `sympy.series()`
+**Guarantee**: Exact coefficients. Convergence depends on radius of convergence.
+
+```python
+from sympy import symbols, series, exp
+
+x = symbols('x')
+s = series(exp(x), x, 0, n=6)
+print(s)  # 1 + x + x²/2 + x³/6 + x⁴/24 + x⁵/120 + O(x⁶)
+```
+
+**Use when**: Function approximation, error estimation, linearization, asymptotic analysis.
+
+---
+
+### A112: Partial Derivatives
+
+**Problem**: Compute ∂f/∂xᵢ for multivariate functions.
+**T**: O(n) per variable | **S**: O(n)
+**Lib**: `sympy.diff(f, x)`, `sympy.diff(f, x, y)` for mixed
+**Guarantee**: Exact symbolic result.
+
+```python
+from sympy import symbols, diff
+
+x, y = symbols('x y')
+f = x**2 * y + x * y**3
+df_dx = diff(f, x)
+df_dy = diff(f, y)
+print(f"∂f/∂x = {df_dx}, ∂f/∂y = {df_dy}")
+```
+
+**Use when**: Multivariable optimization, gradient computation, sensitivity of outputs to inputs.
+
+---
+
+### A113: Gradient / Jacobian / Hessian
+
+**Problem**: Compute gradient vector, Jacobian matrix, or Hessian matrix of a function.
+**T**: O(n·m) for Jacobian of m functions in n variables | **S**: O(n·m)
+**Lib**: `sympy.Matrix.jacobian()`, `sympy.hessian()`
+**Guarantee**: Exact symbolic computation.
+
+```python
+from sympy import symbols, Matrix, hessian
+
+x, y = symbols('x y')
+f = x**2 + x*y + y**2
+H = hessian(f, [x, y])
+print(f"Hessian:\n{H}")  # [[2, 1], [1, 2]] -> positive definite -> local min
+```
+
+**Use when**: Optimization (gradient = 0 for critical points, Hessian for convexity), Newton's method, sensitivity analysis.
+
+---
+
+### A114: Lagrange Multipliers
+
+**Problem**: Optimize f(x) subject to g(x) = 0 by solving ∇f = λ∇g, g(x) = 0.
+**T**: Depends on system size | **S**: O(n)
+**Lib**: `sympy.solve()` for the system of equations
+**Guarantee**: Exact (finds all critical points satisfying KKT conditions).
+
+```python
+from sympy import symbols, solve, diff
+
+x, y, lam = symbols('x y lambda')
+f = x**2 + y**2          # minimize
+g = x + y - 10           # subject to x + y = 10
+eqs = [diff(f, x) - lam * diff(g, x),
+       diff(f, y) - lam * diff(g, y),
+       g]
+sol = solve(eqs, [x, y, lam])
+print(f"Optimum: x={sol[x]}, y={sol[y]}")  # x=5, y=5
+```
+
+**Use when**: Constrained optimization with equality constraints, economics (utility maximization), physics (energy minimization).
+
+---
+
+### A115: Ordinary Differential Equations (Symbolic)
+
+**Problem**: Solve ODEs symbolically: find y(x) given y' = f(x, y) and initial/boundary conditions.
+**T**: Problem-dependent | **S**: O(n)
+**Lib**: `sympy.dsolve()`
+**Guarantee**: Exact when closed form exists. Handles separable, linear, Bernoulli, exact, higher-order.
+
+```python
+from sympy import symbols, Function, dsolve, Eq
+
+x = symbols('x')
+y = Function('y')
+ode = Eq(y(x).diff(x) + 2*y(x), x*exp(-2*x))
+sol = dsolve(ode, y(x))
+print(f"Solution: {sol}")
+```
+
+**Use when**: Population models, radioactive decay, circuit analysis, mechanical vibrations (when exact solution exists).
+
+---
+
+### A116: Ordinary Differential Equations (Numerical)
+
+**Problem**: Numerically solve y' = f(t, y), y(t₀) = y₀ over a time span.
+**T**: O(n·s) where n = steps, s = system dimension | **S**: O(n·s)
+**Lib**: `scipy.integrate.solve_ivp()` (RK45, RK23, Radau, BDF, LSODA)
+**Guarantee**: Adaptive step size with error control. Configurable tolerance.
+
+```python
+from scipy.integrate import solve_ivp
+
+def lotka_volterra(t, y, a=1.0, b=0.1, c=1.5, d=0.075):
+    prey, pred = y
+    return [a*prey - b*prey*pred, -c*pred + d*prey*pred]
+
+sol = solve_ivp(lotka_volterra, [0, 50], [40, 9], max_step=0.1)
+print(f"Final populations: prey={sol.y[0,-1]:.1f}, predator={sol.y[1,-1]:.1f}")
+```
+
+**Use when**: Any ODE without closed-form solution: population dynamics, chemical kinetics, epidemiology (SIR), control systems.
+
+---
+
+## 24. Geometry & Trigonometry
+
+### A117: Polygon Area (Shoelace Formula)
+
+**Problem**: Compute area of a simple polygon given vertex coordinates.
+**T**: O(n) | **S**: O(1)
+**Lib**: `shapely.Polygon.area`, `sympy.geometry.Polygon.area`
+**Guarantee**: Exact for simple (non-self-intersecting) polygons.
+
+```python
+from shapely.geometry import Polygon
+
+coords = [(0, 0), (4, 0), (4, 3), (0, 3)]
+poly = Polygon(coords)
+print(f"Area: {poly.area}")  # 12.0
+```
+
+**Use when**: Land area, floor plans, irregular region measurement, GIS applications.
+
+---
+
+### A118: Volume of Solids
+
+**Problem**: Compute volume of 3D solids (prisms, cylinders, spheres, cones, custom solids of revolution).
+**T**: O(1) for formulas, O(n) for numerical integration | **S**: O(1)
+**Lib**: `sympy` (symbolic integration for solids of revolution), `math` (standard formulas)
+**Guarantee**: Exact for standard shapes and symbolic integration.
+
+```python
+from sympy import symbols, pi, integrate
+
+x = symbols('x')
+# Volume of solid of revolution: y = sqrt(x), 0 ≤ x ≤ 4, rotated around x-axis
+V = pi * integrate(x, (x, 0, 4))
+print(f"Volume: {V}")  # 8*pi
+```
+
+**Use when**: Container sizing, material estimation, tank capacity, 3D printing volume calculation.
+
+---
+
+### A119: Distance Computation (2D/3D)
+
+**Problem**: Compute Euclidean distance, Manhattan distance, or geodesic distance between points.
+**T**: O(d) for d dimensions | **S**: O(1)
+**Lib**: `scipy.spatial.distance`, `numpy.linalg.norm()`, `math.dist()`
+**Guarantee**: Exact.
+
+```python
+import numpy as np
+from scipy.spatial.distance import cdist
+
+points = np.array([[0, 0], [3, 4], [6, 8]])
+D = cdist(points, points, metric='euclidean')
+print(f"Distance matrix:\n{D}")
+```
+
+**Use when**: Proximity analysis, clustering, nearest neighbor, facility placement.
+
+---
+
+### A120: Convex Hull
+
+**Problem**: Find the smallest convex polygon containing all points in a set.
+**T**: O(n log n) | **S**: O(n)
+**Lib**: `scipy.spatial.ConvexHull`, `shapely.MultiPoint.convex_hull`
+**Guarantee**: Exact (Graham scan or Quickhull).
+
+```python
+from scipy.spatial import ConvexHull
+import numpy as np
+
+points = np.random.rand(30, 2)
+hull = ConvexHull(points)
+print(f"Hull vertices: {hull.vertices}, Area: {hull.volume:.4f}")
+```
+
+**Use when**: Boundary detection, collision detection, smallest enclosing region, outlier identification.
+
+---
+
+### A121: Voronoi Diagram
+
+**Problem**: Partition a plane into regions closest to each of a set of seed points.
+**T**: O(n log n) | **S**: O(n)
+**Lib**: `scipy.spatial.Voronoi`
+**Guarantee**: Exact.
+
+```python
+from scipy.spatial import Voronoi
+import numpy as np
+
+points = np.array([[0, 0], [1, 0], [0.5, 1]])
+vor = Voronoi(points)
+print(f"Regions: {vor.regions}")
+```
+
+**Use when**: Service area mapping, nearest facility assignment, spatial partitioning, cell coverage.
+
+---
+
+### A122: Delaunay Triangulation
+
+**Problem**: Triangulate a point set such that no point lies inside the circumcircle of any triangle.
+**T**: O(n log n) | **S**: O(n)
+**Lib**: `scipy.spatial.Delaunay`
+**Guarantee**: Exact. Dual of Voronoi diagram.
+
+```python
+from scipy.spatial import Delaunay
+import numpy as np
+
+points = np.array([[0, 0], [1, 0], [0.5, 1], [1, 1]])
+tri = Delaunay(points)
+print(f"Triangles: {tri.simplices}")
+```
+
+**Use when**: Mesh generation, terrain modeling, interpolation (natural neighbor), finite element preprocessing.
+
+---
+
+### A123: Closest Pair of Points
+
+**Problem**: Find the two closest points in a set.
+**T**: O(n log n) (divide and conquer) | **S**: O(n)
+**Lib**: `scipy.spatial.KDTree.query()`, `scipy.spatial.distance.pdist()`
+**Guarantee**: Exact.
+
+```python
+from scipy.spatial import KDTree
+import numpy as np
+
+points = np.random.rand(1000, 2)
+tree = KDTree(points)
+d, i = tree.query(points, k=2)
+closest_dist = d[:, 1].min()
+print(f"Closest pair distance: {closest_dist:.6f}")
+```
+
+**Use when**: Collision detection, clustering (single-linkage), deduplication, minimum separation constraints.
+
+---
+
+### A124: Line / Segment Intersection
+
+**Problem**: Detect and compute intersection points of line segments.
+**T**: O(1) per pair, O((n+k) log n) for n segments with k intersections (Bentley-Ottmann) | **S**: O(n)
+**Lib**: `shapely.intersection()`, `sympy.geometry.intersection()`
+**Guarantee**: Exact.
+
+```python
+from shapely.geometry import LineString
+
+line1 = LineString([(0, 0), (4, 4)])
+line2 = LineString([(0, 4), (4, 0)])
+pt = line1.intersection(line2)
+print(f"Intersection: {pt}")  # POINT (2 2)
+```
+
+**Use when**: Road network analysis, visibility checks, polygon clipping, CAD operations.
+
+---
+
+### A125: Triangle Solver (Law of Sines / Cosines)
+
+**Problem**: Given partial triangle information (sides, angles), solve for all remaining parts.
+**T**: O(1) | **S**: O(1)
+**Lib**: `math` (standard library), `sympy` (exact symbolic)
+**Guarantee**: Exact. Handles SSS, SAS, ASA, AAS cases. SSA may have 0, 1, or 2 solutions (ambiguous case).
+
+```python
+import math
+
+# SAS: sides a=5, b=7, included angle C=60°
+a, b, C = 5, 7, math.radians(60)
+c = math.sqrt(a**2 + b**2 - 2*a*b*math.cos(C))  # law of cosines
+A = math.asin(a * math.sin(C) / c)                # law of sines
+B = math.pi - A - C
+print(f"c={c:.2f}, A={math.degrees(A):.1f}°, B={math.degrees(B):.1f}°")
+```
+
+**Use when**: Surveying, navigation, construction, any triangle measurement problem.
+
+---
+
+### A126: Coordinate Transforms
+
+**Problem**: Convert between coordinate systems (Cartesian, polar, cylindrical, spherical) or apply affine transforms (rotation, scaling, translation).
+**T**: O(1) per point, O(n) for n points | **S**: O(1)
+**Lib**: `numpy` (matrix multiplication), `sympy` (symbolic), `scipy.spatial.transform.Rotation`
+**Guarantee**: Exact.
+
+```python
+import numpy as np
+
+# Polar to Cartesian
+r, theta = 5, np.radians(30)
+x, y = r * np.cos(theta), r * np.sin(theta)
+
+# 2D rotation by angle
+def rotate_2d(points, angle):
+    c, s = np.cos(angle), np.sin(angle)
+    R = np.array([[c, -s], [s, c]])
+    return points @ R.T
+```
+
+**Use when**: Physics, robotics, GPS coordinate conversion, image transformations, 3D graphics.
+
+---
+
+## 25. Financial Mathematics
+
+### A127: Net Present Value (NPV)
+
+**Problem**: Compute present value of a series of future cash flows discounted at a given rate.
+**T**: O(n) for n periods | **S**: O(1)
+**Lib**: `numpy_financial.npv()`, `numpy` (manual)
+**Guarantee**: Exact (closed-form summation).
+
+```python
+import numpy_financial as npf
+
+rate = 0.08  # 8% discount rate
+cash_flows = [-100000, 25000, 30000, 35000, 40000, 50000]  # initial investment + returns
+npv = npf.npv(rate, cash_flows)
+print(f"NPV: ${npv:,.2f}")
+```
+
+**Use when**: Investment evaluation, project selection, comparing alternatives with different cash flow timing.
+
+---
+
+### A128: Internal Rate of Return (IRR)
+
+**Problem**: Find the discount rate that makes NPV = 0.
+**T**: O(k·n) where k = iterations | **S**: O(1)
+**Lib**: `numpy_financial.irr()`
+**Guarantee**: Iterative (Newton's method). May not converge for unconventional cash flows.
+
+```python
+import numpy_financial as npf
+
+cash_flows = [-100000, 25000, 30000, 35000, 40000, 50000]
+irr = npf.irr(cash_flows)
+print(f"IRR: {irr:.2%}")
+```
+
+**Use when**: Comparing investment returns, hurdle rate analysis, project ranking.
+
+---
+
+### A129: Loan Payment (PMT)
+
+**Problem**: Compute fixed periodic payment for a loan (amortizing).
+**T**: O(1) | **S**: O(1)
+**Lib**: `numpy_financial.pmt()`
+**Guarantee**: Exact (closed-form annuity formula).
+
+```python
+import numpy_financial as npf
+
+pmt = npf.pmt(rate=0.05/12, nper=30*12, pv=-300000)
+print(f"Monthly payment: ${pmt:,.2f}")
+```
+
+**Use when**: Mortgage calculation, auto loan, any fixed-rate amortizing loan.
+
+---
+
+### A130: Amortization Schedule
+
+**Problem**: Generate period-by-period breakdown of principal, interest, and remaining balance.
+**T**: O(n) for n periods | **S**: O(n)
+**Lib**: `numpy_financial.ppmt()`, `numpy_financial.ipmt()`
+**Guarantee**: Exact.
+
+```python
+import numpy_financial as npf
+import numpy as np
+
+rate, nper, pv = 0.05/12, 360, -300000
+periods = np.arange(1, nper + 1)
+principal = npf.ppmt(rate, periods, nper, pv)
+interest = npf.ipmt(rate, periods, nper, pv)
+balance = pv + np.cumsum(principal)
+print(f"Month 1: principal=${principal[0]:,.2f}, interest=${interest[0]:,.2f}")
+print(f"Total interest: ${interest.sum():,.2f}")
+```
+
+**Use when**: Loan comparison, refinancing analysis, early payoff scenarios.
+
+---
+
+### A131: Compound Interest
+
+**Problem**: Compute future value with compound interest: FV = PV(1 + r/n)^(nt).
+**T**: O(1) | **S**: O(1)
+**Lib**: `numpy_financial.fv()`, `math`
+**Guarantee**: Exact.
+
+```python
+import numpy_financial as npf
+
+fv = npf.fv(rate=0.07/12, nper=20*12, pmt=-500, pv=-10000)
+print(f"Future value after 20 years: ${fv:,.2f}")
+```
+
+**Use when**: Savings growth, retirement planning, investment projections.
+
+---
+
+### A132: Annuity Valuation
+
+**Problem**: Compute present or future value of a series of equal payments.
+**T**: O(1) | **S**: O(1)
+**Lib**: `numpy_financial.pv()`, `numpy_financial.fv()`
+**Guarantee**: Exact (closed-form annuity formulas).
+
+```python
+import numpy_financial as npf
+
+pv = npf.pv(rate=0.06/12, nper=10*12, pmt=-200)
+print(f"Present value of $200/month for 10 years at 6%: ${pv:,.2f}")
+```
+
+**Use when**: Pension valuation, lease pricing, structured settlement, insurance products.
+
+---
+
+### A133: Break-Even Analysis (Time-Based)
+
+**Problem**: Find the time at which cumulative revenue equals cumulative cost.
+**T**: O(n) or O(1) with closed form | **S**: O(1)
+**Lib**: `numpy` (vectorized), `sympy` (symbolic)
+**Guarantee**: Exact for linear models. Numerical for nonlinear.
+
+```python
+import numpy as np
+
+fixed_cost = 50000
+monthly_revenue = 8000
+monthly_cost = 3000
+months_to_breakeven = fixed_cost / (monthly_revenue - monthly_cost)
+print(f"Break-even in {months_to_breakeven:.1f} months")
+```
+
+**Use when**: Business planning, investment payback period, make-vs-buy decisions.
+
+---
+
+### A134: Refinancing Comparison
+
+**Problem**: Compare total cost of current loan vs. refinanced loan, accounting for closing costs and remaining term.
+**T**: O(n) | **S**: O(n)
+**Lib**: `numpy_financial` (pmt, ipmt, ppmt)
+**Guarantee**: Exact comparison.
+
+```python
+import numpy_financial as npf
+
+# Current loan
+current_pmt = npf.pmt(0.065/12, 25*12, -250000)
+current_total = current_pmt * 25 * 12
+
+# Refinanced loan (lower rate, closing costs)
+closing_costs = 5000
+new_pmt = npf.pmt(0.045/12, 25*12, -(250000 + closing_costs))
+new_total = new_pmt * 25 * 12
+
+savings = current_total - new_total
+breakeven_months = closing_costs / (current_pmt - new_pmt)
+print(f"Savings: ${savings:,.0f}, Break-even: {breakeven_months:.0f} months")
+```
+
+**Use when**: Mortgage refinancing, debt consolidation, loan restructuring decisions.
+
+---
+
 ## Cross-Reference Index
 
 Where each algorithm section connects to structures and solvers.
@@ -1428,5 +2250,9 @@ Where each algorithm section connects to structures and solvers.
 | §18 Probability (A78-A81) | §8 Discrete Probability (8.1-8.2) | §8 numpy, §4 SymPy | §5 Probability Results |
 | §19-20 Search/Metaheuristics (A82-A86) | §7.2 Search Space | (Custom) | §2.3 Scheduling Results |
 | §21 Continuous Opt (A87-A94) | §9 Continuous Optimization (9.1-9.5) | §9 cvxpy, §5 SciPy | §7 Continuous Opt Solutions |
+| §22 Linear Algebra (A95-A106) | §11 Linear Algebra (11.1-11.4) | numpy.linalg, scipy.linalg | §9 Linear Algebra Results |
+| §23 Calculus (A107-A116) | §12 Calculus (12.1-12.3) | §4 SymPy, §5 SciPy | §10 Calculus Results |
+| §24 Geometry & Trig (A117-A126) | §13 Geometry (13.1-13.4) | shapely, scipy.spatial | §11 Geometry Results |
+| §25 Financial Math (A127-A134) | §14 Financial Math (14.1) | numpy-financial | §12 Financial Results |
 
 Also see: **problem-classification.md** for decision-tree algorithm selection, **solving-protocols.md** for domain-specific solving workflows, **common-mistakes.md** §S1-S6 for solving pitfalls.

@@ -1,0 +1,30 @@
+{
+  "home_price": 400000.0,
+  "down_payment": 80000.0,
+  "loan_amount": 320000.0,
+  "cheapest_option": "15-Year Fixed 5.8%",
+  "refinance_breakeven_months": 26,
+  "refinance_net_savings": 64911.0,
+  "options": [
+    {
+      "name": "30-Year Fixed 6.5%",
+      "monthly_payment": 2022.62,
+      "total_interest": 408142.38,
+      "total_paid": 728143.2
+    },
+    {
+      "name": "15-Year Fixed 5.8%",
+      "monthly_payment": 2665.89,
+      "total_interest": 159859.7,
+      "total_paid": 479860.2
+    },
+    {
+      "name": "Refinance 30yr->25yr at 5.2%",
+      "monthly_payment": 1786.25,
+      "total_interest": 337232.57,
+      "total_paid": 663232.2
+    }
+  ],
+  "algorithm": "Annuity PMT + Amortization Schedule + Break-Even Search",
+  "time_seconds": 0.0013215130311436951
+}

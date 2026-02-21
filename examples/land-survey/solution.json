@@ -1,0 +1,59 @@
+{
+  "label": "Suburban Irregular Lot (8 points)",
+  "n_vertices": 8,
+  "area_m2": 7300.0,
+  "perimeter_m": 350.4994,
+  "centroid": [
+    142.3116,
+    245.097
+  ],
+  "convex_hull_vertices": [
+    [
+      130.0,
+      310.0
+    ],
+    [
+      90.0,
+      245.0
+    ],
+    [
+      100.0,
+      200.0
+    ],
+    [
+      140.0,
+      195.0
+    ],
+    [
+      180.0,
+      210.0
+    ],
+    [
+      185.0,
+      260.0
+    ],
+    [
+      170.0,
+      300.0
+    ]
+  ],
+  "convex_hull_area_m2": 8100.0,
+  "concavity_ratio": 0.9012,
+  "building_fits": true,
+  "building_footprint": {
+    "width": 20.0,
+    "height": 12.0,
+    "center_x": 140.0,
+    "center_y": 255.0
+  },
+  "max_inscribed_rectangle": {
+    "center_x": 144.15,
+    "center_y": 235.25,
+    "width": 47.5,
+    "height": 57.5,
+    "area_m2": 2731.25
+  },
+  "is_feasible": true,
+  "algorithm": "Shoelace + ConvexHull(Qhull) + Shapely containment",
+  "time_seconds": 2.037083
+}

@@ -34,6 +34,13 @@ Which chart for which result type. matplotlib/seaborn/NetworkX templates for com
 | Multiple effect sizes | Forest plot | Single study context | Bar chart with CI |
 | Bayesian posterior | Posterior density plot | Prior comparison | Prior vs. posterior overlay |
 | Survival curves | Kaplan-Meier step plot | Group comparison | Hazard ratio forest plot |
+| Matrix / linear system | Matrix heatmap | Structure view | Spy plot (sparsity) |
+| Eigenvalues / singular values | Scree plot / spectrum | Explained variance | Cumulative variance line |
+| Function / derivative | Annotated function plot | Multiple functions | Subplot grid |
+| Integral / area | Shaded area under curve | Comparison | Side-by-side fill plots |
+| Geometry / spatial | Annotated geometric diagram | 3D view | Matplotlib 3D projection |
+| Cash flow / investment | Cash flow bar chart | Cumulative view | Running NPV line |
+| Amortization | Stacked area (principal vs. interest) | Comparison | Side-by-side schedules |
 
 ---
 
@@ -863,3 +870,170 @@ plt.savefig('posterior_plot.png', dpi=150, bbox_inches='tight')
 ```
 
 **Key elements**: Prior (dashed) vs. posterior (solid) overlay, shaded HDI region, MAP/mean point estimate, clear axis labels.
+
+---
+
+## 17. Matrix Heatmap
+
+**When to use**: Visualize a matrix (coefficients, correlation, assignment, distance). Reveals structure, sparsity, and magnitude patterns at a glance.
+
+**Template**:
+```python
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+import numpy as np
+import seaborn as sns
+
+A = np.array([[4, -2, 1], [-2, 5, -3], [1, -3, 6]])
+labels = ['x₁', 'x₂', 'x₃']
+
+fig, ax = plt.subplots(figsize=(6, 5))
+sns.heatmap(A, annot=True, fmt='.1f', cmap='RdBu_r', center=0,
+            xticklabels=labels, yticklabels=labels, ax=ax)
+ax.set_title('Coefficient Matrix A', fontsize=14)
+plt.tight_layout()
+plt.savefig('matrix_heatmap.png', dpi=150, bbox_inches='tight')
+```
+
+**Key elements**: Annotated cell values, diverging colormap centered at 0, labeled axes.
+
+---
+
+## 18. Scree / Spectrum Plot
+
+**When to use**: Show eigenvalues or singular values in descending order. Reveals effective dimensionality and importance of each component.
+
+**Template**:
+```python
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+import numpy as np
+
+singular_values = np.array([10.5, 4.2, 1.8, 0.3, 0.05])
+explained = singular_values**2 / np.sum(singular_values**2) * 100
+cumulative = np.cumsum(explained)
+
+fig, ax1 = plt.subplots(figsize=(7, 5))
+ax1.bar(range(1, len(singular_values)+1), explained, color='#58a6ff', alpha=0.8, label='Individual')
+ax2 = ax1.twinx()
+ax2.plot(range(1, len(singular_values)+1), cumulative, 'o-', color='#3fb950', label='Cumulative')
+ax1.set_xlabel('Component')
+ax1.set_ylabel('Explained Variance (%)')
+ax2.set_ylabel('Cumulative (%)')
+ax2.axhline(y=95, color='gray', linestyle='--', alpha=0.5, label='95% threshold')
+ax1.set_title('Singular Value Spectrum')
+fig.legend(loc='upper left', bbox_to_anchor=(0.12, 0.88))
+plt.tight_layout()
+plt.savefig('scree_plot.png', dpi=150, bbox_inches='tight')
+```
+
+**Key elements**: Bar chart of individual values, overlaid cumulative line, 95% threshold line, labeled components.
+
+---
+
+## 19. Function Plot (Annotated)
+
+**When to use**: Plot a function with critical points, tangent lines, shaded integrals, or derivative overlays annotated.
+
+**Template**:
+```python
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+import numpy as np
+
+x = np.linspace(-2, 4, 500)
+f = x**3 - 3*x**2 + 1
+f_prime = 3*x**2 - 6*x
+
+fig, ax = plt.subplots(figsize=(8, 5))
+ax.plot(x, f, 'b-', linewidth=2, label='f(x) = x³ − 3x² + 1')
+ax.plot(x, f_prime, 'r--', linewidth=1.5, label="f'(x) = 3x² − 6x")
+# Mark critical points
+ax.plot(0, 1, 'go', markersize=10, label='Local max (0, 1)')
+ax.plot(2, -3, 'rs', markersize=10, label='Local min (2, −3)')
+# Shade integral
+mask = (x >= 0) & (x <= 2)
+ax.fill_between(x[mask], f[mask], alpha=0.2, color='blue', label='∫₀² f(x)dx')
+ax.axhline(0, color='gray', linewidth=0.5)
+ax.legend(fontsize=9)
+ax.set_title('Function Analysis', fontsize=14)
+ax.set_xlabel('x')
+ax.set_ylabel('y')
+plt.tight_layout()
+plt.savefig('function_plot.png', dpi=150, bbox_inches='tight')
+```
+
+**Key elements**: Function curve, derivative overlay, annotated critical points (markers + labels), shaded integral region, axis lines.
+
+---
+
+## 20. Geometric Diagram
+
+**When to use**: Visualize polygons, triangles, points, convex hulls, Voronoi diagrams, or other spatial geometry.
+
+**Template**:
+```python
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+import numpy as np
+from matplotlib.patches import Polygon as MplPolygon
+from scipy.spatial import ConvexHull
+
+points = np.random.rand(20, 2) * 10
+hull = ConvexHull(points)
+
+fig, ax = plt.subplots(figsize=(7, 7))
+ax.scatter(points[:, 0], points[:, 1], c='#58a6ff', s=50, zorder=3)
+for i, (x, y) in enumerate(points):
+    ax.annotate(f'P{i}', (x, y), textcoords='offset points',
+                xytext=(5, 5), fontsize=8)
+hull_pts = points[hull.vertices]
+poly = MplPolygon(hull_pts, fill=True, alpha=0.15, color='#3fb950',
+                  edgecolor='#3fb950', linewidth=2)
+ax.add_patch(poly)
+ax.set_title(f'Convex Hull (area = {hull.volume:.2f})', fontsize=14)
+ax.set_aspect('equal')
+ax.grid(True, alpha=0.3)
+plt.tight_layout()
+plt.savefig('geometric_diagram.png', dpi=150, bbox_inches='tight')
+```
+
+**Key elements**: Labeled points, polygon fill with transparency, dimensions/measurements annotated, equal aspect ratio, grid.
+
+---
+
+## 21. Cash Flow / Amortization Chart
+
+**When to use**: Visualize investment cash flows (bar chart), NPV accumulation (line), or loan amortization (stacked area of principal vs. interest).
+
+**Template**:
+```python
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+import numpy as np
+import numpy_financial as npf
+
+rate, nper, pv = 0.05/12, 360, -300000
+periods = np.arange(1, nper + 1)
+principal = -npf.ppmt(rate, periods, nper, pv)
+interest = -npf.ipmt(rate, periods, nper, pv)
+
+fig, ax = plt.subplots(figsize=(10, 5))
+ax.stackplot(periods/12, principal, interest,
+             labels=['Principal', 'Interest'],
+             colors=['#3fb950', '#58a6ff'], alpha=0.8)
+ax.set_xlabel('Year')
+ax.set_ylabel('Monthly Payment Breakdown ($)')
+ax.set_title('Mortgage Amortization: $300K at 5% over 30 Years')
+ax.legend(loc='upper right')
+ax.set_xlim(0, 30)
+plt.tight_layout()
+plt.savefig('amortization_chart.png', dpi=150, bbox_inches='tight')
+```
+
+**Key elements**: Stacked area (principal grows, interest shrinks over time), clear year axis, dollar labels, total payment line optional.

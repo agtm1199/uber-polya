@@ -268,14 +268,30 @@ pip install networkx pulp z3-solver sympy scipy matplotlib numpy cvxpy statsmode
 
 ## Cross-Platform Compatibility
 
-uber-polya uses the Agent Skills open standard. It works on any platform that supports it:
+uber-polya ships native instruction files for 7+ AI coding assistants. Each tool gets the full Polya methodology (Model → Solve → Interpret) through its native config format, all pointing to the shared protocol in `docs/methodology.md`.
 
-- Claude Code (Anthropic)
-- OpenAI Codex CLI
-- Cursor
-- GitHub Copilot
-- Mistral Vibe
-- And 25+ more
+<p align="center">
+  <img src="https://img.shields.io/badge/Claude_Code-191919?style=for-the-badge&logo=anthropic&logoColor=white" alt="Claude Code" />
+  <img src="https://img.shields.io/badge/OpenAI_Codex-412991?style=for-the-badge&logo=openai&logoColor=white" alt="OpenAI Codex" />
+  <img src="https://img.shields.io/badge/GitHub_Copilot-000000?style=for-the-badge&logo=githubcopilot&logoColor=white" alt="GitHub Copilot" />
+  <img src="https://img.shields.io/badge/Cursor-000000?style=for-the-badge&logo=cursor&logoColor=white" alt="Cursor" />
+  <img src="https://img.shields.io/badge/Windsurf-5865F2?style=for-the-badge&logo=codeium&logoColor=white" alt="Windsurf" />
+  <img src="https://img.shields.io/badge/Amazon_Kiro-FF9900?style=for-the-badge&logo=amazon&logoColor=white" alt="Amazon Kiro" />
+  <img src="https://img.shields.io/badge/Qoder-1E90FF?style=for-the-badge&logo=alibabadotcom&logoColor=white" alt="Qoder" />
+  <img src="https://img.shields.io/badge/Antigravity-4285F4?style=for-the-badge&logo=google&logoColor=white" alt="Antigravity" />
+</p>
+
+| Tool | Config File(s) | Format |
+|---|---|---|
+| ![Anthropic](https://img.shields.io/badge/-Anthropic-191919?style=flat-square&logo=anthropic&logoColor=white) **Claude Code** | `CLAUDE.md` + `skills/*/SKILL.md` | Skills with YAML frontmatter |
+| ![OpenAI](https://img.shields.io/badge/-OpenAI-412991?style=flat-square&logo=openai&logoColor=white) **Codex** | `AGENTS.md` | Plain markdown (cross-tool standard) |
+| ![Copilot](https://img.shields.io/badge/-Copilot-000000?style=flat-square&logo=githubcopilot&logoColor=white) **GitHub Copilot** | `.github/copilot-instructions.md` + `AGENTS.md` | Markdown |
+| ![Cursor](https://img.shields.io/badge/-Cursor-000000?style=flat-square&logo=cursor&logoColor=white) **Cursor** | `.cursor/rules/uber-polya.mdc`, `solver-conventions.mdc` | Markdown with glob targeting |
+| ![Windsurf](https://img.shields.io/badge/-Windsurf-5865F2?style=flat-square&logo=codeium&logoColor=white) **Windsurf** | `.windsurf/rules/uber-polya.md`, `solver-conventions.md` | Markdown |
+| ![Kiro](https://img.shields.io/badge/-Kiro-FF9900?style=flat-square&logo=amazon&logoColor=white) **Amazon Kiro** | `.kiro/steering/uber-polya.md`, `solver-conventions.md` | Markdown with YAML frontmatter |
+| ![Qoder](https://img.shields.io/badge/-Qoder-1E90FF?style=flat-square&logo=alibabadotcom&logoColor=white) ![Antigravity](https://img.shields.io/badge/-Antigravity-4285F4?style=flat-square&logo=google&logoColor=white) **+ others** | `AGENTS.md` | Cross-tool standard (60K+ repos) |
+
+The reference files (`skills/*/references/`) are pure markdown -- readable by any tool. The 36 worked examples use standard Python with no tool-specific dependencies.
 
 ## License
 

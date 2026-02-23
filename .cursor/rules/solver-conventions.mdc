@@ -1,0 +1,54 @@
+---
+description: "Python solver coding conventions for uber-polya examples and generated solvers"
+globs: "examples/**/*.py"
+---
+
+# Solver Conventions
+
+Python 3.10+ solvers must follow these standards:
+
+## Required Structure
+
+```python
+#!/usr/bin/env python3
+"""[Problem name] solver. O([complexity]). [Correctness guarantee]."""
+from __future__ import annotations
+import time
+from dataclasses import dataclass
+
+@dataclass(frozen=True)
+class Instance:
+    """Immutable problem instance."""
+    ...
+
+@dataclass
+class Solution:
+    """Solution with metadata."""
+    value: ...
+    objective: float | None
+    is_optimal: bool
+    is_feasible: bool
+    algorithm: str
+    time_seconds: float
+    certificate: str | None
+
+def solve(instance: Instance) -> Solution:
+    t0 = time.perf_counter()
+    # ... algorithm ...
+    elapsed = time.perf_counter() - t0
+    return Solution(...)
+
+def verify(instance: Instance, solution) -> bool:
+    """Independent verification. Must NOT share logic with solve()."""
+    ...
+```
+
+## Rules
+
+- Type hints on all function signatures
+- `from __future__ import annotations` at top
+- `@dataclass(frozen=True)` for Instance, `@dataclass` for Solution
+- `time.perf_counter()` for timing (not `time.time()`)
+- `solve()` and `verify()` must be separate with no shared logic
+- Deterministic output (seed RNG if randomized)
+- Handle edge cases: n=0, n=1, disconnected, infeasible, unbounded

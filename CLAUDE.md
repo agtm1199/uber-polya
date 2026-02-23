@@ -71,6 +71,10 @@ Skills are tested through conversation, not unit tests. To test a skill:
 5. Verify the solver produces correct, verified output
 6. Try edge cases: vague problems, trivial instances, infeasible instances
 
+## Cross-Tool Compatibility
+
+`docs/methodology.md` is the tool-agnostic version of the Polya protocol. It contains the same pipeline, artifacts, and self-checks as the SKILL.md files but uses generic language instead of Claude Code tool names. Other AI tools (Codex, Copilot, Cursor, Windsurf, Kiro) reference it through their native config files (`AGENTS.md`, `.github/copilot-instructions.md`, `.cursor/rules/`, `.windsurf/rules/`, `.kiro/steering/`).
+
 ## Current State
 
 - **v1.0.0**: Four skills (orchestrator + trilogy) with 305 algorithms (195 discrete/continuous/linear-algebra/calculus/geometry/financial/game-theory/decision-analysis/multi-objective/ODEs/numerical-methods/extended-OR + 110 statistical/time-series/stochastic/survival/ML/simulation/queuing/causal), 91 structures across 24 domains, 26 solver libraries. Eighteen shipped domains: discrete math, continuous optimization, statistical inference, time series analysis, stochastic processes, survival analysis, linear algebra, calculus, geometry & trigonometry, financial mathematics, game theory, decision analysis, multi-objective optimization, machine learning, simulation & ODEs, numerical methods, causal inference, extended operations research. All high-relevance mathematical branches covered. Thirty-six worked examples.

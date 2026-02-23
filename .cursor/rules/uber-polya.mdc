@@ -1,0 +1,37 @@
+---
+description: "uber-polya: Polya-method problem-solving pipeline (Model → Solve → Interpret) for mathematical problem solving"
+alwaysApply: true
+---
+
+# uber-polya Problem-Solving Protocol
+
+When a user presents a problem to solve, follow the three-phase Polya pipeline documented in `docs/methodology.md`.
+
+## Pipeline
+
+1. **Phase A -- Model**: Classify (Find vs. Prove), apply Socratic heuristics, match to mathematical structures, build formal model with mapping table. Consult reference files in `skills/uber-model/references/`.
+2. **Phase B -- Solve**: Classify computational problem, select algorithm, implement Python solver, verify independently. Consult reference files in `skills/uber-solve/references/`.
+3. **Phase C -- Interpret**: Reverse the mapping, state bottom line, run sensitivity analysis, generate visualizations, provide actionable recommendations. Consult reference files in `skills/uber-interpret/references/`.
+
+## Phase Gates
+
+Present your work and ask the user to confirm before proceeding to the next phase.
+
+## Reference Files
+
+Consult on demand at the specified phase:
+
+- **Phase A**: `skills/uber-model/references/problem-classification.md` (first), `heuristics.md`, `structures.md`, `common-mistakes.md` (before finalizing)
+- **Phase B**: `skills/uber-solve/references/algorithms.md`, `algorithms-statistics.md`, `solvers.md`, `solving-protocols.md`
+- **Phase C**: `skills/uber-interpret/references/interpretation-patterns.md`, `visualization.md`
+
+## Artifacts
+
+Each phase produces a structured artifact consumed by the next:
+- **Formal Model** (Phase A): Domain, Universe, Variables, Structure, Mapping, Constraints, Objective/Claim
+- **Solution Report** (Phase B): Answer, Objective Value, Optimal, Feasible, Algorithm, Time, Certificate
+- **Interpretation Report** (Phase C): Question, Answer, Meaning, Robustness, Recommendations, Limitations
+
+## Full Protocol
+
+See `docs/methodology.md` for complete step-by-step instructions, artifact schemas, self-checks, error recovery, and fast-track shortcuts.

@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>uber-polya Usage Guide</title>
-  <meta name="description" content="Complete usage guide for uber-polya, the first math problem-solver skill for Claude Code and 25+ platforms.">
+  <meta name="description" content="Complete usage guide for uber-polya, the math problem-solver for Claude Code, Codex, Copilot, Cursor, Windsurf, Kiro, Qoder, and Antigravity.">
   <style>
     *, *::before, *::after {
       margin: 0;
@@ -511,21 +511,47 @@
     .platform-item {
       background: var(--bg-surface);
       border: 1px solid var(--border);
+      border-left: 3px solid var(--border);
       border-radius: 8px;
       padding: 16px;
-      text-align: center;
+      text-align: left;
+    }
+
+    .platform-item .platform-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 6px;
+    }
+
+    .platform-item .platform-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
     }
 
     .platform-item .platform-name {
       font-size: 14px;
       font-weight: 600;
       color: var(--text);
-      margin-bottom: 2px;
     }
 
     .platform-item .platform-vendor {
       font-size: 11px;
       color: var(--text-dim);
+      margin-bottom: 6px;
+    }
+
+    .platform-item .platform-config {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .platform-item .platform-config code {
+      font-size: 11px;
+      color: var(--green);
+      background: rgba(63, 185, 80, 0.1);
     }
 
     /* ---- FAQ ---- */
@@ -671,7 +697,7 @@
       <!-- INTRO -->
       <section id="top">
         <h1>Usage Guide <span class="badge">v0.4.0</span></h1>
-        <p class="lead">Everything you need to start solving problems with uber-polya &mdash; the first math problem-solver skill for Claude Code and 25+ compatible platforms.</p>
+        <p class="lead">Everything you need to start solving problems with uber-polya &mdash; the math problem-solver for every AI coding assistant.</p>
         <p>uber-polya is a free, open-source skill that implements George Polya's four-phase problem-solving cycle as an executable algorithm. You describe a problem in plain English. It finds the mathematical structure, selects the right algorithm, writes verified solver code, runs it, and gives you the answer with proof.</p>
         <p><strong>Don't guess. Solve.</strong></p>
       </section>
@@ -699,22 +725,24 @@
       <p>That's it. No virtual environment, no build step. The skills are plain markdown files that your AI agent reads on demand.</p>
 
       <h3>Other platforms</h3>
-      <p>uber-polya uses the <strong>Agent Skills standard</strong> &mdash; the same <code>.md</code> files work on any compatible platform. Copy the <code>skills/</code> directory into the platform's skill location:</p>
+      <p>uber-polya ships native config files for each platform. Clone the repo and the config is already in place:</p>
       <div class="table-wrapper">
         <table>
           <thead>
-            <tr><th>Platform</th><th>Skill Location</th></tr>
+            <tr><th>Platform</th><th>Config File(s)</th><th>Format</th></tr>
           </thead>
           <tbody>
-            <tr><td>Claude Code</td><td><code>~/.claude/skills/</code> (global) or <code>.claude/skills/</code> (local)</td></tr>
-            <tr><td>OpenAI Codex CLI</td><td><code>~/.codex/skills/</code></td></tr>
-            <tr><td>Cursor</td><td><code>.cursor/skills/</code></td></tr>
-            <tr><td>GitHub Copilot</td><td><code>.github/skills/</code></td></tr>
-            <tr><td>Mistral Vibe</td><td><code>.mistral/skills/</code></td></tr>
-            <tr><td>Others</td><td>Consult your platform's skill documentation</td></tr>
+            <tr><td>Claude Code</td><td><code>CLAUDE.md</code> + <code>skills/*/SKILL.md</code></td><td>Skills with YAML frontmatter</td></tr>
+            <tr><td>OpenAI Codex</td><td><code>AGENTS.md</code></td><td>Cross-tool standard</td></tr>
+            <tr><td>GitHub Copilot</td><td><code>.github/copilot-instructions.md</code></td><td>Markdown</td></tr>
+            <tr><td>Cursor</td><td><code>.cursor/rules/uber-polya.mdc</code></td><td>Markdown with glob targeting</td></tr>
+            <tr><td>Windsurf</td><td><code>.windsurf/rules/uber-polya.md</code></td><td>Markdown</td></tr>
+            <tr><td>Amazon Kiro</td><td><code>.kiro/steering/uber-polya.md</code></td><td>Markdown with YAML frontmatter</td></tr>
+            <tr><td>Qoder, Antigravity, others</td><td><code>AGENTS.md</code></td><td>Cross-tool standard</td></tr>
           </tbody>
         </table>
       </div>
+      <p>All reference files (<code>skills/*/references/</code>) are pure markdown readable by any tool. The 36 worked examples use standard Python with no tool-specific dependencies.</p>
 
       <h3>Python dependencies</h3>
       <p>uber-polya generates Python solver code. Install the libraries as needed, or all at once:</p>
@@ -1044,17 +1072,49 @@
 
       <!-- PLATFORMS -->
       <h2 id="platforms">Platform Compatibility</h2>
-      <p>uber-polya uses the <strong>Agent Skills open standard</strong>. The skills are plain <code>.md</code> files &mdash; any platform that reads them is compatible.</p>
+      <p>uber-polya ships native instruction files for 8 AI coding assistants. Each tool gets the full Polya methodology through its native config format, all pointing to the shared protocol in <code>docs/methodology.md</code>.</p>
 
       <div class="platform-grid">
-        <div class="platform-item"><div class="platform-name">Claude Code</div><div class="platform-vendor">Anthropic</div></div>
-        <div class="platform-item"><div class="platform-name">Codex CLI</div><div class="platform-vendor">OpenAI</div></div>
-        <div class="platform-item"><div class="platform-name">Cursor</div><div class="platform-vendor">Cursor Inc.</div></div>
-        <div class="platform-item"><div class="platform-name">GitHub Copilot</div><div class="platform-vendor">GitHub / Microsoft</div></div>
-        <div class="platform-item"><div class="platform-name">Mistral Vibe</div><div class="platform-vendor">Mistral AI</div></div>
-        <div class="platform-item"><div class="platform-name">Windsurf</div><div class="platform-vendor">Codeium</div></div>
-        <div class="platform-item"><div class="platform-name">Aider</div><div class="platform-vendor">Paul Gauthier</div></div>
-        <div class="platform-item"><div class="platform-name">25+ more</div><div class="platform-vendor">Agent Skills standard</div></div>
+        <div class="platform-item" style="border-left-color:#d4a27f">
+          <div class="platform-header"><span class="platform-dot" style="background:#d4a27f"></span><div class="platform-name">Claude Code</div></div>
+          <div class="platform-vendor">Anthropic</div>
+          <div class="platform-config"><code>CLAUDE.md</code> + <code>skills/*/SKILL.md</code></div>
+        </div>
+        <div class="platform-item" style="border-left-color:#10a37f">
+          <div class="platform-header"><span class="platform-dot" style="background:#10a37f"></span><div class="platform-name">Codex</div></div>
+          <div class="platform-vendor">OpenAI</div>
+          <div class="platform-config"><code>AGENTS.md</code></div>
+        </div>
+        <div class="platform-item" style="border-left-color:#fff">
+          <div class="platform-header"><span class="platform-dot" style="background:#fff"></span><div class="platform-name">GitHub Copilot</div></div>
+          <div class="platform-vendor">GitHub / Microsoft</div>
+          <div class="platform-config"><code>.github/copilot-instructions.md</code></div>
+        </div>
+        <div class="platform-item" style="border-left-color:#fff">
+          <div class="platform-header"><span class="platform-dot" style="background:#fff"></span><div class="platform-name">Cursor</div></div>
+          <div class="platform-vendor">Cursor Inc.</div>
+          <div class="platform-config"><code>.cursor/rules/*.mdc</code></div>
+        </div>
+        <div class="platform-item" style="border-left-color:#09b6a2">
+          <div class="platform-header"><span class="platform-dot" style="background:#09b6a2"></span><div class="platform-name">Windsurf</div></div>
+          <div class="platform-vendor">Codeium</div>
+          <div class="platform-config"><code>.windsurf/rules/*.md</code></div>
+        </div>
+        <div class="platform-item" style="border-left-color:#ff9900">
+          <div class="platform-header"><span class="platform-dot" style="background:#ff9900"></span><div class="platform-name">Kiro</div></div>
+          <div class="platform-vendor">Amazon</div>
+          <div class="platform-config"><code>.kiro/steering/*.md</code></div>
+        </div>
+        <div class="platform-item" style="border-left-color:#1e90ff">
+          <div class="platform-header"><span class="platform-dot" style="background:#1e90ff"></span><div class="platform-name">Qoder</div></div>
+          <div class="platform-vendor">Alibaba</div>
+          <div class="platform-config"><code>AGENTS.md</code></div>
+        </div>
+        <div class="platform-item" style="border-left-color:#4285f4">
+          <div class="platform-header"><span class="platform-dot" style="background:#4285f4"></span><div class="platform-name">Antigravity</div></div>
+          <div class="platform-vendor">Google</div>
+          <div class="platform-config"><code>AGENTS.md</code></div>
+        </div>
       </div>
 
       <!-- DESIGN PRINCIPLES -->
@@ -1112,7 +1172,7 @@
 
       <div class="faq-item">
         <div class="faq-q">Does this work on platforms other than Claude Code?</div>
-        <div class="faq-a">Yes. uber-polya uses the Agent Skills open standard. The same <code>.md</code> files work on OpenAI Codex CLI, Cursor, GitHub Copilot, Mistral Vibe, Windsurf, and 25+ other platforms. Copy the <code>skills/</code> directory into your platform's skill location.</div>
+        <div class="faq-a">Yes. uber-polya ships native config files for Claude Code, OpenAI Codex, GitHub Copilot, Cursor, Windsurf, Amazon Kiro, Qoder, and Google Antigravity. Each tool reads its own config format &mdash; all pointing to the shared methodology in <code>docs/methodology.md</code>. Clone the repo and the config is already in place.</div>
       </div>
 
       <div class="faq-item">

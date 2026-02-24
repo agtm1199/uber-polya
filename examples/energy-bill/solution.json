@@ -1,0 +1,27 @@
+{
+  "schedule": {
+    "dishwasher": 3,
+    "washer": 9,
+    "dryer": 9,
+    "ev_charger": 2,
+    "pool_pump": 1
+  },
+  "total_cost": 4.695,
+  "cost_breakdown": {
+    "dishwasher": 0.288,
+    "washer": 0.075,
+    "dryer": 1.5,
+    "ev_charger": 2.304,
+    "pool_pump": 0.528
+  },
+  "is_optimal": true,
+  "is_feasible": true,
+  "algorithm": "ILP (PuLP/CBC, Branch & Bound)",
+  "time_seconds": 0.005052574910223484,
+  "comparison": {
+    "worst_case_cost": 14.85,
+    "naive_cost": 11.865,
+    "savings_vs_naive": 7.17,
+    "savings_vs_worst": 10.155
+  }
+}

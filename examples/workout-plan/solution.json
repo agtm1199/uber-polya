@@ -1,0 +1,60 @@
+{
+  "schedule": {
+    "Mon": [
+      "Bench Press"
+    ],
+    "Tue": [
+      "Pull-Up",
+      "Plank"
+    ],
+    "Wed": [
+      "Romanian Deadlift"
+    ],
+    "Thu": [
+      "Bench Press",
+      "Plank"
+    ],
+    "Fri": [
+      "Incline Dumbbell Press",
+      "Pull-Up",
+      "Squat",
+      "Romanian Deadlift"
+    ]
+  },
+  "objective_total_minutes": 103.0,
+  "is_optimal": true,
+  "is_feasible": true,
+  "algorithm": "ILP (PuLP/CBC, Branch & Bound)",
+  "time_seconds": 0.03473506204318255,
+  "verification": {
+    "all_exercises_valid": true,
+    "time_limits_respected": true,
+    "day_times_min": {
+      "Mon": 12,
+      "Tue": 15,
+      "Wed": 12,
+      "Thu": 17,
+      "Fri": 47
+    },
+    "muscle_targets_met": true,
+    "weekly_volume_sets": {
+      "chest": 11,
+      "back": 12,
+      "legs": 10,
+      "shoulders": 11,
+      "arms": 14,
+      "core": 10
+    },
+    "weekly_volume_targets": {
+      "chest": 10,
+      "back": 12,
+      "legs": 10,
+      "shoulders": 10,
+      "arms": 12,
+      "core": 8
+    },
+    "no_consecutive_repeats": true,
+    "objective_recomputed": 103,
+    "no_intraday_duplicates": true
+  }
+}

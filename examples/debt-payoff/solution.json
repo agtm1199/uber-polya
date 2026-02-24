@@ -1,0 +1,76 @@
+{
+  "problem": {
+    "debts": [
+      {
+        "name": "Credit Card",
+        "balance": 6200.0,
+        "apr": 0.2299,
+        "min_payment": 120.0
+      },
+      {
+        "name": "Car Loan",
+        "balance": 12000.0,
+        "apr": 0.065,
+        "min_payment": 250.0
+      },
+      {
+        "name": "Student Loan",
+        "balance": 25000.0,
+        "apr": 0.045,
+        "min_payment": 280.0
+      },
+      {
+        "name": "Personal Loan",
+        "balance": 3500.0,
+        "apr": 0.15,
+        "min_payment": 75.0
+      }
+    ],
+    "extra_monthly_payment": 500.0,
+    "total_balance": 46700.0,
+    "total_minimums": 725.0
+  },
+  "avalanche": {
+    "strategy": "avalanche",
+    "total_interest_paid": 5352.1,
+    "months_to_payoff": 43,
+    "total_paid": 52052.1,
+    "is_optimal": true,
+    "is_feasible": true,
+    "algorithm": "Greedy avalanche simulation (month-by-month)",
+    "time_seconds": 0.00022969499696046114,
+    "payoff_order": [
+      {
+        "debt": "Credit Card",
+        "month": 12
+      },
+      {
+        "debt": "Personal Loan",
+        "month": 16
+      },
+      {
+        "debt": "Car Loan",
+        "month": 26
+      },
+      {
+        "debt": "Student Loan",
+        "month": 43
+      }
+    ]
+  },
+  "snowball": {
+    "strategy": "snowball",
+    "total_interest_paid": 5637.42,
+    "months_to_payoff": 43,
+    "total_paid": 52337.42,
+    "is_optimal": false,
+    "is_feasible": true,
+    "algorithm": "Greedy snowball simulation (month-by-month)",
+    "time_seconds": 0.0002801130758598447
+  },
+  "comparison": {
+    "interest_saved_by_avalanche": 285.32,
+    "months_saved_by_avalanche": 0,
+    "recommended_strategy": "avalanche"
+  }
+}

@@ -1,0 +1,66 @@
+{
+  "assignment": {
+    "Alice": "dessert",
+    "Ben": "salad",
+    "Carmen": "main",
+    "David": "side",
+    "Elena": "appetizer",
+    "Frank": "dessert",
+    "Grace": "salad",
+    "Hiro": "appetizer"
+  },
+  "total_effort": 9,
+  "category_counts": {
+    "appetizer": 2,
+    "salad": 2,
+    "main": 1,
+    "side": 1,
+    "dessert": 2
+  },
+  "effort_breakdown": {
+    "Alice": {
+      "category": "dessert",
+      "effort": 1
+    },
+    "Ben": {
+      "category": "salad",
+      "effort": 1
+    },
+    "Carmen": {
+      "category": "main",
+      "effort": 1
+    },
+    "David": {
+      "category": "side",
+      "effort": 1
+    },
+    "Elena": {
+      "category": "appetizer",
+      "effort": 1
+    },
+    "Frank": {
+      "category": "dessert",
+      "effort": 1
+    },
+    "Grace": {
+      "category": "salad",
+      "effort": 1
+    },
+    "Hiro": {
+      "category": "appetizer",
+      "effort": 2
+    }
+  },
+  "is_optimal": true,
+  "is_feasible": true,
+  "bounds": {
+    "guest_min_sum_lb": 9,
+    "relaxation_lb": 5,
+    "guest_max_sum_ub": 38,
+    "random_mean": 23.6,
+    "random_min": 10,
+    "random_max": 37
+  },
+  "algorithm": "ILP (PuLP/CBC, Branch & Bound)",
+  "time_seconds": 0.005929717910476029
+}

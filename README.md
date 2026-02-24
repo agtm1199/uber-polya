@@ -1,19 +1,31 @@
-# uber-polya
+<div align="center">
 
-[![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
-[![Python 3.10+](https://img.shields.io/badge/Python-3.10+-3776AB.svg)](https://www.python.org/)
-[![Version](https://img.shields.io/badge/Version-0.3.0-green.svg)](release-notes/v0.3.0.md)
-[![CI](https://github.com/agtm1199/uber-polya/actions/workflows/ci.yml/badge.svg)](https://github.com/agtm1199/uber-polya/actions/workflows/ci.yml)
+# uber-polya
 
 **Don't guess. Solve.**
 
-[Docs](https://agtm1199.github.io/uber-polya/guide.html) | [Tutorial](https://agtm1199.github.io/uber-polya/getting-started.html) | [Manifesto](https://agtm1199.github.io/uber-polya/manifesto.html)
+The first math problem-solver for AI coding assistants. Free, open-source, and works across 7+ platforms.
 
-uber-polya is the first math problem-solver skill for Claude Code and 25+ compatible platforms. It's free, open-source, and turns real-world problems -- business or personal -- into mathematically verified solutions.
+[![GitHub Stars](https://img.shields.io/github/stars/agtm1199/uber-polya?style=social)](https://github.com/agtm1199/uber-polya/stargazers)
+[![GitHub Forks](https://img.shields.io/github/forks/agtm1199/uber-polya?style=social)](https://github.com/agtm1199/uber-polya/network/members)
+[![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
+[![Python 3.10+](https://img.shields.io/badge/Python-3.10+-3776AB.svg)](https://www.python.org/)
+[![Version](https://img.shields.io/badge/Version-1.0.0-green.svg)](CHANGELOG.md)
+[![CI](https://github.com/agtm1199/uber-polya/actions/workflows/ci.yml/badge.svg)](https://github.com/agtm1199/uber-polya/actions/workflows/ci.yml)
+
+[Docs](https://agtm1199.github.io/uber-polya/guide.html) | [Tutorial](https://agtm1199.github.io/uber-polya/getting-started.html) | [Manifesto](https://agtm1199.github.io/uber-polya/manifesto.html) | [Contributing](CONTRIBUTING.md)
+
+<!-- Add social links once created:
+[![Discord](https://img.shields.io/badge/Discord-Join-5865F2?style=flat&logo=discord&logoColor=white)](YOUR_DISCORD_LINK)
+[![X (Twitter)](https://img.shields.io/badge/Follow-000000?style=flat&logo=x&logoColor=white)](YOUR_X_LINK)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-0A66C2?style=flat&logo=linkedin&logoColor=white)](YOUR_LINKEDIN_LINK)
+-->
+
+</div>
+
+---
 
 You describe what you're trying to figure out. uber-polya finds the mathematical structure hiding inside your problem, solves it with the right algorithm, checks the answer, and gives you the result: a schedule, a plan, a decision, a budget, a ranking, a proof -- whatever you need.
-
-Describe your problem. Get a verified solution.
 
 ```
 /uber-polya Schedule 12 nurses across 3 shifts so nobody works more than 5 days
@@ -26,11 +38,85 @@ uber-polya:
   5. Delivers     -> A shift schedule you can use today
 ```
 
+Describe your problem. Get a verified solution. That's it.
+
+---
+
+<details>
+<summary><strong>Why uber-polya?</strong></summary>
+
+<br>
+
+Most real-world problems -- business or personal -- have a mathematical structure hiding inside them. Scheduling is graph coloring. Budgeting is linear programming. Pricing is optimization. Route planning is TSP. But finding that structure, picking the right algorithm, writing correct solver code, and verifying the answer takes expertise most people don't have.
+
+uber-polya does all of that in one conversation. It implements George Polya's four-phase problem-solving cycle (*How to Solve It*, 1945) as an executable pipeline:
+
+1. **Understand** -- Socratic dialogue to extract what you really need
+2. **Model** -- Finds the mathematical structure, classifies the problem
+3. **Solve** -- Selects the right algorithm, writes verified solver code, runs it
+4. **Interpret** -- Translates the answer into actionable insight with visualizations
+
+The pipeline is collaborative: uber-polya asks questions, you confirm understanding, and the solution is built together -- not dictated.
+
+</details>
+
+## Quick Start
+
+**1. Install**
+
+```bash
+git clone https://github.com/agtm1199/uber-polya.git
+cd uber-polya
+bash install.sh
+```
+
+The installer asks whether to install globally (`~/.claude/skills/`, available in all projects) or locally (`./.claude/skills/`, current project only).
+
+**2. Solve a problem**
+
+Open Claude Code and type:
+
+```
+/uber-polya I need to schedule 4 exams into time slots so no student has two exams at the same time.
+```
+
+**3. Get a verified result**
+
+uber-polya handles the entire pipeline automatically. One command, one conversation, one verified result.
+
+Under the hood, `/uber-polya` orchestrates three internal skills (`/uber-model`, `/uber-solve`, `/uber-interpret`) that you can also use individually for finer control.
+
+---
+
+## How It Works
+
+```
+/uber-polya (orchestrator)
+
+/uber-model            /uber-solve             /uber-interpret
+"What IS the           "What is the            "What does it
+ problem?"              ANSWER?"                MEAN?"
+
+ Real-world    -->     Formal Model    -->     Verified       -->    Actionable
+ problem               (math)                 Solution              Insight
+
+ Polya Phases          Polya Phase            Polya Phase
+ 1-2: Understand       3: Execute             4: Look Back
+ & Plan
+```
+
+Each skill's output feeds the next. The pipeline is Socratic: uber-polya asks questions, you confirm understanding, and the solution is built collaboratively.
+
+---
+
 ## What Can uber-polya Solve?
 
-Every problem in this table has a mathematical structure. uber-polya finds it and solves it.
+Every problem in these tables has a mathematical structure. uber-polya finds it and solves it.
 
-### Business Problems
+<details>
+<summary><strong>Business Problems</strong> (18 problem types)</summary>
+
+<br>
 
 | Problem | You say... | uber-polya finds... | You get... |
 |---------|-----------|---------------------|-----------|
@@ -53,7 +139,12 @@ Every problem in this table has a mathematical structure. uber-polya finds it an
 | Product configuration | "Can we build this with all customer requirements?" | SAT / constraint satisfaction | Valid configuration or proof of infeasibility |
 | Demand patterns | "Model customer arrival patterns for staffing" | Stochastic processes (Markov / Poisson) | Arrival model + peak hours |
 
-### Personal Problems
+</details>
+
+<details>
+<summary><strong>Personal Problems</strong> (15 problem types)</summary>
+
+<br>
 
 | Problem | You say... | uber-polya finds... | You get... |
 |---------|-----------|---------------------|-----------|
@@ -73,58 +164,18 @@ Every problem in this table has a mathematical structure. uber-polya finds it an
 | Moving logistics | "Fit all furniture into fewest truck loads" | Bin packing | Loading plan + trips needed |
 | House hunting | "Balance commute, price, and schools across 15 houses" | Multi-objective optimization (Pareto) | Shortlist of non-dominated options |
 
-## Installation
+</details>
 
-```bash
-git clone https://github.com/agtm1199/uber-polya.git
-cd uber-polya
-bash install.sh
-```
-
-The installer asks whether to install globally (`~/.claude/skills/`, available in all projects) or locally (`./.claude/skills/`, current project only).
-
-## Quick Start
-
-Open Claude Code and type:
-
-```
-/uber-polya I need to schedule 4 exams into time slots so no student has two exams at the same time.
-```
-
-uber-polya handles the entire pipeline automatically:
-1. **Understand** -- Socratic dialogue to extract what you really need
-2. **Model** -- Classifies as graph coloring on a conflict graph
-3. **Solve** -- Selects the right algorithm, writes verified solver code, runs it
-4. **Interpret** -- Translates the answer, sensitivity analysis, visualizations, recommendations
-
-That's it. One command, one conversation, one verified result.
-
-Under the hood, `/uber-polya` orchestrates three internal skills (`/uber-model`, `/uber-solve`, `/uber-interpret`) that you can also use individually if you want finer control.
-
-## How It Works
-
-uber-polya implements George Polya's four-phase problem-solving cycle (from *How to Solve It*, 1945) as an executable meta-algorithm:
-
-```
-/uber-polya (orchestrator)
-
-/uber-model            /uber-solve             /uber-interpret
-"What IS the           "What is the            "What does it
- problem?"              ANSWER?"                MEAN?"
-
- Real-world    -->     Formal Model    -->     Verified       -->    Actionable
- problem               (math)                 Solution              Insight
-
- Polya Phases          Polya Phase            Polya Phase
- 1-2: Understand       3: Execute             4: Look Back
- & Plan
-```
-
-Each skill's output feeds the next. The pipeline is Socratic: uber-polya asks questions, you confirm understanding, and the solution is built collaboratively -- not dictated.
+---
 
 ## Worked Examples
 
-### Everyday Problems
+36 fully worked examples with solver code, verification, and sample output.
+
+<details>
+<summary><strong>Everyday Problems</strong> (11 examples)</summary>
+
+<br>
 
 | Example | Problem | Algorithm |
 |---------|---------|-----------|
@@ -140,7 +191,12 @@ Each skill's output feeds the next. The pipeline is Socratic: uber-polya asks qu
 | [Event Seating](examples/event-seating/) | Seat 12 wedding guests at 3 tables with constraints | ILP (PuLP/CBC) |
 | [Mortgage Comparison](examples/mortgage-analysis/) | Compare 3 mortgage options with refinancing analysis | NPV + amortization (numpy-financial) |
 
-### Technical Showcases
+</details>
+
+<details>
+<summary><strong>Technical Showcases</strong> (25 examples)</summary>
+
+<br>
 
 | Example | Domain | Algorithm |
 |---------|--------|-----------|
@@ -170,11 +226,16 @@ Each skill's output feeds the next. The pipeline is Socratic: uber-polya asks qu
 | [Inventory Optimization](examples/inventory-optimization/) | Operations research | EOQ + newsvendor + safety stock |
 | [Bin Packing](examples/bin-packing/) | Operations research | First Fit Decreasing + ILP optimal |
 
+</details>
+
+---
+
 ## What's Under the Hood
 
-### The Knowledge Base
+<details>
+<summary><strong>The Knowledge Base</strong> -- 305 algorithms, 91 structures, 26 solver libraries</summary>
 
-305 algorithms, 91 structures, 17 heuristics, 26 solver libraries -- curated, cross-referenced, and organized for rapid problem-solving.
+<br>
 
 | Catalog | Entries |
 |---------|---------|
@@ -186,11 +247,21 @@ Each skill's output feeds the next. The pipeline is Socratic: uber-polya asks qu
 | Interpretation Patterns | Domain-specific math-to-reality translation |
 | Visualization Guide | 37 chart types with matplotlib templates |
 
-### Domains Covered
+</details>
+
+<details>
+<summary><strong>25 Domains Covered</strong></summary>
+
+<br>
 
 Graph Theory, Combinatorics, Set Theory, Logic, Number Theory, Relations & Orders, Optimization, Discrete Probability, Continuous Optimization, Statistical Inference, Time Series Analysis, Stochastic Processes, Survival Analysis, Machine Learning, Simulation & ODEs, Numerical Methods, Causal Inference, Extended Operations Research, Linear Algebra, Calculus, Geometry & Trigonometry, Financial Mathematics, Game Theory, Decision Analysis, Multi-Objective Optimization.
 
-### Expansion Roadmap
+</details>
+
+<details>
+<summary><strong>Expansion Roadmap</strong></summary>
+
+<br>
 
 | Domain | Status | What It Adds |
 |--------|--------|--------------|
@@ -226,28 +297,66 @@ Graph Theory, Combinatorics, Set Theory, Logic, Number Theory, Relations & Order
 | Modern Control | Planned | State-space, LQR, Kalman filtering -- python-control, filterpy |
 | Population Dynamics | Planned | Lotka-Volterra, predator-prey models (extends Simulation & ODEs) |
 | Epidemiology | Planned | SIR, SEIR, compartmental models (extends Simulation & ODEs) |
-| Abstract Algebra | Unlikely | Group theory, ring theory, field extensions |
-| Real Analysis | Unlikely | Measure theory, convergence, completeness |
-| Complex Analysis | Unlikely | Contour integration, conformal mapping, residues |
-| Calculus of Variations | Unlikely | Euler-Lagrange, optimal control |
-| Actuarial Science | Unlikely | Life tables, annuity pricing, loss models |
-| Reinforcement Learning | Unlikely | MDP, Q-learning, policy gradient |
-| Coding Theory | Unlikely | Error-correcting codes, Hamming, Reed-Solomon |
-| Cryptography | Unlikely | RSA, elliptic curves, hash functions |
-| Phylogenetics | Unlikely | Evolutionary trees, maximum likelihood |
 
-Domains marked **Shipped** are fully integrated. **Planned** domains have clear implementation paths and are accepting contributions. **Unlikely** domains are outside the primary scope but could be added by community contributors. New domains plug in as reference files without changing the core Polya workflow. Contributions welcome -- see [CONTRIBUTING.md](CONTRIBUTING.md).
+Domains marked **Shipped** are fully integrated. **Planned** domains have clear implementation paths and are accepting contributions. New domains plug in as reference files without changing the core Polya workflow.
+
+</details>
+
+---
+
+## Cross-Platform Compatibility
+
+uber-polya ships native instruction files for 7+ AI coding assistants. Each tool gets the full Polya methodology (Model -> Solve -> Interpret) through its native config format.
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Claude_Code-191919?style=for-the-badge&logo=anthropic&logoColor=white" alt="Claude Code" />
+  <img src="https://img.shields.io/badge/OpenAI_Codex-412991?style=for-the-badge&logo=openai&logoColor=white" alt="OpenAI Codex" />
+  <img src="https://img.shields.io/badge/GitHub_Copilot-000000?style=for-the-badge&logo=githubcopilot&logoColor=white" alt="GitHub Copilot" />
+  <img src="https://img.shields.io/badge/Cursor-000000?style=for-the-badge&logo=cursor&logoColor=white" alt="Cursor" />
+  <img src="https://img.shields.io/badge/Windsurf-5865F2?style=for-the-badge&logo=codeium&logoColor=white" alt="Windsurf" />
+  <img src="https://img.shields.io/badge/Amazon_Kiro-FF9900?style=for-the-badge&logo=amazon&logoColor=white" alt="Amazon Kiro" />
+  <img src="https://img.shields.io/badge/Qoder-1E90FF?style=for-the-badge&logo=alibabadotcom&logoColor=white" alt="Qoder" />
+  <img src="https://img.shields.io/badge/Antigravity-4285F4?style=for-the-badge&logo=google&logoColor=white" alt="Antigravity" />
+</p>
+
+<details>
+<summary><strong>Platform config details</strong></summary>
+
+<br>
+
+| Tool | Config File(s) | Format |
+|---|---|---|
+| ![Anthropic](https://img.shields.io/badge/-Anthropic-191919?style=flat-square&logo=anthropic&logoColor=white) **Claude Code** | `CLAUDE.md` + `skills/*/SKILL.md` | Skills with YAML frontmatter |
+| ![OpenAI](https://img.shields.io/badge/-OpenAI-412991?style=flat-square&logo=openai&logoColor=white) **Codex** | `AGENTS.md` | Plain markdown (cross-tool standard) |
+| ![Copilot](https://img.shields.io/badge/-Copilot-000000?style=flat-square&logo=githubcopilot&logoColor=white) **GitHub Copilot** | `.github/copilot-instructions.md` + `AGENTS.md` | Markdown |
+| ![Cursor](https://img.shields.io/badge/-Cursor-000000?style=flat-square&logo=cursor&logoColor=white) **Cursor** | `.cursor/rules/uber-polya.mdc`, `solver-conventions.mdc` | Markdown with glob targeting |
+| ![Windsurf](https://img.shields.io/badge/-Windsurf-5865F2?style=flat-square&logo=codeium&logoColor=white) **Windsurf** | `.windsurf/rules/uber-polya.md`, `solver-conventions.md` | Markdown |
+| ![Kiro](https://img.shields.io/badge/-Kiro-FF9900?style=flat-square&logo=amazon&logoColor=white) **Amazon Kiro** | `.kiro/steering/uber-polya.md`, `solver-conventions.md` | Markdown with YAML frontmatter |
+| ![Qoder](https://img.shields.io/badge/-Qoder-1E90FF?style=flat-square&logo=alibabadotcom&logoColor=white) ![Antigravity](https://img.shields.io/badge/-Antigravity-4285F4?style=flat-square&logo=google&logoColor=white) **+ others** | `AGENTS.md` | Cross-tool standard (60K+ repos) |
+
+The reference files (`skills/*/references/`) are pure markdown -- readable by any tool. The 36 worked examples use standard Python with no tool-specific dependencies.
+
+</details>
+
+---
 
 ## Requirements
 
 - **Claude Code** (Anthropic's CLI) -- the runtime for skills
 - **Python 3.10+** -- for running generated solver code
 
-Optional Python packages (installed as needed):
+<details>
+<summary><strong>Optional Python packages</strong> (installed as needed)</summary>
+
+<br>
 
 ```bash
 pip install networkx pulp z3-solver sympy scipy matplotlib numpy cvxpy statsmodels shapely numpy-financial nashpy pymoo prophet arch ruptures lifelines scikit-learn xgboost umap-learn simpy dowhy
 ```
+
+</details>
+
+---
 
 ## Design Principles
 
@@ -266,32 +375,28 @@ pip install networkx pulp z3-solver sympy scipy matplotlib numpy cvxpy statsmode
 - [Creating Skills](docs/creating-skills.md) -- Build on this framework
 - [Contributing](CONTRIBUTING.md) -- Add algorithms, domains, or examples
 
-## Cross-Platform Compatibility
+## Contributing
 
-uber-polya ships native instruction files for 7+ AI coding assistants. Each tool gets the full Polya methodology (Model → Solve → Interpret) through its native config format, all pointing to the shared protocol in `docs/methodology.md`.
+Contributions welcome! Whether it's a new domain, algorithm, worked example, or bug fix -- see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
 
-<p align="center">
-  <img src="https://img.shields.io/badge/Claude_Code-191919?style=for-the-badge&logo=anthropic&logoColor=white" alt="Claude Code" />
-  <img src="https://img.shields.io/badge/OpenAI_Codex-412991?style=for-the-badge&logo=openai&logoColor=white" alt="OpenAI Codex" />
-  <img src="https://img.shields.io/badge/GitHub_Copilot-000000?style=for-the-badge&logo=githubcopilot&logoColor=white" alt="GitHub Copilot" />
-  <img src="https://img.shields.io/badge/Cursor-000000?style=for-the-badge&logo=cursor&logoColor=white" alt="Cursor" />
-  <img src="https://img.shields.io/badge/Windsurf-5865F2?style=for-the-badge&logo=codeium&logoColor=white" alt="Windsurf" />
-  <img src="https://img.shields.io/badge/Amazon_Kiro-FF9900?style=for-the-badge&logo=amazon&logoColor=white" alt="Amazon Kiro" />
-  <img src="https://img.shields.io/badge/Qoder-1E90FF?style=for-the-badge&logo=alibabadotcom&logoColor=white" alt="Qoder" />
-  <img src="https://img.shields.io/badge/Antigravity-4285F4?style=for-the-badge&logo=google&logoColor=white" alt="Antigravity" />
-</p>
+Please note that this project follows the [Contributor Covenant Code of Conduct](CODE_OF_CONDUCT.md).
 
-| Tool | Config File(s) | Format |
-|---|---|---|
-| ![Anthropic](https://img.shields.io/badge/-Anthropic-191919?style=flat-square&logo=anthropic&logoColor=white) **Claude Code** | `CLAUDE.md` + `skills/*/SKILL.md` | Skills with YAML frontmatter |
-| ![OpenAI](https://img.shields.io/badge/-OpenAI-412991?style=flat-square&logo=openai&logoColor=white) **Codex** | `AGENTS.md` | Plain markdown (cross-tool standard) |
-| ![Copilot](https://img.shields.io/badge/-Copilot-000000?style=flat-square&logo=githubcopilot&logoColor=white) **GitHub Copilot** | `.github/copilot-instructions.md` + `AGENTS.md` | Markdown |
-| ![Cursor](https://img.shields.io/badge/-Cursor-000000?style=flat-square&logo=cursor&logoColor=white) **Cursor** | `.cursor/rules/uber-polya.mdc`, `solver-conventions.mdc` | Markdown with glob targeting |
-| ![Windsurf](https://img.shields.io/badge/-Windsurf-5865F2?style=flat-square&logo=codeium&logoColor=white) **Windsurf** | `.windsurf/rules/uber-polya.md`, `solver-conventions.md` | Markdown |
-| ![Kiro](https://img.shields.io/badge/-Kiro-FF9900?style=flat-square&logo=amazon&logoColor=white) **Amazon Kiro** | `.kiro/steering/uber-polya.md`, `solver-conventions.md` | Markdown with YAML frontmatter |
-| ![Qoder](https://img.shields.io/badge/-Qoder-1E90FF?style=flat-square&logo=alibabadotcom&logoColor=white) ![Antigravity](https://img.shields.io/badge/-Antigravity-4285F4?style=flat-square&logo=google&logoColor=white) **+ others** | `AGENTS.md` | Cross-tool standard (60K+ repos) |
+## Citation
 
-The reference files (`skills/*/references/`) are pure markdown -- readable by any tool. The 36 worked examples use standard Python with no tool-specific dependencies.
+If you use uber-polya in your work, please cite it:
+
+```bibtex
+@software{uber_polya,
+  title = {uber-polya: Universal Problem-Solving Engine},
+  url = {https://github.com/agtm1199/uber-polya},
+  license = {Apache-2.0},
+  year = {2025}
+}
+```
+
+Or in text:
+
+> uber-polya: Universal Problem-Solving Engine. https://github.com/agtm1199/uber-polya. Apache-2.0 License.
 
 ## License
 
@@ -300,3 +405,13 @@ The reference files (`skills/*/references/`) are pure markdown -- readable by an
 ## Acknowledgments
 
 George Polya, *How to Solve It* (1945). The heuristic framework, Socratic questioning methodology, and four-phase problem-solving cycle that underpin this project are adapted from his work.
+
+---
+
+<div align="center">
+
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=agtm1199/uber-polya&type=Date)](https://star-history.com/#agtm1199/uber-polya&Date)
+
+</div>

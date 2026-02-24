@@ -1,0 +1,18 @@
+cff-version: 1.2.0
+message: "If you use uber-polya in your work, please cite it as below."
+type: software
+authors:
+  - name: "uber-polya contributors"
+title: "uber-polya: Universal Problem-Solving Engine"
+version: 1.0.0
+date-released: 2025-02-23
+url: "https://github.com/agtm1199/uber-polya"
+repository-code: "https://github.com/agtm1199/uber-polya"
+license: Apache-2.0
+keywords:
+  - mathematical-modeling
+  - optimization
+  - problem-solving
+  - polya
+  - operations-research
+  - statistics

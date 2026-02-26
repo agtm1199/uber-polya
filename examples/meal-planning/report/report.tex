@@ -1,0 +1,216 @@
+\documentclass[11pt, a4paper]{article}
+
+% ── Packages ──────────────────────────────────────────────────────────
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{tcolorbox}
+\usepackage{polya}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=polyablue,
+  urlcolor=polyablue,
+  citecolor=polyablue,
+}
+
+% ── Code listing style ────────────────────────────────────────────────
+\lstdefinestyle{polya-python}{
+  language=Python,
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{polyablue}\bfseries,
+  commentstyle=\color{polyagray}\itshape,
+  stringstyle=\color{polyagreen},
+  numbers=left,
+  numberstyle=\tiny\color{polyagray},
+  numbersep=8pt,
+  frame=single,
+  framerule=0.4pt,
+  rulecolor=\color{polyagray},
+  breaklines=true,
+  showstringspaces=false,
+  tabsize=4,
+}
+\lstset{style=polya-python}
+\title{Meal Planning}
+\author{uber-polya}
+\date{2026-02-26}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+% ── Phase A: Problem Formulation ─────────────────────────────────────
+\section{Problem Formulation}
+
+\begin{polyamodel}
+
+\textbf{Problem Type}: Find \hfill
+\textbf{Domain}: Integer Linear Programming
+
+
+\end{polyamodel}
+
+% ── Universe ──────────────────────────────────────────────────────────
+\subsection{Universe}
+
+\begin{itemize}
+  \item $Plan: \{Salmon Fillet, Bean Chili, Steak & Veggies\}$
+\end{itemize}
+
+% ── Variables ─────────────────────────────────────────────────────────
+\subsection{Variables}
+
+\begin{longtable}{lll}
+\toprule
+\textbf{Symbol} & \textbf{Meaning} & \textbf{Type / Range} \\
+\midrule
+\endhead
+$x_i$ & quantity of item i selected & $\mathbb{{Z}}_{\ge 0}$ \\
+\bottomrule
+\end{longtable}
+
+% ── Structure ─────────────────────────────────────────────────────────
+\subsection{Structure}
+
+Plan 7 days of dinners minimizing total grocery cost while meeting weekly nutrition targets: at least 350g protein, at most 14000 calories, and at least 140g fiber. Choose from 10 meals, each with known cost, calories, protein, and fiber per serving. Each meal can be served between 0 and 7 times during the week.
+
+% ── Mapping ───────────────────────────────────────────────────────────
+\subsection{Real-World Mapping}
+
+\begin{longtable}{ll}
+\toprule
+\textbf{Real-World Concept} & \textbf{Mathematical Object} \\
+\midrule
+\endhead
+plan & $x: solution vector (plan)$ \\
+\bottomrule
+\end{longtable}
+
+% ── Constraints ───────────────────────────────────────────────────────
+\subsection{Constraints}
+
+\begin{enumerate}
+  \item $\sum_j x_{ij} \le 14000$
+  \hfill \textit{(capacity limit)}
+  \item $\sum_j x_{ij} \ge 350$
+  \hfill \textit{(minimum requirement)}
+  \item $x_{ij} \in \{0, 1\} \quad \forall\, i, j$
+  \hfill \textit{(binary decision variables)}
+\end{enumerate}
+
+% ── Objective / Claim ─────────────────────────────────────────────────
+\subsection{Claim}
+
+
+% ── Approach ──────────────────────────────────────────────────────────
+\subsection{Approach}
+
+\begin{description}
+  \item[Suggested approach:] ILP (PuLP/CBC, Branch \& Bound)
+  \item[Complexity class:] 
+  \item[Available tools:] ILP
+\end{description}
+% ── Phase B: Solution ────────────────────────────────────────────────
+\section{Solution}
+
+\begin{polyaresult}
+
+\textbf{Answer}: 3-element plan: Salmon Fillet -> 23, Bean Chili -> 12, Steak \& Veggies -> 7
+
+
+\textbf{Optimal}: No / Unknown \hfill
+\textbf{Feasible}: No
+\textbf{Algorithm}: ILP (PuLP/CBC, Branch \& Bound) \quad $$
+
+\textbf{Time}: 0.0038686369662173092s
+
+
+\end{polyaresult}
+
+% ── Solution Details ──────────────────────────────────────────────────
+\subsection{Solution Details}
+
+Optimal Plan:
+  Salmon Fillet -> 23
+  Bean Chili -> 12
+  Steak \& Veggies -> 7
+LP relaxation: 189.0000
+
+Nutrition Totals:
+  calories: 20980.0000
+  protein: 1917.0000
+  fiber: 250.0000
+  cost: 379.0000
+
+Method: Integer Linear Programming (ILP) via PuLP/CBC. Decision variables are integer counts of how many times each meal is served (0-7). The objective minimizes total cost. Constraints enforce: exactly 7 total meals, minimum 350g protein, maximum 14000 calories, minimum 140g fiber.
+
+% ── Verification ──────────────────────────────────────────────────────
+\subsection{Verification}
+
+\begin{longtable}{lcl}
+\toprule
+\textbf{Check} & \textbf{Status} & \textbf{Detail} \\
+\midrule
+\endhead
+Feasibility & \failmark & Constraint violation \\
+Optimality & \failmark & ILP (PuLP/CBC, Branch \& Bound) \\
+\bottomrule
+\end{longtable}
+
+% ── Phase C: Interpretation ──────────────────────────────────────────
+\section{Interpretation}
+
+% ── The Question & The Answer ─────────────────────────────────────────
+\subsection{The Question}
+Plan 7 days of dinners minimizing total grocery cost while meeting weekly nutrition targets: at least 350g protein, at most 14000 calories, and at least 140g fiber.
+
+\subsection{The Answer}
+
+\begin{polyainsight}[title={Bottom Line}]
+A feasible solution was found.
+\end{polyainsight}
+
+% ── What This Means ───────────────────────────────────────────────────
+\subsection{What This Means}
+
+- Optimal weekly meal plan with 7 total servings
+- Minimum grocery cost while satisfying all nutrition constraints
+- Detailed nutrition breakdown per meal and weekly totals
+
+Integer Linear Programming (ILP) via PuLP/CBC. Decision variables are integer counts of how many times each meal is served (0-7). The objective minimizes total cost. Constraints enforce: exactly 7 total meals, minimum 350g protein, maximum 14000 calories, minimum 140g fiber.
+
+% ── Sensitivity Analysis ──────────────────────────────────────────────
+
+% ── Figures ───────────────────────────────────────────────────────────
+
+% ── Recommendations ───────────────────────────────────────────────────
+\subsection{Recommendations}
+
+\begin{enumerate}
+  \item Review the model assumptions to ensure real-world fidelity.
+\end{enumerate}
+
+% ── Limitations ───────────────────────────────────────────────────────
+\subsection{Limitations}
+
+\begin{polyawarnbox}
+\begin{itemize}
+  \item Model assumes deterministic parameters; real-world variability not captured.
+  \item Solution quality depends on the accuracy of input data.
+\end{itemize}
+\end{polyawarnbox}
+
+% ── Appendix ─────────────────────────────────────────────────────────
+
+\end{document}

@@ -38,6 +38,8 @@ skills/
     references/             305 algorithms, 26 solver libraries, solving protocols
   uber-interpret/           Phase C: solution → actionable insight
     references/             Interpretation patterns, 37+ visualization templates
+templates/
+  latex/                    Jinja2 LaTeX templates + polya.sty for PDF reports
 examples/                   36 worked examples with runnable Python solvers
 docs/
   methodology.md            Full tool-agnostic protocol (start here)
@@ -76,6 +78,15 @@ Solvers must be complete, self-contained Python 3.10+ scripts:
 - Deterministic output (seed RNG if randomized)
 
 See `docs/methodology.md` for the full template.
+
+## Output Format
+
+The pipeline supports three output formats (ask the user before starting):
+- **Python** (default): solver script + console output + JSON
+- **LaTeX/PDF**: professional mathematical report (`.tex` + `.pdf`), no code shown
+- **Both**: full Python output AND compiled PDF report
+
+PDF generation uses `fpdf2` + `matplotlib` (no system LaTeX needed). See `utils/latex_renderer.py` and `templates/latex/`.
 
 ## Worked Examples
 

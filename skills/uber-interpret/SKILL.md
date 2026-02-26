@@ -408,6 +408,8 @@ Produce a structured report adapted to the audience:
 [For those who want them -- algorithm, complexity, verification]
 ```
 
+**LaTeX output** (if requested by the orchestrator): Populate an `InterpretationReport` dataclass from `utils/latex_data.py` with the artifact data -- question, answer, what-this-means narrative, sensitivity rows, recommendations, limitations, and paths to all PNG figures generated in Phase 3 (visualization). The orchestrator will consume this in Phase D to render the interpretation section of the LaTeX report.
+
 ---
 
 ## Phase 5: Knowledge Transfer

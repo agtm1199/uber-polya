@@ -1,0 +1,89 @@
+\section{Problem Formulation}
+
+\begin{polyamodel}
+
+\textbf{Problem Type}: \VAR{model.problem_type|e} \hfill
+\textbf{Domain}: \VAR{model.domain|e}
+
+\BLOCK{if model.named_problem}
+\textbf{Named Problem}: \VAR{model.named_problem|e}
+\BLOCK{endif}
+
+\end{polyamodel}
+
+% ── Universe ──────────────────────────────────────────────────────────
+\subsection{Universe}
+
+\begin{itemize}
+\BLOCK{for s in model.universe}
+  \item $\VAR{s}$
+\BLOCK{endfor}
+\end{itemize}
+
+% ── Variables ─────────────────────────────────────────────────────────
+\subsection{Variables}
+
+\begin{longtable}{lll}
+\toprule
+\textbf{Symbol} & \textbf{Meaning} & \textbf{Type / Range} \\
+\midrule
+\endhead
+\BLOCK{for v in model.variables}
+$\VAR{v.name}$ & \VAR{v.meaning|e} & $\VAR{v.type_range}$ \\
+\BLOCK{endfor}
+\bottomrule
+\end{longtable}
+
+% ── Structure ─────────────────────────────────────────────────────────
+\subsection{Structure}
+
+\VAR{model.structure|e}
+
+% ── Mapping ───────────────────────────────────────────────────────────
+\subsection{Real-World Mapping}
+
+\begin{longtable}{ll}
+\toprule
+\textbf{Real-World Concept} & \textbf{Mathematical Object} \\
+\midrule
+\endhead
+\BLOCK{for row in model.mapping}
+\VAR{row.real_world|e} & $\VAR{row.math_object}$ \\
+\BLOCK{endfor}
+\bottomrule
+\end{longtable}
+
+% ── Constraints ───────────────────────────────────────────────────────
+\subsection{Constraints}
+
+\begin{enumerate}
+\BLOCK{for c in model.constraints}
+  \item $\VAR{c.formal}$
+  \hfill \textit{(\VAR{c.origin|e})}
+\BLOCK{endfor}
+\end{enumerate}
+
+% ── Objective / Claim ─────────────────────────────────────────────────
+\subsection{\BLOCK{if model.objective}Objective\BLOCK{else}Claim\BLOCK{endif}}
+
+\BLOCK{if model.objective}
+\begin{equation}
+\VAR{model.objective}
+\end{equation}
+\BLOCK{endif}
+\BLOCK{if model.claim}
+\begin{equation}
+\VAR{model.claim}
+\end{equation}
+\BLOCK{endif}
+
+% ── Approach ──────────────────────────────────────────────────────────
+\subsection{Approach}
+
+\begin{description}
+  \item[Suggested approach:] \VAR{model.suggested_approach|e}
+  \item[Complexity class:] \VAR{model.complexity_class|e}
+  \BLOCK{if model.available_tools}
+  \item[Available tools:] \VAR{model.available_tools|join(', ')|e}
+  \BLOCK{endif}
+\end{description}

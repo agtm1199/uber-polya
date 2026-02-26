@@ -10,7 +10,7 @@ The first math problem-solver for AI coding assistants. Free, open-source, and w
 [![GitHub Forks](https://img.shields.io/github/forks/agtm1199/uber-polya?style=social)](https://github.com/agtm1199/uber-polya/network/members)
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
 [![Python 3.10+](https://img.shields.io/badge/Python-3.10+-3776AB.svg)](https://www.python.org/)
-[![Version](https://img.shields.io/badge/Version-1.0.0-green.svg)](CHANGELOG.md)
+[![Version](https://img.shields.io/badge/Version-1.1.0-green.svg)](CHANGELOG.md)
 [![CI](https://github.com/agtm1199/uber-polya/actions/workflows/ci.yml/badge.svg)](https://github.com/agtm1199/uber-polya/actions/workflows/ci.yml)
 
 [Docs](https://agtm1199.github.io/uber-polya/guide.html) | [Tutorial](https://agtm1199.github.io/uber-polya/getting-started.html) | [Manifesto](https://agtm1199.github.io/uber-polya/manifesto.html) | [Contributing](CONTRIBUTING.md)
@@ -38,7 +38,7 @@ uber-polya:
   5. Delivers     -> A shift schedule you can use today
 ```
 
-Describe your problem. Get a verified solution. That's it.
+Describe your problem. Get a verified solution. Optionally, get a professional PDF report. That's it.
 
 ---
 
@@ -83,6 +83,23 @@ Open Claude Code and type:
 **3. Get a verified result**
 
 uber-polya handles the entire pipeline automatically. One command, one conversation, one verified result.
+
+**3b. Get a PDF report** (optional)
+
+When you invoke `/uber-polya`, you can choose from three output formats:
+
+| Format | What you get |
+|--------|-------------|
+| **Python** (default) | Solver script + console output + `solution.json` |
+| **LaTeX/PDF** | Professional `.pdf` report with equations, tables, and branded styling |
+| **Both** | Full Python output AND compiled PDF report |
+
+PDF generation uses `fpdf2` + `matplotlib.mathtext` -- pure Python, no system LaTeX installation required. The `.tex` source is always saved for optional higher-quality compilation with `pdflatex`.
+
+```bash
+# Install PDF report dependencies
+pip install jinja2 fpdf2 matplotlib
+```
 
 Under the hood, `/uber-polya` orchestrates three internal skills (`/uber-model`, `/uber-solve`, `/uber-interpret`) that you can also use individually for finer control.
 
@@ -246,6 +263,38 @@ Every problem in these tables has a mathematical structure. uber-polya finds it 
 | Solver Ecosystem | 26 Python libraries (NetworkX, PuLP, Z3, SymPy, SciPy, OR-Tools, cvxpy, statsmodels, PyMC, shapely, numpy-financial, nashpy, pymoo, prophet, arch, ruptures, lifelines, scikit-learn, xgboost, umap-learn, simpy, dowhy, and more) |
 | Interpretation Patterns | Domain-specific math-to-reality translation |
 | Visualization Guide | 37 chart types with matplotlib templates |
+| LaTeX/PDF Templates | Jinja2 templates + polya.sty branded style in `templates/latex/` |
+
+</details>
+
+<details>
+<summary><strong>PDF Report Generation</strong> -- Professional mathematical reports</summary>
+
+<br>
+
+uber-polya can generate branded PDF reports from any solved problem. The report system uses:
+
+- **Jinja2 templates** in `templates/latex/` with custom delimiters (`\VAR{}`, `\BLOCK{}`)
+- **`polya.sty`** custom LaTeX style with branded environments and colors
+- **`fpdf2`** for pure-Python PDF generation (no system LaTeX needed)
+- **`matplotlib.mathtext`** for rendering LaTeX math expressions as images
+
+The data flows through three dataclasses in `utils/latex_data.py`:
+
+| Dataclass | Phase | Contents |
+|-----------|-------|----------|
+| `FormalModel` | Phase A | Universe, variables, constraints, objective, mapping |
+| `SolutionReport` | Phase B | Answer, algorithm, verification checks, solver code |
+| `InterpretationReport` | Phase C | Question, answer, sensitivity, recommendations, figures |
+
+To generate a PDF report from an existing example:
+
+```bash
+python utils/render_example.py examples/team-assignment/
+# Output: examples/team-assignment/report/report.pdf
+```
+
+All 36 worked examples ship with pre-generated reports in their `report/` subdirectories.
 
 </details>
 
@@ -351,7 +400,7 @@ The reference files (`skills/*/references/`) are pure markdown -- readable by an
 <br>
 
 ```bash
-pip install networkx pulp z3-solver sympy scipy matplotlib numpy cvxpy statsmodels shapely numpy-financial nashpy pymoo prophet arch ruptures lifelines scikit-learn xgboost umap-learn simpy dowhy
+pip install networkx pulp z3-solver sympy scipy matplotlib numpy cvxpy statsmodels shapely numpy-financial nashpy pymoo prophet arch ruptures lifelines scikit-learn xgboost umap-learn simpy dowhy jinja2 fpdf2
 ```
 
 </details>

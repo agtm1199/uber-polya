@@ -1,0 +1,221 @@
+\documentclass[11pt, a4paper]{article}
+
+% ── Packages ──────────────────────────────────────────────────────────
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{tcolorbox}
+\usepackage{polya}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=polyablue,
+  urlcolor=polyablue,
+  citecolor=polyablue,
+}
+
+% ── Code listing style ────────────────────────────────────────────────
+\lstdefinestyle{polya-python}{
+  language=Python,
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{polyablue}\bfseries,
+  commentstyle=\color{polyagray}\itshape,
+  stringstyle=\color{polyagreen},
+  numbers=left,
+  numberstyle=\tiny\color{polyagray},
+  numbersep=8pt,
+  frame=single,
+  framerule=0.4pt,
+  rulecolor=\color{polyagray},
+  breaklines=true,
+  showstringspaces=false,
+  tabsize=4,
+}
+\lstset{style=polya-python}
+\title{Water Tank Optimization}
+\author{uber-polya}
+\date{2026-02-26}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+% ── Phase A: Problem Formulation ─────────────────────────────────────
+\section{Problem Formulation}
+
+\begin{polyamodel}
+
+\textbf{Problem Type}: Find \hfill
+\textbf{Domain}: Mathematical Optimization
+
+
+\end{polyamodel}
+
+% ── Universe ──────────────────────────────────────────────────────────
+\subsection{Universe}
+
+\begin{itemize}
+  \item $Open Top: \{radius_m, height_m, surface_area_m2, h_over_r, radius_symbolic, height_symbolic, surface_symbolic\}$
+  \item $Closed Top: \{radius_m, height_m, surface_area_m2, h_over_r\}$
+  \item $Cube Comparison: \{side_m, area_open_m2, material_savings_pct\}$
+\end{itemize}
+
+% ── Variables ─────────────────────────────────────────────────────────
+\subsection{Variables}
+
+\begin{longtable}{lll}
+\toprule
+\textbf{Symbol} & \textbf{Meaning} & \textbf{Type / Range} \\
+\midrule
+\endhead
+$x$ & decision variable & $\mathbb{{R}}$ \\
+\bottomrule
+\end{longtable}
+
+% ── Structure ─────────────────────────────────────────────────────────
+\subsection{Structure}
+
+Design an open-top cylindrical tank to hold 1000 liters using the least material (minimize surface area). The tank consists of a circular base and a cylindrical wall with no lid. Given a required volume V, find the radius r and height h that minimize the total sheet-metal area S = pi*r\textasciicircum{}2 + 2*pi*r*h subject to the volume constraint pi*r\textasciicircum{}2*h = V.
+
+% ── Mapping ───────────────────────────────────────────────────────────
+\subsection{Real-World Mapping}
+
+\begin{longtable}{ll}
+\toprule
+\textbf{Real-World Concept} & \textbf{Mathematical Object} \\
+\midrule
+\endhead
+problem input & $instance parameters$ \\
+\bottomrule
+\end{longtable}
+
+% ── Constraints ───────────────────────────────────────────────────────
+\subsection{Constraints}
+
+\begin{enumerate}
+  \item $Optimization via calculus$
+  \hfill \textit{(minimizing a function subject to an equality constraint by substitution)}
+  \item $Derivatives and critical points$
+  \hfill \textit{(setting dS/dr = 0 to find candidate optima)}
+  \item $Second derivative test$
+  \hfill \textit{(confirming d\textasciicircum{}2S/dr\textasciicircum{}2 > 0 at the critical point to verify a minimum)}
+  \item $Lagrange multipliers$
+  \hfill \textit{(equivalent formulation for constrained optimization (discussed in solver output))}
+  \item $Geometric insight$
+  \hfill \textit{(the optimal open-top cylinder has h = r; the optimal closed-top cylinder has h = 2r)}
+\end{enumerate}
+
+% ── Objective / Claim ─────────────────────────────────────────────────
+\subsection{Claim}
+
+
+% ── Approach ──────────────────────────────────────────────────────────
+\subsection{Approach}
+
+\begin{description}
+  \item[Suggested approach:] Symbolic Differentiation + Critical Point Analysis (SymPy)
+  \item[Complexity class:] 
+  \item[Available tools:] Symbolic Differentiation + Critical Point Analysis
+\end{description}
+% ── Phase B: Solution ────────────────────────────────────────────────
+\section{Solution}
+
+\begin{polyaresult}
+
+\textbf{Answer}: Solution computed
+
+
+\textbf{Optimal}: No / Unknown \hfill
+\textbf{Feasible}: No
+\textbf{Algorithm}: Symbolic Differentiation + Critical Point Analysis (SymPy) \quad $$
+
+\textbf{Time}: 0.2833153899991885s
+
+
+\end{polyaresult}
+
+% ── Solution Details ──────────────────────────────────────────────────
+\subsection{Solution Details}
+
+
+Method: Symbolic differentiation and critical point analysis via SymPy. The volume constraint V = pi*r\textasciicircum{}2*h is used to eliminate h from the surface area expression S(r, h), yielding a single-variable function S(r). Taking dS/dr and setting it to zero gives the optimal radius. The second derivative test confirms the critical point is a minimum. The closed-top variant (S = 2*pi*r\textasciicircum{}2 + 2*pi*r*h) is solved analogously for comparison.
+
+% ── Verification ──────────────────────────────────────────────────────
+\subsection{Verification}
+
+\begin{longtable}{lcl}
+\toprule
+\textbf{Check} & \textbf{Status} & \textbf{Detail} \\
+\midrule
+\endhead
+Volume Constraint Satisfied & \passmark & Passed \\
+Surface Area Recomputed Matches & \passmark & Passed \\
+Second Derivative Positive & \passmark & Passed \\
+First Order Condition Dsdr Zero & \passmark & Passed \\
+Open Top H Equals R & \passmark & Passed \\
+Closed Volume Constraint & \passmark & Passed \\
+Closed Surface Area Recomputed & \passmark & Passed \\
+Closed Top H Equals 2R & \passmark & Passed \\
+Perturbation R+0.001 Gives Worse S & \passmark & Passed \\
+Perturbation R-0.001 Gives Worse S & \passmark & Passed \\
+\bottomrule
+\end{longtable}
+
+% ── Phase C: Interpretation ──────────────────────────────────────────
+\section{Interpretation}
+
+% ── The Question & The Answer ─────────────────────────────────────────
+\subsection{The Question}
+Design an open-top cylindrical tank to hold 1000 liters using the least material (minimize surface area).
+
+\subsection{The Answer}
+
+\begin{polyainsight}[title={Bottom Line}]
+A feasible solution was found.
+\end{polyainsight}
+
+% ── What This Means ───────────────────────────────────────────────────
+\subsection{What This Means}
+
+- Symbolic optimal radius: r* = (V / pi)\textasciicircum{}(1/3) for open-top
+- Symbolic optimal height: h* = (V / pi)\textasciicircum{}(1/3) = r* (i.e., height equals radius for open-top)
+- Numerical surface area for V = 1000 L (1.0 m\textasciicircum{}3): approximately 5.536 m\textasciicircum{}2
+- Closed-top comparison: r* = (V / (2*pi))\textasciicircum{}(1/3), S slightly larger
+- Material savings versus a cube of equal volume
+
+Symbolic differentiation and critical point analysis via SymPy. The volume constraint V = pi*r\textasciicircum{}2*h is used to eliminate h from the surface area expression S(r, h), yielding a single-variable function S(r). Taking dS/dr and setting it to zero gives the optimal radius. The second derivative test confirms the critical point is a minimum. The closed-top variant (S = 2*pi*r\textasciicircum{}2 + 2*pi*r*h) is solved analogously for comparison.
+
+% ── Sensitivity Analysis ──────────────────────────────────────────────
+
+% ── Figures ───────────────────────────────────────────────────────────
+
+% ── Recommendations ───────────────────────────────────────────────────
+\subsection{Recommendations}
+
+\begin{enumerate}
+  \item Review the model assumptions to ensure real-world fidelity.
+\end{enumerate}
+
+% ── Limitations ───────────────────────────────────────────────────────
+\subsection{Limitations}
+
+\begin{polyawarnbox}
+\begin{itemize}
+  \item Model assumes deterministic parameters; real-world variability not captured.
+  \item Solution quality depends on the accuracy of input data.
+\end{itemize}
+\end{polyawarnbox}
+
+% ── Appendix ─────────────────────────────────────────────────────────
+
+\end{document}

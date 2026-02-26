@@ -1,0 +1,326 @@
+\documentclass[11pt, a4paper]{article}
+
+% ── Packages ──────────────────────────────────────────────────────────
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{tcolorbox}
+\usepackage{polya}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=polyablue,
+  urlcolor=polyablue,
+  citecolor=polyablue,
+}
+
+% ── Code listing style ────────────────────────────────────────────────
+\lstdefinestyle{polya-python}{
+  language=Python,
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{polyablue}\bfseries,
+  commentstyle=\color{polyagray}\itshape,
+  stringstyle=\color{polyagreen},
+  numbers=left,
+  numberstyle=\tiny\color{polyagray},
+  numbersep=8pt,
+  frame=single,
+  framerule=0.4pt,
+  rulecolor=\color{polyagray},
+  breaklines=true,
+  showstringspaces=false,
+  tabsize=4,
+}
+\lstset{style=polya-python}
+\title{Nash Equilibrium -- Coffee Shop Pricing}
+\author{uber-polya}
+\date{2026-02-26}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+% ── Phase A: Problem Formulation ─────────────────────────────────────
+\section{Problem Formulation}
+
+\begin{polyamodel}
+
+\textbf{Problem Type}: Find \hfill
+\textbf{Domain}: Game Theory
+
+\textbf{Named Problem}: Game of Chicken
+
+\end{polyamodel}
+
+% ── Universe ──────────────────────────────────────────────────────────
+\subsection{Universe}
+
+\begin{itemize}
+  \item $Strategies: \{Discount, Hold\}$
+  \item $Strategies: \{Discount, Hold, Loyalty\}$
+\end{itemize}
+
+% ── Variables ─────────────────────────────────────────────────────────
+\subsection{Variables}
+
+\begin{longtable}{lll}
+\toprule
+\textbf{Symbol} & \textbf{Meaning} & \textbf{Type / Range} \\
+\midrule
+\endhead
+$\sigma_i$ & mixed strategy for player i (probability vector) & $\Delta(S_i)$ \\
+$A, B$ & payoff matrices for players 1 and 2 & $\mathbb{R}^{m \times n}$ \\
+$u_i(\sigma)$ & expected utility of player i under profile sigma & $\mathbb{R}$ \\
+\bottomrule
+\end{longtable}
+
+% ── Structure ─────────────────────────────────────────────────────────
+\subsection{Structure}
+
+Two competing coffee shops on the same street decide simultaneously whether to run a promotion (discount) or hold prices. Each shop's profit depends on both its own action and its competitor's action:
+
+- If both discount, they trigger a destructive price war (\$2k each).
+- If one discounts while the other holds, the discounter captures market share (\$5k) while the holder loses traffic (\$3k).
+- If both hold prices, they share the market comfortably (\$4k each).
+
+This is an anti-coordination game (Game of Chicken variant): each shop wants to do the opposite of its competitor, but they move simultaneously without knowing the other's choice.
+
+A second, richer variant adds a third strategy -- "loyalty program" -- creating a 3x3 symmetric game with circular dominance (Discount beats Hold, Hold beats Loyalty, Loyalty beats Discount), analogous to Rock-Paper-Scissors but with cooperative payoffs on the diagonal.
+
+% ── Mapping ───────────────────────────────────────────────────────────
+\subsection{Real-World Mapping}
+
+\begin{longtable}{ll}
+\toprule
+\textbf{Real-World Concept} & \textbf{Mathematical Object} \\
+\midrule
+\endhead
+coffee shop & $player i$ \\
+pricing decision & $strategy s_i in S_i$ \\
+profit & $payoff u_i(s)$ \\
+payoff table & $bimatrix (A, B)$ \\
+\bottomrule
+\end{longtable}
+
+% ── Constraints ───────────────────────────────────────────────────────
+\subsection{Constraints}
+
+\begin{enumerate}
+  \item $\sigma_i \ge 0, \quad \sum_{k} \sigma_{ik} = 1$
+  \hfill \textit{(mixed strategy is a probability distribution)}
+  \item $u_i(\sigma_i^*, \sigma_{-i}^*) \ge u_i(s_i, \sigma_{-i}^*) \quad \forall s_i \in S_i$
+  \hfill \textit{(Nash equilibrium: no profitable unilateral deviation)}
+  \item $A \in \mathbb{R}^{m \times n}, \quad B \in \mathbb{R}^{m \times n}$
+  \hfill \textit{(payoff matrices define the normal-form game)}
+\end{enumerate}
+
+% ── Objective / Claim ─────────────────────────────────────────────────
+\subsection{Objective}
+
+\begin{equation}
+\text{Find } \sigma^* \text{ s.t. } u_i(\sigma_i^*, \sigma_{-i}^*) \ge u_i(s_i, \sigma_{-i}^*) \; \forall i, s_i
+\end{equation}
+
+% ── Approach ──────────────────────────────────────────────────────────
+\subsection{Approach}
+
+\begin{description}
+  \item[Suggested approach:] unknown
+  \item[Complexity class:] 
+  \item[Available tools:] unknown
+\end{description}
+% ── Phase B: Solution ────────────────────────────────────────────────
+\section{Solution}
+
+\begin{polyaresult}
+
+\textbf{Answer}: 2x2 Coffee Shop Pricing (Anti-coordination): 3 Nash equilibria found; 3x3 Coffee Shop Pricing (Circular Dominance with Loyalty): 1 Nash equilibria found
+
+
+\textbf{Optimal}: No / Unknown \hfill
+\textbf{Feasible}: Yes
+\textbf{Algorithm}: unknown \quad $$
+
+\textbf{Time}: 0.0s
+
+\textbf{Certificate}: Nash equilibria verified: no player has a profitable unilateral deviation.
+
+\end{polyaresult}
+
+% ── Solution Details ──────────────────────────────────────────────────
+\subsection{Solution Details}
+
+Game: 2x2 Coffee Shop Pricing (Anti-coordination)
+
+Payoff matrix (Player 1, Player 2):
+        Discount           Hold
+    Discount      (2.0, 2.0)     (5.0, 3.0)
+        Hold      (3.0, 5.0)     (4.0, 4.0)
+
+Nash equilibria found: 3
+  NE 1 (Pure): sigma\_1 = [1.0, 0.0], sigma\_2 = [0.0, 1.0]
+    Payoffs: (5.0, 3.0)
+    Support: P1 plays Discount; P2 plays Hold
+  NE 2 (Pure): sigma\_1 = [0.0, 1.0], sigma\_2 = [1.0, 0.0]
+    Payoffs: (3.0, 5.0)
+    Support: P1 plays Hold; P2 plays Discount
+  NE 3 (Mixed): sigma\_1 = [0.5, 0.5], sigma\_2 = [0.5, 0.5]
+    Payoffs: (3.5, 3.5)
+    Support: P1 plays Discount, Hold; P2 plays Discount, Hold
+  No dominant strategy for Shop 1
+  No dominant strategy for Shop 2
+  Zero-sum: No
+  Minimax value (Player 1): 3.0
+  Minimax value (Player 2): 3.0
+
+Game: 3x3 Coffee Shop Pricing (Circular Dominance with Loyalty)
+
+Payoff matrix (Player 1, Player 2):
+        Discount           Hold        Loyalty
+    Discount      (3.0, 3.0)     (6.0, 1.0)     (2.0, 5.0)
+        Hold      (1.0, 6.0)     (5.0, 5.0)     (7.0, 2.0)
+     Loyalty      (5.0, 2.0)     (2.0, 7.0)     (4.0, 4.0)
+
+Nash equilibria found: 1
+  NE 1 (Mixed): sigma\_1 = [0.42857142857142855, 0.3333333333333333, 0.2380952380952381], sigma\_2 = [0.42857142857142855, 0.3333333333333333, 0.2380952380952381]
+    Payoffs: (3.7619047619047614, 3.761904761904762)
+    Support: P1 plays Discount, Hold, Loyalty; P2 plays Discount, Hold, Loyalty
+  No dominant strategy for Shop 1
+  No dominant strategy for Shop 2
+  Zero-sum: No
+  Minimax value (Player 1): 3.7619047619047614
+  Minimax value (Player 2): 3.7619047619047614
+
+
+% ── Verification ──────────────────────────────────────────────────────
+\subsection{Verification}
+
+\begin{longtable}{lcl}
+\toprule
+\textbf{Check} & \textbf{Status} & \textbf{Detail} \\
+\midrule
+\endhead
+game\_1\_2x2: eq0 probs sum 1 p1 & \passmark & Passed \\
+game\_1\_2x2: eq0 probs sum 1 p2 & \passmark & Passed \\
+game\_1\_2x2: eq0 nonneg p1 & \passmark & Passed \\
+game\_1\_2x2: eq0 nonneg p2 & \passmark & Passed \\
+game\_1\_2x2: eq0 payoff p1 correct & \passmark & Passed \\
+game\_1\_2x2: eq0 payoff p2 correct & \passmark & Passed \\
+game\_1\_2x2: eq0 no profitable deviation p1 & \passmark & Passed \\
+game\_1\_2x2: eq0 no profitable deviation p2 & \passmark & Passed \\
+game\_1\_2x2: eq0 indifference condition p1 & \passmark & Passed \\
+game\_1\_2x2: eq0 indifference condition p2 & \passmark & Passed \\
+game\_1\_2x2: eq1 probs sum 1 p1 & \passmark & Passed \\
+game\_1\_2x2: eq1 probs sum 1 p2 & \passmark & Passed \\
+game\_1\_2x2: eq1 nonneg p1 & \passmark & Passed \\
+game\_1\_2x2: eq1 nonneg p2 & \passmark & Passed \\
+game\_1\_2x2: eq1 payoff p1 correct & \passmark & Passed \\
+game\_1\_2x2: eq1 payoff p2 correct & \passmark & Passed \\
+game\_1\_2x2: eq1 no profitable deviation p1 & \passmark & Passed \\
+game\_1\_2x2: eq1 no profitable deviation p2 & \passmark & Passed \\
+game\_1\_2x2: eq1 indifference condition p1 & \passmark & Passed \\
+game\_1\_2x2: eq1 indifference condition p2 & \passmark & Passed \\
+game\_1\_2x2: eq2 probs sum 1 p1 & \passmark & Passed \\
+game\_1\_2x2: eq2 probs sum 1 p2 & \passmark & Passed \\
+game\_1\_2x2: eq2 nonneg p1 & \passmark & Passed \\
+game\_1\_2x2: eq2 nonneg p2 & \passmark & Passed \\
+game\_1\_2x2: eq2 payoff p1 correct & \passmark & Passed \\
+game\_1\_2x2: eq2 payoff p2 correct & \passmark & Passed \\
+game\_1\_2x2: eq2 no profitable deviation p1 & \passmark & Passed \\
+game\_1\_2x2: eq2 no profitable deviation p2 & \passmark & Passed \\
+game\_1\_2x2: eq2 indifference condition p1 & \passmark & Passed \\
+game\_1\_2x2: eq2 indifference condition p2 & \passmark & Passed \\
+game\_1\_2x2: num equilibria positive & \passmark & Passed \\
+game\_1\_2x2: support enum found all & \passmark & Passed \\
+game\_1\_2x2: zero sum correct & \passmark & Passed \\
+game\_1\_2x2: all checks pass & \passmark & Passed \\
+game\_2\_3x3: eq0 probs sum 1 p1 & \passmark & Passed \\
+game\_2\_3x3: eq0 probs sum 1 p2 & \passmark & Passed \\
+game\_2\_3x3: eq0 nonneg p1 & \passmark & Passed \\
+game\_2\_3x3: eq0 nonneg p2 & \passmark & Passed \\
+game\_2\_3x3: eq0 payoff p1 correct & \passmark & Passed \\
+game\_2\_3x3: eq0 payoff p2 correct & \passmark & Passed \\
+game\_2\_3x3: eq0 no profitable deviation p1 & \passmark & Passed \\
+game\_2\_3x3: eq0 no profitable deviation p2 & \passmark & Passed \\
+game\_2\_3x3: eq0 indifference condition p1 & \passmark & Passed \\
+game\_2\_3x3: eq0 indifference condition p2 & \passmark & Passed \\
+game\_2\_3x3: num equilibria positive & \passmark & Passed \\
+game\_2\_3x3: support enum found all & \passmark & Passed \\
+game\_2\_3x3: zero sum correct & \passmark & Passed \\
+game\_2\_3x3: all checks pass & \passmark & Passed \\
+\bottomrule
+\end{longtable}
+
+% ── Phase C: Interpretation ──────────────────────────────────────────
+\section{Interpretation}
+
+% ── The Question & The Answer ─────────────────────────────────────────
+\subsection{The Question}
+Two competing coffee shops on the same street decide simultaneously whether to run a promotion (discount) or hold prices.
+
+\subsection{The Answer}
+
+\begin{polyainsight}[title={Bottom Line}]
+2x2 Coffee Shop Pricing (Anti-coordination): 2 pure + 1 mixed NE; 3x3 Coffee Shop Pricing (Circular Dominance with Loyalty): 0 pure + 1 mixed NE
+\end{polyainsight}
+
+% ── What This Means ───────────────────────────────────────────────────
+\subsection{What This Means}
+
+2x2 Game (Discount vs Hold -- Anti-coordination):
+- No strictly dominant strategy for either player
+- Two pure-strategy Nash equilibria: (Discount, Hold) at (\$5k, \$3k) and (Hold, Discount) at (\$3k, \$5k)
+- One mixed-strategy Nash equilibrium: each shop plays 50/50, expected payoff \$3.50k each
+- Security level: \$3.00k/month (guaranteed by pure Hold maximin strategy)
+
+3x3 Game (Discount vs Hold vs Loyalty -- Circular Dominance):
+- No strictly dominant or weakly dominated strategy
+- Circular best-response structure: Loyalty beats Discount beats Hold beats Loyalty
+- No pure-strategy Nash equilibrium (every pure profile is exploitable)
+- Unique fully-mixed NE: (3/7 Discount, 1/3 Hold, 5/21 Loyalty)
+- Expected payoff at NE: 79/21 \textasciitilde{} \$3.762k/month each
+- Pareto-dominated by several pure outcomes (e.g., Hold-Hold at \$5k each)
+
+1. Formulate as bimatrix game (A, B) where A[i,j] is Player 1's payoff and B[i,j] is Player 2's payoff when Player 1 plays row i and Player 2 plays column j
+2. Enumerate Nash equilibria via support enumeration (nashpy): for each pair of support sets, solve the indifference conditions
+3. Detect strictly dominant and weakly dominated strategies
+4. Compute best response correspondences for each pure strategy
+5. Compute maximin (security level) strategies via linear programming (scipy)
+6. Analyze Pareto efficiency of equilibrium outcomes
+7. Verify independently that no player has a profitable unilateral deviation
+8. Cross-validate with vertex enumeration to confirm all equilibria found
+
+% ── Sensitivity Analysis ──────────────────────────────────────────────
+
+% ── Figures ───────────────────────────────────────────────────────────
+
+% ── Recommendations ───────────────────────────────────────────────────
+\subsection{Recommendations}
+
+\begin{enumerate}
+  \item Consider pre-play communication or binding agreements to reach Pareto-superior outcomes.
+\end{enumerate}
+
+% ── Limitations ───────────────────────────────────────────────────────
+\subsection{Limitations}
+
+\begin{polyawarnbox}
+\begin{itemize}
+  \item Assumes rational, utility-maximizing players with complete information.
+  \item Real-world players may use heuristics or have incomplete information.
+\end{itemize}
+\end{polyawarnbox}
+
+% ── Appendix ─────────────────────────────────────────────────────────
+
+\end{document}

@@ -313,6 +313,8 @@ Read `references/common-mistakes.md` and check the model against each modeling m
 
 Present the complete model to the user. No gate here -- proceed directly to Phase 4 for verification.
 
+**LaTeX output** (if requested by the orchestrator): Populate a `FormalModel` dataclass from `utils/latex_data.py` with the artifact data -- problem type, domain, universe, variables, structure, mapping, constraints, objective/claim, approach, complexity class, and available tools. The orchestrator will consume this in Phase D to render the formulation section of the LaTeX report.
+
 ---
 
 ## Phase 4: Looking Back

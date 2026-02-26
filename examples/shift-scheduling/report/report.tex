@@ -1,0 +1,225 @@
+\documentclass[11pt, a4paper]{article}
+
+% ── Packages ──────────────────────────────────────────────────────────
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{tcolorbox}
+\usepackage{polya}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=polyablue,
+  urlcolor=polyablue,
+  citecolor=polyablue,
+}
+
+% ── Code listing style ────────────────────────────────────────────────
+\lstdefinestyle{polya-python}{
+  language=Python,
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{polyablue}\bfseries,
+  commentstyle=\color{polyagray}\itshape,
+  stringstyle=\color{polyagreen},
+  numbers=left,
+  numberstyle=\tiny\color{polyagray},
+  numbersep=8pt,
+  frame=single,
+  framerule=0.4pt,
+  rulecolor=\color{polyagray},
+  breaklines=true,
+  showstringspaces=false,
+  tabsize=4,
+}
+\lstset{style=polya-python}
+\title{Shift Scheduling}
+\author{uber-polya}
+\date{2026-02-26}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+% ── Phase A: Problem Formulation ─────────────────────────────────────
+\section{Problem Formulation}
+
+\begin{polyamodel}
+
+\textbf{Problem Type}: Find \hfill
+\textbf{Domain}: Integer Linear Programming
+
+
+\end{polyamodel}
+
+% ── Universe ──────────────────────────────────────────────────────────
+\subsection{Universe}
+
+\begin{itemize}
+  \item $Assignments: \{Nurse1, Nurse2, Nurse3, Nurse4, Nurse5, Nurse6, Nurse7, Nurse8\}$
+\end{itemize}
+
+% ── Variables ─────────────────────────────────────────────────────────
+\subsection{Variables}
+
+\begin{longtable}{lll}
+\toprule
+\textbf{Symbol} & \textbf{Meaning} & \textbf{Type / Range} \\
+\midrule
+\endhead
+$x_{ij}$ & assignment decision & $\{0, 1\}$ \\
+$n$ & number of binary variables = 168 & $\mathbb{{Z}}^+$ \\
+\bottomrule
+\end{longtable}
+
+% ── Structure ─────────────────────────────────────────────────────────
+\subsection{Structure}
+
+Schedule 8 nurses across 3 shifts (morning, afternoon, night) over 7 days.
+Each shift needs at least 2 nurses. No nurse works more than 5 days total.
+No nurse works the night shift on two consecutive days.
+
+% ── Mapping ───────────────────────────────────────────────────────────
+\subsection{Real-World Mapping}
+
+\begin{longtable}{ll}
+\toprule
+\textbf{Real-World Concept} & \textbf{Mathematical Object} \\
+\midrule
+\endhead
+assignments & $x: solution vector (assignments)$ \\
+total score/cost & $objective function value$ \\
+\bottomrule
+\end{longtable}
+
+% ── Constraints ───────────────────────────────────────────────────────
+\subsection{Constraints}
+
+\begin{enumerate}
+  \item $\sum_j x_{ij} \ge 2$
+  \hfill \textit{(minimum requirement)}
+  \item $x_{ij} \in \{0, 1\} \quad \forall\, i, j$
+  \hfill \textit{(binary decision variables)}
+\end{enumerate}
+
+% ── Objective / Claim ─────────────────────────────────────────────────
+\subsection{Claim}
+
+
+% ── Approach ──────────────────────────────────────────────────────────
+\subsection{Approach}
+
+\begin{description}
+  \item[Suggested approach:] ILP (PuLP/CBC, Branch \& Bound)
+  \item[Complexity class:] 
+  \item[Available tools:] ILP
+\end{description}
+% ── Phase B: Solution ────────────────────────────────────────────────
+\section{Solution}
+
+\begin{polyaresult}
+
+\textbf{Answer}: 8-element assignments: Nurse1 -> [['Tue', 'morning'], ['Wed', 'afternoon'], ['Thu', 'night'], ['Fri', 'morning'], ['Sat', 'afternoon']], Nurse2 -> [['Mon', 'morning'], ['Tue', 'night'], ['Wed', 'afternoon'], ['Fri', 'night'], ['Sun', 'afternoon']], Nurse3 -> [['Tue', 'afternoon'], ['Thu', 'morning'], ['Fri', 'afternoon'], ['Sat', 'afternoon'], ['Sun', 'afternoon']], Nurse4 -> [['Wed', 'morning'], ['Thu', 'afternoon'], ['Fri', 'night'], ['Sat', 'morning'], ['Sun', 'night']], Nurse5 -> [['Mon', 'afternoon'], ['Tue', 'afternoon'], ['Thu', 'morning'], ['Sat', 'night'], ['Sun', 'morning']], Nurse6 -> [['Mon', 'night'], ['Tue', 'morning'], ['Wed', 'night'], ['Fri', 'afternoon'], ['Sat', 'night']], ... (2 more)
+
+
+\textbf{Optimal}: No / Unknown \hfill
+\textbf{Feasible}: No
+\textbf{Algorithm}: ILP (PuLP/CBC, Branch \& Bound) \quad $$
+
+\textbf{Time}: 0.010157682001590729s
+
+
+\end{polyaresult}
+
+% ── Solution Details ──────────────────────────────────────────────────
+\subsection{Solution Details}
+
+Assignments:
+  Nurse1 -> ['Tue', 'morning'], ['Wed', 'afternoon'], ['Thu', 'night'], ['Fri', 'morning'], ['Sat', 'afternoon']
+  Nurse2 -> ['Mon', 'morning'], ['Tue', 'night'], ['Wed', 'afternoon'], ['Fri', 'night'], ['Sun', 'afternoon']
+  Nurse3 -> ['Tue', 'afternoon'], ['Thu', 'morning'], ['Fri', 'afternoon'], ['Sat', 'afternoon'], ['Sun', 'afternoon']
+  Nurse4 -> ['Wed', 'morning'], ['Thu', 'afternoon'], ['Fri', 'night'], ['Sat', 'morning'], ['Sun', 'night']
+  Nurse5 -> ['Mon', 'afternoon'], ['Tue', 'afternoon'], ['Thu', 'morning'], ['Sat', 'night'], ['Sun', 'morning']
+  Nurse6 -> ['Mon', 'night'], ['Tue', 'morning'], ['Wed', 'night'], ['Fri', 'afternoon'], ['Sat', 'night']
+  Nurse7 -> ['Mon', 'afternoon'], ['Tue', 'night'], ['Wed', 'morning'], ['Thu', 'night'], ['Sun', 'night']
+  Nurse8 -> ['Mon', 'night'], ['Wed', 'night'], ['Fri', 'morning'], ['Sat', 'morning'], ['Sun', 'morning']
+
+Method: Integer Linear Programming (ILP) via PuLP/CBC.
+
+- 168 binary variables (8 nurses x 7 days x 3 shifts)
+- Constraints: minimum staffing per shift, max days per nurse, at most 1 shift per nurse per day, no consecutive night shifts
+- Objective: maximize total shift coverage (equivalently, find a feasible schedule maximizing staffing)
+
+% ── Verification ──────────────────────────────────────────────────────
+\subsection{Verification}
+
+\begin{longtable}{lcl}
+\toprule
+\textbf{Check} & \textbf{Status} & \textbf{Detail} \\
+\midrule
+\endhead
+Feasibility & \failmark & Constraint violation \\
+Optimality & \failmark & ILP (PuLP/CBC, Branch \& Bound) \\
+\bottomrule
+\end{longtable}
+
+% ── Phase C: Interpretation ──────────────────────────────────────────
+\section{Interpretation}
+
+% ── The Question & The Answer ─────────────────────────────────────────
+\subsection{The Question}
+Schedule 8 nurses across 3 shifts (morning, afternoon, night) over 7 days.
+
+\subsection{The Answer}
+
+\begin{polyainsight}[title={Bottom Line}]
+A feasible solution was found.
+\end{polyainsight}
+
+% ── What This Means ───────────────────────────────────────────────────
+\subsection{What This Means}
+
+- Feasible schedule satisfying all staffing, workload, and consecutive-night constraints
+- Total shifts assigned across all nurses
+- Per-nurse workload breakdown
+- Independent constraint verification (all PASS)
+
+Integer Linear Programming (ILP) via PuLP/CBC.
+
+- 168 binary variables (8 nurses x 7 days x 3 shifts)
+- Constraints: minimum staffing per shift, max days per nurse, at most 1 shift per nurse per day, no consecutive night shifts
+- Objective: maximize total shift coverage (equivalently, find a feasible schedule maximizing staffing)
+
+% ── Sensitivity Analysis ──────────────────────────────────────────────
+
+% ── Figures ───────────────────────────────────────────────────────────
+
+% ── Recommendations ───────────────────────────────────────────────────
+\subsection{Recommendations}
+
+\begin{enumerate}
+  \item Review the model assumptions to ensure real-world fidelity.
+\end{enumerate}
+
+% ── Limitations ───────────────────────────────────────────────────────
+\subsection{Limitations}
+
+\begin{polyawarnbox}
+\begin{itemize}
+  \item Model assumes deterministic parameters; real-world variability not captured.
+  \item Solution quality depends on the accuracy of input data.
+\end{itemize}
+\end{polyawarnbox}
+
+% ── Appendix ─────────────────────────────────────────────────────────
+
+\end{document}

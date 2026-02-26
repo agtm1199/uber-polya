@@ -1,0 +1,248 @@
+\documentclass[11pt, a4paper]{article}
+
+% ── Packages ──────────────────────────────────────────────────────────
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{tcolorbox}
+\usepackage{polya}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=polyablue,
+  urlcolor=polyablue,
+  citecolor=polyablue,
+}
+
+% ── Code listing style ────────────────────────────────────────────────
+\lstdefinestyle{polya-python}{
+  language=Python,
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{polyablue}\bfseries,
+  commentstyle=\color{polyagray}\itshape,
+  stringstyle=\color{polyagreen},
+  numbers=left,
+  numberstyle=\tiny\color{polyagray},
+  numbersep=8pt,
+  frame=single,
+  framerule=0.4pt,
+  rulecolor=\color{polyagray},
+  breaklines=true,
+  showstringspaces=false,
+  tabsize=4,
+}
+\lstset{style=polya-python}
+\title{Workout Plan}
+\author{uber-polya}
+\date{2026-02-26}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+% ── Phase A: Problem Formulation ─────────────────────────────────────
+\section{Problem Formulation}
+
+\begin{polyamodel}
+
+\textbf{Problem Type}: Find \hfill
+\textbf{Domain}: Integer Linear Programming
+
+
+\end{polyamodel}
+
+% ── Universe ──────────────────────────────────────────────────────────
+\subsection{Universe}
+
+\begin{itemize}
+  \item $Schedule: \{Mon, Tue, Wed, Thu, Fri\}$
+\end{itemize}
+
+% ── Variables ─────────────────────────────────────────────────────────
+\subsection{Variables}
+
+\begin{longtable}{lll}
+\toprule
+\textbf{Symbol} & \textbf{Meaning} & \textbf{Type / Range} \\
+\midrule
+\endhead
+$x_{ij}$ & assignment decision & $\{0, 1\}$ \\
+$n$ & number of binary variables = 50 & $\mathbb{{Z}}^+$ \\
+\bottomrule
+\end{longtable}
+
+% ── Structure ─────────────────────────────────────────────────────────
+\subsection{Structure}
+
+Design a 5-day weekly workout plan selecting exercises from a catalog of 10 exercises.
+Each exercise targets one or more muscle groups (chest, back, legs, shoulders, arms, core)
+and has a known duration and set count.  The plan must:
+
+1. Meet minimum weekly volume targets (total sets) for each of the six muscle groups.
+2. Stay within a 60-minute time limit per session.
+3. Never schedule the same exercise on two consecutive days.
+4. Minimize total weekly workout time.
+
+% ── Mapping ───────────────────────────────────────────────────────────
+\subsection{Real-World Mapping}
+
+\begin{longtable}{ll}
+\toprule
+\textbf{Real-World Concept} & \textbf{Mathematical Object} \\
+\midrule
+\endhead
+schedule & $x: solution vector (schedule)$ \\
+\bottomrule
+\end{longtable}
+
+% ── Constraints ───────────────────────────────────────────────────────
+\subsection{Constraints}
+
+\begin{enumerate}
+  \item $Integer Linear Programming$
+  \hfill \textit{(optimizing a linear objective subject to linear constraints with integer (here binary) variables)}
+  \item $Muscle volume$
+  \hfill \textit{(total weekly sets targeting a muscle group, summed across all exercise-day assignments)}
+  \item $Consecutive-day constraint$
+  \hfill \textit{(for each exercise, the sum of its binary variables on any two adjacent days is at most 1)}
+  \item $Session time budget$
+  \hfill \textit{(per-day sum of exercise durations must not exceed the time cap)}
+  \item $Independent verification$
+  \hfill \textit{(a separate `verify()` function re-checks every constraint without reusing any solver logic)}
+\end{enumerate}
+
+% ── Objective / Claim ─────────────────────────────────────────────────
+\subsection{Claim}
+
+
+% ── Approach ──────────────────────────────────────────────────────────
+\subsection{Approach}
+
+\begin{description}
+  \item[Suggested approach:] ILP (PuLP/CBC, Branch \& Bound)
+  \item[Complexity class:] 
+  \item[Available tools:] ILP
+\end{description}
+% ── Phase B: Solution ────────────────────────────────────────────────
+\section{Solution}
+
+\begin{polyaresult}
+
+\textbf{Answer}: 5-element schedule: Mon -> [Bench Press], Tue -> [Pull-Up, Plank], Wed -> [Romanian Deadlift], Thu -> [Bench Press, Plank], Fri -> [Incline Dumbbell Press, Pull-Up, Squat, Romanian Deadlift]
+
+
+\textbf{Optimal}: Yes \hfill
+\textbf{Feasible}: Yes
+\textbf{Algorithm}: ILP (PuLP/CBC, Branch \& Bound) \quad $$
+
+\textbf{Time}: 0.03473506204318255s
+
+\textbf{Certificate}: Branch-and-bound solved to optimality.
+
+\end{polyaresult}
+
+% ── Solution Details ──────────────────────────────────────────────────
+\subsection{Solution Details}
+
+Schedule:
+  Mon -> Bench Press
+  Tue -> Pull-Up, Plank
+  Wed -> Romanian Deadlift
+  Thu -> Bench Press, Plank
+  Fri -> Incline Dumbbell Press, Pull-Up, Squat, Romanian Deadlift
+
+Method: Integer Linear Programming (ILP) via PuLP/CBC.
+
+- 50 binary variables (10 exercises x 5 days)
+- Constraints:
+  - 6 muscle volume constraints (one per muscle group, >= target)
+  - 5 session time-limit constraints (one per day, <= 60 min)
+  - 40 consecutive-day constraints (10 exercises x 4 consecutive-day pairs)
+- Objective: minimize sum(duration[e] * x[e, d]) over all (exercise, day) pairs
+- Solved via CBC Branch \& Bound (exact optimal for this small instance)
+
+% ── Verification ──────────────────────────────────────────────────────
+\subsection{Verification}
+
+\begin{longtable}{lcl}
+\toprule
+\textbf{Check} & \textbf{Status} & \textbf{Detail} \\
+\midrule
+\endhead
+All Exercises Valid & \passmark & Passed \\
+Time Limits Respected & \passmark & Passed \\
+Muscle Targets Met & \passmark & Passed \\
+No Consecutive Repeats & \passmark & Passed \\
+No Intraday Duplicates & \passmark & Passed \\
+Feasibility & \passmark & All constraints satisfied \\
+Optimality & \passmark & ILP (PuLP/CBC, Branch \& Bound) \\
+\bottomrule
+\end{longtable}
+
+% ── Phase C: Interpretation ──────────────────────────────────────────
+\section{Interpretation}
+
+% ── The Question & The Answer ─────────────────────────────────────────
+\subsection{The Question}
+Design a 5-day weekly workout plan selecting exercises from a catalog of 10 exercises.
+
+\subsection{The Answer}
+
+\begin{polyainsight}[title={Bottom Line}]
+A optimal solution was found.
+\end{polyainsight}
+
+% ── What This Means ───────────────────────────────────────────────────
+\subsection{What This Means}
+
+- Optimal 5-day exercise schedule with per-day breakdown
+- Total weekly workout time (minimized)
+- Weekly muscle volume vs. targets (all PASS)
+- Daily time-usage bars (all within 60-minute cap)
+- Exercise frequency table
+- Independent verification of all six constraint checks (all PASS)
+
+Integer Linear Programming (ILP) via PuLP/CBC.
+
+- 50 binary variables (10 exercises x 5 days)
+- Constraints:
+  - 6 muscle volume constraints (one per muscle group, >= target)
+  - 5 session time-limit constraints (one per day, <= 60 min)
+  - 40 consecutive-day constraints (10 exercises x 4 consecutive-day pairs)
+- Objective: minimize sum(duration[e] * x[e, d]) over all (exercise, day) pairs
+- Solved via CBC Branch \& Bound (exact optimal for this small instance)
+
+% ── Sensitivity Analysis ──────────────────────────────────────────────
+
+% ── Figures ───────────────────────────────────────────────────────────
+
+% ── Recommendations ───────────────────────────────────────────────────
+\subsection{Recommendations}
+
+\begin{enumerate}
+  \item The solution is provably optimal; no further improvement is possible within this model.
+\end{enumerate}
+
+% ── Limitations ───────────────────────────────────────────────────────
+\subsection{Limitations}
+
+\begin{polyawarnbox}
+\begin{itemize}
+  \item Model assumes deterministic parameters; real-world variability not captured.
+  \item Solution quality depends on the accuracy of input data.
+\end{itemize}
+\end{polyawarnbox}
+
+% ── Appendix ─────────────────────────────────────────────────────────
+
+\end{document}

@@ -1,0 +1,45 @@
+\section{Solution}
+
+\begin{polyaresult}
+
+\textbf{Answer}: \VAR{solution.answer|e}
+
+\BLOCK{if solution.objective_value is not none}
+\textbf{Objective Value}: $\VAR{solution.objective_value}$
+\BLOCK{endif}
+
+\textbf{Optimal}: \BLOCK{if solution.is_optimal}Yes\BLOCK{else}No / Unknown\BLOCK{endif} \hfill
+\textbf{Feasible}: \BLOCK{if solution.is_feasible}Yes\BLOCK{else}No\BLOCK{endif}
+
+\textbf{Algorithm}: \VAR{solution.algorithm|e} \quad $\VAR{solution.complexity}$
+
+\textbf{Time}: \VAR{solution.time_seconds}s
+
+\BLOCK{if solution.certificate}
+\textbf{Certificate}: \VAR{solution.certificate|e}
+\BLOCK{endif}
+
+\end{polyaresult}
+
+% ── Solution Details ──────────────────────────────────────────────────
+\subsection{Solution Details}
+
+\VAR{solution.details|e}
+
+% ── Verification ──────────────────────────────────────────────────────
+\subsection{Verification}
+
+\BLOCK{if solution.verification}
+\begin{longtable}{lcl}
+\toprule
+\textbf{Check} & \textbf{Status} & \textbf{Detail} \\
+\midrule
+\endhead
+\BLOCK{for check in solution.verification}
+\VAR{check.name|e} & \BLOCK{if check.passed}\passmark\BLOCK{else}\failmark\BLOCK{endif} & \VAR{check.value|e} \\
+\BLOCK{endfor}
+\bottomrule
+\end{longtable}
+\BLOCK{else}
+No independent verification checks recorded.
+\BLOCK{endif}

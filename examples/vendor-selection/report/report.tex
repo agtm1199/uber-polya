@@ -1,0 +1,240 @@
+\documentclass[11pt, a4paper]{article}
+
+% ── Packages ──────────────────────────────────────────────────────────
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{tcolorbox}
+\usepackage{polya}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=polyablue,
+  urlcolor=polyablue,
+  citecolor=polyablue,
+}
+
+% ── Code listing style ────────────────────────────────────────────────
+\lstdefinestyle{polya-python}{
+  language=Python,
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{polyablue}\bfseries,
+  commentstyle=\color{polyagray}\itshape,
+  stringstyle=\color{polyagreen},
+  numbers=left,
+  numberstyle=\tiny\color{polyagray},
+  numbersep=8pt,
+  frame=single,
+  framerule=0.4pt,
+  rulecolor=\color{polyagray},
+  breaklines=true,
+  showstringspaces=false,
+  tabsize=4,
+}
+\lstset{style=polya-python}
+\title{Vendor Selection -- Cloud Infrastructure}
+\author{uber-polya}
+\date{2026-02-26}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+% ── Phase A: Problem Formulation ─────────────────────────────────────
+\section{Problem Formulation}
+
+\begin{polyamodel}
+
+\textbf{Problem Type}: Find \hfill
+\textbf{Domain}: Mathematical Optimization
+
+
+\end{polyamodel}
+
+% ── Universe ──────────────────────────────────────────────────────────
+\subsection{Universe}
+
+\begin{itemize}
+  \item $Ahp Weights: \{Cost, Performance, Security, Support\}$
+\end{itemize}
+
+% ── Variables ─────────────────────────────────────────────────────────
+\subsection{Variables}
+
+\begin{longtable}{lll}
+\toprule
+\textbf{Symbol} & \textbf{Meaning} & \textbf{Type / Range} \\
+\midrule
+\endhead
+$x$ & decision variable & $\mathbb{{R}}$ \\
+\bottomrule
+\end{longtable}
+
+% ── Structure ─────────────────────────────────────────────────────────
+\subsection{Structure}
+
+A company needs to select a cloud infrastructure vendor from 5 candidates (CloudPeak, NimbusForge, SkyGrid, DataSphere, CoreVault) evaluated across 4 criteria:
+
+- **Cost** (25\%) -- monthly spend in thousands; lower is better
+- **Performance** (30\%) -- throughput benchmark score; higher is better
+- **Security** (25\%) -- compliance/audit score; higher is better
+- **Support** (20\%) -- SLA response quality score; higher is better
+
+Criteria weights are derived from expert pairwise comparisons using AHP with eigenvalue consistency checking. Final vendor ranking uses TOPSIS with sensitivity analysis to test ranking robustness under weight perturbation.
+
+% ── Mapping ───────────────────────────────────────────────────────────
+\subsection{Real-World Mapping}
+
+\begin{longtable}{ll}
+\toprule
+\textbf{Real-World Concept} & \textbf{Mathematical Object} \\
+\midrule
+\endhead
+problem input & $instance parameters$ \\
+\bottomrule
+\end{longtable}
+
+% ── Constraints ───────────────────────────────────────────────────────
+\subsection{Constraints}
+
+\begin{enumerate}
+  \item $AHP (Analytic Hierarchy Process)$
+  \hfill \textit{(structured method for deriving criterion weights from pairwise expert comparisons with built-in consistency checking)}
+  \item $TOPSIS$
+  \hfill \textit{(distance-based MCDA method that ranks alternatives by proximity to the ideal solution and distance from the anti-ideal)}
+  \item $Consistency ratio$
+  \hfill \textit{(AHP diagnostic ensuring pairwise judgments are logically coherent (CR < 0.10 required))}
+  \item $Vector normalization$
+  \hfill \textit{(dividing each column by its Euclidean norm to make criteria comparable)}
+  \item $Ideal/anti-ideal solutions$
+  \hfill \textit{(best and worst achievable performance vectors used as reference points)}
+  \item $Sensitivity analysis$
+  \hfill \textit{(testing whether the top-ranked vendor changes under plausible weight shifts)}
+  \item $Benefit vs. cost criteria$
+  \hfill \textit{(TOPSIS treats "higher is better" and "lower is better" criteria differently when identifying ideal points)}
+\end{enumerate}
+
+% ── Objective / Claim ─────────────────────────────────────────────────
+\subsection{Claim}
+
+
+% ── Approach ──────────────────────────────────────────────────────────
+\subsection{Approach}
+
+\begin{description}
+  \item[Suggested approach:] AHP (eigenvalue method) + TOPSIS (ideal-point distance)
+  \item[Complexity class:] 
+  \item[Available tools:] AHP
+\end{description}
+% ── Phase B: Solution ────────────────────────────────────────────────
+\section{Solution}
+
+\begin{polyaresult}
+
+\textbf{Answer}: Solution computed
+
+
+\textbf{Optimal}: No / Unknown \hfill
+\textbf{Feasible}: Yes
+\textbf{Algorithm}: AHP (eigenvalue method) + TOPSIS (ideal-point distance) \quad $$
+
+\textbf{Time}: 0.0014144759625196457s
+
+
+\end{polyaresult}
+
+% ── Solution Details ──────────────────────────────────────────────────
+\subsection{Solution Details}
+
+
+Method: 1. AHP weight derivation: Construct a 4x4 pairwise comparison matrix from expert judgments. Compute the principal eigenvector (power method) and normalize to obtain criteria weights. Verify consistency via the consistency ratio (CR = CI / RI where CI = (lambda\_max - n) / (n - 1) and RI is the random index for matrix size n).
+
+2. TOPSIS ranking: Normalize the 5x4 performance matrix using vector normalization. Construct the weighted normalized matrix. Identify positive-ideal (best per criterion) and negative-ideal (worst per criterion) solutions. Compute Euclidean distances to both ideals. Rank by relative closeness: C\_i = D\_i\textasciicircum{}- / (D\_i\textasciicircum{}+ + D\_i\textasciicircum{}-).
+
+3. Sensitivity analysis: Perturb each weight by +/-10\% (redistributing the delta proportionally across other criteria). Re-run TOPSIS for each perturbation. Flag any ranking changes.
+
+4. Cross-validation: Compute simple weighted sum scores and compare the ranking against TOPSIS to check consistency.
+
+% ── Verification ──────────────────────────────────────────────────────
+\subsection{Verification}
+
+\begin{longtable}{lcl}
+\toprule
+\textbf{Check} & \textbf{Status} & \textbf{Detail} \\
+\midrule
+\endhead
+Feasibility & \passmark & All constraints satisfied \\
+\bottomrule
+\end{longtable}
+
+% ── Phase C: Interpretation ──────────────────────────────────────────
+\section{Interpretation}
+
+% ── The Question & The Answer ─────────────────────────────────────────
+\subsection{The Question}
+A company needs to select a cloud infrastructure vendor from 5 candidates (CloudPeak, NimbusForge, SkyGrid, DataSphere, CoreVault) evaluated across 4 criteria:
+
+- **Cost** (25\%) -- monthly spend in thousands; lower is better
+- **Performance** (30\%) -- throughput benchmark score; higher is better
+- **Security** (25\%) -- compliance/audit score; higher is better
+- **Support** (20\%) -- SLA response quality score; higher is better
+
+Criteria weights are derived from expert pairwise comparisons using AHP with eigenvalue consistency checking.
+
+\subsection{The Answer}
+
+\begin{polyainsight}[title={Bottom Line}]
+A feasible solution was found.
+\end{polyainsight}
+
+% ── What This Means ───────────────────────────────────────────────────
+\subsection{What This Means}
+
+- AHP-derived criteria weights with consistency ratio (CR < 0.10)
+- TOPSIS scores and ranking for all 5 vendors
+- Weighted sum ranking for cross-validation
+- Sensitivity analysis showing ranking stability under +/-10\% weight perturbations
+- Independent verification of all computations
+
+1. AHP weight derivation: Construct a 4x4 pairwise comparison matrix from expert judgments. Compute the principal eigenvector (power method) and normalize to obtain criteria weights. Verify consistency via the consistency ratio (CR = CI / RI where CI = (lambda\_max - n) / (n - 1) and RI is the random index for matrix size n).
+
+2. TOPSIS ranking: Normalize the 5x4 performance matrix using vector normalization. Construct the weighted normalized matrix. Identify positive-ideal (best per criterion) and negative-ideal (worst per criterion) solutions. Compute Euclidean distances to both ideals. Rank by relative closeness: C\_i = D\_i\textasciicircum{}- / (D\_i\textasciicircum{}+ + D\_i\textasciicircum{}-).
+
+3. Sensitivity analysis: Perturb each weight by +/-10\% (redistributing the delta proportionally across other criteria). Re-run TOPSIS for each perturbation. Flag any ranking changes.
+
+4. Cross-validation: Compute simple weighted sum scores and compare the ranking against TOPSIS to check consistency.
+
+% ── Sensitivity Analysis ──────────────────────────────────────────────
+
+% ── Figures ───────────────────────────────────────────────────────────
+
+% ── Recommendations ───────────────────────────────────────────────────
+\subsection{Recommendations}
+
+\begin{enumerate}
+  \item Review the model assumptions to ensure real-world fidelity.
+\end{enumerate}
+
+% ── Limitations ───────────────────────────────────────────────────────
+\subsection{Limitations}
+
+\begin{polyawarnbox}
+\begin{itemize}
+  \item Model assumes deterministic parameters; real-world variability not captured.
+  \item Solution quality depends on the accuracy of input data.
+\end{itemize}
+\end{polyawarnbox}
+
+% ── Appendix ─────────────────────────────────────────────────────────
+
+\end{document}

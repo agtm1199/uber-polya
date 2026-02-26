@@ -45,6 +45,15 @@ Translate solution to actionable insight.
 - **Solution Report**: Answer, Objective Value, Optimal, Feasible, Algorithm, Time, Certificate
 - **Interpretation Report**: Question, Answer, Meaning, Robustness, Recommendations, Limitations
 
+## Output Format
+
+Three formats available (ask user before starting):
+- **Python** (default): solver script + console output + JSON
+- **LaTeX/PDF**: professional mathematical report (`.tex` + `.pdf`), no code shown
+- **Both**: full Python output AND compiled PDF report
+
+PDF uses fpdf2 + matplotlib (no system LaTeX needed). See `utils/latex_renderer.py` and `templates/latex/`.
+
 ## Worked Examples
 
 36 examples in `examples/` with runnable Python solvers.

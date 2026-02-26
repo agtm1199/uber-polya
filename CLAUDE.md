@@ -13,6 +13,8 @@ skills/
     references/   -- algorithms, solvers, algorithms-statistics, solvers-statistics, solving-protocols, optimization-hardening
   uber-interpret/ -- Phase C: solution → actionable insight
     references/   -- interpretation-patterns, visualization
+templates/
+  latex/          -- Jinja2 LaTeX templates + polya.sty style for PDF reports
 examples/         -- Worked examples with solver code and visualizations
 docs/             -- Architecture, tutorials, contributing guide
 ```
@@ -51,6 +53,15 @@ Each skill is a directory under `skills/` containing a `SKILL.md` and a `referen
 - Independent `verify()` function (must not share logic with solver)
 - `#!/usr/bin/env python3` shebang and module docstring
 
+### LaTeX/PDF output
+- Output format (Python / LaTeX-PDF / Both) is selected at the start of `/uber-polya`
+- LaTeX source generated via Jinja2 templates in `templates/latex/` using custom delimiters (`\VAR{}`, `\BLOCK{}`)
+- PDF compiled via `fpdf2` + `matplotlib.mathtext` (no system LaTeX installation required)
+- Data flows through `utils/latex_data.py` dataclasses (`FormalModel`, `SolutionReport`, `InterpretationReport`)
+- Rendering handled by `utils/latex_renderer.py` (`LatexRenderer` class)
+- `utils/render_example.py` can generate reports from any existing example's `solution.json`
+- Custom style `templates/latex/polya.sty` provides branded environments and colors
+
 ## Adding a New Domain
 
 1. Add algorithms to `skills/uber-solve/references/algorithms.md` (minimum 10 algorithms)
@@ -77,5 +88,6 @@ Skills are tested through conversation, not unit tests. To test a skill:
 
 ## Current State
 
+- **v1.1.0**: LaTeX/PDF output support. Three output modes (Python / LaTeX-PDF / Both) selectable at invocation. Jinja2 templates in `templates/latex/`, pure-Python PDF generation via fpdf2 + matplotlib (no system LaTeX needed). New utilities: `utils/latex_data.py`, `utils/latex_renderer.py`, `utils/render_example.py`. New dependencies: Jinja2, fpdf2.
 - **v1.0.0**: Four skills (orchestrator + trilogy) with 305 algorithms (195 discrete/continuous/linear-algebra/calculus/geometry/financial/game-theory/decision-analysis/multi-objective/ODEs/numerical-methods/extended-OR + 110 statistical/time-series/stochastic/survival/ML/simulation/queuing/causal), 91 structures across 24 domains, 26 solver libraries. Eighteen shipped domains: discrete math, continuous optimization, statistical inference, time series analysis, stochastic processes, survival analysis, linear algebra, calculus, geometry & trigonometry, financial mathematics, game theory, decision analysis, multi-objective optimization, machine learning, simulation & ODEs, numerical methods, causal inference, extended operations research. All high-relevance mathematical branches covered. Thirty-six worked examples.
 - **Roadmap**: Expansion domains listed in README.md. Contributions welcome per CONTRIBUTING.md.

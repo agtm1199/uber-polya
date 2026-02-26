@@ -1,0 +1,246 @@
+\documentclass[11pt, a4paper]{article}
+
+% ── Packages ──────────────────────────────────────────────────────────
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{tcolorbox}
+\usepackage{polya}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=polyablue,
+  urlcolor=polyablue,
+  citecolor=polyablue,
+}
+
+% ── Code listing style ────────────────────────────────────────────────
+\lstdefinestyle{polya-python}{
+  language=Python,
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{polyablue}\bfseries,
+  commentstyle=\color{polyagray}\itshape,
+  stringstyle=\color{polyagreen},
+  numbers=left,
+  numberstyle=\tiny\color{polyagray},
+  numbersep=8pt,
+  frame=single,
+  framerule=0.4pt,
+  rulecolor=\color{polyagray},
+  breaklines=true,
+  showstringspaces=false,
+  tabsize=4,
+}
+\lstset{style=polya-python}
+\title{Debt Payoff Optimization}
+\author{uber-polya}
+\date{2026-02-26}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+% ── Phase A: Problem Formulation ─────────────────────────────────────
+\section{Problem Formulation}
+
+\begin{polyamodel}
+
+\textbf{Problem Type}: Find \hfill
+\textbf{Domain}: Financial Mathematics
+
+
+\end{polyamodel}
+
+% ── Universe ──────────────────────────────────────────────────────────
+\subsection{Universe}
+
+\begin{itemize}
+  \item $Problem: \{debts, extra_monthly_payment, total_balance, total_minimums\}$
+  \item $Avalanche: \{strategy, total_interest_paid, months_to_payoff, total_paid, is_optimal, is_feasible, algorithm, time_seconds, payoff_order\}$
+  \item $Snowball: \{strategy, total_interest_paid, months_to_payoff, total_paid, is_optimal, is_feasible, algorithm, time_seconds\}$
+\end{itemize}
+
+% ── Variables ─────────────────────────────────────────────────────────
+\subsection{Variables}
+
+\begin{longtable}{lll}
+\toprule
+\textbf{Symbol} & \textbf{Meaning} & \textbf{Type / Range} \\
+\midrule
+\endhead
+$L$ & loan principal = L & $\mathbb{{R}}_{>0}$ \\
+$r$ & monthly interest rate = APR/12 & $\mathbb{{R}}_{>0}$ \\
+$n$ & total number of monthly payments & $\mathbb{{Z}}^+$ \\
+$PMT$ & monthly payment amount & $\mathbb{{R}}_{>0}$ \\
+\bottomrule
+\end{longtable}
+
+% ── Structure ─────────────────────────────────────────────────────────
+\subsection{Structure}
+
+You have 4 debts with different balances, interest rates, and minimum payments:
+
+| Debt | Balance | APR | Min Payment |
+|------|---------|-----|-------------|
+| Credit Card | \$6,200 | 22.99\% | \$120/mo |
+| Car Loan | \$12,000 | 6.50\% | \$250/mo |
+| Student Loan | \$25,000 | 4.50\% | \$280/mo |
+| Personal Loan | \$3,500 | 15.00\% | \$75/mo |
+
+**Total debt**: \$46,700. **Total minimums**: \$725/mo. **Extra available**: \$500/mo.
+
+Find the optimal allocation of extra payments to minimize total interest paid
+over time. Compare two strategies:
+
+1. **Avalanche** (highest interest rate first) -- mathematically optimal among
+   greedy single-target strategies
+2. **Snowball** (lowest balance first) -- psychologically motivating but costs
+   more in interest
+
+% ── Mapping ───────────────────────────────────────────────────────────
+\subsection{Real-World Mapping}
+
+\begin{longtable}{ll}
+\toprule
+\textbf{Real-World Concept} & \textbf{Mathematical Object} \\
+\midrule
+\endhead
+loan balance & $L — principal$ \\
+annual percentage rate & $r — monthly rate = APR/12$ \\
+loan term & $n — number of monthly payments$ \\
+monthly mortgage payment & $PMT — annuity payment$ \\
+\bottomrule
+\end{longtable}
+
+% ── Constraints ───────────────────────────────────────────────────────
+\subsection{Constraints}
+
+\begin{enumerate}
+  \item $PMT = L \cdot \frac{r(1+r)^n}{(1+r)^n - 1}$
+  \hfill \textit{(annuity payment formula)}
+  \item $B_k = B_{k-1}(1+r) - PMT$
+  \hfill \textit{(amortization recurrence)}
+  \item $B_n = 0$
+  \hfill \textit{(loan fully repaid at maturity)}
+  \item $\text{Total Interest} = n \cdot PMT - L$
+  \hfill \textit{(total interest = payments minus principal)}
+\end{enumerate}
+
+% ── Objective / Claim ─────────────────────────────────────────────────
+\subsection{Objective}
+
+\begin{equation}
+\min_{\text{option}} \; \sum_{k=1}^{n} PMT_k \; + \; \text{closing costs}
+\end{equation}
+
+% ── Approach ──────────────────────────────────────────────────────────
+\subsection{Approach}
+
+\begin{description}
+  \item[Suggested approach:] unknown
+  \item[Complexity class:] 
+  \item[Available tools:] unknown
+\end{description}
+% ── Phase B: Solution ────────────────────────────────────────────────
+\section{Solution}
+
+\begin{polyaresult}
+
+\textbf{Answer}: Financial analysis complete
+
+
+\textbf{Optimal}: No / Unknown \hfill
+\textbf{Feasible}: Yes
+\textbf{Algorithm}: unknown \quad $$
+
+\textbf{Time}: 0.0s
+
+\textbf{Certificate}: Amortization verified: final balance = \$0.00 for all options.
+
+\end{polyaresult}
+
+% ── Solution Details ──────────────────────────────────────────────────
+\subsection{Solution Details}
+
+
+
+% ── Verification ──────────────────────────────────────────────────────
+\subsection{Verification}
+
+No independent verification checks recorded.
+
+% ── Phase C: Interpretation ──────────────────────────────────────────
+\section{Interpretation}
+
+% ── The Question & The Answer ─────────────────────────────────────────
+\subsection{The Question}
+You have 4 debts with different balances, interest rates, and minimum payments:
+
+| Debt | Balance | APR | Min Payment |
+|------|---------|-----|-------------|
+| Credit Card | \$6,200 | 22.
+
+\subsection{The Answer}
+
+\begin{polyainsight}[title={Bottom Line}]
+Financial analysis complete.
+\end{polyainsight}
+
+% ── What This Means ───────────────────────────────────────────────────
+\subsection{What This Means}
+
+- Total interest paid under each strategy
+- Months to complete payoff under each strategy
+- Head-to-head comparison table showing interest savings
+- Payoff timeline showing when each debt reaches zero (avalanche)
+- Independent verification (5 checks per strategy)
+
+Month-by-month greedy simulation:
+
+1. Accrue interest on all debts (monthly\_rate = APR / 12)
+2. Pay minimums on every debt with remaining balance
+3. Allocate extra (plus freed minimums from paid-off debts) to the
+   highest-priority target debt
+4. Cascade surplus -- if the target is paid off mid-allocation, redirect
+   remaining funds to the next priority debt
+5. Repeat until all balances reach zero
+
+The avalanche strategy prioritizes debts by descending APR, which is provably
+optimal because it minimizes the balance-weighted average interest rate at every
+step. The snowball strategy prioritizes by ascending balance for faster
+psychological wins.
+
+% ── Sensitivity Analysis ──────────────────────────────────────────────
+
+% ── Figures ───────────────────────────────────────────────────────────
+
+% ── Recommendations ───────────────────────────────────────────────────
+\subsection{Recommendations}
+
+\begin{enumerate}
+  \item Compare total interest paid, not just monthly payments, when evaluating mortgage options.
+\end{enumerate}
+
+% ── Limitations ───────────────────────────────────────────────────────
+\subsection{Limitations}
+
+\begin{polyawarnbox}
+\begin{itemize}
+  \item Assumes fixed interest rates; adjustable-rate mortgages introduce variability.
+  \item Does not account for tax deductions, insurance, or opportunity cost of down payment.
+\end{itemize}
+\end{polyawarnbox}
+
+% ── Appendix ─────────────────────────────────────────────────────────
+
+\end{document}

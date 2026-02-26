@@ -1,0 +1,227 @@
+\documentclass[11pt, a4paper]{article}
+
+% ── Packages ──────────────────────────────────────────────────────────
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{tcolorbox}
+\usepackage{polya}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=polyablue,
+  urlcolor=polyablue,
+  citecolor=polyablue,
+}
+
+% ── Code listing style ────────────────────────────────────────────────
+\lstdefinestyle{polya-python}{
+  language=Python,
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{polyablue}\bfseries,
+  commentstyle=\color{polyagray}\itshape,
+  stringstyle=\color{polyagreen},
+  numbers=left,
+  numberstyle=\tiny\color{polyagray},
+  numbersep=8pt,
+  frame=single,
+  framerule=0.4pt,
+  rulecolor=\color{polyagray},
+  breaklines=true,
+  showstringspaces=false,
+  tabsize=4,
+}
+\lstset{style=polya-python}
+\title{Potluck Planning}
+\author{uber-polya}
+\date{2026-02-26}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+% ── Phase A: Problem Formulation ─────────────────────────────────────
+\section{Problem Formulation}
+
+\begin{polyamodel}
+
+\textbf{Problem Type}: Find \hfill
+\textbf{Domain}: Integer Linear Programming
+
+\textbf{Named Problem}: Assignment Problem
+
+\end{polyamodel}
+
+% ── Universe ──────────────────────────────────────────────────────────
+\subsection{Universe}
+
+\begin{itemize}
+  \item $Assignment: \{Alice, Ben, Carmen, David, Elena, Frank, Grace, Hiro\}$
+  \item $Category Counts: \{appetizer, salad, main, side, dessert\}$
+\end{itemize}
+
+% ── Variables ─────────────────────────────────────────────────────────
+\subsection{Variables}
+
+\begin{longtable}{lll}
+\toprule
+\textbf{Symbol} & \textbf{Meaning} & \textbf{Type / Range} \\
+\midrule
+\endhead
+$x_{ij}$ & assignment decision & $\{0, 1\}$ \\
+$n$ & number of binary variables = 40 & $\mathbb{{Z}}^+$ \\
+\bottomrule
+\end{longtable}
+
+% ── Structure ─────────────────────────────────────────────────────────
+\subsection{Structure}
+
+Assign 8 guests to 5 dish categories (appetizer, salad, main, side, dessert) for a potluck dinner. Each guest rates their effort/skill for each category on a 1-5 scale (lower = easier for them). Every category must be covered by at least 1 guest and at most 2 guests. Minimize total effort across all assignments.
+
+% ── Mapping ───────────────────────────────────────────────────────────
+\subsection{Real-World Mapping}
+
+\begin{longtable}{ll}
+\toprule
+\textbf{Real-World Concept} & \textbf{Mathematical Object} \\
+\midrule
+\endhead
+assignment & $x: solution vector (assignment)$ \\
+\bottomrule
+\end{longtable}
+
+% ── Constraints ───────────────────────────────────────────────────────
+\subsection{Constraints}
+
+\begin{enumerate}
+  \item $\sum_j x_{ij} \le 2$
+  \hfill \textit{(capacity limit)}
+  \item $\sum_j x_{ij} \ge 1$
+  \hfill \textit{(minimum requirement)}
+  \item $x_{ij} \in \{0, 1\} \quad \forall\, i, j$
+  \hfill \textit{(binary decision variables)}
+\end{enumerate}
+
+% ── Objective / Claim ─────────────────────────────────────────────────
+\subsection{Claim}
+
+
+% ── Approach ──────────────────────────────────────────────────────────
+\subsection{Approach}
+
+\begin{description}
+  \item[Suggested approach:] ILP (PuLP/CBC, Branch \& Bound)
+  \item[Complexity class:] 
+  \item[Available tools:] ILP
+\end{description}
+% ── Phase B: Solution ────────────────────────────────────────────────
+\section{Solution}
+
+\begin{polyaresult}
+
+\textbf{Answer}: 8-element assignment: Alice -> dessert, Ben -> salad, Carmen -> main, David -> side, Elena -> appetizer, Frank -> dessert, ... (2 more)
+
+
+\textbf{Optimal}: Yes \hfill
+\textbf{Feasible}: Yes
+\textbf{Algorithm}: ILP (PuLP/CBC, Branch \& Bound) \quad $$
+
+\textbf{Time}: 0.005929717910476029s
+
+\textbf{Certificate}: Branch-and-bound solved to optimality.
+
+\end{polyaresult}
+
+% ── Solution Details ──────────────────────────────────────────────────
+\subsection{Solution Details}
+
+Assignment:
+  Alice -> dessert
+  Ben -> salad
+  Carmen -> main
+  David -> side
+  Elena -> appetizer
+  Frank -> dessert
+  Grace -> salad
+  Hiro -> appetizer
+
+Method: Integer Linear Programming (ILP) via PuLP/CBC.
+
+- 40 binary variables (8 guests x 5 categories)
+- Constraints: one category per guest, min/max coverage per category
+- Objective: minimize sum of effort scores across all guest-category assignments
+
+% ── Verification ──────────────────────────────────────────────────────
+\subsection{Verification}
+
+\begin{longtable}{lcl}
+\toprule
+\textbf{Check} & \textbf{Status} & \textbf{Detail} \\
+\midrule
+\endhead
+Feasibility & \passmark & All constraints satisfied \\
+Optimality & \passmark & ILP (PuLP/CBC, Branch \& Bound) \\
+\bottomrule
+\end{longtable}
+
+% ── Phase C: Interpretation ──────────────────────────────────────────
+\section{Interpretation}
+
+% ── The Question & The Answer ─────────────────────────────────────────
+\subsection{The Question}
+Assign 8 guests to 5 dish categories (appetizer, salad, main, side, dessert) for a potluck dinner.
+
+\subsection{The Answer}
+
+\begin{polyainsight}[title={Bottom Line}]
+A optimal solution was found.
+\end{polyainsight}
+
+% ── What This Means ───────────────────────────────────────────────────
+\subsection{What This Means}
+
+- Optimal assignment of guests to dish categories minimizing total effort
+- All 5 categories covered (some by 2 guests since 8 > 5)
+- Independent constraint verification (all PASS)
+- Comparison against theoretical bounds and random assignment
+
+Integer Linear Programming (ILP) via PuLP/CBC.
+
+- 40 binary variables (8 guests x 5 categories)
+- Constraints: one category per guest, min/max coverage per category
+- Objective: minimize sum of effort scores across all guest-category assignments
+
+% ── Sensitivity Analysis ──────────────────────────────────────────────
+
+% ── Figures ───────────────────────────────────────────────────────────
+
+% ── Recommendations ───────────────────────────────────────────────────
+\subsection{Recommendations}
+
+\begin{enumerate}
+  \item The solution is provably optimal; no further improvement is possible within this model.
+\end{enumerate}
+
+% ── Limitations ───────────────────────────────────────────────────────
+\subsection{Limitations}
+
+\begin{polyawarnbox}
+\begin{itemize}
+  \item Model assumes deterministic parameters; real-world variability not captured.
+  \item Solution quality depends on the accuracy of input data.
+\end{itemize}
+\end{polyawarnbox}
+
+% ── Appendix ─────────────────────────────────────────────────────────
+
+\end{document}

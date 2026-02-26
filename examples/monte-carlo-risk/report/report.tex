@@ -1,0 +1,246 @@
+\documentclass[11pt, a4paper]{article}
+
+% ── Packages ──────────────────────────────────────────────────────────
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{tcolorbox}
+\usepackage{polya}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=polyablue,
+  urlcolor=polyablue,
+  citecolor=polyablue,
+}
+
+% ── Code listing style ────────────────────────────────────────────────
+\lstdefinestyle{polya-python}{
+  language=Python,
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{polyablue}\bfseries,
+  commentstyle=\color{polyagray}\itshape,
+  stringstyle=\color{polyagreen},
+  numbers=left,
+  numberstyle=\tiny\color{polyagray},
+  numbersep=8pt,
+  frame=single,
+  framerule=0.4pt,
+  rulecolor=\color{polyagray},
+  breaklines=true,
+  showstringspaces=false,
+  tabsize=4,
+}
+\lstset{style=polya-python}
+\title{Monte Carlo Project Risk Analysis}
+\author{uber-polya}
+\date{2026-02-26}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+% ── Phase A: Problem Formulation ─────────────────────────────────────
+\section{Problem Formulation}
+
+\begin{polyamodel}
+
+\textbf{Problem Type}: Find \hfill
+\textbf{Domain}: Simulation / Monte Carlo
+
+
+\end{polyamodel}
+
+% ── Universe ──────────────────────────────────────────────────────────
+\subsection{Universe}
+
+\begin{itemize}
+  \item $Statistics: \{mean_duration, std_duration, median_duration, ci_95_low, ci_95_high\}$
+  \item $Risk Metrics: \{prob_finish_by_deadline, var95, cvar95, deadline\}$
+  \item $Convergence: \{sample_sizes, running_means\}$
+  \item $Analytical Crosscheck: \{analytical_mean, mc_mean, difference\}$
+\end{itemize}
+
+% ── Variables ─────────────────────────────────────────────────────────
+\subsection{Variables}
+
+\begin{longtable}{lll}
+\toprule
+\textbf{Symbol} & \textbf{Meaning} & \textbf{Type / Range} \\
+\midrule
+\endhead
+$x$ & decision variable & $\mathbb{{R}}$ \\
+\bottomrule
+\end{longtable}
+
+% ── Structure ─────────────────────────────────────────────────────────
+\subsection{Structure}
+
+A software project has 5 phases, each with uncertain duration modeled as a triangular distribution (min, mode, max in days). Phases 1-3 are sequential; phases 4 and 5 run in parallel after phase 3 completes.
+
+**Phase estimates (days):**
+
+| Phase   | Min | Mode | Max | Dependencies     |
+|---------|-----|------|-----|------------------|
+| Phase 1 |  5  |   8  |  14 | None             |
+| Phase 2 |  3  |   5  |  10 | Phase 1          |
+| Phase 3 |  7  |  10  |  18 | Phase 2          |
+| Phase 4 |  4  |   6  |  12 | Phase 3          |
+| Phase 5 |  6  |   9  |  15 | Phase 3          |
+
+**Critical path**: Phase 1 + Phase 2 + Phase 3 + max(Phase 4, Phase 5)
+
+**Questions**:
+- What is the expected total project duration (mean and 95\% CI)?
+- What is the probability of finishing within 50 days?
+- What is the Value at Risk at 95\% (worst-case duration at 95th percentile)?
+- Which phase is the critical risk driver?
+
+% ── Mapping ───────────────────────────────────────────────────────────
+\subsection{Real-World Mapping}
+
+\begin{longtable}{ll}
+\toprule
+\textbf{Real-World Concept} & \textbf{Mathematical Object} \\
+\midrule
+\endhead
+problem input & $instance parameters$ \\
+\bottomrule
+\end{longtable}
+
+% ── Constraints ───────────────────────────────────────────────────────
+\subsection{Constraints}
+
+\begin{enumerate}
+  \item $Monte Carlo simulation**: Estimate distributional properties of complex systems by repeated random sampling$
+  \hfill \textit{()}
+  \item $Triangular distribution**: Three-parameter distribution (min, mode, max) for expert elicitation of uncertain durations$
+  \hfill \textit{()}
+  \item $Critical path**: The longest dependency chain determines total project duration$
+  \hfill \textit{()}
+  \item $Value at Risk (VaR)**: The duration threshold exceeded only (1 - confidence)% of the time$
+  \hfill \textit{()}
+  \item $Conditional Value at Risk (CVaR)**: Expected duration in the worst-case tail beyond VaR$
+  \hfill \textit{()}
+  \item $Convergence analysis**: Demonstrates that Monte Carlo estimates stabilize as sample size grows$
+  \hfill \textit{()}
+  \item $Sensitivity analysis**: Correlation between individual phase durations and total duration reveals risk drivers$
+  \hfill \textit{()}
+  \item $Confidence intervals**: Quantify estimation uncertainty in the Monte Carlo mean via the Central Limit Theorem$
+  \hfill \textit{()}
+\end{enumerate}
+
+% ── Objective / Claim ─────────────────────────────────────────────────
+\subsection{Claim}
+
+
+% ── Approach ──────────────────────────────────────────────────────────
+\subsection{Approach}
+
+\begin{description}
+  \item[Suggested approach:] Monte Carlo simulation with triangular distributions
+  \item[Complexity class:] 
+  \item[Available tools:] Monte Carlo simulation with triangular distributions
+\end{description}
+% ── Phase B: Solution ────────────────────────────────────────────────
+\section{Solution}
+
+\begin{polyaresult}
+
+\textbf{Answer}: Solution computed
+
+
+\textbf{Optimal}: No / Unknown \hfill
+\textbf{Feasible}: No
+\textbf{Algorithm}: Monte Carlo simulation with triangular distributions \quad $$
+
+\textbf{Time}: 0.04585076100192964s
+
+
+\end{polyaresult}
+
+% ── Solution Details ──────────────────────────────────────────────────
+\subsection{Solution Details}
+
+Solution computed successfully.
+
+% ── Verification ──────────────────────────────────────────────────────
+\subsection{Verification}
+
+\begin{longtable}{lcl}
+\toprule
+\textbf{Check} & \textbf{Status} & \textbf{Detail} \\
+\midrule
+\endhead
+Mean Reasonable & \passmark & Passed \\
+Std Positive & \passmark & Passed \\
+Ci Contains Mean & \passmark & Passed \\
+Var95 Gt Mean & \passmark & Passed \\
+Cvar95 Ge Var95 & \passmark & Passed \\
+Prob Deadline Between 0 1 & \passmark & Passed \\
+Convergence Stabilizes & \passmark & Passed \\
+Analytical Close & \passmark & Passed \\
+Sensitivity Sums Reasonable & \passmark & Passed \\
+Simulation Count Correct & \passmark & Passed \\
+All Passed & \passmark & Passed \\
+\bottomrule
+\end{longtable}
+
+% ── Phase C: Interpretation ──────────────────────────────────────────
+\section{Interpretation}
+
+% ── The Question & The Answer ─────────────────────────────────────────
+\subsection{The Question}
+A software project has 5 phases, each with uncertain duration modeled as a triangular distribution (min, mode, max in days).
+
+\subsection{The Answer}
+
+\begin{polyainsight}[title={Bottom Line}]
+A feasible solution was found.
+\end{polyainsight}
+
+% ── What This Means ───────────────────────────────────────────────────
+\subsection{What This Means}
+
+- Mean duration: \textasciitilde{}36 days
+- 95\% CI for mean: narrow interval around the mean (via CLT)
+- P(finish <= 50 days): high probability (>90\%)
+- VaR95: 95th percentile duration (\textasciitilde{}43-44 days)
+- CVaR95: conditional tail expectation above VaR95
+- Critical risk driver: Phase 3 or Phase 5 (highest correlation with total duration)
+- Convergence: running mean stabilizes well before 100,000 simulations
+
+% ── Sensitivity Analysis ──────────────────────────────────────────────
+
+% ── Figures ───────────────────────────────────────────────────────────
+
+% ── Recommendations ───────────────────────────────────────────────────
+\subsection{Recommendations}
+
+\begin{enumerate}
+  \item Review the model assumptions to ensure real-world fidelity.
+\end{enumerate}
+
+% ── Limitations ───────────────────────────────────────────────────────
+\subsection{Limitations}
+
+\begin{polyawarnbox}
+\begin{itemize}
+  \item Model assumes deterministic parameters; real-world variability not captured.
+  \item Solution quality depends on the accuracy of input data.
+\end{itemize}
+\end{polyawarnbox}
+
+% ── Appendix ─────────────────────────────────────────────────────────
+
+\end{document}

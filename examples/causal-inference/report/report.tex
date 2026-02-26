@@ -1,0 +1,228 @@
+\documentclass[11pt, a4paper]{article}
+
+% ── Packages ──────────────────────────────────────────────────────────
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{tcolorbox}
+\usepackage{polya}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=polyablue,
+  urlcolor=polyablue,
+  citecolor=polyablue,
+}
+
+% ── Code listing style ────────────────────────────────────────────────
+\lstdefinestyle{polya-python}{
+  language=Python,
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{polyablue}\bfseries,
+  commentstyle=\color{polyagray}\itshape,
+  stringstyle=\color{polyagreen},
+  numbers=left,
+  numberstyle=\tiny\color{polyagray},
+  numbersep=8pt,
+  frame=single,
+  framerule=0.4pt,
+  rulecolor=\color{polyagray},
+  breaklines=true,
+  showstringspaces=false,
+  tabsize=4,
+}
+\lstset{style=polya-python}
+\title{Causal Inference -- Job Training Program}
+\author{uber-polya}
+\date{2026-02-26}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+% ── Phase A: Problem Formulation ─────────────────────────────────────
+\section{Problem Formulation}
+
+\begin{polyamodel}
+
+\textbf{Problem Type}: Find \hfill
+\textbf{Domain}: Causal Inference
+
+
+\end{polyamodel}
+
+% ── Universe ──────────────────────────────────────────────────────────
+\subsection{Universe}
+
+\begin{itemize}
+  \item $Naive: \{estimate, bias\}$
+  \item $Propensity Score Matching: \{att, propensity_treated_mean, propensity_control_mean, error\}$
+  \item $Difference In Differences: \{estimate, error\}$
+  \item $Doubly Robust: \{ate, error\}$
+\end{itemize}
+
+% ── Variables ─────────────────────────────────────────────────────────
+\subsection{Variables}
+
+\begin{longtable}{lll}
+\toprule
+\textbf{Symbol} & \textbf{Meaning} & \textbf{Type / Range} \\
+\midrule
+\endhead
+$x$ & decision variable & $\mathbb{{R}}$ \\
+\bottomrule
+\end{longtable}
+
+% ── Structure ─────────────────────────────────────────────────────────
+\subsection{Structure}
+
+- **Treated**: 500 employees who participated in the training program (approximately)
+- **Control**: 500 employees who did not participate (approximately)
+- **Covariates**: education\_years, experience\_years, age (all affect both participation and salary)
+- **Confounding**: Higher-education, more-experienced employees self-select into training AND earn more
+- **Question**: What is the causal effect of the training program on salary?
+- **Ground truth**: The data is synthetic with a true treatment effect of \$5,000
+
+% ── Mapping ───────────────────────────────────────────────────────────
+\subsection{Real-World Mapping}
+
+\begin{longtable}{ll}
+\toprule
+\textbf{Real-World Concept} & \textbf{Mathematical Object} \\
+\midrule
+\endhead
+problem input & $instance parameters$ \\
+\bottomrule
+\end{longtable}
+
+% ── Constraints ───────────────────────────────────────────────────────
+\subsection{Constraints}
+
+\begin{enumerate}
+  \item $Selection bias**: Treated and control groups differ systematically on covariates, inflating naive estimates$
+  \hfill \textit{()}
+  \item $Propensity score**: P(treatment | covariates)$
+  \hfill \textit{(summarizes confounding into a single number for matching)}
+  \item $ATE vs ATT**: Average Treatment Effect (population) vs Average Treatment Effect on the Treated (those who participated)$
+  \hfill \textit{()}
+  \item $Confounding**: When a variable affects both treatment assignment and outcome$
+  \hfill \textit{()}
+  \item $Doubly robust estimation**: Combines propensity model with outcome model; consistent if either model is correct$
+  \hfill \textit{()}
+\end{enumerate}
+
+% ── Objective / Claim ─────────────────────────────────────────────────
+\subsection{Claim}
+
+
+% ── Approach ──────────────────────────────────────────────────────────
+\subsection{Approach}
+
+\begin{description}
+  \item[Suggested approach:] Naive + Propensity Score Matching + Difference-in-Differences + Doubly Robust (AIPW)
+  \item[Complexity class:] 
+  \item[Available tools:] Naive + Propensity Score Matching + Difference-in-Differences + Doubly Robust
+\end{description}
+% ── Phase B: Solution ────────────────────────────────────────────────
+\section{Solution}
+
+\begin{polyaresult}
+
+\textbf{Answer}: Solution computed
+
+
+\textbf{Optimal}: No / Unknown \hfill
+\textbf{Feasible}: No
+\textbf{Algorithm}: Naive + Propensity Score Matching + Difference-in-Differences + Doubly Robust (AIPW) \quad $$
+
+\textbf{Time}: 0.009365651989355683s
+
+
+\end{polyaresult}
+
+% ── Solution Details ──────────────────────────────────────────────────
+\subsection{Solution Details}
+
+Solution computed successfully.
+
+% ── Verification ──────────────────────────────────────────────────────
+\subsection{Verification}
+
+\begin{longtable}{lcl}
+\toprule
+\textbf{Check} & \textbf{Status} & \textbf{Detail} \\
+\midrule
+\endhead
+Naive Biased & \passmark & Passed \\
+Psm Close & \passmark & Passed \\
+Did Close & \passmark & Passed \\
+Dr Close & \passmark & Passed \\
+Psm Closer Than Naive & \passmark & Passed \\
+Dr Closer Than Naive & \passmark & Passed \\
+Propensity Overlap & \passmark & Passed \\
+Treatment Balance & \passmark & Passed \\
+All Passed & \passmark & Passed \\
+\bottomrule
+\end{longtable}
+
+% ── Phase C: Interpretation ──────────────────────────────────────────
+\section{Interpretation}
+
+% ── The Question & The Answer ─────────────────────────────────────────
+\subsection{The Question}
+- **Treated**: 500 employees who participated in the training program (approximately)
+- **Control**: 500 employees who did not participate (approximately)
+- **Covariates**: education\_years, experience\_years, age (all affect both participation and salary)
+- **Confounding**: Higher-education, more-experienced employees self-select into training AND earn more
+- **Question**: What is the causal effect of the training program on salary?
+- **Ground truth**: The data is synthetic with a true treatment effect of \$5,000.
+
+\subsection{The Answer}
+
+\begin{polyainsight}[title={Bottom Line}]
+A feasible solution was found.
+\end{polyainsight}
+
+% ── What This Means ───────────────────────────────────────────────────
+\subsection{What This Means}
+
+- Naive difference: Overestimates the effect (well above \$5,000) due to selection bias
+- Propensity Score Matching (ATT): Recovers approximately \$5,000
+- Difference-in-Differences: Recovers approximately \$5,000
+- Doubly Robust (AIPW): Recovers approximately \$5,000
+- Verification: All 8 checks pass -- naive is biased, causal methods are closer to truth
+
+% ── Sensitivity Analysis ──────────────────────────────────────────────
+
+% ── Figures ───────────────────────────────────────────────────────────
+
+% ── Recommendations ───────────────────────────────────────────────────
+\subsection{Recommendations}
+
+\begin{enumerate}
+  \item Review the model assumptions to ensure real-world fidelity.
+\end{enumerate}
+
+% ── Limitations ───────────────────────────────────────────────────────
+\subsection{Limitations}
+
+\begin{polyawarnbox}
+\begin{itemize}
+  \item Model assumes deterministic parameters; real-world variability not captured.
+  \item Solution quality depends on the accuracy of input data.
+\end{itemize}
+\end{polyawarnbox}
+
+% ── Appendix ─────────────────────────────────────────────────────────
+
+\end{document}

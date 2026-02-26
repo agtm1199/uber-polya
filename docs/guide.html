@@ -686,6 +686,7 @@
         <a href="#examples">Problem Gallery</a>
         <a href="#knowledge-base">Knowledge Base</a>
         <a href="#platforms">Platforms</a>
+        <a href="#pdf-reports">PDF Reports</a>
         <a href="#principles">Design Principles</a>
         <a href="#faq">FAQ</a>
       </div>
@@ -696,7 +697,7 @@
 
       <!-- INTRO -->
       <section id="top">
-        <h1>Usage Guide <span class="badge">v0.4.0</span></h1>
+        <h1>Usage Guide <span class="badge">v1.1.0</span></h1>
         <p class="lead">Everything you need to start solving problems with uber-polya &mdash; the math problem-solver for every AI coding assistant.</p>
         <p>uber-polya is a free, open-source skill that implements George Polya's four-phase problem-solving cycle as an executable algorithm. You describe a problem in plain English. It finds the mathematical structure, selects the right algorithm, writes verified solver code, runs it, and gives you the answer with proof.</p>
         <p><strong>Don't guess. Solve.</strong></p>
@@ -765,6 +766,7 @@
           <div><span class="prompt">$</span> <span class="cmd">pip install sympy</span>          <span class="comment"># Symbolic algebra, break-even</span></div>
           <div><span class="prompt">$</span> <span class="cmd">pip install statsmodels</span>    <span class="comment"># Statistical inference, A/B tests</span></div>
           <div><span class="prompt">$</span> <span class="cmd">pip install matplotlib numpy</span> <span class="comment"># Visualization (all examples)</span></div>
+          <div><span class="prompt">$</span> <span class="cmd">pip install jinja2 fpdf2</span>        <span class="comment"># PDF report generation</span></div>
         </div>
       </div>
 
@@ -875,6 +877,7 @@
             <li><strong>Fast-Track</strong> &mdash; skip Socratic dialogue for well-defined problems</li>
             <li><strong>Stop-After-Model</strong> &mdash; just formalize, don't solve</li>
             <li><strong>Stop-After-Solve</strong> &mdash; solve but skip interpretation</li>
+            <li><strong>PDF Report</strong> &mdash; generate a branded PDF report with equations and figures</li>
           </ul>
         </div>
       </div>
@@ -933,7 +936,7 @@
 
       <!-- PROBLEM GALLERY -->
       <h2 id="examples">Problem Gallery</h2>
-      <p>22 worked examples with complete solver code, independent verification, and sample data.</p>
+      <p>36 worked examples with complete solver code, independent verification, and sample data.</p>
 
       <h3>Everyday Problems <span class="badge-green badge">16</span></h3>
       <div class="example-grid">
@@ -1033,14 +1036,14 @@
 
       <!-- KNOWLEDGE BASE -->
       <h2 id="knowledge-base">Knowledge Base</h2>
-      <p>uber-polya ships 13 reference files that the AI reads on demand. These are the curated catalogs that power problem classification, algorithm selection, and solution interpretation.</p>
+      <p>uber-polya ships 15 reference files that the AI reads on demand. These are the curated catalogs that power problem classification, algorithm selection, and solution interpretation.</p>
 
       <div class="stats">
-        <div class="stat"><div class="stat-number">139</div><div class="stat-label">Algorithms</div></div>
-        <div class="stat"><div class="stat-number">43</div><div class="stat-label">Structures</div></div>
+        <div class="stat"><div class="stat-number">305</div><div class="stat-label">Algorithms</div></div>
+        <div class="stat"><div class="stat-number">91</div><div class="stat-label">Structures</div></div>
         <div class="stat"><div class="stat-number">17</div><div class="stat-label">Heuristics</div></div>
-        <div class="stat"><div class="stat-number">15</div><div class="stat-label">Solver Libraries</div></div>
-        <div class="stat"><div class="stat-number">10</div><div class="stat-label">Domains</div></div>
+        <div class="stat"><div class="stat-number">26</div><div class="stat-label">Solver Libraries</div></div>
+        <div class="stat"><div class="stat-number">24</div><div class="stat-label">Domains</div></div>
       </div>
 
       <h3>Reference files by skill</h3>
@@ -1084,11 +1087,21 @@
             <tr><td>Discrete Probability</td><td><span class="badge-green badge">Shipped</span></td><td>Expected value, random variables, distributions</td></tr>
             <tr><td>Continuous Optimization</td><td><span class="badge-green badge">Shipped</span></td><td>Convex QP, BFGS, gradient descent, interior point</td></tr>
             <tr><td>Statistical Inference</td><td><span class="badge-green badge">Shipped</span></td><td>Hypothesis testing, regression, Bayesian, bootstrap</td></tr>
-            <tr><td>Game Theory</td><td><span class="badge-yellow badge">Planned</span></td><td>Nash equilibrium, fair division, mechanism design</td></tr>
-            <tr><td>Machine Learning</td><td><span class="badge-yellow badge">Planned</span></td><td>Classification, clustering, dimensionality reduction</td></tr>
-            <tr><td>Simulation</td><td><span class="badge-yellow badge">Planned</span></td><td>Monte Carlo, discrete-event, agent-based</td></tr>
-            <tr><td>Time Series</td><td><span class="badge-yellow badge">Planned</span></td><td>ARIMA, forecasting, anomaly detection</td></tr>
-            <tr><td>Decision Analysis</td><td><span class="badge-yellow badge">Planned</span></td><td>Multi-criteria, decision trees, utility theory</td></tr>
+            <tr><td>Game Theory</td><td><span class="badge-green badge">Shipped</span></td><td>Nash equilibrium, fair division, mechanism design</td></tr>
+            <tr><td>Machine Learning</td><td><span class="badge-green badge">Shipped</span></td><td>Classification, clustering, dimensionality reduction</td></tr>
+            <tr><td>Simulation</td><td><span class="badge-green badge">Shipped</span></td><td>Monte Carlo, discrete-event, agent-based</td></tr>
+            <tr><td>Time Series</td><td><span class="badge-green badge">Shipped</span></td><td>ARIMA, forecasting, anomaly detection</td></tr>
+            <tr><td>Decision Analysis</td><td><span class="badge-green badge">Shipped</span></td><td>Multi-criteria, decision trees, utility theory</td></tr>
+            <tr><td>Linear Algebra</td><td><span class="badge-green badge">Shipped</span></td><td>Matrix ops, decomposition, systems of equations</td></tr>
+            <tr><td>Calculus</td><td><span class="badge-green badge">Shipped</span></td><td>Symbolic differentiation, integration, optimization</td></tr>
+            <tr><td>Geometry</td><td><span class="badge-green badge">Shipped</span></td><td>Area, distance, convex hull, triangulation</td></tr>
+            <tr><td>Financial Math</td><td><span class="badge-green badge">Shipped</span></td><td>NPV, IRR, amortization, break-even</td></tr>
+            <tr><td>Multi-Objective</td><td><span class="badge-green badge">Shipped</span></td><td>Pareto frontier, epsilon-constraint, NSGA-II</td></tr>
+            <tr><td>Stochastic Processes</td><td><span class="badge-green badge">Shipped</span></td><td>Markov chains, Poisson, random walks</td></tr>
+            <tr><td>Survival Analysis</td><td><span class="badge-green badge">Shipped</span></td><td>Kaplan-Meier, Cox PH, survival curves</td></tr>
+            <tr><td>Numerical Methods</td><td><span class="badge-green badge">Shipped</span></td><td>Root finding, interpolation, quadrature</td></tr>
+            <tr><td>Causal Inference</td><td><span class="badge-green badge">Shipped</span></td><td>Propensity matching, DiD, doubly robust</td></tr>
+            <tr><td>Extended OR</td><td><span class="badge-green badge">Shipped</span></td><td>Inventory, bin packing, lot sizing, scheduling</td></tr>
           </tbody>
         </table>
       </div>
@@ -1138,6 +1151,94 @@
           <div class="platform-header"><span class="platform-dot" style="background:#4285f4"></span><div class="platform-name">Antigravity</div></div>
           <div class="platform-vendor">Google</div>
           <div class="platform-config"><code>AGENTS.md</code></div>
+        </div>
+      </div>
+
+      <!-- PDF REPORTS -->
+      <h2 id="pdf-reports">PDF Report Output <span class="badge-green badge">v1.1.0</span></h2>
+      <p>uber-polya can generate professional PDF reports from any solved problem. When you invoke <code>/uber-polya</code>, you choose from three output formats:</p>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr><th>Format</th><th>Deliverable</th><th>System LaTeX needed?</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Python (default)</td><td>Solver script + console output + <code>solution.json</code></td><td>No</td></tr>
+            <tr><td>LaTeX/PDF</td><td><code>.tex</code> source + compiled <code>.pdf</code> report</td><td>No (uses fpdf2)</td></tr>
+            <tr><td>Both</td><td>Full Python output AND compiled PDF report</td><td>No</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>How it works</h3>
+      <p>The PDF pipeline flows through three stages:</p>
+
+      <div class="terminal">
+        <div class="terminal-header">
+          <div class="terminal-dot"></div>
+          <div class="terminal-dot"></div>
+          <div class="terminal-dot"></div>
+        </div>
+        <div class="terminal-body">
+          <div><span class="comment"># Data flows through typed dataclasses</span></div>
+          <div><span class="output">Phase A: FormalModel &rarr; universe, variables, constraints, objective</span></div>
+          <div><span class="output">Phase B: SolutionReport &rarr; answer, algorithm, verification checks</span></div>
+          <div><span class="output">Phase C: InterpretationReport &rarr; question, answer, sensitivity, figures</span></div>
+          <br>
+          <div><span class="comment"># Jinja2 renders LaTeX source from templates</span></div>
+          <div><span class="output">LatexRenderer.render_tex() &rarr; report.tex</span></div>
+          <br>
+          <div><span class="comment"># fpdf2 + matplotlib.mathtext compile to PDF</span></div>
+          <div><span class="output">LatexRenderer.render_pdf() &rarr; report.pdf</span></div>
+        </div>
+      </div>
+
+      <h3>Report structure</h3>
+      <p>Each PDF report contains branded sections matching the three Polya phases:</p>
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr><th>Section</th><th>Template</th><th>Contents</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Problem Formulation</td><td><code>section_model.tex.j2</code></td><td>Universe, variables table, structure, mapping, constraints, objective</td></tr>
+            <tr><td>Solution</td><td><code>section_solve.tex.j2</code></td><td>Answer, metrics, algorithm, verification checks</td></tr>
+            <tr><td>Interpretation</td><td><code>section_interpret.tex.j2</code></td><td>Question, answer, explanation, sensitivity table, figures, recommendations</td></tr>
+            <tr><td>Appendix</td><td><code>section_appendix.tex.j2</code></td><td>Python solver source code (optional)</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Generate from existing examples</h3>
+      <div class="terminal">
+        <div class="terminal-header">
+          <div class="terminal-dot"></div>
+          <div class="terminal-dot"></div>
+          <div class="terminal-dot"></div>
+        </div>
+        <div class="terminal-body">
+          <div><span class="comment"># Generate a PDF report from any example</span></div>
+          <div><span class="prompt">$</span> <span class="cmd">python utils/render_example.py examples/team-assignment/</span></div>
+          <br>
+          <div><span class="output">Wrote: examples/team-assignment/report/report.tex</span></div>
+          <div><span class="output">Wrote: examples/team-assignment/report/report.pdf</span></div>
+          <div><span class="success">Done. 3 sections rendered.</span></div>
+        </div>
+      </div>
+
+      <h3>Dependencies</h3>
+      <div class="terminal">
+        <div class="terminal-header">
+          <div class="terminal-dot"></div>
+          <div class="terminal-dot"></div>
+          <div class="terminal-dot"></div>
+        </div>
+        <div class="terminal-body">
+          <div><span class="prompt">$</span> <span class="cmd">pip install jinja2 fpdf2 matplotlib</span></div>
+          <br>
+          <div><span class="comment"># No system LaTeX installation required.</span></div>
+          <div><span class="comment"># Optional: install pdflatex for higher-quality output.</span></div>
         </div>
       </div>
 
@@ -1197,6 +1298,11 @@
       <div class="faq-item">
         <div class="faq-q">Does this work on platforms other than Claude Code?</div>
         <div class="faq-a">Yes. uber-polya ships native config files for Claude Code, OpenAI Codex, GitHub Copilot, Cursor, Windsurf, Amazon Kiro, Qoder, and Google Antigravity. Each tool reads its own config format &mdash; all pointing to the shared methodology in <code>docs/methodology.md</code>. Clone the repo and the config is already in place.</div>
+      </div>
+
+      <div class="faq-item">
+        <div class="faq-q">How do I generate a PDF report?</div>
+        <div class="faq-a">When invoking <code>/uber-polya</code>, you'll be asked to choose an output format: Python (default), LaTeX/PDF, or Both. Choose LaTeX/PDF or Both to get a branded PDF report. You need <code>pip install jinja2 fpdf2 matplotlib</code>. No system LaTeX installation is required &mdash; PDF generation uses fpdf2 (pure Python). The <code>.tex</code> source is always saved for optional higher-quality compilation with <code>pdflatex</code>. You can also generate reports from existing examples with <code>python utils/render_example.py examples/&lt;name&gt;/</code>.</div>
       </div>
 
       <div class="faq-item">

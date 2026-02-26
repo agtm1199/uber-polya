@@ -1,0 +1,80 @@
+% polya.sty -- Custom LaTeX style for uber-polya reports
+% Provides branded environments, colors, and formatting.
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{polya}[2025/01/01 uber-polya report style]
+
+% ── Dependencies ──────────────────────────────────────────────────────
+\RequirePackage{xcolor}
+\RequirePackage{tcolorbox}
+\RequirePackage{fancyhdr}
+\RequirePackage{enumitem}
+
+\tcbuselibrary{skins, breakable}
+
+% ── Color palette ─────────────────────────────────────────────────────
+\definecolor{polyablue}{HTML}{1E40AF}
+\definecolor{polyagreen}{HTML}{15803D}
+\definecolor{polyared}{HTML}{B91C1C}
+\definecolor{polyagray}{HTML}{4B5563}
+\definecolor{polyalight}{HTML}{EFF6FF}
+\definecolor{polyawarn}{HTML}{FEF3C7}
+\definecolor{polyapass}{HTML}{DCFCE7}
+\definecolor{polyafail}{HTML}{FEE2E2}
+
+% ── Branded environments ──────────────────────────────────────────────
+
+% Formal Model box (Phase A)
+\newtcolorbox{polyamodel}[1][]{%
+  colback=polyalight,
+  colframe=polyablue,
+  fonttitle=\bfseries,
+  title={Formal Model},
+  breakable,
+  #1
+}
+
+% Solution Result box (Phase B)
+\newtcolorbox{polyaresult}[1][]{%
+  colback=polyapass,
+  colframe=polyagreen,
+  fonttitle=\bfseries,
+  title={Solution},
+  breakable,
+  #1
+}
+
+% Insight / Recommendation box (Phase C)
+\newtcolorbox{polyainsight}[1][]{%
+  colback=polyawarn,
+  colframe=polyagray,
+  fonttitle=\bfseries,
+  title={Recommendation},
+  breakable,
+  #1
+}
+
+% Warning / Limitation box
+\newtcolorbox{polyawarnbox}[1][]{%
+  colback=polyafail,
+  colframe=polyared,
+  fonttitle=\bfseries,
+  title={Limitation},
+  breakable,
+  #1
+}
+
+% ── Header / Footer ──────────────────────────────────────────────────
+\pagestyle{fancy}
+\fancyhf{}
+\renewcommand{\headrulewidth}{0.4pt}
+\fancyhead[L]{\small\textcolor{polyagray}{uber-polya report}}
+\fancyhead[R]{\small\textcolor{polyagray}{\today}}
+\fancyfoot[C]{\small\textcolor{polyagray}{\thepage}}
+
+% ── Verification check marks ─────────────────────────────────────────
+\newcommand{\passmark}{\textcolor{polyagreen}{\checkmark}}
+\newcommand{\failmark}{\textcolor{polyared}{$\times$}}
+
+% ── Compact description list for variables ────────────────────────────
+\newlist{varlist}{description}{1}
+\setlist[varlist]{font=\normalfont\itshape, labelwidth=2cm, leftmargin=2.5cm, style=nextline}

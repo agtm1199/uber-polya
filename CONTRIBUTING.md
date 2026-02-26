@@ -122,6 +122,17 @@ Each skill follows a phase-based progression:
 4. Test by copying your modified skill to `~/.claude/skills/` and invoking it
 5. Submit a PR with a description of what you added and why
 
+## LaTeX Templates
+
+Templates live in `templates/latex/`. When modifying templates:
+
+- Templates use Jinja2 with custom delimiters: `\VAR{expr}` for variables, `\BLOCK{stmt}` for blocks
+- Use the `|e` filter for all user-facing text to escape LaTeX special characters
+- Raw math expressions (intentional LaTeX) do NOT use the `|e` filter
+- Test template changes by running: `python utils/render_example.py examples/team-assignment/`
+- Verify both the `.tex` source (should compile with `pdflatex`) and the `.pdf` output (via fpdf2)
+- Custom environments are defined in `polya.sty` -- add new environments there, not in templates
+
 ## Testing Skills
 
 Skills are tested through conversation, not unit tests:

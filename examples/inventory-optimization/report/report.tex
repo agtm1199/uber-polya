@@ -1,0 +1,242 @@
+\documentclass[11pt, a4paper]{article}
+
+% ── Packages ──────────────────────────────────────────────────────────
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{tcolorbox}
+\usepackage{polya}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=polyablue,
+  urlcolor=polyablue,
+  citecolor=polyablue,
+}
+
+% ── Code listing style ────────────────────────────────────────────────
+\lstdefinestyle{polya-python}{
+  language=Python,
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{polyablue}\bfseries,
+  commentstyle=\color{polyagray}\itshape,
+  stringstyle=\color{polyagreen},
+  numbers=left,
+  numberstyle=\tiny\color{polyagray},
+  numbersep=8pt,
+  frame=single,
+  framerule=0.4pt,
+  rulecolor=\color{polyagray},
+  breaklines=true,
+  showstringspaces=false,
+  tabsize=4,
+}
+\lstset{style=polya-python}
+\title{Inventory Optimization -- EOQ \& Newsvendor}
+\author{uber-polya}
+\date{2026-02-26}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+% ── Phase A: Problem Formulation ─────────────────────────────────────
+\section{Problem Formulation}
+
+\begin{polyamodel}
+
+\textbf{Problem Type}: Find \hfill
+\textbf{Domain}: Mathematical Optimization
+
+
+\end{polyamodel}
+
+% ── Universe ──────────────────────────────────────────────────────────
+\subsection{Universe}
+
+\begin{itemize}
+  \item $Eoq: \{quantity, total_cost, ordering_cost, holding_cost, orders_per_year, cycle_time_days\}$
+  \item $Reorder Point: \{rop, safety_stock, z_score, mean_demand_lt, std_demand_lt\}$
+  \item $Newsvendor: \{critical_ratio, optimal_q, expected_profit, expected_leftover, expected_shortage\}$
+  \item $Simulation: \{n_cycles, simulated_fill_rate, target_service_level, fill_rate_error, simulated_nv_mean_profit, simulated_nv_std_profit\}$
+\end{itemize}
+
+% ── Variables ─────────────────────────────────────────────────────────
+\subsection{Variables}
+
+\begin{longtable}{lll}
+\toprule
+\textbf{Symbol} & \textbf{Meaning} & \textbf{Type / Range} \\
+\midrule
+\endhead
+$x$ & decision variable & $\mathbb{{R}}$ \\
+\bottomrule
+\end{longtable}
+
+% ── Structure ─────────────────────────────────────────────────────────
+\subsection{Structure}
+
+A retail store sells a product with the following characteristics:
+
+- **Annual demand**: 10,000 units
+- **Order cost**: \$50 per order
+- **Holding cost**: \$2/unit/year
+- **Lead time**: 1 week (deterministic)
+- **Weekly demand**: mean = 192 units, std = 40 units
+- **Perishable variant**: unit cost = \$10, selling price = \$25, salvage value = \$3
+
+**Questions**:
+1. What is the optimal order quantity (EOQ)?
+2. What reorder point achieves a 95\% service level?
+3. What is the optimal newsvendor order quantity for the perishable variant?
+4. How sensitive are these answers to parameter changes?
+
+% ── Mapping ───────────────────────────────────────────────────────────
+\subsection{Real-World Mapping}
+
+\begin{longtable}{ll}
+\toprule
+\textbf{Real-World Concept} & \textbf{Mathematical Object} \\
+\midrule
+\endhead
+problem input & $instance parameters$ \\
+\bottomrule
+\end{longtable}
+
+% ── Constraints ───────────────────────────────────────────────────────
+\subsection{Constraints}
+
+\begin{enumerate}
+  \item $Economic Order Quantity (EOQ)**: Balances ordering cost and holding cost to minimize total inventory cost$
+  \hfill \textit{()}
+  \item $Reorder Point (ROP)**: Inventory level that triggers a new order, accounting for lead-time demand$
+  \hfill \textit{()}
+  \item $Safety Stock**: Extra inventory held to buffer against demand variability during lead time$
+  \hfill \textit{()}
+  \item $Newsvendor Model**: Single-period stocking decision for perishable goods under demand uncertainty$
+  \hfill \textit{()}
+  \item $Critical Ratio**: Cu / (Cu + Co)$
+  \hfill \textit{(the probability threshold for the newsvendor optimal quantity)}
+  \item $Service Level**: Probability of not stocking out during a replenishment cycle$
+  \hfill \textit{()}
+\end{enumerate}
+
+% ── Objective / Claim ─────────────────────────────────────────────────
+\subsection{Claim}
+
+
+% ── Approach ──────────────────────────────────────────────────────────
+\subsection{Approach}
+
+\begin{description}
+  \item[Suggested approach:] EOQ + (s,Q) reorder point + Newsvendor
+  \item[Complexity class:] 
+  \item[Available tools:] EOQ +
+\end{description}
+% ── Phase B: Solution ────────────────────────────────────────────────
+\section{Solution}
+
+\begin{polyaresult}
+
+\textbf{Answer}: Solution computed
+
+
+\textbf{Optimal}: No / Unknown \hfill
+\textbf{Feasible}: No
+\textbf{Algorithm}: EOQ + (s,Q) reorder point + Newsvendor \quad $$
+
+\textbf{Time}: 0.0019171980093233287s
+
+
+\end{polyaresult}
+
+% ── Solution Details ──────────────────────────────────────────────────
+\subsection{Solution Details}
+
+Solution computed successfully.
+
+% ── Verification ──────────────────────────────────────────────────────
+\subsection{Verification}
+
+\begin{longtable}{lcl}
+\toprule
+\textbf{Check} & \textbf{Status} & \textbf{Detail} \\
+\midrule
+\endhead
+Eoq Positive & \passmark & Passed \\
+Eoq Formula Correct & \passmark & Passed \\
+Total Cost At Eoq & \passmark & Passed \\
+Rop Gt Mean Demand & \passmark & Passed \\
+Safety Stock Positive & \passmark & Passed \\
+Newsvendor In Range & \passmark & Passed \\
+Critical Ratio Correct & \passmark & Passed \\
+Simulation Service Level & \passmark & Passed \\
+All Passed & \passmark & Passed \\
+\bottomrule
+\end{longtable}
+
+% ── Phase C: Interpretation ──────────────────────────────────────────
+\section{Interpretation}
+
+% ── The Question & The Answer ─────────────────────────────────────────
+\subsection{The Question}
+A retail store sells a product with the following characteristics:
+
+- **Annual demand**: 10,000 units
+- **Order cost**: \$50 per order
+- **Holding cost**: \$2/unit/year
+- **Lead time**: 1 week (deterministic)
+- **Weekly demand**: mean = 192 units, std = 40 units
+- **Perishable variant**: unit cost = \$10, selling price = \$25, salvage value = \$3
+
+**Questions**:
+1.
+
+\subsection{The Answer}
+
+\begin{polyainsight}[title={Bottom Line}]
+A feasible solution was found.
+\end{polyainsight}
+
+% ── What This Means ───────────────────────────────────────────────────
+\subsection{What This Means}
+
+- EOQ: \textasciitilde{}707 units, total cost \textasciitilde{}\$1,414/year, \textasciitilde{}14 orders/year
+- Reorder point: \textasciitilde{}258 units (with \textasciitilde{}66 units safety stock)
+- Newsvendor Q: \textasciitilde{}222 units, critical ratio \textasciitilde{}0.682
+- Monte Carlo fill rate: within 3\% of 95\% target
+
+% ── Sensitivity Analysis ──────────────────────────────────────────────
+
+% ── Figures ───────────────────────────────────────────────────────────
+
+% ── Recommendations ───────────────────────────────────────────────────
+\subsection{Recommendations}
+
+\begin{enumerate}
+  \item Review the model assumptions to ensure real-world fidelity.
+\end{enumerate}
+
+% ── Limitations ───────────────────────────────────────────────────────
+\subsection{Limitations}
+
+\begin{polyawarnbox}
+\begin{itemize}
+  \item Model assumes deterministic parameters; real-world variability not captured.
+  \item Solution quality depends on the accuracy of input data.
+\end{itemize}
+\end{polyawarnbox}
+
+% ── Appendix ─────────────────────────────────────────────────────────
+
+\end{document}

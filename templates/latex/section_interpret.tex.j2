@@ -1,0 +1,70 @@
+\section{Interpretation}
+
+% ── The Question & The Answer ─────────────────────────────────────────
+\subsection{The Question}
+\VAR{interpretation.question|e}
+
+\subsection{The Answer}
+
+\begin{polyainsight}[title={Bottom Line}]
+\VAR{interpretation.answer|e}
+\end{polyainsight}
+
+% ── What This Means ───────────────────────────────────────────────────
+\subsection{What This Means}
+
+\VAR{interpretation.what_this_means|e}
+
+% ── Sensitivity Analysis ──────────────────────────────────────────────
+\BLOCK{if interpretation.sensitivity}
+\subsection{Sensitivity Analysis}
+
+\begin{longtable}{llrrl}
+\toprule
+\textbf{Parameter} & \textbf{Current} & \textbf{Change} & \textbf{New Obj.} & \textbf{Class} \\
+\midrule
+\endhead
+\BLOCK{for row in interpretation.sensitivity}
+\VAR{row.parameter|e} & \VAR{row.current|e} & \VAR{row.change|e} & \VAR{row.new_objective|e} &
+\BLOCK{if row.classification == 'robust'}\textcolor{polyagreen}{\VAR{row.classification}}\BLOCK{elif row.classification == 'critical'}\textcolor{polyared}{\VAR{row.classification}}\BLOCK{else}\textcolor{polyagray}{\VAR{row.classification}}\BLOCK{endif} \\
+\BLOCK{endfor}
+\bottomrule
+\end{longtable}
+\BLOCK{endif}
+
+% ── Figures ───────────────────────────────────────────────────────────
+\BLOCK{if interpretation.figures}
+\subsection{Visualizations}
+
+\BLOCK{for fig in interpretation.figures}
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=0.85\textwidth]{\VAR{fig.path.name}}
+\caption{\VAR{fig.caption|e}}
+\end{figure}
+\BLOCK{endfor}
+\BLOCK{endif}
+
+% ── Recommendations ───────────────────────────────────────────────────
+\BLOCK{if interpretation.recommendations}
+\subsection{Recommendations}
+
+\begin{enumerate}
+\BLOCK{for rec in interpretation.recommendations}
+  \item \VAR{rec|e}
+\BLOCK{endfor}
+\end{enumerate}
+\BLOCK{endif}
+
+% ── Limitations ───────────────────────────────────────────────────────
+\BLOCK{if interpretation.limitations}
+\subsection{Limitations}
+
+\begin{polyawarnbox}
+\begin{itemize}
+\BLOCK{for lim in interpretation.limitations}
+  \item \VAR{lim|e}
+\BLOCK{endfor}
+\end{itemize}
+\end{polyawarnbox}
+\BLOCK{endif}

@@ -1,0 +1,246 @@
+\documentclass[11pt, a4paper]{article}
+
+% ── Packages ──────────────────────────────────────────────────────────
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{tcolorbox}
+\usepackage{polya}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=polyablue,
+  urlcolor=polyablue,
+  citecolor=polyablue,
+}
+
+% ── Code listing style ────────────────────────────────────────────────
+\lstdefinestyle{polya-python}{
+  language=Python,
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{polyablue}\bfseries,
+  commentstyle=\color{polyagray}\itshape,
+  stringstyle=\color{polyagreen},
+  numbers=left,
+  numberstyle=\tiny\color{polyagray},
+  numbersep=8pt,
+  frame=single,
+  framerule=0.4pt,
+  rulecolor=\color{polyagray},
+  breaklines=true,
+  showstringspaces=false,
+  tabsize=4,
+}
+\lstset{style=polya-python}
+\title{A/B Test Example}
+\author{uber-polya}
+\date{2026-02-26}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+% ── Phase A: Problem Formulation ─────────────────────────────────────
+\section{Problem Formulation}
+
+\begin{polyamodel}
+
+\textbf{Problem Type}: Find \hfill
+\textbf{Domain}: Statistical Inference
+
+
+\end{polyamodel}
+
+% ── Universe ──────────────────────────────────────────────────────────
+\subsection{Universe}
+
+\begin{itemize}
+  \item $Frequentist: \{z_statistic, p_value, ci_diff, cohens_h, is_significant\}$
+  \item $Bayesian: \{prob_b_better, expected_lift, credible_interval_lift\}$
+  \item $Bootstrap: \{ci_diff\}$
+  \item $Power: \{observed, n_for_80pct\}$
+\end{itemize}
+
+% ── Variables ─────────────────────────────────────────────────────────
+\subsection{Variables}
+
+\begin{longtable}{lll}
+\toprule
+\textbf{Symbol} & \textbf{Meaning} & \textbf{Type / Range} \\
+\midrule
+\endhead
+$\mu_1, \mu_2$ & population means for groups 1 and 2 & $\mathbb{{R}}$ \\
+$\bar{{x}}_1, \bar{{x}}_2$ & sample means & $\mathbb{{R}}$ \\
+$s_1, s_2$ & sample standard deviations & $\mathbb{{R}}_{{>0}}$ \\
+$n_1, n_2$ & sample sizes & $\mathbb{{Z}}^+$ \\
+$t$ & test statistic (hypothesis test) & $\mathbb{{R}}$ \\
+$p$ & p-value & $[0, 1]$ \\
+$\alpha$ & significance level & $[0, 1]$ \\
+\bottomrule
+\end{longtable}
+
+% ── Structure ─────────────────────────────────────────────────────────
+\subsection{Structure}
+
+- **Control (A)**: 1,500 visitors, 60 conversions (4.00\%)
+- **Treatment (B)**: 1,500 visitors, 85 conversions (5.67\%)
+- **Question**: Is the new checkout significantly better?
+
+% ── Mapping ───────────────────────────────────────────────────────────
+\subsection{Real-World Mapping}
+
+\begin{longtable}{ll}
+\toprule
+\textbf{Real-World Concept} & \textbf{Mathematical Object} \\
+\midrule
+\endhead
+group average & $sample mean x-bar$ \\
+group variability & $sample std s$ \\
+sample count & $n$ \\
+significance threshold & $alpha = 0.05$ \\
+\bottomrule
+\end{longtable}
+
+% ── Constraints ───────────────────────────────────────────────────────
+\subsection{Constraints}
+
+\begin{enumerate}
+  \item $H_0: \mu_1 = \mu_2$
+  \hfill \textit{(null hypothesis)}
+  \item $H_1: \mu_1 \neq \mu_2$
+  \hfill \textit{(alternative hypothesis)}
+  \item $\alpha = 0.05$
+  \hfill \textit{(significance level)}
+  \item $t = \frac{\bar{x}_1 - \bar{x}_2}{\sqrt{\frac{s_1^2}{n_1} + \frac{s_2^2}{n_2}}}$
+  \hfill \textit{(Welch's t-test statistic)}
+\end{enumerate}
+
+% ── Objective / Claim ─────────────────────────────────────────────────
+\subsection{Objective}
+
+\begin{equation}
+\text{Reject } H_0 \text{ if } p < \alpha
+\end{equation}
+
+% ── Approach ──────────────────────────────────────────────────────────
+\subsection{Approach}
+
+\begin{description}
+  \item[Suggested approach:] Two-proportion z-test + Bayesian Beta-Binomial + Bootstrap
+  \item[Complexity class:] 
+  \item[Available tools:] Two-proportion z-test + Bayesian Beta-Binomial + Bootstrap
+\end{description}
+% ── Phase B: Solution ────────────────────────────────────────────────
+\section{Solution}
+
+\begin{polyaresult}
+
+\textbf{Answer}: Statistical test complete
+
+
+\textbf{Optimal}: No / Unknown \hfill
+\textbf{Feasible}: Yes
+\textbf{Algorithm}: Two-proportion z-test + Bayesian Beta-Binomial + Bootstrap \quad $$
+
+\textbf{Time}: 0.20763929595705122s
+
+\textbf{Certificate}: Assumptions checked; test statistic independently verified.
+
+\end{polyaresult}
+
+% ── Solution Details ──────────────────────────────────────────────────
+\subsection{Solution Details}
+
+
+Bayesian Analysis:
+
+Power Analysis:
+
+Recommendation: CAUTIOUS: Statistically significant but small effect. Consider practical impact.
+
+% ── Verification ──────────────────────────────────────────────────────
+\subsection{Verification}
+
+\begin{longtable}{lcl}
+\toprule
+\textbf{Check} & \textbf{Status} & \textbf{Detail} \\
+\midrule
+\endhead
+Rate A Correct & \passmark & Passed \\
+Rate B Correct & \passmark & Passed \\
+Bayesian Direction Agrees & \passmark & Passed \\
+All Methods Agree & \passmark & Passed \\
+\bottomrule
+\end{longtable}
+
+% ── Phase C: Interpretation ──────────────────────────────────────────
+\section{Interpretation}
+
+% ── The Question & The Answer ─────────────────────────────────────────
+\subsection{The Question}
+- **Control (A)**: 1,500 visitors, 60 conversions (4.
+
+\subsection{The Answer}
+
+\begin{polyainsight}[title={Bottom Line}]
+Test complete.
+\end{polyainsight}
+
+% ── What This Means ───────────────────────────────────────────────────
+\subsection{What This Means}
+
+- Z-statistic: \textasciitilde{}2.36, p-value: \textasciitilde{}0.018 (significant at alpha=0.05)
+- Cohen's h: \textasciitilde{}0.130 (small effect)
+- P(B > A): \textasciitilde{}98.9\% (Bayesian)
+- Power: \textasciitilde{}65\% (underpowered for this effect size)
+- Recommendation: "CAUTIOUS" -- significant but small effect
+
+% ── Sensitivity Analysis ──────────────────────────────────────────────
+\subsection{Sensitivity Analysis}
+
+\begin{longtable}{llrrl}
+\toprule
+\textbf{Parameter} & \textbf{Current} & \textbf{Change} & \textbf{New Obj.} & \textbf{Class} \\
+\midrule
+\endhead
+double\_sample\_size & present & removed &  &
+\textcolor{polyagreen}{robust} \\
+half\_effect & present & removed &  &
+\textcolor{polyagreen}{robust} \\
+power\_curve & present & removed &  &
+\textcolor{polyagreen}{robust} \\
+\bottomrule
+\end{longtable}
+
+% ── Figures ───────────────────────────────────────────────────────────
+
+% ── Recommendations ───────────────────────────────────────────────────
+\subsection{Recommendations}
+
+\begin{enumerate}
+  \item Report effect sizes alongside p-values for practical significance assessment.
+\end{enumerate}
+
+% ── Limitations ───────────────────────────────────────────────────────
+\subsection{Limitations}
+
+\begin{polyawarnbox}
+\begin{itemize}
+  \item Results are conditional on model assumptions (normality, independence, etc.).
+  \item Statistical significance does not imply practical importance.
+\end{itemize}
+\end{polyawarnbox}
+
+% ── Appendix ─────────────────────────────────────────────────────────
+
+\end{document}

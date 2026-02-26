@@ -769,6 +769,7 @@
         <a href="#outputs-model" class="sub">uber-model Outputs</a>
         <a href="#outputs-solve" class="sub">uber-solve Outputs</a>
         <a href="#outputs-interpret" class="sub">uber-interpret Outputs</a>
+        <a href="#outputs-report" class="sub">Report Output</a>
       </div>
       <div class="sidebar-section">
         <div class="sidebar-section-title">Knowledge</div>
@@ -780,6 +781,7 @@
       <div class="sidebar-section">
         <div class="sidebar-section-title">Design</div>
         <a href="#principles">Design Principles</a>
+        <a href="#pdf-architecture">PDF Architecture</a>
         <a href="#why-discrete">Why Discrete Math?</a>
         <a href="#expansion">Expansion Architecture</a>
       </div>
@@ -847,6 +849,12 @@
           <div class="pipeline-stage-name">/uber-interpret</div>
           <div class="pipeline-stage-label">"What does it MEAN?"</div>
           <div class="pipeline-stage-desc">Verified Solution &rarr; Actionable Insight</div>
+        </div>
+        <div class="pipeline-arrow">&rarr;</div>
+        <div class="pipeline-stage">
+          <div class="pipeline-stage-name">Phase D</div>
+          <div class="pipeline-stage-label">"How does it LOOK?"</div>
+          <div class="pipeline-stage-desc">Actionable Insight &rarr; PDF Report</div>
         </div>
       </div>
 
@@ -959,6 +967,27 @@
         </ul>
       </div>
 
+      <h3 id="outputs-report">Report Output (Phase D) <span class="badge-green badge">v1.1.0</span></h3>
+      <p>When LaTeX/PDF output mode is selected, the orchestrator invokes Phase D to generate a professional report. The report collects data from all three phases into typed dataclasses (<code>utils/latex_data.py</code>) and renders them through Jinja2 templates.</p>
+
+      <div class="output-block">
+        <h4>PDF Report <span class="badge">Phase D</span></h4>
+        <ul>
+          <li><strong>Title page:</strong> Problem title, author, date, pipeline mode</li>
+          <li><strong>Problem Formulation:</strong> Universe, variables table, structure, mapping, constraints, objective</li>
+          <li><strong>Solution:</strong> Answer, metrics, algorithm, verification table with pass/fail marks</li>
+          <li><strong>Interpretation:</strong> Question, answer, explanation, sensitivity table, embedded figures, recommendations, limitations</li>
+          <li><strong>Appendix:</strong> Python solver source code (optional)</li>
+        </ul>
+      </div>
+
+      <p>The report pipeline uses three components:</p>
+      <ul class="plain">
+        <li><strong><code>utils/latex_data.py</code></strong> &mdash; Typed dataclasses mirroring the artifacts from each phase (FormalModel, SolutionReport, InterpretationReport, ReportConfig)</li>
+        <li><strong><code>templates/latex/</code></strong> &mdash; Jinja2 templates with custom delimiters (<code>\VAR{}</code>, <code>\BLOCK{}</code>) plus <code>polya.sty</code> branded style</li>
+        <li><strong><code>utils/latex_renderer.py</code></strong> &mdash; LatexRenderer class with <code>render_tex()</code> (Jinja2 &rarr; .tex), <code>render_pdf()</code> (fpdf2 &rarr; .pdf), and <code>compile_tex()</code> (pdflatex, optional)</li>
+      </ul>
+
       <!-- REFERENCE KNOWLEDGE BASE -->
       <h2 id="knowledge-base">The Reference Knowledge Base</h2>
       <p>Fifteen reference files provide the domain knowledge that powers the skills. Each is a curated catalog designed to be read on demand during a specific skill phase. All reference files carry cross-reference indexes linking entries to counterparts in other files.</p>
@@ -1031,6 +1060,34 @@
         </div>
       </div>
 
+      <!-- PDF REPORT ARCHITECTURE -->
+      <h2 id="pdf-architecture">PDF Report Architecture <span class="badge-green badge">v1.1.0</span></h2>
+      <p>The PDF report system is a self-contained rendering pipeline that transforms structured phase data into professional mathematical documents.</p>
+
+      <div class="file-tree">
+        <div><span class="dir">templates/latex/</span> <span class="comment">&mdash; Jinja2 templates</span></div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="file">report.tex.j2</span> <span class="comment">&mdash; Master document template</span></div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="file">preamble.tex.j2</span> <span class="comment">&mdash; Shared LaTeX preamble (packages, styles)</span></div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="file">section_model.tex.j2</span> <span class="comment">&mdash; Phase A: Problem Formulation</span></div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="file">section_solve.tex.j2</span> <span class="comment">&mdash; Phase B: Solution</span></div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="file">section_interpret.tex.j2</span> <span class="comment">&mdash; Phase C: Interpretation</span></div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="file">section_appendix.tex.j2</span> <span class="comment">&mdash; Appendix: Solver code</span></div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="file">polya.sty</span> <span class="comment">&mdash; Custom style (colors, environments)</span></div>
+        <br>
+        <div><span class="dir">utils/</span> <span class="comment">&mdash; Python rendering utilities</span></div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="file">latex_data.py</span> <span class="comment">&mdash; Typed dataclasses for all phases</span></div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="file">latex_renderer.py</span> <span class="comment">&mdash; LatexRenderer (Jinja2 + fpdf2)</span></div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="file">render_example.py</span> <span class="comment">&mdash; CLI tool for example reports</span></div>
+      </div>
+
+      <p><strong>Key design decisions:</strong></p>
+      <ul class="plain">
+        <li><strong>No system LaTeX required.</strong> PDF generation uses fpdf2 (pure Python) with matplotlib.mathtext for math rendering. The .tex source is always saved for optional pdflatex compilation.</li>
+        <li><strong>Custom Jinja2 delimiters.</strong> Templates use <code>\VAR{expr}</code> and <code>\BLOCK{stmt}</code> to avoid conflicts with LaTeX's own braces and backslashes.</li>
+        <li><strong>Branded environments.</strong> <code>polya.sty</code> defines four tcolorbox environments: polyamodel (blue), polyaresult (green), polyainsight (yellow), polyawarnbox (red) &mdash; matching the pipeline's three phases plus warnings.</li>
+        <li><strong>Data-driven.</strong> The rendering engine reads typed dataclasses (FormalModel, SolutionReport, InterpretationReport), not free-form text. This ensures structural consistency across all reports.</li>
+      </ul>
+
       <!-- WHY DISCRETE MATH -->
       <h2 id="why-discrete">Why Start With Discrete Mathematics?</h2>
       <p>Polya's method is universal, but our implementation begins with discrete mathematics for practical reasons:</p>
@@ -1072,6 +1129,10 @@
         <div><span class="dir">skills/uber-interpret/references/</span></div>
         <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="file">interpretation-patterns.md</span> <span class="comment">&mdash; 8 pattern sections</span> <span class="shipped">(shipped)</span></div>
         <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="file">visualization.md</span> <span class="comment">&mdash; 20+ chart types</span> <span class="shipped">(shipped)</span></div>
+        <br>
+        <div><span class="dir">templates/latex/</span></div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="file">report.tex.j2</span> <span class="comment">&mdash; Master report template</span> <span class="shipped">(shipped)</span></div>
+        <div>&nbsp;&nbsp;&nbsp;&nbsp;<span class="file">polya.sty</span> <span class="comment">&mdash; Branded style package</span> <span class="shipped">(shipped)</span></div>
       </div>
 
       <h3>Level 2: Protocol Sections</h3>
@@ -1092,7 +1153,7 @@
               <th>Shipped (Discrete)</th>
               <th>Shipped (Continuous)</th>
               <th>Shipped (Statistical)</th>
-              <th>Planned (ML)</th>
+              <th>Shipped (ML/Sim)</th>
             </tr>
           </thead>
           <tbody>
@@ -1100,25 +1161,37 @@
               <td>Graph coloring</td>
               <td>Convex optimization</td>
               <td>Hypothesis testing (t, chi2, ANOVA)</td>
-              <td>Classification</td>
+              <td>Classification (RF, GBT)</td>
             </tr>
             <tr>
               <td>ILP</td>
               <td>Quadratic programming</td>
               <td>Regression (OLS, logistic, GLM)</td>
-              <td>Clustering</td>
+              <td>Clustering (K-Means, DBSCAN)</td>
             </tr>
             <tr>
               <td>SAT</td>
               <td>Gradient descent / BFGS</td>
               <td>Bayesian inference (MCMC, conjugate)</td>
-              <td>Dimensionality reduction</td>
+              <td>Feature selection (PCA)</td>
             </tr>
             <tr>
               <td>Knapsack</td>
               <td>Interior point / SQP</td>
               <td>Survival analysis (KM, Cox PH)</td>
-              <td>Feature selection</td>
+              <td>Queuing (M/M/c + DES)</td>
+            </tr>
+            <tr>
+              <td>Bin packing</td>
+              <td>Multi-objective (NSGA-II)</td>
+              <td>Time series (SARIMA, Prophet)</td>
+              <td>SIR/ODE simulation</td>
+            </tr>
+            <tr>
+              <td>Assignment</td>
+              <td>Financial (NPV, IRR)</td>
+              <td>Causal inference (DiD, PSM)</td>
+              <td>Monte Carlo risk</td>
             </tr>
           </tbody>
         </table>

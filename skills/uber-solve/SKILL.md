@@ -333,6 +333,8 @@ Present the solution in this structured format:
 [Independent check results]
 ```
 
+**LaTeX output** (if requested by the orchestrator): Populate a `SolutionReport` dataclass from `utils/latex_data.py` with the artifact data -- answer, objective value, optimality, feasibility, algorithm, complexity, timing, certificate, solution details, and verification checks. If output mode is "Both", also store the Python solver source in `solver_code` for inclusion in the LaTeX appendix.
+
 ### Step 3: Verify correctness
 
 Run the independent verification:

@@ -1,0 +1,244 @@
+\documentclass[11pt, a4paper]{article}
+
+% ── Packages ──────────────────────────────────────────────────────────
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{tcolorbox}
+\usepackage{polya}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=polyablue,
+  urlcolor=polyablue,
+  citecolor=polyablue,
+}
+
+% ── Code listing style ────────────────────────────────────────────────
+\lstdefinestyle{polya-python}{
+  language=Python,
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{polyablue}\bfseries,
+  commentstyle=\color{polyagray}\itshape,
+  stringstyle=\color{polyagreen},
+  numbers=left,
+  numberstyle=\tiny\color{polyagray},
+  numbersep=8pt,
+  frame=single,
+  framerule=0.4pt,
+  rulecolor=\color{polyagray},
+  breaklines=true,
+  showstringspaces=false,
+  tabsize=4,
+}
+\lstset{style=polya-python}
+\title{Feature Importance \& Model Comparison}
+\author{uber-polya}
+\date{2026-02-26}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+% ── Phase A: Problem Formulation ─────────────────────────────────────
+\section{Problem Formulation}
+
+\begin{polyamodel}
+
+\textbf{Problem Type}: Find \hfill
+\textbf{Domain}: Machine Learning
+
+
+\end{polyamodel}
+
+% ── Universe ──────────────────────────────────────────────────────────
+\subsection{Universe}
+
+\begin{itemize}
+  \item $Pca: \{explained_variance_ratio, cumulative_variance, n_components_95pct\}$
+  \item $Mutual Information: \{feature_scores, feature_ranking, selected_indices\}$
+  \item $Rfe: \{feature_ranking, selected_indices\}$
+  \item $Feature Overlap: \{mi_rfe_overlap, overlap_count\}$
+  \item $Best Combination: \{model_name, feature_method, accuracy, accuracy_std\}$
+\end{itemize}
+
+% ── Variables ─────────────────────────────────────────────────────────
+\subsection{Variables}
+
+\begin{longtable}{lll}
+\toprule
+\textbf{Symbol} & \textbf{Meaning} & \textbf{Type / Range} \\
+\midrule
+\endhead
+$x$ & decision variable & $\mathbb{{R}}$ \\
+\bottomrule
+\end{longtable}
+
+% ── Structure ─────────────────────────────────────────────────────────
+\subsection{Structure}
+
+- **Data**: 800 samples, 20 features, binary target (\textasciitilde{}balanced classes)
+- **True structure**: Only 5 features are informative, 3 are redundant, 12 are noise
+- **Questions**: (1) How many components explain 95\% of variance? (2) Which features matter most? (3) Which model + feature set combination is best?
+
+% ── Mapping ───────────────────────────────────────────────────────────
+\subsection{Real-World Mapping}
+
+\begin{longtable}{ll}
+\toprule
+\textbf{Real-World Concept} & \textbf{Mathematical Object} \\
+\midrule
+\endhead
+problem input & $instance parameters$ \\
+\bottomrule
+\end{longtable}
+
+% ── Constraints ───────────────────────────────────────────────────────
+\subsection{Constraints}
+
+\begin{enumerate}
+  \item $PCA explained variance**: How much total variance each principal component captures; cumulative sum determines dimensionality reduction threshold$
+  \hfill \textit{()}
+  \item $Mutual information**: Information-theoretic measure of dependency between a feature and the target; zero means independence$
+  \hfill \textit{()}
+  \item $Recursive Feature Elimination (RFE)**: Iteratively removes features with the smallest importance weights from a fitted model$
+  \hfill \textit{()}
+  \item $Pipeline**: Standardized workflow of preprocessing, feature selection, and model fitting$
+  \hfill \textit{()}
+  \item $Cross-validation (5-fold)**: Splits data into 5 folds, trains on 4, tests on 1, rotates; provides unbiased accuracy estimate with variance$
+  \hfill \textit{()}
+  \item $Model comparison**: Evaluating multiple classifiers on identical data splits to identify the best approach for a given dataset$
+  \hfill \textit{()}
+\end{enumerate}
+
+% ── Objective / Claim ─────────────────────────────────────────────────
+\subsection{Claim}
+
+
+% ── Approach ──────────────────────────────────────────────────────────
+\subsection{Approach}
+
+\begin{description}
+  \item[Suggested approach:] PCA + Mutual Information + RFE (Random Forest) + 4-Model 5-Fold CV
+  \item[Complexity class:] 
+  \item[Available tools:] PCA + Mutual Information + RFE
+\end{description}
+% ── Phase B: Solution ────────────────────────────────────────────────
+\section{Solution}
+
+\begin{polyaresult}
+
+\textbf{Answer}: Solution computed
+
+
+\textbf{Optimal}: No / Unknown \hfill
+\textbf{Feasible}: No
+\textbf{Algorithm}: PCA + Mutual Information + RFE (Random Forest) + 4-Model 5-Fold CV \quad $$
+
+\textbf{Time}: 5.616892437974457s
+
+
+\end{polyaresult}
+
+% ── Solution Details ──────────────────────────────────────────────────
+\subsection{Solution Details}
+
+
+Method: 1. PCA (Principal Component Analysis): Fit on all 20 features. Record explained variance per component and find the number of components needed for 95\% cumulative variance. Reveals how much redundancy exists in the feature space.
+
+2. Mutual Information feature selection: Score each feature's mutual information with the target. Rank all 20 features and select the top 8. Filter method -- fast, model-agnostic, detects nonlinear relationships.
+
+3. Recursive Feature Elimination (RFE): Use a Random Forest estimator to recursively eliminate the least important features. Select the top 8. Wrapper method -- slower but accounts for feature interactions through the model.
+
+4. Model comparison (5-fold CV): Compare Logistic Regression, Random Forest, SVM (RBF kernel), and k-NN on three feature sets: all 20 features, MI top 8, and RFE top 8. Each combination evaluated with 5-fold stratified cross-validation accuracy.
+
+5. Best combination: Identify the model + feature set with the highest mean CV accuracy.
+
+% ── Verification ──────────────────────────────────────────────────────
+\subsection{Verification}
+
+\begin{longtable}{lcl}
+\toprule
+\textbf{Check} & \textbf{Status} & \textbf{Detail} \\
+\midrule
+\endhead
+Pca 95Pct Lt 20 & \passmark & Passed \\
+Informative Features Selected & \passmark & Passed \\
+Rfe Features Selected & \passmark & Passed \\
+Selected Beats Random & \passmark & Passed \\
+Best Accuracy Gt 80Pct & \passmark & Passed \\
+Cv Scores Stable & \passmark & Passed \\
+All Passed & \passmark & Passed \\
+\bottomrule
+\end{longtable}
+
+% ── Phase C: Interpretation ──────────────────────────────────────────
+\section{Interpretation}
+
+% ── The Question & The Answer ─────────────────────────────────────────
+\subsection{The Question}
+- **Data**: 800 samples, 20 features, binary target (\textasciitilde{}balanced classes)
+- **True structure**: Only 5 features are informative, 3 are redundant, 12 are noise
+- **Questions**: (1) How many components explain 95\% of variance? (2) Which features matter most? (3) Which model + feature set combination is best?.
+
+\subsection{The Answer}
+
+\begin{polyainsight}[title={Bottom Line}]
+A feasible solution was found.
+\end{polyainsight}
+
+% ── What This Means ───────────────────────────────────────────────────
+\subsection{What This Means}
+
+- PCA: Fewer than 20 components needed for 95\% variance (dimensionality is compressible)
+- Mutual information: Top 8 features recover at least 3 of the 5 true informative features
+- RFE (Random Forest): Top 8 features also recover at least 3 of the 5 true informative features
+- Best model accuracy: > 80\% via 5-fold cross-validation
+- Feature selection helps: Best selected-feature accuracy >= all-features accuracy - 0.05
+- MI/RFE overlap: Substantial agreement between the two selection methods
+- All 7 verification checks pass
+
+1. PCA (Principal Component Analysis): Fit on all 20 features. Record explained variance per component and find the number of components needed for 95\% cumulative variance. Reveals how much redundancy exists in the feature space.
+
+2. Mutual Information feature selection: Score each feature's mutual information with the target. Rank all 20 features and select the top 8. Filter method -- fast, model-agnostic, detects nonlinear relationships.
+
+3. Recursive Feature Elimination (RFE): Use a Random Forest estimator to recursively eliminate the least important features. Select the top 8. Wrapper method -- slower but accounts for feature interactions through the model.
+
+4. Model comparison (5-fold CV): Compare Logistic Regression, Random Forest, SVM (RBF kernel), and k-NN on three feature sets: all 20 features, MI top 8, and RFE top 8. Each combination evaluated with 5-fold stratified cross-validation accuracy.
+
+5. Best combination: Identify the model + feature set with the highest mean CV accuracy.
+
+% ── Sensitivity Analysis ──────────────────────────────────────────────
+
+% ── Figures ───────────────────────────────────────────────────────────
+
+% ── Recommendations ───────────────────────────────────────────────────
+\subsection{Recommendations}
+
+\begin{enumerate}
+  \item Review the model assumptions to ensure real-world fidelity.
+\end{enumerate}
+
+% ── Limitations ───────────────────────────────────────────────────────
+\subsection{Limitations}
+
+\begin{polyawarnbox}
+\begin{itemize}
+  \item Model assumes deterministic parameters; real-world variability not captured.
+  \item Solution quality depends on the accuracy of input data.
+\end{itemize}
+\end{polyawarnbox}
+
+% ── Appendix ─────────────────────────────────────────────────────────
+
+\end{document}

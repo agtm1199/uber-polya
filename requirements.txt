@@ -36,6 +36,10 @@ pandas
 simpy
 dowhy
 
+# Report generation
+Jinja2
+fpdf2
+
 # Testing
 pytest
 pytest-timeout

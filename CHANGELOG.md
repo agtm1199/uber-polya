@@ -4,6 +4,38 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [1.1.0] - 2026-02-25
+
+### Added
+
+- **LaTeX/PDF output support**: Three output modes selectable at invocation:
+  - **Python** (default): solver script + console output + JSON (existing behavior)
+  - **LaTeX/PDF**: professional mathematical report typeset as `.tex` + compiled `.pdf`
+  - **Both**: full Python output AND a compiled PDF report
+- **Jinja2 LaTeX templates** (`templates/latex/`):
+  - `report.tex.j2`: master document template
+  - `preamble.tex.j2`: shared preamble (amsmath, booktabs, graphicx, hyperref, etc.)
+  - `section_model.tex.j2`: Phase A formulation (universe, variables, constraints, objective)
+  - `section_solve.tex.j2`: Phase B solution (algorithm, verification table, certificate)
+  - `section_interpret.tex.j2`: Phase C interpretation (sensitivity, figures, recommendations)
+  - `section_appendix.tex.j2`: optional Python solver listing
+  - `polya.sty`: custom style with branded environments (`polyamodel`, `polyaresult`, `polyainsight`)
+- **`utils/latex_data.py`**: Dataclasses mirroring the three artifact schemas (`FormalModel`, `SolutionReport`, `InterpretationReport`) plus supporting types
+- **`utils/latex_renderer.py`**: `LatexRenderer` class with `render_tex()` (Jinja2) and `render_pdf()` (fpdf2 + matplotlib math) methods; optional `compile_tex()` for system LaTeX
+- **`utils/render_example.py`**: CLI utility to generate PDF reports from any existing example's `solution.json`
+- **Phase D: Generate Report** added to orchestrator (`skills/uber-polya/SKILL.md`) for LaTeX/PDF modes
+- **Artifact 4: PDF Report** schema added to orchestrator
+- New dependencies: `Jinja2`, `fpdf2`
+
+### Changed
+
+- `skills/uber-polya/SKILL.md`: added Output Format Selection section and Phase D
+- `skills/uber-model/SKILL.md`: added LaTeX output instruction at end of Phase 3
+- `skills/uber-solve/SKILL.md`: added LaTeX output instruction at end of Phase 3
+- `skills/uber-interpret/SKILL.md`: added LaTeX output instruction at end of Phase 4
+- `requirements.txt`: added Jinja2 and fpdf2
+- `CLAUDE.md`: added templates/ to project structure, LaTeX/PDF conventions section, updated current state
+
 ## [0.3.0] - 2026-02-21
 
 ### Added

@@ -1,0 +1,231 @@
+\documentclass[11pt, a4paper]{article}
+
+% ── Packages ──────────────────────────────────────────────────────────
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{tcolorbox}
+\usepackage{polya}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=polyablue,
+  urlcolor=polyablue,
+  citecolor=polyablue,
+}
+
+% ── Code listing style ────────────────────────────────────────────────
+\lstdefinestyle{polya-python}{
+  language=Python,
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{polyablue}\bfseries,
+  commentstyle=\color{polyagray}\itshape,
+  stringstyle=\color{polyagreen},
+  numbers=left,
+  numberstyle=\tiny\color{polyagray},
+  numbersep=8pt,
+  frame=single,
+  framerule=0.4pt,
+  rulecolor=\color{polyagray},
+  breaklines=true,
+  showstringspaces=false,
+  tabsize=4,
+}
+\lstset{style=polya-python}
+\title{Project Prioritization (MCDA)}
+\author{uber-polya}
+\date{2026-02-26}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+% ── Phase A: Problem Formulation ─────────────────────────────────────
+\section{Problem Formulation}
+
+\begin{polyamodel}
+
+\textbf{Problem Type}: Find \hfill
+\textbf{Domain}: Multi-Objective Optimization
+
+
+\end{polyamodel}
+
+% ── Universe ──────────────────────────────────────────────────────────
+\subsection{Universe}
+
+\begin{itemize}
+  \item $See problem description$
+\end{itemize}
+
+% ── Variables ─────────────────────────────────────────────────────────
+\subsection{Variables}
+
+\begin{longtable}{lll}
+\toprule
+\textbf{Symbol} & \textbf{Meaning} & \textbf{Type / Range} \\
+\midrule
+\endhead
+$x$ & decision variable & $\mathbb{{R}}$ \\
+\bottomrule
+\end{longtable}
+
+% ── Structure ─────────────────────────────────────────────────────────
+\subsection{Structure}
+
+Rank 8 software features by priority using 4 weighted criteria: user impact
+(weight 0.4), development effort (0.25, lower is better), strategic alignment
+(0.2), and revenue potential (0.15). Each feature is scored 1-10 on each
+criterion. Produce a defensible priority ranking.
+
+% ── Mapping ───────────────────────────────────────────────────────────
+\subsection{Real-World Mapping}
+
+\begin{longtable}{ll}
+\toprule
+\textbf{Real-World Concept} & \textbf{Mathematical Object} \\
+\midrule
+\endhead
+total score/cost & $objective function value$ \\
+\bottomrule
+\end{longtable}
+
+% ── Constraints ───────────────────────────────────────────────────────
+\subsection{Constraints}
+
+\begin{enumerate}
+  \item $MCDA / weighted scoring$
+  \hfill \textit{(structured approach to multi-objective decisions)}
+  \item $Score normalization$
+  \hfill \textit{(making heterogeneous criteria comparable)}
+  \item $Criterion inversion$
+  \hfill \textit{(handling "lower is better" metrics)}
+  \item $Sensitivity analysis$
+  \hfill \textit{(testing robustness of rankings to weight changes)}
+  \item $Transparency$
+  \hfill \textit{(full breakdown of how each feature scored)}
+\end{enumerate}
+
+% ── Objective / Claim ─────────────────────────────────────────────────
+\subsection{Objective}
+
+\begin{equation}
+\max \sum_{i,j} s_{ij} \, x_{ij}
+\end{equation}
+
+% ── Approach ──────────────────────────────────────────────────────────
+\subsection{Approach}
+
+\begin{description}
+  \item[Suggested approach:] MCDA weighted linear scoring with min-max normalization
+  \item[Complexity class:] 
+  \item[Available tools:] MCDA weighted linear scoring with min-max normalization
+\end{description}
+% ── Phase B: Solution ────────────────────────────────────────────────
+\section{Solution}
+
+\begin{polyaresult}
+
+\textbf{Answer}: Solution computed
+
+\textbf{Objective Value}: $0.8229$
+
+\textbf{Optimal}: Yes \hfill
+\textbf{Feasible}: Yes
+\textbf{Algorithm}: MCDA weighted linear scoring with min-max normalization \quad $$
+
+\textbf{Time}: 0.0002983359736390412s
+
+\textbf{Certificate}: Solver reports optimal.
+
+\end{polyaresult}
+
+% ── Solution Details ──────────────────────────────────────────────────
+\subsection{Solution Details}
+
+
+Objective value: z* = 0.8229
+
+Method: Multi-Criteria Decision Analysis (MCDA) with weighted linear scoring.
+
+- Normalize raw scores to [0, 1] range using min-max normalization
+- Invert effort scores (lower effort is better)
+- Apply criterion weights and compute weighted composite score
+- Rank features by composite score
+
+% ── Verification ──────────────────────────────────────────────────────
+\subsection{Verification}
+
+\begin{longtable}{lcl}
+\toprule
+\textbf{Check} & \textbf{Status} & \textbf{Detail} \\
+\midrule
+\endhead
+Feasibility & \passmark & All constraints satisfied \\
+Optimality & \passmark & MCDA weighted linear scoring with min-max normalization \\
+\bottomrule
+\end{longtable}
+
+% ── Phase C: Interpretation ──────────────────────────────────────────
+\section{Interpretation}
+
+% ── The Question & The Answer ─────────────────────────────────────────
+\subsection{The Question}
+Rank 8 software features by priority using 4 weighted criteria: user impact
+(weight 0.
+
+\subsection{The Answer}
+
+\begin{polyainsight}[title={Bottom Line}]
+The optimal solution has objective value z* = 0.8229.
+\end{polyainsight}
+
+% ── What This Means ───────────────────────────────────────────────────
+\subsection{What This Means}
+
+- Ranked list of 8 features with composite scores
+- Normalized score breakdown per criterion
+- Sensitivity analysis: how rankings change if weights shift
+- Independent verification of score computation
+
+Multi-Criteria Decision Analysis (MCDA) with weighted linear scoring.
+
+- Normalize raw scores to [0, 1] range using min-max normalization
+- Invert effort scores (lower effort is better)
+- Apply criterion weights and compute weighted composite score
+- Rank features by composite score
+
+% ── Sensitivity Analysis ──────────────────────────────────────────────
+
+% ── Figures ───────────────────────────────────────────────────────────
+
+% ── Recommendations ───────────────────────────────────────────────────
+\subsection{Recommendations}
+
+\begin{enumerate}
+  \item The solution is provably optimal; no further improvement is possible within this model.
+\end{enumerate}
+
+% ── Limitations ───────────────────────────────────────────────────────
+\subsection{Limitations}
+
+\begin{polyawarnbox}
+\begin{itemize}
+  \item Model assumes deterministic parameters; real-world variability not captured.
+  \item Solution quality depends on the accuracy of input data.
+\end{itemize}
+\end{polyawarnbox}
+
+% ── Appendix ─────────────────────────────────────────────────────────
+
+\end{document}

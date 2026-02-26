@@ -1,0 +1,218 @@
+\documentclass[11pt, a4paper]{article}
+
+% ── Packages ──────────────────────────────────────────────────────────
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{tcolorbox}
+\usepackage{polya}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=polyablue,
+  urlcolor=polyablue,
+  citecolor=polyablue,
+}
+
+% ── Code listing style ────────────────────────────────────────────────
+\lstdefinestyle{polya-python}{
+  language=Python,
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{polyablue}\bfseries,
+  commentstyle=\color{polyagray}\itshape,
+  stringstyle=\color{polyagreen},
+  numbers=left,
+  numberstyle=\tiny\color{polyagray},
+  numbersep=8pt,
+  frame=single,
+  framerule=0.4pt,
+  rulecolor=\color{polyagray},
+  breaklines=true,
+  showstringspaces=false,
+  tabsize=4,
+}
+\lstset{style=polya-python}
+\title{Event Seating}
+\author{uber-polya}
+\date{2026-02-26}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+% ── Phase A: Problem Formulation ─────────────────────────────────────
+\section{Problem Formulation}
+
+\begin{polyamodel}
+
+\textbf{Problem Type}: Find \hfill
+\textbf{Domain}: Integer Linear Programming
+
+
+\end{polyamodel}
+
+% ── Universe ──────────────────────────────────────────────────────────
+\subsection{Universe}
+
+\begin{itemize}
+  \item $Tables: \{0, 1, 2\}$
+  \item $Model Stats: \{total_variables, total_constraints\}$
+\end{itemize}
+
+% ── Variables ─────────────────────────────────────────────────────────
+\subsection{Variables}
+
+\begin{longtable}{lll}
+\toprule
+\textbf{Symbol} & \textbf{Meaning} & \textbf{Type / Range} \\
+\midrule
+\endhead
+$x$ & decision variable & $\mathbb{{R}}$ \\
+\bottomrule
+\end{longtable}
+
+% ── Structure ─────────────────────────────────────────────────────────
+\subsection{Structure}
+
+Seat 12 wedding guests at 3 tables (4 guests each). Some pairs must sit together (couples). Some pairs must not sit together (feuding relatives). Maximize the total "affinity" score across all tables, where affinity measures how well pairs of guests get along.
+
+% ── Mapping ───────────────────────────────────────────────────────────
+\subsection{Real-World Mapping}
+
+\begin{longtable}{ll}
+\toprule
+\textbf{Real-World Concept} & \textbf{Mathematical Object} \\
+\midrule
+\endhead
+total score/cost & $objective function value$ \\
+\bottomrule
+\end{longtable}
+
+% ── Constraints ───────────────────────────────────────────────────────
+\subsection{Constraints}
+
+\begin{enumerate}
+  \item $Constrained partitioning$
+  \hfill \textit{(dividing a set into groups subject to constraints)}
+  \item $Integer linear programming$
+  \hfill \textit{(binary decision variables with linear constraints)}
+  \item $Pairwise affinity modeling$
+  \hfill \textit{(encoding social preferences as an objective function)}
+  \item $Hard constraints vs soft objectives$
+  \hfill \textit{(mandatory seating rules vs preference optimization)}
+  \item $Linearization of quadratic terms$
+  \hfill \textit{(modeling "both at same table" with auxiliary variables)}
+\end{enumerate}
+
+% ── Objective / Claim ─────────────────────────────────────────────────
+\subsection{Objective}
+
+\begin{equation}
+\max \sum_{i,j} c_{ij} \, x_{ij}
+\end{equation}
+
+% ── Approach ──────────────────────────────────────────────────────────
+\subsection{Approach}
+
+\begin{description}
+  \item[Suggested approach:] ILP (PuLP/CBC, Branch \& Bound)
+  \item[Complexity class:] 
+  \item[Available tools:] ILP
+\end{description}
+% ── Phase B: Solution ────────────────────────────────────────────────
+\section{Solution}
+
+\begin{polyaresult}
+
+\textbf{Answer}: Solution computed
+
+\textbf{Objective Value}: $88.0$
+
+\textbf{Optimal}: Yes \hfill
+\textbf{Feasible}: Yes
+\textbf{Algorithm}: ILP (PuLP/CBC, Branch \& Bound) \quad $$
+
+\textbf{Time}: 0.6494897590018809s
+
+\textbf{Certificate}: Branch-and-bound solved to optimality.
+
+\end{polyaresult}
+
+% ── Solution Details ──────────────────────────────────────────────────
+\subsection{Solution Details}
+
+
+Objective value: z* = 88.0
+
+Method: Integer Linear Programming (ILP) via PuLP/CBC. Binary decision variables x[g,t] indicate whether guest g sits at table t. The objective maximizes the sum of pairwise affinity scores for guests seated at the same table. Constraints enforce: each guest at exactly one table, table capacity of 4, must-sit-together pairs at the same table, must-not-sit-together pairs at different tables.
+
+% ── Verification ──────────────────────────────────────────────────────
+\subsection{Verification}
+
+\begin{longtable}{lcl}
+\toprule
+\textbf{Check} & \textbf{Status} & \textbf{Detail} \\
+\midrule
+\endhead
+Feasibility & \passmark & All constraints satisfied \\
+Optimality & \passmark & ILP (PuLP/CBC, Branch \& Bound) \\
+\bottomrule
+\end{longtable}
+
+% ── Phase C: Interpretation ──────────────────────────────────────────
+\section{Interpretation}
+
+% ── The Question & The Answer ─────────────────────────────────────────
+\subsection{The Question}
+Seat 12 wedding guests at 3 tables (4 guests each).
+
+\subsection{The Answer}
+
+\begin{polyainsight}[title={Bottom Line}]
+The optimal solution has objective value z* = 88.0.
+\end{polyainsight}
+
+% ── What This Means ───────────────────────────────────────────────────
+\subsection{What This Means}
+
+- Optimal seating arrangement for 3 tables of 4 guests each
+- All must-sit-together constraints satisfied (couples at same table)
+- All must-not-sit-together constraints satisfied (feuding pairs separated)
+- Maximum total affinity score
+
+Integer Linear Programming (ILP) via PuLP/CBC. Binary decision variables x[g,t] indicate whether guest g sits at table t. The objective maximizes the sum of pairwise affinity scores for guests seated at the same table. Constraints enforce: each guest at exactly one table, table capacity of 4, must-sit-together pairs at the same table, must-not-sit-together pairs at different tables.
+
+% ── Sensitivity Analysis ──────────────────────────────────────────────
+
+% ── Figures ───────────────────────────────────────────────────────────
+
+% ── Recommendations ───────────────────────────────────────────────────
+\subsection{Recommendations}
+
+\begin{enumerate}
+  \item The solution is provably optimal; no further improvement is possible within this model.
+\end{enumerate}
+
+% ── Limitations ───────────────────────────────────────────────────────
+\subsection{Limitations}
+
+\begin{polyawarnbox}
+\begin{itemize}
+  \item Model assumes deterministic parameters; real-world variability not captured.
+  \item Solution quality depends on the accuracy of input data.
+\end{itemize}
+\end{polyawarnbox}
+
+% ── Appendix ─────────────────────────────────────────────────────────
+
+\end{document}

@@ -1,0 +1,241 @@
+\documentclass[11pt, a4paper]{article}
+
+% ── Packages ──────────────────────────────────────────────────────────
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{tcolorbox}
+\usepackage{polya}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=polyablue,
+  urlcolor=polyablue,
+  citecolor=polyablue,
+}
+
+% ── Code listing style ────────────────────────────────────────────────
+\lstdefinestyle{polya-python}{
+  language=Python,
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{polyablue}\bfseries,
+  commentstyle=\color{polyagray}\itshape,
+  stringstyle=\color{polyagreen},
+  numbers=left,
+  numberstyle=\tiny\color{polyagray},
+  numbersep=8pt,
+  frame=single,
+  framerule=0.4pt,
+  rulecolor=\color{polyagray},
+  breaklines=true,
+  showstringspaces=false,
+  tabsize=4,
+}
+\lstset{style=polya-python}
+\title{Customer Churn Classification}
+\author{uber-polya}
+\date{2026-02-26}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+% ── Phase A: Problem Formulation ─────────────────────────────────────
+\section{Problem Formulation}
+
+\begin{polyamodel}
+
+\textbf{Problem Type}: Find \hfill
+\textbf{Domain}: Machine Learning
+
+
+\end{polyamodel}
+
+% ── Universe ──────────────────────────────────────────────────────────
+\subsection{Universe}
+
+\begin{itemize}
+  \item $Best Model: \{name, accuracy, roc_auc\}$
+  \item $Confusion Matrix: \{TP, FP, FN, TN\}$
+  \item $Feature Importances: \{tenure, total_charges, monthly_charges, num_support_tickets, contract_type, has_internet\}$
+  \item $Cross Validation: \{n_folds, scores, mean, std\}$
+\end{itemize}
+
+% ── Variables ─────────────────────────────────────────────────────────
+\subsection{Variables}
+
+\begin{longtable}{lll}
+\toprule
+\textbf{Symbol} & \textbf{Meaning} & \textbf{Type / Range} \\
+\midrule
+\endhead
+$x$ & decision variable & $\mathbb{{R}}$ \\
+\bottomrule
+\end{longtable}
+
+% ── Structure ─────────────────────────────────────────────────────────
+\subsection{Structure}
+
+- **Data**: \textasciitilde{}1,000 synthetic customers with 6 features (seed=42)
+- **Features**: tenure (months), monthly charges, total charges, support tickets, contract type (month-to-month vs annual), internet service (yes/no)
+- **Target**: churned (1) vs retained (0), \textasciitilde{}30\% churn rate
+- **Churn drivers**: shorter tenure, more support tickets, and month-to-month contracts increase churn probability
+- **Question**: Which model best predicts churn, and which features matter most?
+
+% ── Mapping ───────────────────────────────────────────────────────────
+\subsection{Real-World Mapping}
+
+\begin{longtable}{ll}
+\toprule
+\textbf{Real-World Concept} & \textbf{Mathematical Object} \\
+\midrule
+\endhead
+problem input & $instance parameters$ \\
+\bottomrule
+\end{longtable}
+
+% ── Constraints ───────────────────────────────────────────────────────
+\subsection{Constraints}
+
+\begin{enumerate}
+  \item $Accuracy**: fraction of correct predictions (TP + TN) / total$
+  \hfill \textit{()}
+  \item $Precision**: of those predicted as churned, how many actually churned (TP / (TP + FP))$
+  \hfill \textit{()}
+  \item $Recall**: of those who actually churned, how many were caught (TP / (TP + FN))$
+  \hfill \textit{()}
+  \item $F1 score**: harmonic mean of precision and recall$
+  \hfill \textit{()}
+  \item $ROC-AUC**: area under the receiver operating characteristic curve; measures discrimination across all thresholds$
+  \hfill \textit{()}
+  \item $Confusion matrix**: 2x2 table of TP, FP, FN, TN$
+  \hfill \textit{()}
+  \item $Feature importance**: mean decrease in impurity (Gini) across all trees in the Random Forest$
+  \hfill \textit{()}
+  \item $Cross-validation**: 5-fold stratified CV estimates out-of-sample performance and its variability$
+  \hfill \textit{()}
+\end{enumerate}
+
+% ── Objective / Claim ─────────────────────────────────────────────────
+\subsection{Claim}
+
+
+% ── Approach ──────────────────────────────────────────────────────────
+\subsection{Approach}
+
+\begin{description}
+  \item[Suggested approach:] Logistic Regression + Random Forest (100) + Gradient Boosting (100)
+  \item[Complexity class:] 
+  \item[Available tools:] Logistic Regression + Random Forest
+\end{description}
+% ── Phase B: Solution ────────────────────────────────────────────────
+\section{Solution}
+
+\begin{polyaresult}
+
+\textbf{Answer}: Solution computed
+
+
+\textbf{Optimal}: No / Unknown \hfill
+\textbf{Feasible}: No
+\textbf{Algorithm}: Logistic Regression + Random Forest (100) + Gradient Boosting (100) \quad $$
+
+\textbf{Time}: 0.34118065395159647s
+
+
+\end{polyaresult}
+
+% ── Solution Details ──────────────────────────────────────────────────
+\subsection{Solution Details}
+
+
+Method: 1. Logistic Regression: Linear model with L2 regularization. Fast baseline. Provides interpretable coefficients for each feature.
+
+2. Random Forest (100 trees): Bagged ensemble of decision trees. Handles non-linear relationships and feature interactions. Produces feature importance rankings.
+
+3. Gradient Boosting (100 trees): Sequential boosting of shallow trees. Often achieves the best accuracy on tabular data. Minimizes log-loss via gradient descent in function space.
+
+% ── Verification ──────────────────────────────────────────────────────
+\subsection{Verification}
+
+\begin{longtable}{lcl}
+\toprule
+\textbf{Check} & \textbf{Status} & \textbf{Detail} \\
+\midrule
+\endhead
+Best Accuracy Gt 75Pct & \passmark & Passed \\
+Best Roc Auc Gt 70Pct & \passmark & Passed \\
+Rf Outperforms Baseline & \passmark & Passed \\
+Feature Importances Sum To 1 & \passmark & Passed \\
+Cv Accuracy Stable & \passmark & Passed \\
+Confusion Matrix Sums Correct & \passmark & Passed \\
+All Passed & \passmark & Passed \\
+\bottomrule
+\end{longtable}
+
+% ── Phase C: Interpretation ──────────────────────────────────────────
+\section{Interpretation}
+
+% ── The Question & The Answer ─────────────────────────────────────────
+\subsection{The Question}
+- **Data**: \textasciitilde{}1,000 synthetic customers with 6 features (seed=42)
+- **Features**: tenure (months), monthly charges, total charges, support tickets, contract type (month-to-month vs annual), internet service (yes/no)
+- **Target**: churned (1) vs retained (0), \textasciitilde{}30\% churn rate
+- **Churn drivers**: shorter tenure, more support tickets, and month-to-month contracts increase churn probability
+- **Question**: Which model best predicts churn, and which features matter most?.
+
+\subsection{The Answer}
+
+\begin{polyainsight}[title={Bottom Line}]
+A feasible solution was found.
+\end{polyainsight}
+
+% ── What This Means ───────────────────────────────────────────────────
+\subsection{What This Means}
+
+- Best model: Logistic Regression (accuracy \textasciitilde{}80\%, ROC-AUC \textasciitilde{}0.85)
+- All models beat majority-class baseline (\textasciitilde{}70\% accuracy by always predicting "not churned")
+- Top features (Random Forest importance): tenure, total charges, monthly charges, support tickets
+- Cross-validation: stable accuracy (std < 0.05 across 5 folds)
+- All 7 verification checks pass
+
+1. Logistic Regression: Linear model with L2 regularization. Fast baseline. Provides interpretable coefficients for each feature.
+
+2. Random Forest (100 trees): Bagged ensemble of decision trees. Handles non-linear relationships and feature interactions. Produces feature importance rankings.
+
+3. Gradient Boosting (100 trees): Sequential boosting of shallow trees. Often achieves the best accuracy on tabular data. Minimizes log-loss via gradient descent in function space.
+
+% ── Sensitivity Analysis ──────────────────────────────────────────────
+
+% ── Figures ───────────────────────────────────────────────────────────
+
+% ── Recommendations ───────────────────────────────────────────────────
+\subsection{Recommendations}
+
+\begin{enumerate}
+  \item Review the model assumptions to ensure real-world fidelity.
+\end{enumerate}
+
+% ── Limitations ───────────────────────────────────────────────────────
+\subsection{Limitations}
+
+\begin{polyawarnbox}
+\begin{itemize}
+  \item Model assumes deterministic parameters; real-world variability not captured.
+  \item Solution quality depends on the accuracy of input data.
+\end{itemize}
+\end{polyawarnbox}
+
+% ── Appendix ─────────────────────────────────────────────────────────
+
+\end{document}

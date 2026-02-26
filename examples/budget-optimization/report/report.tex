@@ -1,0 +1,227 @@
+\documentclass[11pt, a4paper]{article}
+
+% ── Packages ──────────────────────────────────────────────────────────
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{tcolorbox}
+\usepackage{polya}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=polyablue,
+  urlcolor=polyablue,
+  citecolor=polyablue,
+}
+
+% ── Code listing style ────────────────────────────────────────────────
+\lstdefinestyle{polya-python}{
+  language=Python,
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{polyablue}\bfseries,
+  commentstyle=\color{polyagray}\itshape,
+  stringstyle=\color{polyagreen},
+  numbers=left,
+  numberstyle=\tiny\color{polyagray},
+  numbersep=8pt,
+  frame=single,
+  framerule=0.4pt,
+  rulecolor=\color{polyagray},
+  breaklines=true,
+  showstringspaces=false,
+  tabsize=4,
+}
+\lstset{style=polya-python}
+\title{Budget Optimization}
+\author{uber-polya}
+\date{2026-02-26}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+% ── Phase A: Problem Formulation ─────────────────────────────────────
+\section{Problem Formulation}
+
+\begin{polyamodel}
+
+\textbf{Problem Type}: Find \hfill
+\textbf{Domain}: Integer Linear Programming
+
+\textbf{Named Problem}: Knapsack Problem
+
+\end{polyamodel}
+
+% ── Universe ──────────────────────────────────────────────────────────
+\subsection{Universe}
+
+\begin{itemize}
+  \item $See problem description$
+\end{itemize}
+
+% ── Variables ─────────────────────────────────────────────────────────
+\subsection{Variables}
+
+\begin{longtable}{lll}
+\toprule
+\textbf{Symbol} & \textbf{Meaning} & \textbf{Type / Range} \\
+\midrule
+\endhead
+$x_{ij}$ & assignment decision & $\{0, 1\}$ \\
+$n$ & number of binary variables = 10 & $\mathbb{{Z}}^+$ \\
+\bottomrule
+\end{longtable}
+
+% ── Structure ─────────────────────────────────────────────────────────
+\subsection{Structure}
+
+A startup has a \$500K budget and 10 candidate projects. Each project has a fixed
+cost and an expected ROI score. Select the subset of projects that maximizes
+total ROI without exceeding the budget.
+
+% ── Mapping ───────────────────────────────────────────────────────────
+\subsection{Real-World Mapping}
+
+\begin{longtable}{ll}
+\toprule
+\textbf{Real-World Concept} & \textbf{Mathematical Object} \\
+\midrule
+\endhead
+total score/cost & $objective function value$ \\
+\bottomrule
+\end{longtable}
+
+% ── Constraints ───────────────────────────────────────────────────────
+\subsection{Constraints}
+
+\begin{enumerate}
+  \item $0/1 Knapsack as ILP$
+  \hfill \textit{(classic combinatorial optimization with binary selection)}
+  \item $Budget-constrained selection$
+  \hfill \textit{(real-world resource allocation under constraints)}
+  \item $ROI-driven prioritization$
+  \hfill \textit{(scoring and ranking candidate investments)}
+  \item $Sensitivity analysis$
+  \hfill \textit{(effect of budget changes on optimal selection)}
+\end{enumerate}
+
+% ── Objective / Claim ─────────────────────────────────────────────────
+\subsection{Objective}
+
+\begin{equation}
+\max \sum_{i,j} c_{ij} \, x_{ij}
+\end{equation}
+
+% ── Approach ──────────────────────────────────────────────────────────
+\subsection{Approach}
+
+\begin{description}
+  \item[Suggested approach:] 0/1 Knapsack ILP (PuLP/CBC, Branch \& Bound)
+  \item[Complexity class:] 
+  \item[Available tools:] 0/1 Knapsack ILP
+\end{description}
+% ── Phase B: Solution ────────────────────────────────────────────────
+\section{Solution}
+
+\begin{polyaresult}
+
+\textbf{Answer}: Solution computed
+
+\textbf{Objective Value}: $50.0$
+
+\textbf{Optimal}: Yes \hfill
+\textbf{Feasible}: Yes
+\textbf{Algorithm}: 0/1 Knapsack ILP (PuLP/CBC, Branch \& Bound) \quad $$
+
+\textbf{Time}: 0.007456578954588622s
+
+\textbf{Certificate}: Branch-and-bound solved to optimality.
+
+\end{polyaresult}
+
+% ── Solution Details ──────────────────────────────────────────────────
+\subsection{Solution Details}
+
+
+Objective value: z* = 50.0
+
+Method: 0/1 Knapsack formulated as Integer Linear Programming via PuLP/CBC.
+
+- 10 binary variables (one per project: selected or not)
+- 1 budget constraint (total cost <= \$500K)
+- Objective: maximize sum of ROI scores for selected projects
+
+% ── Verification ──────────────────────────────────────────────────────
+\subsection{Verification}
+
+\begin{longtable}{lcl}
+\toprule
+\textbf{Check} & \textbf{Status} & \textbf{Detail} \\
+\midrule
+\endhead
+Feasibility & \passmark & All constraints satisfied \\
+Optimality & \passmark & 0/1 Knapsack ILP (PuLP/CBC, Branch \& Bound) \\
+\bottomrule
+\end{longtable}
+
+% ── Phase C: Interpretation ──────────────────────────────────────────
+\section{Interpretation}
+
+% ── The Question & The Answer ─────────────────────────────────────────
+\subsection{The Question}
+A startup has a \$500K budget and 10 candidate projects.
+
+\subsection{The Answer}
+
+\begin{polyainsight}[title={Bottom Line}]
+The optimal solution has objective value z* = 50.0.
+\end{polyainsight}
+
+% ── What This Means ───────────────────────────────────────────────────
+\subsection{What This Means}
+
+- Optimal project selection maximizing total ROI score under \$500K budget
+- Budget utilization percentage
+- Per-project selection table
+- Independent verification of budget and selection constraints
+
+0/1 Knapsack formulated as Integer Linear Programming via PuLP/CBC.
+
+- 10 binary variables (one per project: selected or not)
+- 1 budget constraint (total cost <= \$500K)
+- Objective: maximize sum of ROI scores for selected projects
+
+% ── Sensitivity Analysis ──────────────────────────────────────────────
+
+% ── Figures ───────────────────────────────────────────────────────────
+
+% ── Recommendations ───────────────────────────────────────────────────
+\subsection{Recommendations}
+
+\begin{enumerate}
+  \item The solution is provably optimal; no further improvement is possible within this model.
+\end{enumerate}
+
+% ── Limitations ───────────────────────────────────────────────────────
+\subsection{Limitations}
+
+\begin{polyawarnbox}
+\begin{itemize}
+  \item Model assumes deterministic parameters; real-world variability not captured.
+  \item Solution quality depends on the accuracy of input data.
+\end{itemize}
+\end{polyawarnbox}
+
+% ── Appendix ─────────────────────────────────────────────────────────
+
+\end{document}

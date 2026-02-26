@@ -50,6 +50,15 @@ Translate back to real-world meaning. Steps:
 
 **Artifact**: Interpretation Report (Question, Answer, Meaning, Robustness, Recommendations, Limitations)
 
+## Output Format
+
+The pipeline supports three output formats (ask the user before starting):
+- **Python** (default): solver script + console output + JSON
+- **LaTeX/PDF**: professional mathematical report (`.tex` + `.pdf`), no code shown
+- **Both**: full Python output AND compiled PDF report
+
+PDF generation uses fpdf2 + matplotlib (no system LaTeX needed). See `utils/latex_renderer.py` and `templates/latex/`.
+
 ## Error Recovery
 
 - Phase B fails → check if model is over-constrained (loop to A) or algorithm wrong (re-classify in B)

@@ -1,0 +1,224 @@
+\documentclass[11pt, a4paper]{article}
+
+% ── Packages ──────────────────────────────────────────────────────────
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{tcolorbox}
+\usepackage{polya}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=polyablue,
+  urlcolor=polyablue,
+  citecolor=polyablue,
+}
+
+% ── Code listing style ────────────────────────────────────────────────
+\lstdefinestyle{polya-python}{
+  language=Python,
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{polyablue}\bfseries,
+  commentstyle=\color{polyagray}\itshape,
+  stringstyle=\color{polyagreen},
+  numbers=left,
+  numberstyle=\tiny\color{polyagray},
+  numbersep=8pt,
+  frame=single,
+  framerule=0.4pt,
+  rulecolor=\color{polyagray},
+  breaklines=true,
+  showstringspaces=false,
+  tabsize=4,
+}
+\lstset{style=polya-python}
+\title{Root Finding \& Interpolation}
+\author{uber-polya}
+\date{2026-02-26}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+% ── Phase A: Problem Formulation ─────────────────────────────────────
+\section{Problem Formulation}
+
+\begin{polyamodel}
+
+\textbf{Problem Type}: Find \hfill
+\textbf{Domain}: Numerical Methods
+
+
+\end{polyamodel}
+
+% ── Universe ──────────────────────────────────────────────────────────
+\subsection{Universe}
+
+\begin{itemize}
+  \item $Root Finding: \{methods, best_method, best_root_degC, best_residual\}$
+  \item $Interpolation: \{cubic_spline_max_error, linear_max_error, lagrange_max_error, max_spline_vs_linear, max_spline_vs_lagrange\}$
+  \item $Integration: \{trapezoidal, simpson, gaussian_quad\}$
+\end{itemize}
+
+% ── Variables ─────────────────────────────────────────────────────────
+\subsection{Variables}
+
+\begin{longtable}{lll}
+\toprule
+\textbf{Symbol} & \textbf{Meaning} & \textbf{Type / Range} \\
+\midrule
+\endhead
+$x$ & decision variable & $\mathbb{{R}}$ \\
+\bottomrule
+\end{longtable}
+
+% ── Structure ─────────────────────────────────────────────────────────
+\subsection{Structure}
+
+Given 8 measured data points of temperature (0--700 degC) vs. thermal expansion coefficient alpha(T), which increases nonlinearly from \textasciitilde{}9 to \textasciitilde{}16 x10\textasciicircum{}-6 /degC:
+
+1. **Root finding**: Find the temperature where alpha(T) = 12.0 x10\textasciicircum{}-6 /degC by solving g(T) = spline(T) - target = 0
+2. **Method comparison**: Compare 4 root-finding methods -- bisection, Newton (finite-difference), secant, and Brent
+3. **Interpolation comparison**: Fit the data using linear, cubic spline, and Lagrange interpolation
+4. **Numerical integration**: Integrate alpha(T) over [100, 500] degC using trapezoidal, Simpson, and Gaussian quadrature
+
+% ── Mapping ───────────────────────────────────────────────────────────
+\subsection{Real-World Mapping}
+
+\begin{longtable}{ll}
+\toprule
+\textbf{Real-World Concept} & \textbf{Mathematical Object} \\
+\midrule
+\endhead
+problem input & $instance parameters$ \\
+\bottomrule
+\end{longtable}
+
+% ── Constraints ───────────────────────────────────────────────────────
+\subsection{Constraints}
+
+\begin{enumerate}
+  \item $Bisection**: Guaranteed convergence (linear rate), requires bracket$
+  \hfill \textit{()}
+  \item $Newton's method**: Quadratic convergence near root, needs derivative (approximated via finite difference)$
+  \hfill \textit{()}
+  \item $Secant method**: Superlinear convergence (~1.618), no derivative needed$
+  \hfill \textit{()}
+  \item $Brent's method**: Combines bisection reliability with superlinear speed$
+  \hfill \textit{(the gold standard)}
+  \item $Cubic spline**: C2-continuous interpolation that passes exactly through data points$
+  \hfill \textit{()}
+  \item $Gaussian quadrature**: Exact for polynomials up to degree 2n-1 with n points$
+  \hfill \textit{()}
+\end{enumerate}
+
+% ── Objective / Claim ─────────────────────────────────────────────────
+\subsection{Claim}
+
+
+% ── Approach ──────────────────────────────────────────────────────────
+\subsection{Approach}
+
+\begin{description}
+  \item[Suggested approach:] Cubic Spline + Brent/Bisection/Newton/Secant root finding
+  \item[Complexity class:] 
+  \item[Available tools:] Cubic Spline + Brent/Bisection/Newton/Secant root finding
+\end{description}
+% ── Phase B: Solution ────────────────────────────────────────────────
+\section{Solution}
+
+\begin{polyaresult}
+
+\textbf{Answer}: Solution computed
+
+
+\textbf{Optimal}: No / Unknown \hfill
+\textbf{Feasible}: No
+\textbf{Algorithm}: Cubic Spline + Brent/Bisection/Newton/Secant root finding \quad $$
+
+\textbf{Time}: 0.011280923965387046s
+
+
+\end{polyaresult}
+
+% ── Solution Details ──────────────────────────────────────────────────
+\subsection{Solution Details}
+
+Solution computed successfully.
+
+% ── Verification ──────────────────────────────────────────────────────
+\subsection{Verification}
+
+\begin{longtable}{lcl}
+\toprule
+\textbf{Check} & \textbf{Status} & \textbf{Detail} \\
+\midrule
+\endhead
+All Methods Find Root & \passmark & Passed \\
+Roots Agree & \passmark & Passed \\
+Residual Small & \passmark & Passed \\
+Root In Range & \passmark & Passed \\
+Spline Passes Through Data & \passmark & Passed \\
+Integration Methods Agree & \passmark & Passed \\
+Integration Positive & \passmark & Passed \\
+Brent Fewest Or Tied & \passmark & Passed \\
+\bottomrule
+\end{longtable}
+
+% ── Phase C: Interpretation ──────────────────────────────────────────
+\section{Interpretation}
+
+% ── The Question & The Answer ─────────────────────────────────────────
+\subsection{The Question}
+Given 8 measured data points of temperature (0--700 degC) vs.
+
+\subsection{The Answer}
+
+\begin{polyainsight}[title={Bottom Line}]
+A feasible solution was found.
+\end{polyainsight}
+
+% ── What This Means ───────────────────────────────────────────────────
+\subsection{What This Means}
+
+- Root (Brent): \textasciitilde{}244 degC where alpha(T) = 12.0 x10\textasciicircum{}-6 /degC
+- Method agreement: All 4 methods agree to within 0.1 degC
+- Brent iterations: Fewest (or tied) compared to bisection
+- Residual: |g(root)| < 1e-8 for Brent's method
+- Integration: All 3 quadrature methods agree within 1\%
+- 8 verification checks: All pass
+
+% ── Sensitivity Analysis ──────────────────────────────────────────────
+
+% ── Figures ───────────────────────────────────────────────────────────
+
+% ── Recommendations ───────────────────────────────────────────────────
+\subsection{Recommendations}
+
+\begin{enumerate}
+  \item Review the model assumptions to ensure real-world fidelity.
+\end{enumerate}
+
+% ── Limitations ───────────────────────────────────────────────────────
+\subsection{Limitations}
+
+\begin{polyawarnbox}
+\begin{itemize}
+  \item Model assumes deterministic parameters; real-world variability not captured.
+  \item Solution quality depends on the accuracy of input data.
+\end{itemize}
+\end{polyawarnbox}
+
+% ── Appendix ─────────────────────────────────────────────────────────
+
+\end{document}

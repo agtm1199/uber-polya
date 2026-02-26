@@ -1,0 +1,263 @@
+\documentclass[11pt, a4paper]{article}
+
+% ── Packages ──────────────────────────────────────────────────────────
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{tcolorbox}
+\usepackage{polya}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=polyablue,
+  urlcolor=polyablue,
+  citecolor=polyablue,
+}
+
+% ── Code listing style ────────────────────────────────────────────────
+\lstdefinestyle{polya-python}{
+  language=Python,
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{polyablue}\bfseries,
+  commentstyle=\color{polyagray}\itshape,
+  stringstyle=\color{polyagreen},
+  numbers=left,
+  numberstyle=\tiny\color{polyagray},
+  numbersep=8pt,
+  frame=single,
+  framerule=0.4pt,
+  rulecolor=\color{polyagray},
+  breaklines=true,
+  showstringspaces=false,
+  tabsize=4,
+}
+\lstset{style=polya-python}
+\title{Inspector Assignment}
+\author{uber-polya}
+\date{2026-02-26}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+% ── Phase A: Problem Formulation ─────────────────────────────────────
+\section{Problem Formulation}
+
+\begin{polyamodel}
+
+\textbf{Problem Type}: Find \hfill
+\textbf{Domain}: Graph Theory / Combinatorics
+
+\textbf{Named Problem}: Assignment Problem
+
+\end{polyamodel}
+
+% ── Universe ──────────────────────────────────────────────────────────
+\subsection{Universe}
+
+\begin{itemize}
+  \item $Assignments: \{Alice, Bob, Carol, Dave, Eve, Frank\}$
+\end{itemize}
+
+% ── Variables ─────────────────────────────────────────────────────────
+\subsection{Variables}
+
+\begin{longtable}{lll}
+\toprule
+\textbf{Symbol} & \textbf{Meaning} & \textbf{Type / Range} \\
+\midrule
+\endhead
+$x_{ij}$ & assignment decision & $\{0, 1\}$ \\
+$n$ & number of binary variables = 60 & $\mathbb{{Z}}^+$ \\
+\bottomrule
+\end{longtable}
+
+% ── Structure ─────────────────────────────────────────────────────────
+\subsection{Structure}
+
+Assign 6 food safety inspectors to 10 facilities (5 types x 2 each) to
+maximize total expertise score. Each inspector handles at most 3 facilities;
+each facility needs exactly 1 inspector.
+
+% ── Mapping ───────────────────────────────────────────────────────────
+\subsection{Real-World Mapping}
+
+\begin{longtable}{ll}
+\toprule
+\textbf{Real-World Concept} & \textbf{Mathematical Object} \\
+\midrule
+\endhead
+assignments & $x: solution vector (assignments)$ \\
+total score/cost & $objective function value$ \\
+\bottomrule
+\end{longtable}
+
+% ── Constraints ───────────────────────────────────────────────────────
+\subsection{Constraints}
+
+\begin{enumerate}
+  \item $\sum_j x_{ij} \le 3$
+  \hfill \textit{(capacity limit)}
+  \item $\sum_j x_{ij} = 1$
+  \hfill \textit{(exact assignment)}
+  \item $\sum_i x_{ij} = 1$
+  \hfill \textit{(coverage requirement)}
+  \item $x_{ij} \in \{0, 1\} \quad \forall\, i, j$
+  \hfill \textit{(binary decision variables)}
+\end{enumerate}
+
+% ── Objective / Claim ─────────────────────────────────────────────────
+\subsection{Objective}
+
+\begin{equation}
+\max \sum_{i,j} c_{ij} \, x_{ij}
+\end{equation}
+
+% ── Approach ──────────────────────────────────────────────────────────
+\subsection{Approach}
+
+\begin{description}
+  \item[Suggested approach:] ILP (PuLP/CBC, Branch \& Bound)
+  \item[Complexity class:] 
+  \item[Available tools:] ILP
+\end{description}
+% ── Phase B: Solution ────────────────────────────────────────────────
+\section{Solution}
+
+\begin{polyaresult}
+
+\textbf{Answer}: 6-element assignments: Alice -> [F1, F2], Bob -> [F3, F4], Carol -> [F5, F6], Dave -> [F7, F8], Eve -> [F9, F10], Frank -> []
+
+\textbf{Objective Value}: $90.0$
+
+\textbf{Optimal}: Yes \hfill
+\textbf{Feasible}: Yes
+\textbf{Algorithm}: ILP (PuLP/CBC, Branch \& Bound) \quad $$
+
+\textbf{Time}: 0.007788196962792426s
+
+\textbf{Certificate}: LP relaxation = ILP solution (gap = 0\%). Global optimum proven.
+
+\end{polyaresult}
+
+% ── Solution Details ──────────────────────────────────────────────────
+\subsection{Solution Details}
+
+Assignments:
+  Alice -> F1, F2
+  Bob -> F3, F4
+  Carol -> F5, F6
+  Dave -> F7, F8
+  Eve -> F9, F10
+  Frank -> 
+
+Objective value: z* = 90.0
+LP relaxation: 90.0000
+Integrality gap: 0.00\%
+Solution efficiency: 100.0\%
+
+Method: Integer Linear Programming via PuLP/CBC.
+
+- 60 binary variables (6 inspectors x 10 facilities)
+- 16 constraints (10 facility-coverage + 6 inspector-capacity)
+- The LP relaxation is integral (totally unimodular constraint matrix),
+  so LP optimal = ILP optimal.
+
+% ── Verification ──────────────────────────────────────────────────────
+\subsection{Verification}
+
+\begin{longtable}{lcl}
+\toprule
+\textbf{Check} & \textbf{Status} & \textbf{Detail} \\
+\midrule
+\endhead
+Feasibility & \passmark & All constraints satisfied \\
+Optimality & \passmark & LP relaxation = 90.00, gap = 0.00\% \\
+Efficiency & \passmark & 100.0\% of theoretical maximum \\
+\bottomrule
+\end{longtable}
+
+% ── Phase C: Interpretation ──────────────────────────────────────────
+\section{Interpretation}
+
+% ── The Question & The Answer ─────────────────────────────────────────
+\subsection{The Question}
+Assign 6 food safety inspectors to 10 facilities (5 types x 2 each) to
+maximize total expertise score.
+
+\subsection{The Answer}
+
+\begin{polyainsight}[title={Bottom Line}]
+The optimal solution has objective value z* = 90.0.
+\end{polyainsight}
+
+% ── What This Means ───────────────────────────────────────────────────
+\subsection{What This Means}
+
+- Optimal score: 90/90 (100\% efficiency)
+- Each facility assigned to its top expert
+- 0\% optimality gap
+
+Integer Linear Programming via PuLP/CBC.
+
+- 60 binary variables (6 inspectors x 10 facilities)
+- 16 constraints (10 facility-coverage + 6 inspector-capacity)
+- The LP relaxation is integral (totally unimodular constraint matrix),
+  so LP optimal = ILP optimal.
+
+% ── Sensitivity Analysis ──────────────────────────────────────────────
+\subsection{Sensitivity Analysis}
+
+\begin{longtable}{llrrl}
+\toprule
+\textbf{Parameter} & \textbf{Current} & \textbf{Change} & \textbf{New Obj.} & \textbf{Class} \\
+\midrule
+\endhead
+Alice & present & removed & 88.0 &
+\textcolor{polyagray}{sensitive} \\
+Bob & present & removed & 85.0 &
+\textcolor{polyared}{critical} \\
+Carol & present & removed & 85.0 &
+\textcolor{polyared}{critical} \\
+Dave & present & removed & 86.0 &
+\textcolor{polyagray}{sensitive} \\
+Eve & present & removed & 87.0 &
+\textcolor{polyagray}{sensitive} \\
+Frank & present & removed & 90.0 &
+\textcolor{polyagreen}{robust} \\
+\bottomrule
+\end{longtable}
+
+% ── Figures ───────────────────────────────────────────────────────────
+
+% ── Recommendations ───────────────────────────────────────────────────
+\subsection{Recommendations}
+
+\begin{enumerate}
+  \item The solution is provably optimal; no further improvement is possible within this model.
+  \item Monitor critical parameters: Bob, Carol.
+\end{enumerate}
+
+% ── Limitations ───────────────────────────────────────────────────────
+\subsection{Limitations}
+
+\begin{polyawarnbox}
+\begin{itemize}
+  \item Model assumes deterministic parameters; real-world variability not captured.
+  \item Solution quality depends on the accuracy of input data.
+\end{itemize}
+\end{polyawarnbox}
+
+% ── Appendix ─────────────────────────────────────────────────────────
+
+\end{document}

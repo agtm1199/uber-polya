@@ -1,0 +1,233 @@
+\documentclass[11pt, a4paper]{article}
+
+% ── Packages ──────────────────────────────────────────────────────────
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{tcolorbox}
+\usepackage{polya}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=polyablue,
+  urlcolor=polyablue,
+  citecolor=polyablue,
+}
+
+% ── Code listing style ────────────────────────────────────────────────
+\lstdefinestyle{polya-python}{
+  language=Python,
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{polyablue}\bfseries,
+  commentstyle=\color{polyagray}\itshape,
+  stringstyle=\color{polyagreen},
+  numbers=left,
+  numberstyle=\tiny\color{polyagray},
+  numbersep=8pt,
+  frame=single,
+  framerule=0.4pt,
+  rulecolor=\color{polyagray},
+  breaklines=true,
+  showstringspaces=false,
+  tabsize=4,
+}
+\lstset{style=polya-python}
+\title{Pareto Optimization -- Product Design Trade-offs}
+\author{uber-polya}
+\date{2026-02-26}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+% ── Phase A: Problem Formulation ─────────────────────────────────────
+\section{Problem Formulation}
+
+\begin{polyamodel}
+
+\textbf{Problem Type}: Find \hfill
+\textbf{Domain}: Multi-Objective Optimization
+
+
+\end{polyamodel}
+
+% ── Universe ──────────────────────────────────────────────────────────
+\subsection{Universe}
+
+\begin{itemize}
+  \item $Knee Point: \{cost, inv_durability, thickness, alloy_grade, coating_level, frontier_index\}$
+  \item $Utopia: \{cost, inv_durability\}$
+  \item $Nadir: \{cost, inv_durability\}$
+\end{itemize}
+
+% ── Variables ─────────────────────────────────────────────────────────
+\subsection{Variables}
+
+\begin{longtable}{lll}
+\toprule
+\textbf{Symbol} & \textbf{Meaning} & \textbf{Type / Range} \\
+\midrule
+\endhead
+$x$ & decision variable & $\mathbb{{R}}$ \\
+\bottomrule
+\end{longtable}
+
+% ── Structure ─────────────────────────────────────────────────────────
+\subsection{Structure}
+
+A manufacturing company designs a product with two competing objectives: minimize cost and maximize durability (equivalently, minimize inverse durability). There are 3 design variables -- material thickness, alloy grade, and coating level -- each with physical bounds. The goal is to find the Pareto frontier (the set of non-dominated designs), identify the knee point (best compromise), and quantify the trade-off rates along the frontier.
+
+**Design Variables**:
+- Material thickness: [1.0, 10.0] mm
+- Alloy grade: [1.0, 5.0] (index)
+- Coating level: [0.5, 3.0] (index)
+
+**Objectives**:
+- Minimize cost: f1(x) = 2*thickness + 5*alloy\textasciicircum{}2 + 3*coating
+- Minimize inverse durability: f2(x) = -ln(thickness) - 2*alloy - 1.5*coating\textasciicircum{}0.8
+
+% ── Mapping ───────────────────────────────────────────────────────────
+\subsection{Real-World Mapping}
+
+\begin{longtable}{ll}
+\toprule
+\textbf{Real-World Concept} & \textbf{Mathematical Object} \\
+\midrule
+\endhead
+problem input & $instance parameters$ \\
+\bottomrule
+\end{longtable}
+
+% ── Constraints ───────────────────────────────────────────────────────
+\subsection{Constraints}
+
+\begin{enumerate}
+  \item $Pareto optimality**: A solution is Pareto-optimal if no other feasible solution improves one objective without worsening another$
+  \hfill \textit{()}
+  \item $Epsilon-constraint method**: Convert a multi-objective problem into a sequence of single-objective problems by constraining all but one objective$
+  \hfill \textit{()}
+  \item $Knee point**: The point on the Pareto front where the trade-off rate changes most sharply$
+  \hfill \textit{(often the best practical compromise)}
+  \item $Utopia point**: The ideal (usually infeasible) point formed by the best value of each objective independently$
+  \hfill \textit{()}
+  \item $Nadir point**: The worst objective values among Pareto-optimal solutions$
+  \hfill \textit{(defines the "box" bounding the Pareto front)}
+  \item $Marginal rate of substitution**: How much of one objective must be sacrificed to gain a unit of improvement in another$
+  \hfill \textit{()}
+  \item $Non-dominance**: The defining property of Pareto-optimal solutions$
+  \hfill \textit{(no other solution is at least as good in every objective)}
+\end{enumerate}
+
+% ── Objective / Claim ─────────────────────────────────────────────────
+\subsection{Claim}
+
+
+% ── Approach ──────────────────────────────────────────────────────────
+\subsection{Approach}
+
+\begin{description}
+  \item[Suggested approach:] Epsilon-constraint + Pareto filter (scipy L-BFGS-B)
+  \item[Complexity class:] 
+  \item[Available tools:] Epsilon-constraint + Pareto filter
+\end{description}
+% ── Phase B: Solution ────────────────────────────────────────────────
+\section{Solution}
+
+\begin{polyaresult}
+
+\textbf{Answer}: Solution computed
+
+
+\textbf{Optimal}: No / Unknown \hfill
+\textbf{Feasible}: No
+\textbf{Algorithm}: Epsilon-constraint + Pareto filter (scipy L-BFGS-B) \quad $$
+
+\textbf{Time}: 2.315410837996751s
+
+
+\end{polyaresult}
+
+% ── Solution Details ──────────────────────────────────────────────────
+\subsection{Solution Details}
+
+
+Method: 1. Individual optima: Minimize each objective independently to establish the feasible objective range
+2. Epsilon-constraint sweep: Fix one objective as a constraint (durability >= epsilon) and optimize the other (cost), sweeping epsilon across the feasible range
+3. Weighted-sum comparison: Solve scalarized problems min w1*f1 + w2*f2 for a grid of weights
+4. Pareto filter: Remove dominated points -- a point is dominated if another point is at least as good in all objectives and strictly better in at least one
+5. Knee point: Find the point on the Pareto front with maximum curvature (largest angle formed by its neighbors), indicating the best marginal trade-off
+6. Utopia/nadir: The utopia point is the (infeasible) vector of individually optimal objectives; the nadir point is the worst objective value attained by any Pareto-optimal solution in each dimension
+7. Trade-off rates: Compute the marginal rate of substitution (delta f2 / delta f1) between consecutive Pareto points
+
+% ── Verification ──────────────────────────────────────────────────────
+\subsection{Verification}
+
+No independent verification checks recorded.
+
+% ── Phase C: Interpretation ──────────────────────────────────────────
+\section{Interpretation}
+
+% ── The Question & The Answer ─────────────────────────────────────────
+\subsection{The Question}
+A manufacturing company designs a product with two competing objectives: minimize cost and maximize durability (equivalently, minimize inverse durability).
+
+\subsection{The Answer}
+
+\begin{polyainsight}[title={Bottom Line}]
+A feasible solution was found.
+\end{polyainsight}
+
+% ── What This Means ───────────────────────────────────────────────────
+\subsection{What This Means}
+
+- 50 candidate solutions generated via epsilon-constraint sweeps
+- Pareto front filtered to \textasciitilde{}20-40 non-dominated points
+- Weighted-sum solutions for comparison
+- Knee point identified at the point of maximum curvature
+- Utopia point (infeasible ideal) and nadir point (worst of the bests)
+- Trade-off rates (marginal rate of substitution) along the frontier
+- Full independent verification (non-dominance, bounds, objective recomputation)
+- Solution saved to solution.json
+
+1. Individual optima: Minimize each objective independently to establish the feasible objective range
+2. Epsilon-constraint sweep: Fix one objective as a constraint (durability >= epsilon) and optimize the other (cost), sweeping epsilon across the feasible range
+3. Weighted-sum comparison: Solve scalarized problems min w1*f1 + w2*f2 for a grid of weights
+4. Pareto filter: Remove dominated points -- a point is dominated if another point is at least as good in all objectives and strictly better in at least one
+5. Knee point: Find the point on the Pareto front with maximum curvature (largest angle formed by its neighbors), indicating the best marginal trade-off
+6. Utopia/nadir: The utopia point is the (infeasible) vector of individually optimal objectives; the nadir point is the worst objective value attained by any Pareto-optimal solution in each dimension
+7. Trade-off rates: Compute the marginal rate of substitution (delta f2 / delta f1) between consecutive Pareto points
+
+% ── Sensitivity Analysis ──────────────────────────────────────────────
+
+% ── Figures ───────────────────────────────────────────────────────────
+
+% ── Recommendations ───────────────────────────────────────────────────
+\subsection{Recommendations}
+
+\begin{enumerate}
+  \item Review the model assumptions to ensure real-world fidelity.
+\end{enumerate}
+
+% ── Limitations ───────────────────────────────────────────────────────
+\subsection{Limitations}
+
+\begin{polyawarnbox}
+\begin{itemize}
+  \item Model assumes deterministic parameters; real-world variability not captured.
+  \item Solution quality depends on the accuracy of input data.
+\end{itemize}
+\end{polyawarnbox}
+
+% ── Appendix ─────────────────────────────────────────────────────────
+
+\end{document}

@@ -1,0 +1,244 @@
+\documentclass[11pt, a4paper]{article}
+
+% ── Packages ──────────────────────────────────────────────────────────
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{tcolorbox}
+\usepackage{polya}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=polyablue,
+  urlcolor=polyablue,
+  citecolor=polyablue,
+}
+
+% ── Code listing style ────────────────────────────────────────────────
+\lstdefinestyle{polya-python}{
+  language=Python,
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{polyablue}\bfseries,
+  commentstyle=\color{polyagray}\itshape,
+  stringstyle=\color{polyagreen},
+  numbers=left,
+  numberstyle=\tiny\color{polyagray},
+  numbersep=8pt,
+  frame=single,
+  framerule=0.4pt,
+  rulecolor=\color{polyagray},
+  breaklines=true,
+  showstringspaces=false,
+  tabsize=4,
+}
+\lstset{style=polya-python}
+\title{Mortgage Comparison Analysis}
+\author{uber-polya}
+\date{2026-02-26}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+% ── Phase A: Problem Formulation ─────────────────────────────────────
+\section{Problem Formulation}
+
+\begin{polyamodel}
+
+\textbf{Problem Type}: Find \hfill
+\textbf{Domain}: Financial Mathematics
+
+
+\end{polyamodel}
+
+% ── Universe ──────────────────────────────────────────────────────────
+\subsection{Universe}
+
+\begin{itemize}
+  \item $Loan amount: $320,000$
+  \item $Options: \{30-Year Fixed 6.5%, 15-Year Fixed 5.8%, Refinance 30yr->25yr at 5.2%\}$
+\end{itemize}
+
+% ── Variables ─────────────────────────────────────────────────────────
+\subsection{Variables}
+
+\begin{longtable}{lll}
+\toprule
+\textbf{Symbol} & \textbf{Meaning} & \textbf{Type / Range} \\
+\midrule
+\endhead
+$L$ & loan principal = \$320,000 & $\mathbb{{R}}_{>0}$ \\
+$r$ & monthly interest rate = APR/12 & $\mathbb{{R}}_{>0}$ \\
+$n$ & total number of monthly payments & $\mathbb{{Z}}^+$ \\
+$PMT$ & monthly payment amount & $\mathbb{{R}}_{>0}$ \\
+\bottomrule
+\end{longtable}
+
+% ── Structure ─────────────────────────────────────────────────────────
+\subsection{Structure}
+
+A homebuyer is purchasing a \$400,000 home with an \$80,000 down payment (\$320,000 loan). Compare three mortgage options:
+
+1. **30-year fixed** at 6.5\% APR
+2. **15-year fixed** at 5.8\% APR
+3. **Refinance scenario**: Start with the 30-year at 6.5\%, then after 5 years refinance the remaining balance into a new 25-year loan at 5.2\% APR with \$6,000 in closing costs
+
+Which option minimizes total cost? When does refinancing break even against staying with the original 30-year loan?
+
+% ── Mapping ───────────────────────────────────────────────────────────
+\subsection{Real-World Mapping}
+
+\begin{longtable}{ll}
+\toprule
+\textbf{Real-World Concept} & \textbf{Mathematical Object} \\
+\midrule
+\endhead
+loan balance & $L — principal$ \\
+annual percentage rate & $r — monthly rate = APR/12$ \\
+loan term & $n — number of monthly payments$ \\
+monthly mortgage payment & $PMT — annuity payment$ \\
+\bottomrule
+\end{longtable}
+
+% ── Constraints ───────────────────────────────────────────────────────
+\subsection{Constraints}
+
+\begin{enumerate}
+  \item $PMT = L \cdot \frac{r(1+r)^n}{(1+r)^n - 1}$
+  \hfill \textit{(annuity payment formula)}
+  \item $B_k = B_{k-1}(1+r) - PMT$
+  \hfill \textit{(amortization recurrence)}
+  \item $B_n = 0$
+  \hfill \textit{(loan fully repaid at maturity)}
+  \item $\text{Total Interest} = n \cdot PMT - L$
+  \hfill \textit{(total interest = payments minus principal)}
+\end{enumerate}
+
+% ── Objective / Claim ─────────────────────────────────────────────────
+\subsection{Objective}
+
+\begin{equation}
+\min_{\text{option}} \; \sum_{k=1}^{n} PMT_k \; + \; \text{closing costs}
+\end{equation}
+
+% ── Approach ──────────────────────────────────────────────────────────
+\subsection{Approach}
+
+\begin{description}
+  \item[Suggested approach:] Annuity PMT + Amortization Schedule + Break-Even Search
+  \item[Complexity class:] 
+  \item[Available tools:] Annuity PMT + Amortization Schedule + Break-Even Search
+\end{description}
+% ── Phase B: Solution ────────────────────────────────────────────────
+\section{Solution}
+
+\begin{polyaresult}
+
+\textbf{Answer}: cheapest: 15-Year Fixed 5.8\%; refinance break-even at month 26
+
+
+\textbf{Optimal}: No / Unknown \hfill
+\textbf{Feasible}: Yes
+\textbf{Algorithm}: Annuity PMT + Amortization Schedule + Break-Even Search \quad $$
+
+\textbf{Time}: 0.002336381992790848s
+
+\textbf{Certificate}: Amortization verified: final balance = \$0.00 for all options.
+
+\end{polyaresult}
+
+% ── Solution Details ──────────────────────────────────────────────────
+\subsection{Solution Details}
+
+Home price: \$400,000
+Down payment: \$80,000
+Loan amount: L = \$320,000
+
+Mortgage Options Comparison:
+
+  30-Year Fixed 6.5\%:
+    Monthly payment: PMT = \$2,022.62
+    Total interest: \$408,142.38
+    Total paid: \$728,143.20
+
+  15-Year Fixed 5.8\%:
+    Monthly payment: PMT = \$2,665.89
+    Total interest: \$159,859.70
+    Total paid: \$479,860.20
+
+  Refinance 30yr->25yr at 5.2\%:
+    Monthly payment: PMT = \$1,786.25
+    Total interest: \$337,232.57
+    Total paid: \$663,232.20
+
+Cheapest option: 15-Year Fixed 5.8\%
+Refinance break-even: month 26 (2.2 years)
+Refinance net savings: \$64,911
+
+% ── Verification ──────────────────────────────────────────────────────
+\subsection{Verification}
+
+No independent verification checks recorded.
+
+% ── Phase C: Interpretation ──────────────────────────────────────────
+\section{Interpretation}
+
+% ── The Question & The Answer ─────────────────────────────────────────
+\subsection{The Question}
+A homebuyer is purchasing a \$400,000 home with an \$80,000 down payment (\$320,000 loan).
+
+\subsection{The Answer}
+
+\begin{polyainsight}[title={Bottom Line}]
+Cheapest option: 15-Year Fixed 5.8\%; refinancing saves \$64,911; break-even at month 26.
+\end{polyainsight}
+
+% ── What This Means ───────────────────────────────────────────────────
+\subsection{What This Means}
+
+- Monthly payments for each option
+- Full amortization schedule summaries (total interest, total paid)
+- Refinance break-even month (when cumulative savings exceed closing costs)
+- Net savings from refinancing over the remaining loan life
+- Independent verification that amortization schedules sum correctly
+
+1. PMT calculation: Compute monthly payment using the annuity formula P = L * r(1+r)\textasciicircum{}n / ((1+r)\textasciicircum{}n - 1)
+2. Amortization schedule: For each month, split payment into principal and interest, track remaining balance
+3. Refinance analysis: After 60 months on the 30-year loan, compute remaining balance, then start a new 25-year schedule at the lower rate plus closing costs
+4. Break-even: Find the month where cumulative payment savings from refinancing exceed the closing costs
+5. Verify: Independently confirm that principal payments sum to the loan amount and that final balances are zero
+
+% ── Sensitivity Analysis ──────────────────────────────────────────────
+
+% ── Figures ───────────────────────────────────────────────────────────
+
+% ── Recommendations ───────────────────────────────────────────────────
+\subsection{Recommendations}
+
+\begin{enumerate}
+  \item Compare total interest paid, not just monthly payments, when evaluating mortgage options.
+\end{enumerate}
+
+% ── Limitations ───────────────────────────────────────────────────────
+\subsection{Limitations}
+
+\begin{polyawarnbox}
+\begin{itemize}
+  \item Assumes fixed interest rates; adjustable-rate mortgages introduce variability.
+  \item Does not account for tax deductions, insurance, or opportunity cost of down payment.
+\end{itemize}
+\end{polyawarnbox}
+
+% ── Appendix ─────────────────────────────────────────────────────────
+
+\end{document}

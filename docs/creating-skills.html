@@ -583,6 +583,12 @@
         <div class="sidebar-section-title">Testing</div>
         <a href="#how-to-test">How to Test</a>
       </div>
+      <div class="sidebar-section">
+        <div class="sidebar-section-title">LaTeX/PDF</div>
+        <a href="#latex-templates">LaTeX Templates</a>
+        <a href="#template-customization" class="sub">Customization</a>
+        <a href="#testing-templates" class="sub">Testing</a>
+      </div>
     </aside>
 
     <!-- MAIN CONTENT -->
@@ -855,6 +861,112 @@
       </div>
 
       <p>Good skills handle all four cases: the well-defined problem produces a clean result, the trivial case shortcuts correctly, the ambiguous case triggers Socratic clarification, and the trigger phrase auto-suggests the skill.</p>
+
+      <!-- LATEX TEMPLATES -->
+      <h2 id="latex-templates">LaTeX / PDF Report Templates</h2>
+      <p>uber-polya v1.1.0 can generate branded PDF reports. The template system uses Jinja2 with custom delimiters to avoid conflicts with LaTeX syntax.</p>
+
+      <h3>Template directory</h3>
+      <div class="terminal">
+        <div class="terminal-header">
+          <div class="terminal-dot"></div>
+          <div class="terminal-dot"></div>
+          <div class="terminal-dot"></div>
+          <div class="terminal-title">templates/latex/</div>
+        </div>
+        <div class="terminal-body">
+<div><span class="output">templates/latex/</span></div>
+<div><span class="highlight">  report.tex.j2</span>             <span class="comment"># Master document</span></div>
+<div><span class="highlight">  preamble.tex.j2</span>           <span class="comment"># Shared preamble (packages)</span></div>
+<div><span class="highlight">  section_model.tex.j2</span>      <span class="comment"># Phase A: Problem Formulation</span></div>
+<div><span class="highlight">  section_solve.tex.j2</span>      <span class="comment"># Phase B: Solution</span></div>
+<div><span class="highlight">  section_interpret.tex.j2</span>  <span class="comment"># Phase C: Interpretation</span></div>
+<div><span class="highlight">  section_appendix.tex.j2</span>   <span class="comment"># Optional: Solver code listing</span></div>
+<div><span class="str">  polya.sty</span>                 <span class="comment"># Custom style (colors, environments)</span></div>
+        </div>
+      </div>
+
+      <h3 id="template-customization">Custom Jinja2 delimiters</h3>
+      <p>Templates use custom delimiters to coexist with LaTeX:</p>
+
+      <div class="terminal">
+        <div class="terminal-header">
+          <div class="terminal-dot"></div>
+          <div class="terminal-dot"></div>
+          <div class="terminal-dot"></div>
+          <div class="terminal-title">Jinja2 delimiters</div>
+        </div>
+        <div class="terminal-body">
+<div><span class="kw">\VAR</span><span class="output">{model.domain|e}</span>        <span class="comment"># Variable interpolation</span></div>
+<div><span class="kw">\BLOCK</span><span class="output">{for v in model.variables}</span> <span class="comment"># Control flow</span></div>
+<div><span class="kw">\#{</span><span class="output">This is a comment</span><span class="kw">}</span>        <span class="comment"># Jinja2 comment</span></div>
+<div></div>
+<div><span class="comment"># Use |e filter for user-facing text (escapes &amp; % $ # _ { } ~ ^ \)</span></div>
+<div><span class="str">\VAR{model.structure|e}</span>      <span class="comment"># Safe: escapes special chars</span></div>
+<div></div>
+<div><span class="comment"># Do NOT use |e for intentional LaTeX math</span></div>
+<div><span class="str">\VAR{model.objective}</span>        <span class="comment"># Raw: keeps LaTeX intact</span></div>
+        </div>
+      </div>
+
+      <h3>Branded environments (polya.sty)</h3>
+      <p>The custom style package defines four tcolorbox environments that map to the pipeline phases:</p>
+
+      <div class="card-grid">
+        <div class="card">
+          <h4 style="color:#58a6ff">polyamodel</h4>
+          <p>Phase A: Problem Formulation. Light blue background with blue border.</p>
+        </div>
+        <div class="card">
+          <h4 style="color:#3fb950">polyaresult</h4>
+          <p>Phase B: Solution. Light green background with green border.</p>
+        </div>
+        <div class="card">
+          <h4 style="color:#d29922">polyainsight</h4>
+          <p>Phase C: Interpretation. Yellow background with gray border.</p>
+        </div>
+        <div class="card">
+          <h4 style="color:#f85149">polyawarnbox</h4>
+          <p>Limitations and warnings. Light red background with red border.</p>
+        </div>
+      </div>
+
+      <h3>Data flow</h3>
+      <p>Report data flows through typed dataclasses defined in <code>utils/latex_data.py</code>:</p>
+
+      <ul class="checklist">
+        <li><strong>FormalModel</strong> &mdash; Phase A output: universe, variables, structure, mapping, constraints, objective</li>
+        <li><strong>SolutionReport</strong> &mdash; Phase B output: answer, algorithm, timing, verification checks, solver code</li>
+        <li><strong>InterpretationReport</strong> &mdash; Phase C output: question, answer, sensitivity rows, figures, recommendations, limitations</li>
+        <li><strong>ReportConfig</strong> &mdash; Title, output directory, whether to include code, date, author</li>
+      </ul>
+
+      <p>The rendering engine (<code>utils/latex_renderer.py</code>) provides three methods:</p>
+      <ul class="checklist">
+        <li><strong>render_tex()</strong> &mdash; Render Jinja2 templates to <code>.tex</code> source file</li>
+        <li><strong>render_pdf()</strong> &mdash; Generate <code>.pdf</code> using fpdf2 + matplotlib.mathtext (no system LaTeX)</li>
+        <li><strong>compile_tex()</strong> &mdash; Optional: compile with <code>pdflatex</code> or <code>latexmk</code> for higher quality</li>
+      </ul>
+
+      <h3 id="testing-templates">Testing template changes</h3>
+      <div class="terminal">
+        <div class="terminal-header">
+          <div class="terminal-dot"></div>
+          <div class="terminal-dot"></div>
+          <div class="terminal-dot"></div>
+          <div class="terminal-title">testing</div>
+        </div>
+        <div class="terminal-body">
+<div><span class="comment"># Generate report from any example to test templates</span></div>
+<div><span class="prompt">$</span> <span class="cmd">python utils/render_example.py examples/team-assignment/</span></div>
+<div></div>
+<div><span class="comment"># Verify both outputs:</span></div>
+<div><span class="comment"># 1. .tex source should compile with pdflatex</span></div>
+<div><span class="comment"># 2. .pdf output should render all sections correctly</span></div>
+        </div>
+      </div>
+
+      <p>When adding new environments, define them in <code>polya.sty</code> &mdash; not in individual templates. This keeps the style centralized and consistent across all report types.</p>
 
     </main>
   </div>

@@ -55,6 +55,24 @@ How deep should we go?
   (c) Model only -- formalize the problem, I'll solve it myself
 ```
 
+### Output Format Selection
+
+After determining the mode, determine the output format. If the user hasn't specified, use AskUserQuestion:
+
+```
+What output format do you want?
+  (a) Python -- solver script + console output + JSON (default)
+  (b) LaTeX/PDF -- professional mathematical report, no code shown
+  (c) Both -- full Python output AND a compiled PDF report
+```
+
+Thread the format choice through all phases. When transitioning between phases, state the format (e.g., "Output format: LaTeX/PDF") so each sub-skill populates the LaTeX data structures from `utils/latex_data.py`.
+
+**Format behavior**:
+- **Python**: Current behavior -- generate solver script, console output, `solution.json`.
+- **LaTeX/PDF**: Solver still runs internally to compute the answer, but the user-facing deliverable is a `.tex` source file and compiled `.pdf` report. Do NOT present the Python solver script to the user.
+- **Both**: Full Python output AND a compiled PDF report.
+
 ---
 
 ## Artifact Schemas
@@ -144,6 +162,17 @@ Produced by Phase C. The final deliverable.
 ### Limitations
 [What the model doesn't capture]
 ```
+
+### Artifact 4: PDF Report (optional)
+
+Produced by Phase D when LaTeX/PDF output is requested.
+
+**Files**:
+- `report.tex` -- LaTeX source (always generated)
+- `report.pdf` -- compiled PDF via fpdf2 (always generated, no system LaTeX needed)
+- `polya.sty` -- custom style file (copied to output directory)
+
+The PDF report contains all three phases typeset as a professional mathematical document with equations, tables, embedded figures, and branded styling.
 
 ---
 
@@ -236,6 +265,33 @@ Read and follow the protocol in `skills/uber-interpret/SKILL.md`.
 - [ ] Recommendations are specific and actionable (not generic)
 - [ ] Limitations are honestly disclosed
 - [ ] Audience level is appropriate (confirmed or inferred)
+
+---
+
+## Phase D: Generate Report (LaTeX/PDF modes only)
+
+Skip this phase if output format is Python-only.
+
+1. **Populate data classes**: Build `FormalModel`, `SolutionReport`, and `InterpretationReport` objects from `utils/latex_data.py` using the artifacts produced in Phases A, B, and C.
+
+2. **Generate LaTeX source**: Instantiate `LatexRenderer` from `utils/latex_renderer.py` with a `ReportConfig`. Call `render_tex()` to produce `report.tex` in the working directory. This also copies `polya.sty` and any PNG figures.
+
+3. **Generate PDF**: Call `render_pdf()` to produce `report.pdf` using fpdf2 (no system LaTeX needed).
+
+4. **Optionally compile with system LaTeX**: Call `compile_tex()` for higher-quality PDF if `pdflatex` or `latexmk` is available.
+
+5. **Present to user**:
+   - "LaTeX source saved to: `report.tex`"
+   - "PDF report saved to: `report.pdf`"
+   - If **Both** mode: also show the Python solver script as usual.
+   - If **LaTeX/PDF** mode: do NOT present the Python solver script.
+
+**Self-check**:
+- [ ] `report.tex` is syntactically valid LaTeX
+- [ ] `report.pdf` contains all applicable sections (model, solution, interpretation)
+- [ ] All figures embedded correctly
+- [ ] Math equations render correctly in PDF
+- [ ] No LaTeX special characters leaked into text
 
 ---
 

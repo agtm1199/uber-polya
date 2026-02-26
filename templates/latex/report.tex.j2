@@ -1,0 +1,36 @@
+\documentclass[11pt, a4paper]{article}
+
+\BLOCK{include 'preamble.tex.j2'}
+
+\title{\VAR{config.title|e}}
+\author{\VAR{config.author|e}}
+\date{\VAR{config.date|e}}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+% ── Phase A: Problem Formulation ─────────────────────────────────────
+\BLOCK{if model}
+\BLOCK{include 'section_model.tex.j2'}
+\BLOCK{endif}
+
+% ── Phase B: Solution ────────────────────────────────────────────────
+\BLOCK{if solution}
+\BLOCK{include 'section_solve.tex.j2'}
+\BLOCK{endif}
+
+% ── Phase C: Interpretation ──────────────────────────────────────────
+\BLOCK{if interpretation}
+\BLOCK{include 'section_interpret.tex.j2'}
+\BLOCK{endif}
+
+% ── Appendix ─────────────────────────────────────────────────────────
+\BLOCK{if config.include_code and solution and solution.solver_code}
+\appendix
+\BLOCK{include 'section_appendix.tex.j2'}
+\BLOCK{endif}
+
+\end{document}

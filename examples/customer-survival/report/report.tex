@@ -1,0 +1,245 @@
+\documentclass[11pt, a4paper]{article}
+
+% ── Packages ──────────────────────────────────────────────────────────
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{tcolorbox}
+\usepackage{polya}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=polyablue,
+  urlcolor=polyablue,
+  citecolor=polyablue,
+}
+
+% ── Code listing style ────────────────────────────────────────────────
+\lstdefinestyle{polya-python}{
+  language=Python,
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{polyablue}\bfseries,
+  commentstyle=\color{polyagray}\itshape,
+  stringstyle=\color{polyagreen},
+  numbers=left,
+  numberstyle=\tiny\color{polyagray},
+  numbersep=8pt,
+  frame=single,
+  framerule=0.4pt,
+  rulecolor=\color{polyagray},
+  breaklines=true,
+  showstringspaces=false,
+  tabsize=4,
+}
+\lstset{style=polya-python}
+\title{Customer Survival -- SaaS Subscription Churn}
+\author{uber-polya}
+\date{2026-02-26}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+% ── Phase A: Problem Formulation ─────────────────────────────────────
+\section{Problem Formulation}
+
+\begin{polyamodel}
+
+\textbf{Problem Type}: Find \hfill
+\textbf{Domain}: Statistical Inference
+
+
+\end{polyamodel}
+
+% ── Universe ──────────────────────────────────────────────────────────
+\subsection{Universe}
+
+\begin{itemize}
+  \item $Kaplan Meier: \{median_basic, median_pro\}$
+  \item $Logrank Test: \{statistic, p_value\}$
+  \item $Ph Assumption: \{plan_schoenfeld_p, tickets_schoenfeld_p, holds\}$
+\end{itemize}
+
+% ── Variables ─────────────────────────────────────────────────────────
+\subsection{Variables}
+
+\begin{longtable}{lll}
+\toprule
+\textbf{Symbol} & \textbf{Meaning} & \textbf{Type / Range} \\
+\midrule
+\endhead
+$\mu_1, \mu_2$ & population means for groups 1 and 2 & $\mathbb{{R}}$ \\
+$\bar{{x}}_1, \bar{{x}}_2$ & sample means & $\mathbb{{R}}$ \\
+$s_1, s_2$ & sample standard deviations & $\mathbb{{R}}_{{>0}}$ \\
+$n_1, n_2$ & sample sizes & $\mathbb{{Z}}^+$ \\
+$t$ & test statistic (hypothesis test) & $\mathbb{{R}}$ \\
+$p$ & p-value & $[0, 1]$ \\
+$\alpha$ & significance level & $[0, 1]$ \\
+\bottomrule
+\end{longtable}
+
+% ── Structure ─────────────────────────────────────────────────────────
+\subsection{Structure}
+
+- **Customers**: 500 SaaS subscribers with subscription duration (months) and churn status
+- **Censoring**: \textasciitilde{}30\% of customers are right-censored (still active, have not churned)
+- **Plan types**: Basic (n=300, median survival \textasciitilde{}12 months) and Pro (n=200, median survival \textasciitilde{}24 months)
+- **Covariate**: Support ticket count (higher tickets correlate with higher churn risk)
+- **Questions**: Do Basic and Pro plans have different churn rates? What factors predict churn?
+
+% ── Mapping ───────────────────────────────────────────────────────────
+\subsection{Real-World Mapping}
+
+\begin{longtable}{ll}
+\toprule
+\textbf{Real-World Concept} & \textbf{Mathematical Object} \\
+\midrule
+\endhead
+group average & $sample mean x-bar$ \\
+group variability & $sample std s$ \\
+sample count & $n$ \\
+significance threshold & $alpha = 0.05$ \\
+\bottomrule
+\end{longtable}
+
+% ── Constraints ───────────────────────────────────────────────────────
+\subsection{Constraints}
+
+\begin{enumerate}
+  \item $H_0: \mu_1 = \mu_2$
+  \hfill \textit{(null hypothesis)}
+  \item $H_1: \mu_1 \neq \mu_2$
+  \hfill \textit{(alternative hypothesis)}
+  \item $\alpha = 0.05$
+  \hfill \textit{(significance level)}
+  \item $t = \frac{\bar{x}_1 - \bar{x}_2}{\sqrt{\frac{s_1^2}{n_1} + \frac{s_2^2}{n_2}}}$
+  \hfill \textit{(Welch's t-test statistic)}
+\end{enumerate}
+
+% ── Objective / Claim ─────────────────────────────────────────────────
+\subsection{Objective}
+
+\begin{equation}
+\text{Reject } H_0 \text{ if } p < \alpha
+\end{equation}
+
+% ── Approach ──────────────────────────────────────────────────────────
+\subsection{Approach}
+
+\begin{description}
+  \item[Suggested approach:] Kaplan-Meier + Log-Rank Test + Cox Proportional Hazards
+  \item[Complexity class:] 
+  \item[Available tools:] Kaplan-Meier + Log-Rank Test + Cox Proportional Hazards
+\end{description}
+% ── Phase B: Solution ────────────────────────────────────────────────
+\section{Solution}
+
+\begin{polyaresult}
+
+\textbf{Answer}: Statistical test complete
+
+
+\textbf{Optimal}: No / Unknown \hfill
+\textbf{Feasible}: Yes
+\textbf{Algorithm}: Kaplan-Meier + Log-Rank Test + Cox Proportional Hazards \quad $$
+
+\textbf{Time}: 0.09642017504666s
+
+\textbf{Certificate}: Assumptions checked; test statistic independently verified.
+
+\end{polyaresult}
+
+% ── Solution Details ──────────────────────────────────────────────────
+\subsection{Solution Details}
+
+Statistical analysis computed.
+
+% ── Verification ──────────────────────────────────────────────────────
+\subsection{Verification}
+
+\begin{longtable}{lcl}
+\toprule
+\textbf{Check} & \textbf{Status} & \textbf{Detail} \\
+\midrule
+\endhead
+Km Basic Monotonic & \passmark & Passed \\
+Km Pro Monotonic & \passmark & Passed \\
+Km Basic In 01 & \passmark & Passed \\
+Km Pro In 01 & \passmark & Passed \\
+Logrank Significant & \passmark & Passed \\
+Cox Plan Hr Gt 1 & \passmark & Passed \\
+Cox Tickets Hr Gt 1 & \passmark & Passed \\
+Concordance Gt 055 & \passmark & Passed \\
+Median Basic Lt Pro & \passmark & Passed \\
+Censoring Rate Approx 30Pct & \passmark & Passed \\
+All Passed & \passmark & Passed \\
+\bottomrule
+\end{longtable}
+
+% ── Phase C: Interpretation ──────────────────────────────────────────
+\section{Interpretation}
+
+% ── The Question & The Answer ─────────────────────────────────────────
+\subsection{The Question}
+- **Customers**: 500 SaaS subscribers with subscription duration (months) and churn status
+- **Censoring**: \textasciitilde{}30\% of customers are right-censored (still active, have not churned)
+- **Plan types**: Basic (n=300, median survival \textasciitilde{}12 months) and Pro (n=200, median survival \textasciitilde{}24 months)
+- **Covariate**: Support ticket count (higher tickets correlate with higher churn risk)
+- **Questions**: Do Basic and Pro plans have different churn rates? What factors predict churn?.
+
+\subsection{The Answer}
+
+\begin{polyainsight}[title={Bottom Line}]
+Test complete.
+\end{polyainsight}
+
+% ── What This Means ───────────────────────────────────────────────────
+\subsection{What This Means}
+
+- Kaplan-Meier: Monotonically decreasing survival curves for Basic and Pro plans
+- Median survival: Basic \textasciitilde{}12 months, Pro \textasciitilde{}24 months
+- Log-rank test: p < 0.05 (significant difference between plans)
+- Cox PH hazard ratios: Basic vs Pro HR > 1.0 (Basic has higher hazard), tickets HR > 1.0 (more tickets = higher churn)
+- 95\% CI: Hazard ratio confidence intervals excluding 1.0 for both covariates
+- Concordance index: > 0.55 (better than random prediction)
+- PH assumption: Schoenfeld residuals test for proportional hazards
+
+1. Kaplan-Meier estimator: Non-parametric survival function estimate per plan group, handling right-censored observations
+2. Log-rank test: Non-parametric hypothesis test comparing survival distributions between Basic and Pro plans
+3. Cox Proportional Hazards: Semi-parametric regression modeling hazard as a function of plan type and support ticket count; reports hazard ratios with 95\% confidence intervals
+4. Diagnostics: Proportional hazards assumption check via Schoenfeld residuals; concordance index for predictive accuracy
+
+% ── Sensitivity Analysis ──────────────────────────────────────────────
+
+% ── Figures ───────────────────────────────────────────────────────────
+
+% ── Recommendations ───────────────────────────────────────────────────
+\subsection{Recommendations}
+
+\begin{enumerate}
+  \item Report effect sizes alongside p-values for practical significance assessment.
+\end{enumerate}
+
+% ── Limitations ───────────────────────────────────────────────────────
+\subsection{Limitations}
+
+\begin{polyawarnbox}
+\begin{itemize}
+  \item Results are conditional on model assumptions (normality, independence, etc.).
+  \item Statistical significance does not imply practical importance.
+\end{itemize}
+\end{polyawarnbox}
+
+% ── Appendix ─────────────────────────────────────────────────────────
+
+\end{document}

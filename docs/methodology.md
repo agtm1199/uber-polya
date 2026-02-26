@@ -21,6 +21,20 @@ Determine the mode before starting:
 
 If unclear, ask the user which depth they want.
 
+### Output Format
+
+After determining the mode, determine the output format:
+
+| Format | Deliverable | System LaTeX needed? |
+|---|---|---|
+| **Python** (default) | Solver script + console output + `solution.json` | No |
+| **LaTeX/PDF** | `.tex` source + compiled `.pdf` report (no code shown) | No (uses fpdf2) |
+| **Both** | Full Python output AND compiled PDF report | No |
+
+The LaTeX/PDF format produces a professional mathematical document with equations, tables, embedded figures, and branded styling. PDF compilation uses `fpdf2` + `matplotlib.mathtext` (pure Python, no system LaTeX installation required). The `.tex` source is always saved for optional higher-quality compilation with `pdflatex`.
+
+Implementation details: `utils/latex_data.py` (data classes), `utils/latex_renderer.py` (rendering engine), `templates/latex/` (Jinja2 templates + `polya.sty` style).
+
 ---
 
 ## Phase A: Model the Problem

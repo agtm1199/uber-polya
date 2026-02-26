@@ -1,0 +1,259 @@
+\documentclass[11pt, a4paper]{article}
+
+% ── Packages ──────────────────────────────────────────────────────────
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{tcolorbox}
+\usepackage{polya}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=polyablue,
+  urlcolor=polyablue,
+  citecolor=polyablue,
+}
+
+% ── Code listing style ────────────────────────────────────────────────
+\lstdefinestyle{polya-python}{
+  language=Python,
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{polyablue}\bfseries,
+  commentstyle=\color{polyagray}\itshape,
+  stringstyle=\color{polyagreen},
+  numbers=left,
+  numberstyle=\tiny\color{polyagray},
+  numbersep=8pt,
+  frame=single,
+  framerule=0.4pt,
+  rulecolor=\color{polyagray},
+  breaklines=true,
+  showstringspaces=false,
+  tabsize=4,
+}
+\lstset{style=polya-python}
+\title{Customer Segmentation via Clustering}
+\author{uber-polya}
+\date{2026-02-26}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+% ── Phase A: Problem Formulation ─────────────────────────────────────
+\section{Problem Formulation}
+
+\begin{polyamodel}
+
+\textbf{Problem Type}: Prove \hfill
+\textbf{Domain}: Machine Learning
+
+
+\end{polyamodel}
+
+% ── Universe ──────────────────────────────────────────────────────────
+\subsection{Universe}
+
+\begin{itemize}
+  \item $Elbow Analysis: \{k_range, inertias\}$
+  \item $Kmeans: \{k, labels, centroids, silhouette, inertia\}$
+  \item $Dbscan: \{eps, labels, n_clusters, n_noise, silhouette\}$
+  \item $Gmm: \{n_components, labels, bic, aic, silhouette\}$
+\end{itemize}
+
+% ── Variables ─────────────────────────────────────────────────────────
+\subsection{Variables}
+
+\begin{longtable}{lll}
+\toprule
+\textbf{Symbol} & \textbf{Meaning} & \textbf{Type / Range} \\
+\midrule
+\endhead
+$x$ & decision variable & $\mathbb{{R}}$ \\
+\bottomrule
+\end{longtable}
+
+% ── Structure ─────────────────────────────────────────────────────────
+\subsection{Structure}
+
+- **Data**: \textasciitilde{}500 synthetic customers with 4 purchasing features
+- **Features**: annual\_spending, purchase\_frequency, avg\_order\_value, days\_since\_last\_purchase
+- **Natural segments**: 3 ground-truth clusters with overlapping boundaries
+  - **High Value** (\textasciitilde{}150 customers): high spending, high frequency, low recency
+  - **Moderate** (\textasciitilde{}200 customers): medium spending, medium frequency
+  - **At Risk** (\textasciitilde{}150 customers): low spending, low frequency, high recency
+- **Questions**: (1) How many segments exist? (2) Which method recovers them best? (3) What defines each segment?
+
+% ── Mapping ───────────────────────────────────────────────────────────
+\subsection{Real-World Mapping}
+
+\begin{longtable}{ll}
+\toprule
+\textbf{Real-World Concept} & \textbf{Mathematical Object} \\
+\midrule
+\endhead
+problem input & $instance parameters$ \\
+\bottomrule
+\end{longtable}
+
+% ── Constraints ───────────────────────────────────────────────────────
+\subsection{Constraints}
+
+\begin{enumerate}
+  \item $K-Means**: partition-based clustering minimizing within-cluster variance; assumes spherical, equal-size clusters$
+  \hfill \textit{()}
+  \item $DBSCAN**: density-based clustering that finds arbitrarily shaped clusters and identifies noise points$
+  \hfill \textit{()}
+  \item $GMM (Gaussian Mixture Model)**: probabilistic model assuming data is generated from a mixture of Gaussians$
+  \hfill \textit{()}
+  \item $Silhouette score**: measures how similar an object is to its own cluster vs. the nearest neighbor cluster (range -1 to +1)$
+  \hfill \textit{()}
+  \item $Elbow method**: heuristic for choosing k by finding the "knee" in the inertia curve$
+  \hfill \textit{()}
+  \item $Cluster profiles**: per-cluster summary statistics that translate numeric labels into business-meaningful segments$
+  \hfill \textit{()}
+\end{enumerate}
+
+% ── Objective / Claim ─────────────────────────────────────────────────
+\subsection{Claim}
+
+
+% ── Approach ──────────────────────────────────────────────────────────
+\subsection{Approach}
+
+\begin{description}
+  \item[Suggested approach:] K-Means + DBSCAN + GMM
+  \item[Complexity class:] 
+  \item[Available tools:] K-Means + DBSCAN + GMM
+\end{description}
+% ── Phase B: Solution ────────────────────────────────────────────────
+\section{Solution}
+
+\begin{polyaresult}
+
+\textbf{Answer}: Solution computed
+
+
+\textbf{Optimal}: No / Unknown \hfill
+\textbf{Feasible}: No
+\textbf{Algorithm}: K-Means + DBSCAN + GMM \quad $$
+
+\textbf{Time}: 0.21494594000978395s
+
+
+\end{polyaresult}
+
+% ── Solution Details ──────────────────────────────────────────────────
+\subsection{Solution Details}
+
+
+Method: 1. StandardScaler: Zero-mean, unit-variance normalization of all features. Essential for distance-based methods (K-Means, DBSCAN) where feature scales differ by orders of magnitude.
+
+2. Elbow method: Run K-Means for k=2..8, plot inertia (within-cluster sum of squares). The "elbow" where marginal improvement drops suggests the natural number of clusters.
+
+3. K-Means (k=3): Lloyd's algorithm with k-means++ initialization. Fast, deterministic given seed, assumes spherical clusters. Reports centroids, labels, inertia, and silhouette score.
+
+4. DBSCAN: Density-based clustering that discovers clusters of arbitrary shape. The eps parameter is set via k-distance heuristic (knee of the sorted 5-nearest-neighbor distance curve). Reports labels, number of clusters, number of noise points, and silhouette score.
+
+5. GMM (3 components): Gaussian Mixture Model fit via Expectation-Maximization. Soft clustering that models each cluster as a multivariate Gaussian. Reports labels (hard assignment), BIC, AIC, and silhouette score.
+
+6. Comparison: Methods ranked by silhouette score; best method selected.
+
+7. Profiling: For the best method, compute mean feature values per cluster to build interpretable segment descriptions.
+
+% ── Verification ──────────────────────────────────────────────────────
+\subsection{Verification}
+
+\begin{longtable}{lcl}
+\toprule
+\textbf{Check} & \textbf{Status} & \textbf{Detail} \\
+\midrule
+\endhead
+Kmeans Silhouette Gt 04 & \passmark & Passed \\
+Kmeans Found 3 Clusters & \passmark & Passed \\
+Dbscan Found 2 To 5 Clusters & \passmark & Passed \\
+Gmm Bic Finite & \passmark & Passed \\
+Cluster Sizes Reasonable & \passmark & Passed \\
+Profiles Distinguishable & \passmark & Passed \\
+All Passed & \passmark & Passed \\
+\bottomrule
+\end{longtable}
+
+% ── Phase C: Interpretation ──────────────────────────────────────────
+\section{Interpretation}
+
+% ── The Question & The Answer ─────────────────────────────────────────
+\subsection{The Question}
+- **Data**: \textasciitilde{}500 synthetic customers with 4 purchasing features
+- **Features**: annual\_spending, purchase\_frequency, avg\_order\_value, days\_since\_last\_purchase
+- **Natural segments**: 3 ground-truth clusters with overlapping boundaries
+  - **High Value** (\textasciitilde{}150 customers): high spending, high frequency, low recency
+  - **Moderate** (\textasciitilde{}200 customers): medium spending, medium frequency
+  - **At Risk** (\textasciitilde{}150 customers): low spending, low frequency, high recency
+- **Questions**: (1) How many segments exist? (2) Which method recovers them best? (3) What defines each segment?.
+
+\subsection{The Answer}
+
+\begin{polyainsight}[title={Bottom Line}]
+A feasible solution was found.
+\end{polyainsight}
+
+% ── What This Means ───────────────────────────────────────────────────
+\subsection{What This Means}
+
+- Elbow analysis: inertia curve for k=2..8 shows clear elbow at k=3
+- K-Means (k=3): silhouette score > 0.4, recovers 3 well-separated clusters
+- DBSCAN: finds 2--5 clusters depending on eps (determined via k-distance heuristic)
+- GMM (3 components): finite BIC/AIC, comparable silhouette to K-Means
+- Best method: selected by highest silhouette score
+- Cluster profiles: distinct mean feature values per cluster (distinguishable in standardized space)
+- All 7 verification checks pass
+
+1. StandardScaler: Zero-mean, unit-variance normalization of all features. Essential for distance-based methods (K-Means, DBSCAN) where feature scales differ by orders of magnitude.
+
+2. Elbow method: Run K-Means for k=2..8, plot inertia (within-cluster sum of squares). The "elbow" where marginal improvement drops suggests the natural number of clusters.
+
+3. K-Means (k=3): Lloyd's algorithm with k-means++ initialization. Fast, deterministic given seed, assumes spherical clusters. Reports centroids, labels, inertia, and silhouette score.
+
+4. DBSCAN: Density-based clustering that discovers clusters of arbitrary shape. The eps parameter is set via k-distance heuristic (knee of the sorted 5-nearest-neighbor distance curve). Reports labels, number of clusters, number of noise points, and silhouette score.
+
+5. GMM (3 components): Gaussian Mixture Model fit via Expectation-Maximization. Soft clustering that models each cluster as a multivariate Gaussian. Reports labels (hard assignment), BIC, AIC, and silhouette score.
+
+6. Comparison: Methods ranked by silhouette score; best method selected.
+
+7. Profiling: For the best method, compute mean feature values per cluster to build interpretable segment descriptions.
+
+% ── Sensitivity Analysis ──────────────────────────────────────────────
+
+% ── Figures ───────────────────────────────────────────────────────────
+
+% ── Recommendations ───────────────────────────────────────────────────
+\subsection{Recommendations}
+
+\begin{enumerate}
+  \item Review the model assumptions to ensure real-world fidelity.
+\end{enumerate}
+
+% ── Limitations ───────────────────────────────────────────────────────
+\subsection{Limitations}
+
+\begin{polyawarnbox}
+\begin{itemize}
+  \item Model assumes deterministic parameters; real-world variability not captured.
+  \item Solution quality depends on the accuracy of input data.
+\end{itemize}
+\end{polyawarnbox}
+
+% ── Appendix ─────────────────────────────────────────────────────────
+
+\end{document}

@@ -1,0 +1,228 @@
+\documentclass[11pt, a4paper]{article}
+
+% ── Packages ──────────────────────────────────────────────────────────
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{tcolorbox}
+\usepackage{polya}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=polyablue,
+  urlcolor=polyablue,
+  citecolor=polyablue,
+}
+
+% ── Code listing style ────────────────────────────────────────────────
+\lstdefinestyle{polya-python}{
+  language=Python,
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{polyablue}\bfseries,
+  commentstyle=\color{polyagray}\itshape,
+  stringstyle=\color{polyagreen},
+  numbers=left,
+  numberstyle=\tiny\color{polyagray},
+  numbersep=8pt,
+  frame=single,
+  framerule=0.4pt,
+  rulecolor=\color{polyagray},
+  breaklines=true,
+  showstringspaces=false,
+  tabsize=4,
+}
+\lstset{style=polya-python}
+\title{Team Assignment}
+\author{uber-polya}
+\date{2026-02-26}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+% ── Phase A: Problem Formulation ─────────────────────────────────────
+\section{Problem Formulation}
+
+\begin{polyamodel}
+
+\textbf{Problem Type}: Find \hfill
+\textbf{Domain}: Graph Theory / Combinatorics
+
+\textbf{Named Problem}: Assignment Problem
+
+\end{polyamodel}
+
+% ── Universe ──────────────────────────────────────────────────────────
+\subsection{Universe}
+
+\begin{itemize}
+  \item $Assignment: \{Alice, Bob, Carol, Dave, Eve, Frank\}$
+\end{itemize}
+
+% ── Variables ─────────────────────────────────────────────────────────
+\subsection{Variables}
+
+\begin{longtable}{lll}
+\toprule
+\textbf{Symbol} & \textbf{Meaning} & \textbf{Type / Range} \\
+\midrule
+\endhead
+$x_{ij}$ & 1 if item i assigned to slot j, 0 otherwise & $\{0, 1\}$ \\
+\bottomrule
+\end{longtable}
+
+% ── Structure ─────────────────────────────────────────────────────────
+\subsection{Structure}
+
+Assign 6 developers to 6 projects (one developer per project, one project per developer). Each developer has rated their interest in each project on a scale of 1-10. Find the assignment that maximizes total satisfaction across all developer-project pairs.
+
+% ── Mapping ───────────────────────────────────────────────────────────
+\subsection{Real-World Mapping}
+
+\begin{longtable}{ll}
+\toprule
+\textbf{Real-World Concept} & \textbf{Mathematical Object} \\
+\midrule
+\endhead
+assignment & $x: solution vector (assignment)$ \\
+total score/cost & $objective function value$ \\
+\bottomrule
+\end{longtable}
+
+% ── Constraints ───────────────────────────────────────────────────────
+\subsection{Constraints}
+
+\begin{enumerate}
+  \item $\sum_j x_{{ij}} = 1$
+  \hfill \textit{(one-per-item)}
+  \item $x_{ij} \in \{0, 1\} \quad \forall\, i, j$
+  \hfill \textit{(binary decision variables)}
+\end{enumerate}
+
+% ── Objective / Claim ─────────────────────────────────────────────────
+\subsection{Objective}
+
+\begin{equation}
+\max \sum_{i,j} c_{ij} \, x_{ij}
+\end{equation}
+
+% ── Approach ──────────────────────────────────────────────────────────
+\subsection{Approach}
+
+\begin{description}
+  \item[Suggested approach:] Hungarian Algorithm (scipy.optimize.linear\_sum\_assignment)
+  \item[Complexity class:] O(n\textasciicircum{}3)
+  \item[Available tools:] Hungarian Algorithm
+\end{description}
+% ── Phase B: Solution ────────────────────────────────────────────────
+\section{Solution}
+
+\begin{polyaresult}
+
+\textbf{Answer}: 6-element assignment: Alice -> ML Model, Bob -> Mobile App, Carol -> Data Pipeline, Dave -> DevOps CI/CD, Eve -> API Gateway, Frank -> Frontend UI
+
+\textbf{Objective Value}: $52$
+
+\textbf{Optimal}: Yes \hfill
+\textbf{Feasible}: Yes
+\textbf{Algorithm}: Hungarian Algorithm (scipy.optimize.linear\_sum\_assignment) \quad $O(n^3)$
+
+\textbf{Time}: 7.345003541558981e-05s
+
+\textbf{Certificate}: Hungarian algorithm guarantees global optimum in O(n\textasciicircum{}3).
+
+\end{polyaresult}
+
+% ── Solution Details ──────────────────────────────────────────────────
+\subsection{Solution Details}
+
+Assignment:
+  Alice -> ML Model
+  Bob -> Mobile App
+  Carol -> Data Pipeline
+  Dave -> DevOps CI/CD
+  Eve -> API Gateway
+  Frank -> Frontend UI
+
+Objective value: z* = 52
+Upper bound: 53
+Lower bound: 16
+
+Random Stats:
+  mean: 33.8905
+  std: 5.6285
+  min: 18
+  max: 52
+  p95: 43.0000
+
+Method: Hungarian algorithm (Kuhn-Munkres) via scipy.optimize.linear\_sum\_assignment. Since the algorithm minimizes cost, we negate the preference matrix to convert maximization into minimization. The algorithm runs in O(n\textasciicircum{}3) and guarantees a globally optimal assignment.
+
+% ── Verification ──────────────────────────────────────────────────────
+\subsection{Verification}
+
+\begin{longtable}{lcl}
+\toprule
+\textbf{Check} & \textbf{Status} & \textbf{Detail} \\
+\midrule
+\endhead
+Feasibility & \passmark & All constraints satisfied \\
+Optimality & \passmark & Hungarian Algorithm (scipy.optimize.linear\_sum\_assignment) \\
+\bottomrule
+\end{longtable}
+
+% ── Phase C: Interpretation ──────────────────────────────────────────
+\section{Interpretation}
+
+% ── The Question & The Answer ─────────────────────────────────────────
+\subsection{The Question}
+Assign 6 developers to 6 projects (one developer per project, one project per developer).
+
+\subsection{The Answer}
+
+\begin{polyainsight}[title={Bottom Line}]
+The optimal solution has objective value z* = 52.
+\end{polyainsight}
+
+% ── What This Means ───────────────────────────────────────────────────
+\subsection{What This Means}
+
+- Optimal one-to-one assignment of developers to projects
+- Maximum total satisfaction score
+- Comparison against worst-case and random assignments
+
+Hungarian algorithm (Kuhn-Munkres) via scipy.optimize.linear\_sum\_assignment. Since the algorithm minimizes cost, we negate the preference matrix to convert maximization into minimization. The algorithm runs in O(n\textasciicircum{}3) and guarantees a globally optimal assignment.
+
+% ── Sensitivity Analysis ──────────────────────────────────────────────
+
+% ── Figures ───────────────────────────────────────────────────────────
+
+% ── Recommendations ───────────────────────────────────────────────────
+\subsection{Recommendations}
+
+\begin{enumerate}
+  \item The solution is provably optimal; no further improvement is possible within this model.
+\end{enumerate}
+
+% ── Limitations ───────────────────────────────────────────────────────
+\subsection{Limitations}
+
+\begin{polyawarnbox}
+\begin{itemize}
+  \item Model assumes deterministic parameters; real-world variability not captured.
+  \item Solution quality depends on the accuracy of input data.
+\end{itemize}
+\end{polyawarnbox}
+
+% ── Appendix ─────────────────────────────────────────────────────────
+
+\end{document}

@@ -20,6 +20,15 @@ Ask the user to confirm at each phase gate before proceeding to the next phase.
 
 Solvers use Python 3.10+, `dataclass(frozen=True)` for Instance, separate `verify()` function, `time.perf_counter()` for timing, type hints on all signatures. See `docs/methodology.md` for the full template.
 
+### Output Format
+
+The pipeline supports three output formats (ask the user before starting):
+- **Python** (default): solver script + console output + JSON
+- **LaTeX/PDF**: professional mathematical report (`.tex` + `.pdf`), no code shown
+- **Both**: full Python output AND compiled PDF report
+
+PDF generation uses fpdf2 + matplotlib (no system LaTeX needed). See `utils/latex_renderer.py` and `templates/latex/`.
+
 ### Worked Examples
 
 See `examples/` for 36 fully worked problems with runnable solver scripts.

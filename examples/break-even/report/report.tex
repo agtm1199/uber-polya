@@ -1,0 +1,220 @@
+\documentclass[11pt, a4paper]{article}
+
+% ── Packages ──────────────────────────────────────────────────────────
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{tcolorbox}
+\usepackage{polya}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=polyablue,
+  urlcolor=polyablue,
+  citecolor=polyablue,
+}
+
+% ── Code listing style ────────────────────────────────────────────────
+\lstdefinestyle{polya-python}{
+  language=Python,
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{polyablue}\bfseries,
+  commentstyle=\color{polyagray}\itshape,
+  stringstyle=\color{polyagreen},
+  numbers=left,
+  numberstyle=\tiny\color{polyagray},
+  numbersep=8pt,
+  frame=single,
+  framerule=0.4pt,
+  rulecolor=\color{polyagray},
+  breaklines=true,
+  showstringspaces=false,
+  tabsize=4,
+}
+\lstset{style=polya-python}
+\title{Break-Even Analysis}
+\author{uber-polya}
+\date{2026-02-26}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+% ── Phase A: Problem Formulation ─────────────────────────────────────
+\section{Problem Formulation}
+
+\begin{polyamodel}
+
+\textbf{Problem Type}: Find \hfill
+\textbf{Domain}: Numerical Methods
+
+
+\end{polyamodel}
+
+% ── Universe ──────────────────────────────────────────────────────────
+\subsection{Universe}
+
+\begin{itemize}
+  \item $See problem description$
+\end{itemize}
+
+% ── Variables ─────────────────────────────────────────────────────────
+\subsection{Variables}
+
+\begin{longtable}{lll}
+\toprule
+\textbf{Symbol} & \textbf{Meaning} & \textbf{Type / Range} \\
+\midrule
+\endhead
+$x$ & decision variable & $\mathbb{{R}}$ \\
+\bottomrule
+\end{longtable}
+
+% ── Structure ─────────────────────────────────────────────────────────
+\subsection{Structure}
+
+A small business is considering launching a new product. Fixed costs are \$25,000 (tooling, marketing). Variable cost per unit is \$12. Selling price per unit is \$35. What is the break-even quantity? How does the break-even point shift if the price drops 10\% or variable costs increase 20\%?
+
+% ── Mapping ───────────────────────────────────────────────────────────
+\subsection{Real-World Mapping}
+
+\begin{longtable}{ll}
+\toprule
+\textbf{Real-World Concept} & \textbf{Mathematical Object} \\
+\midrule
+\endhead
+problem input & $instance parameters$ \\
+\bottomrule
+\end{longtable}
+
+% ── Constraints ───────────────────────────────────────────────────────
+\subsection{Constraints}
+
+\begin{enumerate}
+  \item $Break-even analysis$
+  \hfill \textit{(finding the production volume where profit turns positive)}
+  \item $Symbolic computation$
+  \hfill \textit{(deriving exact formulas with SymPy)}
+  \item $Sensitivity analysis$
+  \hfill \textit{(understanding how parameter changes affect the result)}
+  \item $Contribution margin$
+  \hfill \textit{(Price minus Variable cost per unit)}
+  \item $Business decision modeling$
+  \hfill \textit{(translating financial questions into mathematical models)}
+\end{enumerate}
+
+% ── Objective / Claim ─────────────────────────────────────────────────
+\subsection{Claim}
+
+
+% ── Approach ──────────────────────────────────────────────────────────
+\subsection{Approach}
+
+\begin{description}
+  \item[Suggested approach:] Symbolic (SymPy) + Numerical (NumPy) Break-Even Analysis
+  \item[Complexity class:] 
+  \item[Available tools:] Symbolic
+\end{description}
+% ── Phase B: Solution ────────────────────────────────────────────────
+\section{Solution}
+
+\begin{polyaresult}
+
+\textbf{Answer}: Solution computed
+
+
+\textbf{Optimal}: No / Unknown \hfill
+\textbf{Feasible}: Yes
+\textbf{Algorithm}: Symbolic (SymPy) + Numerical (NumPy) Break-Even Analysis \quad $$
+
+\textbf{Time}: 0.11466744501376525s
+
+
+\end{polyaresult}
+
+% ── Solution Details ──────────────────────────────────────────────────
+\subsection{Solution Details}
+
+
+Method: Symbolic algebra via SymPy to derive the closed-form break-even formula, then numerical evaluation with NumPy for sensitivity analysis. Break-even occurs where Revenue(Q) = Cost(Q), i.e., P*Q = F + V*Q, yielding Q* = F / (P - V). Sensitivity sweeps over price and variable cost perturbations.
+
+% ── Verification ──────────────────────────────────────────────────────
+\subsection{Verification}
+
+\begin{longtable}{lcl}
+\toprule
+\textbf{Check} & \textbf{Status} & \textbf{Detail} \\
+\midrule
+\endhead
+Feasibility & \passmark & All constraints satisfied \\
+\bottomrule
+\end{longtable}
+
+% ── Phase C: Interpretation ──────────────────────────────────────────
+\section{Interpretation}
+
+% ── The Question & The Answer ─────────────────────────────────────────
+\subsection{The Question}
+A small business is considering launching a new product.
+
+\subsection{The Answer}
+
+\begin{polyainsight}[title={Bottom Line}]
+A feasible solution was found.
+\end{polyainsight}
+
+% ── What This Means ───────────────────────────────────────────────────
+\subsection{What This Means}
+
+- Exact symbolic break-even quantity: Q = Fixed / (Price - Variable)
+- Base case: \textasciitilde{}1087 units
+- Sensitivity table showing break-even under price drops and cost increases
+- Profit projections at various production volumes
+
+Symbolic algebra via SymPy to derive the closed-form break-even formula, then numerical evaluation with NumPy for sensitivity analysis. Break-even occurs where Revenue(Q) = Cost(Q), i.e., P*Q = F + V*Q, yielding Q* = F / (P - V). Sensitivity sweeps over price and variable cost perturbations.
+
+% ── Sensitivity Analysis ──────────────────────────────────────────────
+\subsection{Sensitivity Analysis}
+
+\begin{longtable}{llrrl}
+\toprule
+\textbf{Parameter} & \textbf{Current} & \textbf{Change} & \textbf{New Obj.} & \textbf{Class} \\
+\midrule
+\endhead
+worst\_case & present & removed &  &
+\textcolor{polyagreen}{robust} \\
+\bottomrule
+\end{longtable}
+
+% ── Figures ───────────────────────────────────────────────────────────
+
+% ── Recommendations ───────────────────────────────────────────────────
+\subsection{Recommendations}
+
+\begin{enumerate}
+  \item Review the model assumptions to ensure real-world fidelity.
+\end{enumerate}
+
+% ── Limitations ───────────────────────────────────────────────────────
+\subsection{Limitations}
+
+\begin{polyawarnbox}
+\begin{itemize}
+  \item Model assumes deterministic parameters; real-world variability not captured.
+  \item Solution quality depends on the accuracy of input data.
+\end{itemize}
+\end{polyawarnbox}
+
+% ── Appendix ─────────────────────────────────────────────────────────
+
+\end{document}

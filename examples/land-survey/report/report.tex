@@ -1,0 +1,233 @@
+\documentclass[11pt, a4paper]{article}
+
+% ── Packages ──────────────────────────────────────────────────────────
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{tcolorbox}
+\usepackage{polya}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=polyablue,
+  urlcolor=polyablue,
+  citecolor=polyablue,
+}
+
+% ── Code listing style ────────────────────────────────────────────────
+\lstdefinestyle{polya-python}{
+  language=Python,
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{polyablue}\bfseries,
+  commentstyle=\color{polyagray}\itshape,
+  stringstyle=\color{polyagreen},
+  numbers=left,
+  numberstyle=\tiny\color{polyagray},
+  numbersep=8pt,
+  frame=single,
+  framerule=0.4pt,
+  rulecolor=\color{polyagray},
+  breaklines=true,
+  showstringspaces=false,
+  tabsize=4,
+}
+\lstset{style=polya-python}
+\title{Land Survey Analysis}
+\author{uber-polya}
+\date{2026-02-26}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+% ── Phase A: Problem Formulation ─────────────────────────────────────
+\section{Problem Formulation}
+
+\begin{polyamodel}
+
+\textbf{Problem Type}: Find \hfill
+\textbf{Domain}: Computational Geometry
+
+
+\end{polyamodel}
+
+% ── Universe ──────────────────────────────────────────────────────────
+\subsection{Universe}
+
+\begin{itemize}
+  \item $Building Footprint: \{width, height, center_x, center_y\}$
+  \item $Max Inscribed Rectangle: \{center_x, center_y, width, height, area_m2\}$
+\end{itemize}
+
+% ── Variables ─────────────────────────────────────────────────────────
+\subsection{Variables}
+
+\begin{longtable}{lll}
+\toprule
+\textbf{Symbol} & \textbf{Meaning} & \textbf{Type / Range} \\
+\midrule
+\endhead
+$x$ & decision variable & $\mathbb{{R}}$ \\
+\bottomrule
+\end{longtable}
+
+% ── Structure ─────────────────────────────────────────────────────────
+\subsection{Structure}
+
+A surveyor has recorded GPS coordinates for 8 boundary markers defining an irregular lot. Given these coordinates (in meters, local projected coordinate system), compute:
+
+1. **Area** of the lot polygon
+2. **Perimeter** of the lot boundary
+3. **Convex hull** of the survey points
+4. **Centroid** (geometric center of mass)
+5. **Building fit check** -- determine whether a proposed rectangular building footprint fits entirely within the lot
+
+The lot is an irregular 8-sided polygon. The building footprint is an axis-aligned rectangle placed at a proposed location. The solver must verify containment using independent geometric methods.
+
+% ── Mapping ───────────────────────────────────────────────────────────
+\subsection{Real-World Mapping}
+
+\begin{longtable}{ll}
+\toprule
+\textbf{Real-World Concept} & \textbf{Mathematical Object} \\
+\midrule
+\endhead
+problem input & $instance parameters$ \\
+\bottomrule
+\end{longtable}
+
+% ── Constraints ───────────────────────────────────────────────────────
+\subsection{Constraints}
+
+\begin{enumerate}
+  \item $Computational geometry$
+  \hfill \textit{(algorithms operating on points, lines, and polygons in the plane)}
+  \item $Polygon operations$
+  \hfill \textit{(area, perimeter, convex hull, centroid for arbitrary simple polygons)}
+  \item $Spatial containment$
+  \hfill \textit{(testing whether one geometric object lies entirely within another)}
+  \item $Voronoi partitioning$
+  \hfill \textit{(dual of Delaunay triangulation, useful for nearest-facility analysis)}
+  \item $Shoelace formula$
+  \hfill \textit{(exact O(n) area computation for simple polygons from vertex coordinates)}
+  \item $Convex hull$
+  \hfill \textit{(smallest convex set containing all points; measures lot "regularity")}
+\end{enumerate}
+
+% ── Objective / Claim ─────────────────────────────────────────────────
+\subsection{Claim}
+
+
+% ── Approach ──────────────────────────────────────────────────────────
+\subsection{Approach}
+
+\begin{description}
+  \item[Suggested approach:] Shoelace + ConvexHull(Qhull) + Shapely containment
+  \item[Complexity class:] O(n)
+  \item[Available tools:] Shoelace + ConvexHull
+\end{description}
+% ── Phase B: Solution ────────────────────────────────────────────────
+\section{Solution}
+
+\begin{polyaresult}
+
+\textbf{Answer}: Solution computed
+
+
+\textbf{Optimal}: No / Unknown \hfill
+\textbf{Feasible}: Yes
+\textbf{Algorithm}: Shoelace + ConvexHull(Qhull) + Shapely containment \quad $O(n)$
+
+\textbf{Time}: 1.864808s
+
+
+\end{polyaresult}
+
+% ── Solution Details ──────────────────────────────────────────────────
+\subsection{Solution Details}
+
+
+Method: 1. Area: Shoelace formula (Gauss's area formula) for simple polygons -- O(n)
+2. Perimeter: Sum of Euclidean distances between consecutive vertices -- O(n)
+3. Convex hull: Scipy ConvexHull (Qhull library, O(n log n))
+4. Centroid: Weighted average using the shoelace sub-expressions -- O(n)
+5. Containment: Shapely Polygon.contains() for the full building rectangle -- O(n) per query
+6. Max inscribed rectangle: Grid search over candidate positions and sizes within the polygon
+
+% ── Verification ──────────────────────────────────────────────────────
+\subsection{Verification}
+
+\begin{longtable}{lcl}
+\toprule
+\textbf{Check} & \textbf{Status} & \textbf{Detail} \\
+\midrule
+\endhead
+Feasibility & \passmark & All constraints satisfied \\
+\bottomrule
+\end{longtable}
+
+% ── Phase C: Interpretation ──────────────────────────────────────────
+\section{Interpretation}
+
+% ── The Question & The Answer ─────────────────────────────────────────
+\subsection{The Question}
+A surveyor has recorded GPS coordinates for 8 boundary markers defining an irregular lot.
+
+\subsection{The Answer}
+
+\begin{polyainsight}[title={Bottom Line}]
+A feasible solution was found.
+\end{polyainsight}
+
+% ── What This Means ───────────────────────────────────────────────────
+\subsection{What This Means}
+
+- Lot area computed via shapely and independently verified with the shoelace formula
+- Perimeter of the lot boundary
+- Convex hull vertices and hull area (compared to lot area for concavity measure)
+- Centroid coordinates
+- Building containment verdict (fits / does not fit)
+- Maximum axis-aligned inscribed rectangle estimate
+- Independent verification of all computed quantities
+
+1. Area: Shoelace formula (Gauss's area formula) for simple polygons -- O(n)
+2. Perimeter: Sum of Euclidean distances between consecutive vertices -- O(n)
+3. Convex hull: Scipy ConvexHull (Qhull library, O(n log n))
+4. Centroid: Weighted average using the shoelace sub-expressions -- O(n)
+5. Containment: Shapely Polygon.contains() for the full building rectangle -- O(n) per query
+6. Max inscribed rectangle: Grid search over candidate positions and sizes within the polygon
+
+% ── Sensitivity Analysis ──────────────────────────────────────────────
+
+% ── Figures ───────────────────────────────────────────────────────────
+
+% ── Recommendations ───────────────────────────────────────────────────
+\subsection{Recommendations}
+
+\begin{enumerate}
+  \item Review the model assumptions to ensure real-world fidelity.
+\end{enumerate}
+
+% ── Limitations ───────────────────────────────────────────────────────
+\subsection{Limitations}
+
+\begin{polyawarnbox}
+\begin{itemize}
+  \item Model assumes deterministic parameters; real-world variability not captured.
+  \item Solution quality depends on the accuracy of input data.
+\end{itemize}
+\end{polyawarnbox}
+
+% ── Appendix ─────────────────────────────────────────────────────────
+
+\end{document}

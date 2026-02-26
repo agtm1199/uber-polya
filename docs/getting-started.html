@@ -666,9 +666,11 @@
         <a href="#phase-1" class="sub">Understand &amp; Model</a>
         <a href="#phase-2" class="sub">Solve &amp; Verify</a>
         <a href="#phase-3" class="sub">Interpret &amp; Recommend</a>
+        <a href="#phase-4" class="sub">PDF Report (optional)</a>
       </div>
       <div class="sidebar-section">
         <div class="sidebar-section-title">Next</div>
+        <a href="#pdf-output">PDF Output</a>
         <a href="#what-happened">What Just Happened?</a>
         <a href="#next-steps">Next Steps</a>
         <a href="#everyday" class="sub">Everyday Problems</a>
@@ -704,6 +706,19 @@
         </div>
         <div class="terminal-body">
           <div><span class="prompt">$</span> <span class="cmd">pip install networkx pulp z3-solver sympy scipy matplotlib numpy cvxpy statsmodels shapely numpy-financial nashpy pymoo prophet arch ruptures lifelines scikit-learn xgboost umap-learn simpy dowhy</span></div>
+        </div>
+      </div>
+
+      <p>For PDF report generation (optional):</p>
+
+      <div class="terminal">
+        <div class="terminal-header">
+          <div class="terminal-dot"></div>
+          <div class="terminal-dot"></div>
+          <div class="terminal-dot"></div>
+        </div>
+        <div class="terminal-body">
+          <div><span class="prompt">$</span> <span class="cmd">pip install jinja2 fpdf2 matplotlib</span></div>
         </div>
       </div>
 
@@ -802,6 +817,34 @@
         Note: Claude's exact wording, formatting, and level of detail will vary between runs. The outputs above are representative, not verbatim.
       </div>
 
+      <!-- PHASE 4 -->
+      <h3 id="phase-4">Phase 4 &mdash; PDF Report (optional)</h3>
+
+      <p>If you chose the <strong>LaTeX/PDF</strong> or <strong>Both</strong> output format at the start, uber-polya generates a branded PDF report. Representative output:</p>
+
+      <div class="terminal">
+        <div class="terminal-header">
+          <div class="terminal-dot"></div>
+          <div class="terminal-dot"></div>
+          <div class="terminal-dot"></div>
+        </div>
+        <div class="terminal-body">
+          <div><span class="output">Generating PDF report...</span></div>
+          <br>
+          <div><span class="success">Wrote: report/report.tex</span> <span class="comment">(LaTeX source)</span></div>
+          <div><span class="success">Wrote: report/report.pdf</span> <span class="comment">(compiled PDF)</span></div>
+          <div><span class="success">Wrote: report/polya.sty</span> <span class="comment">(branded style)</span></div>
+          <br>
+          <div><span class="output">Report contents:</span></div>
+          <div><span class="highlight">  1. Problem Formulation</span> <span class="comment">&mdash; variables, constraints, objective</span></div>
+          <div><span class="highlight">  2. Solution</span> <span class="comment">&mdash; answer, algorithm, verification checks</span></div>
+          <div><span class="highlight">  3. Interpretation</span> <span class="comment">&mdash; explanation, sensitivity, recommendations</span></div>
+          <div><span class="highlight">  4. Appendix</span> <span class="comment">&mdash; Python solver source code</span></div>
+        </div>
+      </div>
+
+      <p>The PDF is generated using <code>fpdf2</code> (pure Python) &mdash; no system LaTeX installation is required. The <code>.tex</code> source is always saved alongside for optional higher-quality compilation with <code>pdflatex</code>.</p>
+
       <!-- WHAT JUST HAPPENED -->
       <h2 id="what-happened">What Just Happened?</h2>
 
@@ -825,11 +868,52 @@
               <td><span class="polya-phase phase-interpret">4</span> Look Back</td>
               <td>Translates the solution back into actionable insight with sensitivity analysis</td>
             </tr>
+            <tr>
+              <td><span class="polya-phase phase-interpret">D</span> Report</td>
+              <td>Renders all artifacts into a branded PDF report (if PDF output selected)</td>
+            </tr>
           </tbody>
         </table>
       </div>
 
       <p>Under the hood, <code>/uber-polya</code> chains three internal skills (<code>/uber-model</code>, <code>/uber-solve</code>, <code>/uber-interpret</code>). You can also use these individually for finer control &mdash; for example, <code>/uber-solve</code> accepts any well-specified math problem, and <code>/uber-interpret</code> can explain any solution you hand it.</p>
+
+      <!-- PDF OUTPUT -->
+      <h2 id="pdf-output">PDF Output</h2>
+
+      <p>When you invoke <code>/uber-polya</code>, you'll be asked to choose an output format:</p>
+
+      <div class="table-wrapper">
+        <table>
+          <thead>
+            <tr><th>Format</th><th>What you get</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>Python</strong> (default)</td><td>Solver script + console output + <code>solution.json</code></td></tr>
+            <tr><td><strong>LaTeX/PDF</strong></td><td>Professional <code>.pdf</code> report with equations, tables, and figures</td></tr>
+            <tr><td><strong>Both</strong></td><td>Full Python output AND compiled PDF report</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>You can also generate reports from any of the 36 existing examples:</p>
+
+      <div class="terminal">
+        <div class="terminal-header">
+          <div class="terminal-dot"></div>
+          <div class="terminal-dot"></div>
+          <div class="terminal-dot"></div>
+        </div>
+        <div class="terminal-body">
+          <div><span class="prompt">$</span> <span class="cmd">python utils/render_example.py examples/team-assignment/</span></div>
+          <br>
+          <div><span class="output">Wrote: examples/team-assignment/report/report.tex</span></div>
+          <div><span class="output">Wrote: examples/team-assignment/report/report.pdf</span></div>
+          <div><span class="success">Done.</span></div>
+        </div>
+      </div>
+
+      <p>All 36 worked examples ship with pre-generated reports in their <code>report/</code> subdirectories.</p>
 
       <!-- NEXT STEPS -->
       <h2 id="next-steps">Next Steps</h2>

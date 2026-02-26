@@ -1,0 +1,255 @@
+\documentclass[11pt, a4paper]{article}
+
+% ── Packages ──────────────────────────────────────────────────────────
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{tcolorbox}
+\usepackage{polya}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=polyablue,
+  urlcolor=polyablue,
+  citecolor=polyablue,
+}
+
+% ── Code listing style ────────────────────────────────────────────────
+\lstdefinestyle{polya-python}{
+  language=Python,
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{polyablue}\bfseries,
+  commentstyle=\color{polyagray}\itshape,
+  stringstyle=\color{polyagreen},
+  numbers=left,
+  numberstyle=\tiny\color{polyagray},
+  numbersep=8pt,
+  frame=single,
+  framerule=0.4pt,
+  rulecolor=\color{polyagray},
+  breaklines=true,
+  showstringspaces=false,
+  tabsize=4,
+}
+\lstset{style=polya-python}
+\title{SIR Epidemic Model}
+\author{uber-polya}
+\date{2026-02-26}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+% ── Phase A: Problem Formulation ─────────────────────────────────────
+\section{Problem Formulation}
+
+\begin{polyamodel}
+
+\textbf{Problem Type}: Find \hfill
+\textbf{Domain}: Dynamical Systems / ODEs
+
+
+\end{polyamodel}
+
+% ── Universe ──────────────────────────────────────────────────────────
+\subsection{Universe}
+
+\begin{itemize}
+  \item $Population N = 10000$
+  \item $Time horizon: [0, 200.0] days$
+\end{itemize}
+
+% ── Variables ─────────────────────────────────────────────────────────
+\subsection{Variables}
+
+\begin{longtable}{lll}
+\toprule
+\textbf{Symbol} & \textbf{Meaning} & \textbf{Type / Range} \\
+\midrule
+\endhead
+$S(t)$ & susceptible individuals at time t & $[0, 10000]$ \\
+$I(t)$ & infected individuals at time t & $[0, 10000]$ \\
+$R(t)$ & recovered individuals at time t & $[0, 10000]$ \\
+$\beta$ & transmission rate = 0.3/day & $\mathbb{{R}}_{{>0}}$ \\
+$\gamma$ & recovery rate = 0.1/day & $\mathbb{{R}}_{{>0}}$ \\
+$R_0$ & basic reproduction number = 0.3/0.1 & $\mathbb{{R}}_{{>0}}$ \\
+$N$ & total population = 10000 & $\mathbb{{Z}}^+$ \\
+\bottomrule
+\end{longtable}
+
+% ── Structure ─────────────────────────────────────────────────────────
+\subsection{Structure}
+
+A disease outbreak in a population of N=10,000. The transmission rate is beta=0.3/day and the recovery rate is gamma=0.1/day (10-day infectious period). Initially 10 individuals are infected, with the rest susceptible. Questions:
+
+- What is the basic reproduction number R0?
+- When does the infection peak, and how many are infected at the peak?
+- What fraction of the population is ultimately infected?
+- What vaccination rate prevents an epidemic (herd immunity threshold)?
+
+% ── Mapping ───────────────────────────────────────────────────────────
+\subsection{Real-World Mapping}
+
+\begin{longtable}{ll}
+\toprule
+\textbf{Real-World Concept} & \textbf{Mathematical Object} \\
+\midrule
+\endhead
+healthy population & $S(t) — susceptible compartment$ \\
+sick population & $I(t) — infected compartment$ \\
+immune population & $R(t) — recovered compartment$ \\
+contagiousness & $beta — transmission rate$ \\
+recovery speed & $gamma — recovery rate$ \\
+\bottomrule
+\end{longtable}
+
+% ── Constraints ───────────────────────────────────────────────────────
+\subsection{Constraints}
+
+\begin{enumerate}
+  \item $\frac{dS}{dt} = -\frac{\beta S I}{N}$
+  \hfill \textit{(susceptible individuals become infected)}
+  \item $\frac{dI}{dt} = \frac{\beta S I}{N} - \gamma I$
+  \hfill \textit{(infected gain from transmission, lose from recovery)}
+  \item $\frac{dR}{dt} = \gamma I$
+  \hfill \textit{(recovered individuals accumulate)}
+  \item $S(t) + I(t) + R(t) = N$
+  \hfill \textit{(population conservation)}
+  \item $R_0 = \frac{\beta}{\gamma}$
+  \hfill \textit{(basic reproduction number)}
+  \item $v^* = 1 - \frac{1}{R_0}$
+  \hfill \textit{(herd immunity threshold)}
+\end{enumerate}
+
+% ── Objective / Claim ─────────────────────────────────────────────────
+\subsection{Objective}
+
+\begin{equation}
+\text{Solve } \frac{d\mathbf{y}}{dt} = f(t, \mathbf{y}), \quad \mathbf{y}(0) = \mathbf{y}_0
+\end{equation}
+
+% ── Approach ──────────────────────────────────────────────────────────
+\subsection{Approach}
+
+\begin{description}
+  \item[Suggested approach:] Runge-Kutta 4(5) adaptive ODE integration (scipy.integrate.solve\_ivp)
+  \item[Complexity class:] 
+  \item[Available tools:] Runge-Kutta 4
+\end{description}
+% ── Phase B: Solution ────────────────────────────────────────────────
+\section{Solution}
+
+\begin{polyaresult}
+
+\textbf{Answer}: R\_0 = 3.00; peak infected = 3,008; herd immunity = 66.7\%
+
+
+\textbf{Optimal}: No / Unknown \hfill
+\textbf{Feasible}: Yes
+\textbf{Algorithm}: Runge-Kutta 4(5) adaptive ODE integration (scipy.integrate.solve\_ivp) \quad $$
+
+\textbf{Time}: 0.13489555899286643s
+
+\textbf{Certificate}: Population conservation verified. S(t)+I(t)+R(t)=N at all time steps.
+
+\end{polyaresult}
+
+% ── Solution Details ──────────────────────────────────────────────────
+\subsection{Solution Details}
+
+Population: N = 10,000
+Transmission rate: beta = 0.3/day
+Recovery rate: gamma = 0.1/day
+Initial infected: I(0) = 10
+
+Basic reproduction number: R\_0 = beta/gamma = 3.00
+Peak infection: I\_max = 3,008 at t = 38.3 days
+Final epidemic size (numerical): 94.1\% of population
+Final epidemic size (theory): 94.0\% of population
+Herd immunity threshold: v* = 1 - 1/R\_0 = 66.7\%
+
+Vaccination scenarios:
+  v = 0\%: R\_eff = 3.00, peak = 3,015, final size = 94.2\% [EPIDEMIC]
+  v = 30\%: R\_eff = 2.10, peak = 1,204, final size = 57.7\% [EPIDEMIC]
+  v = 50\%: R\_eff = 1.50, peak = 325, final size = 28.8\% [EPIDEMIC]
+  v = 67\%: R\_eff = 0.99, peak = 10, final size = 1.5\% [contained]
+  v = 80\%: R\_eff = 0.60, peak = 10, final size = 0.2\% [contained]
+
+Disease-free equilibrium: unstable
+Eigenvalues: 0.0, 0.0, 0.19999999999999998
+
+% ── Verification ──────────────────────────────────────────────────────
+\subsection{Verification}
+
+\begin{longtable}{lcl}
+\toprule
+\textbf{Check} & \textbf{Status} & \textbf{Detail} \\
+\midrule
+\endhead
+Population Conserved & \passmark & Passed \\
+R0 Correct & \passmark & Passed \\
+Peak Occurs & \passmark & Passed \\
+Peak Time Reasonable & \passmark & Passed \\
+Final Size Matches Theory & \passmark & Passed \\
+Herd Immunity Correct & \passmark & Passed \\
+Vaccination Prevents Epidemic & \passmark & Passed \\
+All Compartments Nonneg & \passmark & Passed \\
+\bottomrule
+\end{longtable}
+
+% ── Phase C: Interpretation ──────────────────────────────────────────
+\section{Interpretation}
+
+% ── The Question & The Answer ─────────────────────────────────────────
+\subsection{The Question}
+A disease outbreak in a population of N=10,000.
+
+\subsection{The Answer}
+
+\begin{polyainsight}[title={Bottom Line}]
+R\_0 = 3.00; peak = 3,008 infected at day 38; herd immunity at 67\% vaccination.
+\end{polyainsight}
+
+% ── What This Means ───────────────────────────────────────────────────
+\subsection{What This Means}
+
+- R0: 3.0
+- Peak infection: around day \textasciitilde{}30, with \textasciitilde{}2,900 infected simultaneously
+- Final epidemic size: \textasciitilde{}94\% of the population ultimately infected
+- Herd immunity threshold: 67\% vaccination rate prevents an epidemic
+- Vaccination analysis: effective R0 drops below 1.0 at 67\% coverage, preventing large outbreaks
+
+% ── Sensitivity Analysis ──────────────────────────────────────────────
+
+% ── Figures ───────────────────────────────────────────────────────────
+
+% ── Recommendations ───────────────────────────────────────────────────
+\subsection{Recommendations}
+
+\begin{enumerate}
+  \item Monitor R\_0 closely; small changes in transmission can shift epidemic dynamics dramatically.
+\end{enumerate}
+
+% ── Limitations ───────────────────────────────────────────────────────
+\subsection{Limitations}
+
+\begin{polyawarnbox}
+\begin{itemize}
+  \item SIR model assumes homogeneous mixing; real populations have network structure.
+  \item Parameters (beta, gamma) are assumed constant; real epidemics evolve over time.
+\end{itemize}
+\end{polyawarnbox}
+
+% ── Appendix ─────────────────────────────────────────────────────────
+
+\end{document}

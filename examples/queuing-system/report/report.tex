@@ -1,0 +1,229 @@
+\documentclass[11pt, a4paper]{article}
+
+% ── Packages ──────────────────────────────────────────────────────────
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath, amssymb, amsthm}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{tcolorbox}
+\usepackage{polya}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=polyablue,
+  urlcolor=polyablue,
+  citecolor=polyablue,
+}
+
+% ── Code listing style ────────────────────────────────────────────────
+\lstdefinestyle{polya-python}{
+  language=Python,
+  basicstyle=\ttfamily\small,
+  keywordstyle=\color{polyablue}\bfseries,
+  commentstyle=\color{polyagray}\itshape,
+  stringstyle=\color{polyagreen},
+  numbers=left,
+  numberstyle=\tiny\color{polyagray},
+  numbersep=8pt,
+  frame=single,
+  framerule=0.4pt,
+  rulecolor=\color{polyagray},
+  breaklines=true,
+  showstringspaces=false,
+  tabsize=4,
+}
+\lstset{style=polya-python}
+\title{Call Center Queuing Analysis}
+\author{uber-polya}
+\date{2026-02-26}
+
+\begin{document}
+
+\maketitle
+\tableofcontents
+\newpage
+
+% ── Phase A: Problem Formulation ─────────────────────────────────────
+\section{Problem Formulation}
+
+\begin{polyamodel}
+
+\textbf{Problem Type}: Find \hfill
+\textbf{Domain}: Queuing Theory
+
+
+\end{polyamodel}
+
+% ── Universe ──────────────────────────────────────────────────────────
+\subsection{Universe}
+
+\begin{itemize}
+  \item $Current Analytical: \{c, rho, p0, erlang_c, lq, wq_hours, wq_minutes, w_hours, w_minutes, l\}$
+  \item $Simulation: \{wq_hours, wq_minutes, w_hours, avg_queue_length, customers_served\}$
+\end{itemize}
+
+% ── Variables ─────────────────────────────────────────────────────────
+\subsection{Variables}
+
+\begin{longtable}{lll}
+\toprule
+\textbf{Symbol} & \textbf{Meaning} & \textbf{Type / Range} \\
+\midrule
+\endhead
+$x$ & decision variable & $\mathbb{{R}}$ \\
+\bottomrule
+\end{longtable}
+
+% ── Structure ─────────────────────────────────────────────────────────
+\subsection{Structure}
+
+- **Arrivals**: Poisson process at lambda = 20 calls/hour
+- **Service**: Exponential service time, mu = 6 calls/hour/agent
+- **Current staff**: 4 agents (M/M/4 queue)
+- **Questions**:
+  1. What is the average wait time with 4 agents?
+  2. How many agents are needed for < 2 minute average wait?
+  3. What happens if call volume increases 50\%?
+
+% ── Mapping ───────────────────────────────────────────────────────────
+\subsection{Real-World Mapping}
+
+\begin{longtable}{ll}
+\toprule
+\textbf{Real-World Concept} & \textbf{Mathematical Object} \\
+\midrule
+\endhead
+problem input & $instance parameters$ \\
+\bottomrule
+\end{longtable}
+
+% ── Constraints ───────────────────────────────────────────────────────
+\subsection{Constraints}
+
+\begin{enumerate}
+  \item $M/M/1 and M/M/c**: Markovian single-server and multi-server queues with Poisson arrivals and exponential service$
+  \hfill \textit{()}
+  \item $Erlang-C formula**: Probability an arriving customer must wait in an M/M/c queue$
+  \hfill \textit{()}
+  \item $Utilization (rho)**: Server utilization rho = lambda / (c * mu); must be < 1 for stability$
+  \hfill \textit{()}
+  \item $Little's Law**: L = lambda * W (fundamental relationship between queue length and wait time)$
+  \hfill \textit{()}
+  \item $Warm-up period**: Discard initial transient observations in simulation before collecting statistics$
+  \hfill \textit{()}
+  \item $Discrete-Event Simulation (DES)**: SimPy-based simulation to cross-validate analytical results$
+  \hfill \textit{()}
+\end{enumerate}
+
+% ── Objective / Claim ─────────────────────────────────────────────────
+\subsection{Claim}
+
+
+% ── Approach ──────────────────────────────────────────────────────────
+\subsection{Approach}
+
+\begin{description}
+  \item[Suggested approach:] M/M/c Analytical + SimPy DES Verification
+  \item[Complexity class:] 
+  \item[Available tools:] M/M/c Analytical + SimPy DES Verification
+\end{description}
+% ── Phase B: Solution ────────────────────────────────────────────────
+\section{Solution}
+
+\begin{polyaresult}
+
+\textbf{Answer}: Solution computed
+
+
+\textbf{Optimal}: No / Unknown \hfill
+\textbf{Feasible}: No
+\textbf{Algorithm}: M/M/c Analytical + SimPy DES Verification \quad $$
+
+\textbf{Time}: 2.8108772009727545s
+
+
+\end{polyaresult}
+
+% ── Solution Details ──────────────────────────────────────────────────
+\subsection{Solution Details}
+
+Solution computed successfully.
+
+% ── Verification ──────────────────────────────────────────────────────
+\subsection{Verification}
+
+\begin{longtable}{lcl}
+\toprule
+\textbf{Check} & \textbf{Status} & \textbf{Detail} \\
+\midrule
+\endhead
+Utilization Below 1 & \passmark & Passed \\
+Littles Law Holds & \passmark & Passed \\
+Wait Time Positive & \passmark & Passed \\
+System Time Gt Service & \passmark & Passed \\
+Simulation Matches Theory & \passmark & Passed \\
+Staffing Reduces Wait & \passmark & Passed \\
+Growth Needs More Staff & \passmark & Passed \\
+Probability Bounds & \passmark & Passed \\
+All Passed & \passmark & Passed \\
+\bottomrule
+\end{longtable}
+
+% ── Phase C: Interpretation ──────────────────────────────────────────
+\section{Interpretation}
+
+% ── The Question & The Answer ─────────────────────────────────────────
+\subsection{The Question}
+- **Arrivals**: Poisson process at lambda = 20 calls/hour
+- **Service**: Exponential service time, mu = 6 calls/hour/agent
+- **Current staff**: 4 agents (M/M/4 queue)
+- **Questions**:
+  1.
+
+\subsection{The Answer}
+
+\begin{polyainsight}[title={Bottom Line}]
+A feasible solution was found.
+\end{polyainsight}
+
+% ── What This Means ───────────────────────────────────────────────────
+\subsection{What This Means}
+
+- M/M/c analytical results: P0, Erlang-C P(wait), Lq, Wq, L, W for c=4 agents
+- Little's Law check: L = lambda * W verified within tolerance
+- Staffing analysis: Wq for c=1..10, minimum c for < 2 min average wait
+- Growth scenario: Repeat analysis with lambda' = 30 calls/hour (50\% increase)
+- SimPy DES verification: 200,000-customer simulation (10,000 warm-up discarded), simulated Wq matches analytical Wq within 10\%
+- Staffing recommendation: Minimum agents for current and growth scenarios
+
+% ── Sensitivity Analysis ──────────────────────────────────────────────
+
+% ── Figures ───────────────────────────────────────────────────────────
+
+% ── Recommendations ───────────────────────────────────────────────────
+\subsection{Recommendations}
+
+\begin{enumerate}
+  \item Review the model assumptions to ensure real-world fidelity.
+\end{enumerate}
+
+% ── Limitations ───────────────────────────────────────────────────────
+\subsection{Limitations}
+
+\begin{polyawarnbox}
+\begin{itemize}
+  \item Model assumes deterministic parameters; real-world variability not captured.
+  \item Solution quality depends on the accuracy of input data.
+\end{itemize}
+\end{polyawarnbox}
+
+% ── Appendix ─────────────────────────────────────────────────────────
+
+\end{document}

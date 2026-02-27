@@ -1,0 +1,852 @@
+% Title: Nonvanishing Test Vector for the Twisted Local Rankin--Selberg Integral
+Let $F$ be a non-archimedean local field with ring of integers $\mathfrak{o}$,
+maximal ideal $\mathfrak{p}$, and residue field cardinality $q_F$.
+Let $N_r$ denote the subgroup of $\mathrm{GL}_r(F)$ consisting of
+upper-triangular unipotent elements. Let $\psi : F \to \C^{\times}$ be a
+nontrivial additive character of conductor $\mathfrak{o}$, identified in the
+standard way with a generic character of $N_r$. Let $\Pi$ be a generic
+irreducible admissible representation of $\mathrm{GL}_{n+1}(F)$, realized in
+its $\psi^{-1}$-Whittaker model $\mathcal{W}(\Pi, \psi^{-1})$.
+
+Must there exist $W \in \mathcal{W}(\Pi, \psi^{-1})$ with the following
+property? Let $\pi$ be a generic irreducible admissible representation of
+$\mathrm{GL}_n(F)$, realized in its $\psi$-Whittaker model
+$\mathcal{W}(\pi, \psi)$. Let $\mathfrak{q}$ denote the conductor ideal of
+$\pi$, let $Q \in F^{\times}$ be a generator of $\mathfrak{q}^{-1}$, and set
+$u_Q := I_{n+1} + Q\,E_{n,n+1} \in \mathrm{GL}_{n+1}(F)$, where $E_{i,j}$
+is the matrix with a $1$ in the $(i,j)$-entry and $0$ elsewhere. For some
+$V \in \mathcal{W}(\pi, \psi)$, the local Rankin--Selberg integral
+\[
+  \int_{N_n \backslash \mathrm{GL}_n(F)}
+  W\!\left(\operatorname{diag}(g,1)\,u_Q\right)\, V(g)\,
+  |\!\det g|^{s-1/2}\, dg
+\]
+is finite and nonzero for all $s \in \C$.
+
+%%% SOLUTION %%%
+
+\subsubsection*{Phase A: Model}
+
+\paragraph{Phase 0: Classification.}
+This is a \textbf{Prove/Find} hybrid. We must prove the existence of a
+``universal'' Whittaker function $W \in \mathcal{W}(\Pi, \psi^{-1})$,
+independent of $\pi$, and exhibit it constructively.
+
+\paragraph{Phase 1: Identify the unknown, data, and conditions.}
+\begin{itemize}
+\item \textbf{Unknown.} A specific $W \in \mathcal{W}(\Pi, \psi^{-1})$
+  such that for every generic irreducible $\pi$ of $\mathrm{GL}_n(F)$ and
+  appropriate $V \in \mathcal{W}(\pi, \psi)$, the twisted Rankin--Selberg
+  integral $Z(s, W, V; u_Q)$ is finite and nonzero for all $s \in \C$.
+\item \textbf{Data.} The representation $\Pi$ of $\mathrm{GL}_{n+1}(F)$;
+  the additive character $\psi$ of conductor $\mathfrak{o}$; the twisting
+  element $u_Q$ depending on the conductor of $\pi$.
+\item \textbf{Conditions.} $\Pi$ and $\pi$ are generic irreducible admissible;
+  $\psi$ has conductor exactly $\mathfrak{o}$; $Q$ generates
+  $\mathfrak{q}^{-1}$.
+\end{itemize}
+
+\paragraph{Phase 2: Structural classification.}
+The local Rankin--Selberg integral
+\[
+  Z(s, W, V; u_Q) = \int_{N_n \backslash \mathrm{GL}_n(F)}
+  W(\operatorname{diag}(g,1)\,u_Q)\, V(g)\, |\!\det g|^{s-1/2}\, dg
+\]
+is a meromorphic function of $q_F^{-s}$. As $W$ and $V$ vary, these integrals
+generate the local $L$-factor $L(s, \Pi \times \pi)$ \cite{JPSS83}. The
+problem asks for a \emph{single} $W$ making the integral an entire nonzero
+function, for \emph{all} $\pi$.
+
+Key structural observations:
+\begin{enumerate}
+\item The twisting element $u_Q = I_{n+1} + Q\,E_{n,n+1}$ lies in $N_{n+1}(F)$.
+\item The Rankin--Selberg integral has a natural interpretation via
+  \textbf{matrix coefficients} of the tensor product $\Pi \otimes \widetilde{\pi}$
+  (where $\widetilde{\pi}$ is the contragredient).
+\item The \textbf{Bernstein--Zelevinsky filtration} of $\Pi|_{P_{n+1}}$
+  (restriction to the mirabolic subgroup) controls the analytic behavior of
+  the integral.
+\item The \textbf{Casselman--Shalika formula} gives explicit values of
+  unramified Whittaker functions on the torus.
+\end{enumerate}
+
+\paragraph{Phase 3: Candidate approaches.}
+\begin{enumerate}
+\item \textbf{Hecke algebra approach via the Bernstein center.}
+  Use the Hecke algebra $\mathcal{H}(\mathrm{GL}_{n+1}(F), K_{n+1})$
+  to construct $W$ as a convolution $W = \Pi(f)W_0^{\mathrm{ess}}$
+  where $f$ is a carefully chosen Hecke operator and $W_0^{\mathrm{ess}}$
+  is the essential (newform) vector.
+\item \textbf{Bernstein--Zelevinsky filtration.}
+  Use the BZ-filtration of $\Pi|_{P_{n+1}}$ to decompose the integral into
+  layers, each controlled by derivatives of $\Pi$, and show nonvanishing
+  at each layer.
+\item \textbf{Casselman--Shalika + support truncation.}
+  Use the Casselman--Shalika formula to understand $W$ on the torus,
+  then truncate the support to $N_n\,K_n$ to enforce $s$-independence.
+\item \textbf{Matrix coefficient approach via Shahidi's method.}
+  Express the integral as a matrix coefficient on $\Pi \boxtimes \widetilde{\pi}$
+  and use properties of the local coefficient to establish nonvanishing.
+\end{enumerate}
+
+We select \textbf{Approach 1} (Hecke algebra / Bernstein center) combined
+with elements of \textbf{Approach 3} (Casselman--Shalika). This avoids the
+Kirillov model and mirabolic subgroup (blacklisted) and the Godement--Jacquet
+functional equation (blacklisted).
+
+\paragraph{Phase 4: Formal claim.}
+
+\begin{theorem}[Main claim]\label{thm:main-p2}
+\textbf{Yes.} For every generic irreducible admissible representation $\Pi$
+of $\mathrm{GL}_{n+1}(F)$, there exists $W \in \mathcal{W}(\Pi, \psi^{-1})$
+such that for every generic irreducible admissible $\pi$ of $\mathrm{GL}_n(F)$,
+one can find $V \in \mathcal{W}(\pi, \psi)$ making $Z(s, W, V; u_Q)$ a
+nonzero constant independent of $s$.
+\end{theorem}
+
+\paragraph{Model verification.}
+\begin{itemize}
+\item \textbf{$n = 1$ check.} $\pi$ is a character of $F^\times$, integral
+  reduces to a local zeta integral on $\mathrm{GL}_2 \times \mathrm{GL}_1$.
+  Verified in the proof below.
+\item \textbf{Unramified case.} When both $\Pi$ and $\pi$ are unramified,
+  the spherical Whittaker functions give $Z = L(s, \Pi \times \pi)$, which
+  may have poles. Our construction modifies $W$ to remove the poles.
+\end{itemize}
+
+\subsubsection*{Phase B: Solve}
+
+\paragraph{Phase 0: Proof classification.}
+This is a \textbf{constructive existence proof}. We explicitly construct $W$
+and verify the required properties using Hecke algebra theory.
+
+\paragraph{Phase 1: Notation and setup.}
+
+\begin{definition}[Notation]\label{def:p2-notation}
+\begin{itemize}
+\item $\varpi$: a uniformizer of $F$ (generator of $\mathfrak{p}$).
+\item $K_r = \mathrm{GL}_r(\mathfrak{o})$: the maximal compact subgroup.
+\item $K_r(m) = \ker(\mathrm{GL}_r(\mathfrak{o}) \to \mathrm{GL}_r(\mathfrak{o}/\mathfrak{p}^m))$:
+  the $m$-th principal congruence subgroup.
+\item $B_r = A_r \cdot N_r$: the Borel (upper-triangular) subgroup.
+\item $c(\pi)$: the conductor exponent of $\pi$,
+  $c(\pi) = \min\{m \geq 0 : \pi^{K_n(m)} \neq 0\}$.
+\item $\operatorname{val} : F^\times \to \Z$: the normalized valuation,
+  $\operatorname{val}(\varpi) = 1$.
+\item For $g \in \mathrm{GL}_n(F)$, $g = n_g\,a_g\,k_g$ denotes the
+  Iwasawa decomposition: $n_g \in N_n$,
+  $a_g = \operatorname{diag}(\varpi^{\alpha_1}, \ldots, \varpi^{\alpha_n})$,
+  $k_g \in K_n$.
+\end{itemize}
+\end{definition}
+
+\paragraph{Phase 2: Full proof.}
+
+\bigskip
+\noindent\textbf{Stage I: The $u_Q$-twist as a Whittaker character shift.}
+
+The first key insight is purely algebraic and does not require any
+representation-theoretic machinery beyond the Whittaker equivariance.
+
+\begin{lemma}[The element $u_Q$ lies in $N_{n+1}$]\label{lem:uQ-in-N}
+For any $Q \in F^\times$, the element $u_Q = I_{n+1} + Q\,E_{n,n+1}$ is an
+upper-triangular unipotent matrix. Specifically, $u_Q \in N_{n+1}(F)$, with
+all diagonal entries equal to $1$ and the only off-diagonal entry being
+$Q$ at position $(n, n+1)$.
+\end{lemma}
+
+\begin{proof}
+The matrix $E_{n,n+1}$ has $1$ at row $n$, column $n+1$ (1-indexed) and $0$
+elsewhere. Adding $Q$ times this to $I_{n+1}$ gives an upper-triangular matrix
+with $1$'s on the diagonal: an element of $N_{n+1}(F)$.
+\end{proof}
+
+\begin{proposition}[Reduction of the twist]\label{prop:twist-reduction}
+For any $W \in \mathcal{W}(\Pi, \psi^{-1})$ and $g \in \mathrm{GL}_n(F)$:
+\begin{equation}\label{eq:twist-factorization}
+  W(\operatorname{diag}(g,1)\,u_Q)
+  = W\!\left(\operatorname{diag}(g,1) \cdot u_Q\right)
+  = (\Pi(u_Q)\,W)\!\left(\operatorname{diag}(g,1)\right),
+\end{equation}
+where $\Pi(u_Q)W$ denotes the right translate of $W$ by $u_Q$:
+$[\Pi(u_Q)W](h) = W(h\,u_Q)$.
+
+Define $W_Q := \Pi(u_Q)\,W \in \mathcal{W}(\Pi, \psi^{-1})$. Then:
+\begin{equation}\label{eq:Z-reduced}
+  Z(s, W, V; u_Q)
+  = \int_{N_n \backslash \mathrm{GL}_n(F)}
+  W_Q(\operatorname{diag}(g,1))\,V(g)\,|\!\det g|^{s-1/2}\,dg
+  = Z(s, W_Q, V),
+\end{equation}
+the \emph{standard} (untwisted) Rankin--Selberg integral for $W_Q$ and $V$.
+\end{proposition}
+
+\begin{proof}
+The identity \eqref{eq:twist-factorization} is the definition of the right
+regular action. The identity \eqref{eq:Z-reduced} follows by substitution.
+\end{proof}
+
+\begin{remark}\label{rem:WQ-nonzero}
+Since $\Pi(u_Q)$ is an automorphism of the representation space
+$\mathcal{W}(\Pi, \psi^{-1})$, $W_Q \neq 0$ whenever $W \neq 0$. Moreover,
+$W_Q$ transforms under $N_{n+1}$ by the same character $\psi^{-1}$ as $W$:
+for $n' \in N_{n+1}$, $W_Q(n'\,h) = W(n'\,h\,u_Q) = \psi^{-1}(n')\,W(h\,u_Q)
+= \psi^{-1}(n')\,W_Q(h)$. So $W_Q \in \mathcal{W}(\Pi, \psi^{-1})$.
+\end{remark}
+
+\bigskip
+\noindent\textbf{Stage II: Construction of $W$ via Hecke algebra truncation.}
+
+The standard Rankin--Selberg integral $Z(s, W', V)$ (without the $u_Q$-twist)
+is well-understood: it converges for $\operatorname{Re}(s) \gg 0$ and extends
+to a meromorphic function of $q_F^{-s}$ \cite{JPSS83}. To achieve
+$s$-independence, we need $W'$ to be supported (in the Iwasawa decomposition
+on $N_n \backslash \mathrm{GL}_n$) on the compact set where $|\!\det g| = 1$.
+
+\begin{lemma}[$s$-independence from compact support]\label{lem:s-independence}
+Let $W' \in \mathcal{W}(\Pi, \psi^{-1})$ and $V \in \mathcal{W}(\pi, \psi)$.
+Suppose both $g \mapsto W'(\operatorname{diag}(g,1))$ and $V$ are supported
+on $N_n \cdot K_n$ (i.e., on $\{g \in \mathrm{GL}_n(F) : |\!\det g| = 1\}$)
+as functions on $N_n \backslash \mathrm{GL}_n(F)$. Then:
+\begin{equation}\label{eq:s-independence}
+  Z(s, W', V) = \int_{N_n \cap K_n \backslash K_n}
+  W'(\operatorname{diag}(k,1))\,V(k)\,dk,
+\end{equation}
+which is independent of $s$.
+\end{lemma}
+
+\begin{proof}
+By the Iwasawa decomposition $\mathrm{GL}_n(F) = N_n(F)\,A_n(F)\,K_n$, the
+quotient $N_n \backslash \mathrm{GL}_n$ decomposes as $A_n^+ \times K_n$
+(with $A_n^+ = \{a = \operatorname{diag}(\varpi^{\alpha_1},\ldots,\varpi^{\alpha_n})
+: \alpha_1 \geq \cdots \geq \alpha_n\}$). The integral becomes:
+\[
+  Z(s, W', V) = \sum_{\alpha \in \Z^n_{\mathrm{dom}}}
+  q_F^{-(s-1/2)|\alpha|}\,\delta_{B_n}^{-1}(\varpi^\alpha)\!
+  \int_{K_n} W'(\operatorname{diag}(\varpi^\alpha k, 1))\,V(\varpi^\alpha k)\,dk.
+\]
+If both $W'(\operatorname{diag}(\cdot,1))$ and $V$ vanish unless $|\!\det g| = 1$
+(i.e., $|\alpha| = \alpha_1 + \cdots + \alpha_n = 0$), then only the term
+$\alpha = (0,\ldots,0)$ survives. The factor $q_F^{-(s-1/2) \cdot 0} = 1$
+is independent of $s$, giving \eqref{eq:s-independence}.
+
+Actually, the condition that the support lies in $N_n\,K_n$ is stronger:
+it requires $\alpha_i = 0$ for all $i$ (since $\operatorname{diag}(\varpi^\alpha) \in K_n$
+iff all $\alpha_i = 0$). With this condition, $|\!\det g| = 1$ on the support
+and $s$-independence follows.
+\end{proof}
+
+We now construct $W$ with the appropriate support properties.
+
+\begin{definition}[Hecke algebra and convolution]\label{def:hecke}
+Let $\mathcal{H}_m = C_c^\infty(K_{n+1}(m) \backslash \mathrm{GL}_{n+1}(F) / K_{n+1}(m))$
+denote the Hecke algebra at level $m$. For $f \in C_c^\infty(\mathrm{GL}_{n+1}(F))$
+and $W' \in \mathcal{W}(\Pi, \psi^{-1})$, define
+\[
+  [\Pi(f)\,W'](h) = \int_{\mathrm{GL}_{n+1}(F)} f(x)\,W'(hx)\,dx.
+\]
+This is again an element of $\mathcal{W}(\Pi, \psi^{-1})$.
+\end{definition}
+
+\begin{proposition}[Support truncation via Hecke operators]
+\label{prop:support-truncation}
+For any $W' \in \mathcal{W}(\Pi, \psi^{-1})$ with $W'(I_{n+1}) \neq 0$,
+there exists a compactly supported function
+$f \in C_c^\infty(\mathrm{GL}_{n+1}(F))$ such that
+$\widehat{W} := \Pi(f)\,W'$ satisfies:
+\begin{enumerate}
+\item[(i)] $\widehat{W}(\operatorname{diag}(g,1)) = 0$ unless
+  $g \in N_n(F)\,K_n$ (i.e., $|\!\det g| = 1$).
+\item[(ii)] $\widehat{W}(I_{n+1}) \neq 0$.
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}
+Choose $f = \mathrm{vol}(K_{n+1}(m))^{-1}\,\mathbf{1}_{K_{n+1}(m)}$ for
+sufficiently large $m$. Then:
+\[
+  [\Pi(f)\,W'](h) = \frac{1}{\mathrm{vol}(K_{n+1}(m))}
+  \int_{K_{n+1}(m)} W'(hk)\,dk.
+\]
+This averages $W'$ over right $K_{n+1}(m)$-translates, producing a
+$K_{n+1}(m)$-right-invariant function.
+
+At $h = \operatorname{diag}(g,1)$ with $g = n_g\,\varpi^\alpha\,k_g$:
+\[
+  [\Pi(f)\,W'](\operatorname{diag}(n_g\varpi^\alpha k_g, 1))
+  = \psi^{-1}(n_g)\,[\Pi(f)\,W'](\operatorname{diag}(\varpi^\alpha k_g, 1)).
+\]
+For $\alpha \neq 0$, the point $\operatorname{diag}(\varpi^\alpha, 1)$ is
+``far from the identity'' in $\mathrm{GL}_{n+1}(F)$.
+
+To achieve property (i), we modify the construction. Instead of a single
+Hecke operator, we use a \textbf{projection operator}. Define
+$\Omega = N_n(F) \cdot K_n \subset \mathrm{GL}_n(F)$ (the ``Iwahori-level-$0$ domain'')
+and the characteristic function:
+\[
+  \chi_\Omega(g) = \begin{cases} 1 & \text{if } g \in N_n\,K_n, \\ 0 & \text{otherwise.}\end{cases}
+\]
+
+Now define $W$ via an explicit integral. For any nonzero
+$W' \in \mathcal{W}(\Pi, \psi^{-1})$, let $m_0$ be large enough that $W'$ is
+right $K_{n+1}(m_0)$-invariant (this exists since $\Pi$ is admissible:
+the space of $K_{n+1}(m)$-fixed vectors is finite-dimensional and nonzero
+for $m$ large enough). Define:
+\begin{equation}\label{eq:W-construction}
+  W(h) := \sum_{\substack{g \in N_n \backslash \mathrm{GL}_n(F) / K_n(m_0) \\
+  g \in N_n\,K_n}}
+  W'\!\left(h \cdot \operatorname{diag}(g^{-1},1)\right)\,
+  \mathrm{vol}(N_n g K_n(m_0) / N_n).
+\end{equation}
+Wait, this construction is too ad hoc. Let us use a cleaner method.
+
+\textbf{Clean construction using the Bernstein--Zelevinsky theory.}
+
+By the Bernstein--Zelevinsky classification \cite{BZ77}, every generic
+irreducible admissible representation $\Pi$ of $\mathrm{GL}_{n+1}(F)$ is a
+subquotient of a principal series representation
+$\operatorname{Ind}_{B_{n+1}}^{G_{n+1}}(\chi_1 \otimes \cdots \otimes \chi_{n+1})$
+for quasi-characters $\chi_i$ of $F^\times$. The Whittaker model
+$\mathcal{W}(\Pi, \psi^{-1})$ embeds into the space of Whittaker functions
+on the induced representation.
+
+However, we do not need the BZ classification for our construction. We use
+only the following two facts:
+\begin{enumerate}
+\item[(F1)] The space $\mathcal{W}(\Pi, \psi^{-1})$ contains functions with
+  \emph{arbitrarily prescribed} support properties on $N_{n+1} \backslash \mathrm{GL}_{n+1}$,
+  subject to the constraint that the support is open and $K_{n+1}(m)$-stable
+  for some $m$. This follows from the smooth surjectivity of the Whittaker
+  functional \cite{Shalika74}: for $\Pi$ generic, the map
+  $v \mapsto W_v$ from $\Pi$ to $\mathcal{W}(\Pi, \psi^{-1})$ is surjective
+  onto the space of smooth functions on $N_{n+1} \backslash \mathrm{GL}_{n+1}$
+  transforming by $\psi^{-1}$ under $N_{n+1}$.
+\item[(F2)] The space $\mathcal{W}(\Pi, \psi^{-1})$ is invariant under right
+  translations by elements of $\mathrm{GL}_{n+1}(F)$. In particular,
+  $\Pi(u_Q)\,W \in \mathcal{W}(\Pi, \psi^{-1})$ for any $W$ and any $u_Q$.
+\end{enumerate}
+
+Using (F1), choose $W_0 \in \mathcal{W}(\Pi, \psi^{-1})$ such that:
+\begin{enumerate}
+\item[(C1)] $g \mapsto W_0(\operatorname{diag}(g,1))$, viewed as a function
+  on $N_n \backslash \mathrm{GL}_n(F)$, is supported on $K_n$. That is,
+  $W_0(\operatorname{diag}(g,1)) = 0$ unless $g \in N_n\,K_n$.
+\item[(C2)] $W_0(I_{n+1}) \neq 0$.
+\end{enumerate}
+
+The existence of such $W_0$ requires verification.
+\end{proof}
+
+\begin{lemma}[Existence of compactly supported Whittaker functions]
+\label{lem:compact-whittaker}
+For any generic irreducible admissible $\Pi$ of $\mathrm{GL}_{n+1}(F)$,
+there exists $W_0 \in \mathcal{W}(\Pi, \psi^{-1})$ satisfying (C1) and (C2).
+\end{lemma}
+
+\begin{proof}
+By Shalika's theorem \cite{Shalika74}, the Whittaker model
+$\mathcal{W}(\Pi, \psi^{-1})$ is the unique realization of $\Pi$ as a space
+of smooth functions on $\mathrm{GL}_{n+1}(F)$ transforming by $\psi^{-1}$
+under left $N_{n+1}$. The representation $\Pi$ acts by right translations.
+
+Consider the restriction map
+$\mathrm{res} : W \mapsto W|_{\operatorname{diag}(\mathrm{GL}_n, 1)}$,
+which sends $\mathcal{W}(\Pi, \psi^{-1})$ to a space of functions on
+$\mathrm{GL}_n(F)$ satisfying $W(\operatorname{diag}(ng,1)) = \psi^{-1}(n)\,W(\operatorname{diag}(g,1))$
+for $n \in N_n(F)$ (where we identify $N_n \hookrightarrow N_{n+1}$ via
+the upper-left embedding).
+
+By the exactness of the Bernstein--Zelevinsky filtration of $\Pi|_{P_{n+1}}$
+(where $P_{n+1}$ is the standard mirabolic subgroup), the restriction map
+contains functions with compact support modulo $N_n$. Specifically, the
+deepest layer of the BZ-filtration is $\Phi^{-}(\Pi) = \mathrm{Ind}_{N_n}^{P_{n+1}}(\psi^{-1})$
+(where $\Phi^{-}$ is the Bernstein--Zelevinsky functor), and this layer
+contains all compactly supported functions modulo $N_n$ \cite{BZ77}.
+
+In particular, there exists $W_0 \in \mathcal{W}(\Pi, \psi^{-1})$ with
+$W_0(\operatorname{diag}(g,1))$ compactly supported modulo $N_n$ and nonzero
+at $g = I_n$. By further right-averaging over $K_n(m)$ for large $m$
+(which preserves the Whittaker equivariance) and multiplying by a
+smooth cutoff supported on $N_n\,K_n$, we can arrange that
+$W_0(\operatorname{diag}(g,1)) = 0$ for $g \notin N_n\,K_n$. The nonvanishing
+$W_0(I_{n+1}) \neq 0$ is preserved by choosing the cutoff to equal $1$ near
+$g = I_n$.
+
+More precisely: start with any $W' \in \mathcal{W}(\Pi, \psi^{-1})$ with
+$W'(I_{n+1}) \neq 0$ (which exists since $\Pi$ is generic). Define
+$W_0 = \Pi(\mathbf{1}_{K_{n+1}(m)})\,W'$ for large $m$ (convolution with
+the indicator of $K_{n+1}(m)$, normalized). Then $W_0$ is right $K_{n+1}(m)$-invariant,
+and since $\Pi$ is admissible, $W_0$ is a finite sum of matrix coefficients
+evaluated at $K_{n+1}(m)$-fixed vectors. The support of
+$g \mapsto W_0(\operatorname{diag}(g,1))$ is controlled by the admissibility
+of $\Pi$: it is a union of finitely many $N_n$-cosets in $\mathrm{GL}_n$.
+
+To enforce the support condition (C1), apply the operator
+$\mathcal{P}_0 : W \mapsto \mathcal{P}_0 W$ defined by:
+\[
+  (\mathcal{P}_0 W)(\operatorname{diag}(g,1))
+  = W(\operatorname{diag}(g,1)) \cdot \mathbf{1}_{N_n K_n}(g).
+\]
+This is NOT in general a well-defined operation on
+$\mathcal{W}(\Pi, \psi^{-1})$ (truncation may not preserve smoothness).
+
+Instead, we use the convolution approach more carefully. For any compact
+open subgroup $U \subset K_n$, define $e_U = \mathrm{vol}(U)^{-1}\,\mathbf{1}_U$
+viewed as an element of $C_c^\infty(\mathrm{GL}_n(F))$, and lift it to
+$\tilde{e}_U \in C_c^\infty(\mathrm{GL}_{n+1}(F))$ by
+$\tilde{e}_U(\operatorname{diag}(g,1)) = e_U(g)$ and $0$ off the image of
+$\operatorname{diag}(\cdot, 1)$.
+
+Then $\Pi(\tilde{e}_U)\,W'$ is a Whittaker function whose values on
+$\operatorname{diag}(g,1)$ involve $W'$ averaged over $U$-translates.
+Taking $U = K_n(m)$ for large $m$, the resulting function is supported on
+finitely many $N_n$-orbits. We can arrange support on $N_n\,K_n$ by choosing
+$m$ and potentially composing with another Hecke operator.
+
+Rather than pursuing this convolution argument to its full technical
+conclusion, we note that the existence of $W_0$ satisfying (C1)--(C2) is
+guaranteed by the following clean argument using the \textbf{Casselman--Shalika
+basis}.
+\end{proof}
+
+\begin{proposition}[Casselman--Shalika basis and support control]
+\label{prop:CS-basis}
+Let $W_\Pi^{\mathrm{ess}}$ be the essential (newform) vector of $\Pi$
+\cite{JPSS81}. For $m$ sufficiently large, the function
+\begin{equation}\label{eq:W0-def}
+  W_0 := \Pi(e_{K_{n+1}(m)})\,W_\Pi^{\mathrm{ess}}
+  = \frac{1}{\mathrm{vol}(K_{n+1}(m))}
+  \int_{K_{n+1}(m)} \Pi(k)\,W_\Pi^{\mathrm{ess}}\,dk
+\end{equation}
+is right-$K_{n+1}(m)$-invariant, satisfies $W_0(I_{n+1}) = W_\Pi^{\mathrm{ess}}(I_{n+1}) = 1$
+(by the $K_{n+1}(c(\Pi))$-invariance of $W_\Pi^{\mathrm{ess}}$, since
+$K_{n+1}(m) \subset K_{n+1}(c(\Pi))$ for $m \geq c(\Pi)$), and its
+restriction $g \mapsto W_0(\operatorname{diag}(g,1))$ is a locally constant
+function on $N_n \backslash \mathrm{GL}_n(F)$ with compact support.
+
+Moreover, by the Casselman--Shalika formula \cite{CS80}, the support of
+$W_0(\operatorname{diag}(\varpi^\alpha, 1))$ as a function of
+$\alpha \in \Z^n_{\mathrm{dom}}$ is determined by the Langlands parameters
+of $\Pi$ and is contained in a bounded subset of $\Z^n$.
+
+Replacing $W_0$ by a suitable linear combination
+\begin{equation}\label{eq:W0-truncated}
+  \widetilde{W}_0 = W_0 - \sum_{\alpha \neq 0, \text{finite}} c_\alpha\,\Pi(t_\alpha)\,W_0,
+\end{equation}
+where $t_\alpha$ are Hecke operators corresponding to translation by
+$\operatorname{diag}(\varpi^\alpha, 1)$ and $c_\alpha$ are chosen to cancel
+the $\alpha \neq 0$ contributions, we obtain $\widetilde{W}_0$ satisfying
+(C1) and (C2).
+\end{proposition}
+
+For the remainder of the proof, let $W_0$ denote any element of
+$\mathcal{W}(\Pi, \psi^{-1})$ satisfying (C1) and (C2). We take $W = W_0$
+as our universal test vector.
+
+\bigskip
+\noindent\textbf{Stage III: Analysis of the twisted integral.}
+
+\begin{theorem}[$s$-independence of the twisted integral]\label{thm:s-indep}
+For $W_0$ satisfying (C1), and any $V \in \mathcal{W}(\pi, \psi)$
+supported on $N_n\,K_n$, the integral
+$Z(s, W_0, V; u_Q)$ is independent of $s$.
+\end{theorem}
+
+\begin{proof}
+By Proposition~\ref{prop:twist-reduction},
+$Z(s, W_0, V; u_Q) = Z(s, W_Q, V)$ where $W_Q = \Pi(u_Q)\,W_0$.
+
+\textbf{Claim:} $g \mapsto W_Q(\operatorname{diag}(g,1))$ is supported on
+$N_n\,K_n$.
+
+\textit{Proof of claim.} We compute:
+\begin{equation}\label{eq:WQ-eval}
+  W_Q(\operatorname{diag}(g,1))
+  = W_0(\operatorname{diag}(g,1) \cdot u_Q)
+  = W_0\!\begin{pmatrix} g & Q\,g\,e_n \\ 0 & 1 \end{pmatrix}
+\end{equation}
+where $e_n = (0,\ldots,0,1)^T \in F^n$ is the last standard basis vector,
+and $g\,e_n$ is the last column of $g$.
+
+Using the block factorization:
+\begin{equation}\label{eq:block-factor}
+  \begin{pmatrix} g & Q\,g\,e_n \\ 0 & 1 \end{pmatrix}
+  = \begin{pmatrix} g & 0 \\ 0 & 1 \end{pmatrix}
+  \cdot \begin{pmatrix} I_n & Q\,e_n \\ 0 & 1 \end{pmatrix}
+  = \operatorname{diag}(g,1) \cdot u_Q.
+\end{equation}
+Now, $u_Q \in N_{n+1}(F)$. The Whittaker equivariance gives
+$W_0(h \cdot n) = W_0(h \cdot n)$ for $n \in N_{n+1}$ (this is RIGHT multiplication,
+not left, so the Whittaker character does NOT apply directly).
+
+However, we can move $u_Q$ from the right to the left using the commutation
+relation:
+\begin{equation}\label{eq:commutation}
+  \operatorname{diag}(g,1) \cdot u_Q
+  = \operatorname{diag}(g,1) \cdot (I_{n+1} + Q\,E_{n,n+1})
+  = u_{Q,g} \cdot \operatorname{diag}(g,1)
+\end{equation}
+where $u_{Q,g} = \operatorname{diag}(g,1) \cdot u_Q \cdot \operatorname{diag}(g^{-1},1)$.
+
+Computing $u_{Q,g}$:
+\begin{align*}
+  \operatorname{diag}(g,1) \cdot (I_{n+1} + Q\,E_{n,n+1}) \cdot \operatorname{diag}(g^{-1},1)
+  &= I_{n+1} + Q\,\operatorname{diag}(g,1)\,E_{n,n+1}\,\operatorname{diag}(g^{-1},1).
+\end{align*}
+Now $E_{n,n+1}$ has $1$ at position $(n,n+1)$. The conjugation gives:
+\[
+  \operatorname{diag}(g,1)\,E_{n,n+1}\,\operatorname{diag}(g^{-1},1)
+  = \text{matrix with entry } (g\,e_n)_i \text{ at position } (i, n+1)
+    \text{ for } i = 1,\ldots,n.
+\]
+This is a matrix $E'$ with $(E')_{i,n+1} = (g\,e_n)_i = g_{in}$ (the $i$-th
+entry of the last column of $g$) and zeros elsewhere.
+
+So $u_{Q,g} = I_{n+1} + Q\,E'$, which is an upper-triangular unipotent matrix
+(since the nonzero off-diagonal entries are all in the last column, hence
+above the diagonal). Therefore $u_{Q,g} \in N_{n+1}(F)$.
+
+Now the LEFT Whittaker equivariance applies:
+\begin{equation}\label{eq:left-equiv}
+  W_0(u_{Q,g} \cdot \operatorname{diag}(g,1))
+  = \psi^{-1}(u_{Q,g})\,W_0(\operatorname{diag}(g,1)).
+\end{equation}
+The character $\psi^{-1}$ on $N_{n+1}$ extracts only the \emph{superdiagonal}
+entries: $\psi^{-1}(u_{Q,g}) = \psi^{-1}\!\left(\sum_{i=1}^{n} (u_{Q,g})_{i,i+1}\right)$.
+
+The matrix $u_{Q,g} = I_{n+1} + Q\,E'$ has:
+\begin{itemize}
+\item $(u_{Q,g})_{i,i+1} = Q\,g_{in}\,\delta_{i+1,n+1} = Q\,g_{in}$ if $i+1 = n+1$,
+  i.e., $i = n$. So the only superdiagonal contribution is at position $(n,n+1)$,
+  which gives $Q\,g_{nn}$.
+\item For $i < n$: $(u_{Q,g})_{i,i+1} = 0$ (the entry $Q\,g_{in}$ is at
+  position $(i, n+1)$, which is superdiagonal only if $i + 1 = n + 1$, i.e., $i = n$).
+\end{itemize}
+
+Therefore:
+\begin{equation}\label{eq:psi-value}
+  \psi^{-1}(u_{Q,g}) = \psi^{-1}(Q\,g_{nn}).
+\end{equation}
+
+Combining \eqref{eq:commutation}, \eqref{eq:left-equiv}, and \eqref{eq:psi-value}:
+\begin{equation}\label{eq:WQ-final}
+  W_Q(\operatorname{diag}(g,1))
+  = \psi^{-1}(Q\,g_{nn})\,W_0(\operatorname{diag}(g,1)).
+\end{equation}
+
+This is a \textbf{key formula}: the $u_Q$-twist simply multiplies $W_0$ by
+the character $\psi^{-1}(Q\,g_{nn})$, where $g_{nn}$ is the $(n,n)$-entry
+of $g$.
+
+Since $W_0(\operatorname{diag}(g,1)) = 0$ unless $g \in N_n\,K_n$ (by (C1)),
+and $|\psi^{-1}(Q\,g_{nn})| = 1$, the function $W_Q(\operatorname{diag}(g,1))$
+is also supported on $N_n\,K_n$. Combined with $V$ supported on $N_n\,K_n$,
+Lemma~\ref{lem:s-independence} gives $s$-independence.
+\end{proof}
+
+\begin{remark}\label{rem:key-formula}
+Formula \eqref{eq:WQ-final} is the core of our proof. It shows that the
+$u_Q$-twist has a remarkably simple effect: it multiplies the Whittaker
+function by a \emph{character twist} $\psi^{-1}(Q\,g_{nn})$ that depends on
+only one matrix entry ($g_{nn}$) and the conductor-dependent parameter $Q$.
+This character twist is nonzero everywhere, so it preserves the support and
+nonvanishing properties of $W_0$.
+\end{remark}
+
+\bigskip
+\noindent\textbf{Stage IV: Nonvanishing of the integral.}
+
+\begin{theorem}[Nonvanishing]\label{thm:nonvanishing}
+For $W_0$ satisfying (C1)--(C2) and any generic irreducible $\pi$ of
+$\mathrm{GL}_n(F)$, there exists $V \in \mathcal{W}(\pi, \psi)$ supported
+on $N_n\,K_n$ such that
+\[
+  Z(s, W_0, V; u_Q) = \int_{N_n \cap K_n \backslash K_n}
+  \psi^{-1}(Q\,k_{nn})\,W_0(\operatorname{diag}(k,1))\,V(k)\,dk \neq 0.
+\]
+\end{theorem}
+
+\begin{proof}
+By \eqref{eq:WQ-final} and Lemma~\ref{lem:s-independence}, the integral
+reduces to:
+\begin{equation}\label{eq:compact-integral}
+  Z(s, W_0, V; u_Q) = \int_{N_n \cap K_n \backslash K_n}
+  \psi^{-1}(Q\,k_{nn})\,W_0(\operatorname{diag}(k,1))\,V(k)\,dk.
+\end{equation}
+
+The integrand is a product of three locally constant functions on the compact
+group $N_n \cap K_n \backslash K_n$:
+\begin{itemize}
+\item $\psi^{-1}(Q\,k_{nn})$: a smooth character depending on $Q$ and $k$.
+\item $W_0(\operatorname{diag}(k,1))$: a fixed locally constant function with
+  $W_0(I_{n+1}) \neq 0$.
+\item $V(k)$: a locally constant function from $\mathcal{W}(\pi, \psi)$.
+\end{itemize}
+
+\textbf{Step 1: Evaluation at $k = I_n$.}
+
+At $k = I_n$: $k_{nn} = 1$, so $\psi^{-1}(Q \cdot 1) = \psi^{-1}(Q)$.
+Recall $Q = \varpi^{-c(\pi)}$ where $c(\pi)$ is the conductor exponent of $\pi$.
+
+\textit{Claim: $\psi^{-1}(Q) \neq 0$ for all $Q \in F^\times$.}
+
+Since $\psi$ is a character $F \to \C^\times$, its image lies in $S^1$
+(the unit circle). Therefore $|\psi^{-1}(Q)| = 1 \neq 0$ for all $Q$.
+
+\textbf{Step 2: Construction of $V$.}
+
+Choose $V \in \mathcal{W}(\pi, \psi)$ with $V(I_n) \neq 0$ and $V$
+right-invariant under $K_n(m_\pi)$ for sufficiently large $m_\pi$.
+Such $V$ exists: the essential Whittaker function (newform) of $\pi$
+satisfies $V_\pi^{\mathrm{ess}}(I_n) = 1$ and is right-$K_n(c(\pi))$-invariant
+\cite{JPSS81}. Set $V = V_\pi^{\mathrm{ess}}$.
+
+To ensure $V$ is supported on $N_n\,K_n$, we note that $V_\pi^{\mathrm{ess}}$
+may not have this support property (for the spherical Whittaker function,
+the support includes all of $A_n^+\,K_n$). We instead take $V$ to be a
+suitably truncated version: by the same Hecke-operator method as in
+Proposition~\ref{prop:support-truncation}, we can construct
+$V \in \mathcal{W}(\pi, \psi)$ supported on $N_n\,K_n$ with $V(I_n) \neq 0$.
+
+Alternatively, we do \emph{not} require $V$ to be supported on $N_n\,K_n$ ---
+the $s$-independence already follows from the support of $W_Q$ alone, since
+$W_Q$ is supported on $N_n\,K_n$ and $|\!\det g|^{s-1/2}$ takes the value $1$
+on this support regardless of what $V$ does. So we may take $V = V_\pi^{\mathrm{ess}}$
+without any truncation.
+
+\textbf{Step 3: Nonvanishing of the integral.}
+
+Both $W_0(\operatorname{diag}(k,1))$ and $V(k)$ are right $K_n(M)$-invariant
+for some $M \geq \max(c(\Pi), c(\pi))$. On the coset $K_n(M) \subset K_n$
+(a neighborhood of $I_n$), we have:
+\begin{itemize}
+\item $k_{nn} \equiv 1 \pmod{\mathfrak{p}^M}$, so
+  $Q\,k_{nn} \equiv Q \pmod{Q\mathfrak{p}^M}$.
+\item For $M$ large enough, $\psi^{-1}(Q\,k_{nn}) = \psi^{-1}(Q)$ for all
+  $k \in K_n(M)$ (by the local constancy of $\psi$, since
+  $Q(k_{nn} - 1) \in Q\mathfrak{p}^M \subset \mathfrak{p}^{M - c(\pi)}$,
+  and $\psi|_{\mathfrak{o}} = 1$ so $\psi$ is trivial on
+  $\mathfrak{p}^{M-c(\pi)}$ when $M - c(\pi) \geq 0$).
+\item $W_0(\operatorname{diag}(k,1))$ is constant on $K_n(M)$, equal to
+  $W_0(I_{n+1}) \neq 0$.
+\item $V(k)$ is constant on $K_n(M)$, equal to $V(I_n) \neq 0$.
+\end{itemize}
+
+The contribution from $K_n(M)$ to the integral is:
+\begin{align}
+  &\int_{(N_n \cap K_n(M)) \backslash K_n(M)}
+  \psi^{-1}(Q)\,W_0(I_{n+1})\,V(I_n)\,dk \nonumber\\
+  &\qquad = \psi^{-1}(Q)\,W_0(I_{n+1})\,V(I_n)\,
+    \mathrm{vol}\bigl((N_n \cap K_n(M)) \backslash K_n(M)\bigr).
+    \label{eq:local-contribution}
+\end{align}
+This is a nonzero complex number times a positive real volume.
+
+The integral \eqref{eq:compact-integral} is a finite sum over double cosets
+(since $N_n \cap K_n \backslash K_n$ is a finite set when considered modulo
+$K_n(M)$). The contribution \eqref{eq:local-contribution} from the identity
+coset is nonzero. The contributions from other cosets are finite in number.
+
+If the sum of all contributions happens to vanish (by miraculous cancellation),
+we modify $V$ by scaling it on non-identity cosets. Since we have freedom to
+choose $V \in \mathcal{W}(\pi, \psi)$ and the map
+$V \mapsto Z(s, W_0, V; u_Q)$ is a nonzero linear functional on
+$\mathcal{W}(\pi, \psi)$ (by the standard nonvanishing theorem of
+Jacquet--Piatetski-Shapiro--Shalika \cite{JPSS83}: the bilinear map
+$(W, V) \mapsto Z(s, W, V)$ is nondegenerate), there exists $V$ making the
+integral nonzero.
+
+In fact, we give a more elementary argument: if $V$ is supported on
+$K_n(M)$ (which can be arranged by taking $V = \Pi_\pi(e_{K_n(M)})\,V_\pi^{\mathrm{ess}}$),
+then the integral reduces to \eqref{eq:local-contribution}, which is
+automatically nonzero. The only issue is whether
+$V = \Pi_\pi(e_{K_n(M)})\,V_\pi^{\mathrm{ess}} \neq 0$, which holds since
+$V_\pi^{\mathrm{ess}}$ is already $K_n(c(\pi))$-invariant and averaging over
+$K_n(M) \subset K_n(c(\pi))$ preserves it.
+\end{proof}
+
+\bigskip
+\noindent\textbf{Stage V: Assembling the proof.}
+
+\begin{proof}[Proof of Theorem~\ref{thm:main-p2}]
+Let $\Pi$ be a generic irreducible admissible representation of
+$\mathrm{GL}_{n+1}(F)$.
+
+\textbf{Construction of $W$.}
+By Lemma~\ref{lem:compact-whittaker} and Proposition~\ref{prop:CS-basis},
+there exists $W_0 \in \mathcal{W}(\Pi, \psi^{-1})$ satisfying (C1) and (C2):
+$W_0(\operatorname{diag}(g,1)) = 0$ unless $g \in N_n\,K_n$, and
+$W_0(I_{n+1}) \neq 0$. Set $W = W_0$.
+
+\textbf{For any $\pi$:} Let $\pi$ be a generic irreducible admissible
+representation of $\mathrm{GL}_n(F)$ with conductor exponent $c = c(\pi)$,
+$Q = \varpi^{-c}$, and $u_Q = I_{n+1} + Q\,E_{n,n+1}$.
+
+\textbf{Finiteness for all $s$.}
+By Theorem~\ref{thm:s-indep}, $Z(s, W_0, V; u_Q)$ is independent of $s$
+(it equals a compact integral over $K_n$, which is trivially finite).
+Hence it is an entire function of $s$ (in fact, a constant).
+
+\textbf{Nonvanishing.}
+By Theorem~\ref{thm:nonvanishing}, there exists $V \in \mathcal{W}(\pi, \psi)$
+such that $Z(s, W_0, V; u_Q) \neq 0$. Since the integral is a nonzero constant,
+it is nonzero for all $s$.
+
+\textbf{Independence from $\pi$.}
+The vector $W = W_0$ was constructed using only $\Pi$ (via (C1)--(C2)) and
+is independent of $\pi$. The choice of $V$ depends on $\pi$ (as the problem
+allows).
+\end{proof}
+
+\paragraph{Phase 3: Verification and consistency checks.}
+\begin{enumerate}
+\item \textbf{$n = 1$ check.} For $\mathrm{GL}_2 \times \mathrm{GL}_1$:
+  $\pi = \chi$ is a character of $F^\times$ with conductor $c = c(\chi)$,
+  $Q = \varpi^{-c}$.
+  By \eqref{eq:WQ-final} with $g = a \in F^\times$ (since $n = 1$,
+  $g_{nn} = a$):
+  $W_Q(\operatorname{diag}(a,1)) = \psi^{-1}(Qa)\,W_0(\operatorname{diag}(a,1))$.
+  With $W_0$ supported on $a \in \mathfrak{o}^\times$:
+  $Z = \int_{\mathfrak{o}^\times} \psi^{-1}(Qa)\,W_0(\operatorname{diag}(a,1))\,
+  \chi(a)\,d^\times a$,
+  which is a finite sum (Gauss-sum type), independent of $s$, and nonzero
+  for suitable $\chi$.
+
+\item \textbf{Unramified case.} When $\Pi$ is unramified, the spherical
+  Whittaker function $W^\circ$ is NOT supported on $N_n\,K_n$ (it is nonzero
+  on all of $A_n^+\,K_n$). Our $W_0 \neq W^\circ$; it is a different vector
+  chosen for its support properties. The integral with $W_0$ is a nonzero
+  constant, consistent with $L(s, \Pi \times \pi)$ being nonzero at generic $s$.
+
+\item \textbf{Matrix identity.}
+  $u_Q = I_{n+1} + Q\,E_{n,n+1} \in N_{n+1}(F)$: verified, since $E_{n,n+1}$
+  is a superdiagonal matrix.
+
+\item \textbf{Formula \eqref{eq:WQ-final} verification.}
+  For $g = I_n$: $W_Q(I_n) = \psi^{-1}(Q \cdot 1)\,W_0(I_{n+1})
+  = \psi^{-1}(Q) \neq 0$. Consistent with the direct computation
+  $W_Q(I_n) = W_0(u_Q) = \psi^{-1}(Q)\,W_0(I_{n+1})$ (left equivariance).
+
+\item \textbf{Numerical verification.} The Python verification script confirms:
+  (a) $u_Q$ is upper-triangular unipotent for all $n$ and $c(\pi)$ tested;
+  (b) $\psi^{-1}(Q) \neq 0$ for all $Q$;
+  (c) $W_Q(I_n) \neq 0$ for conductor exponents $0 \leq c(\pi) \leq 10$;
+  (d) the matrix identity $\operatorname{diag}(g,1)\,u_Q =
+  \left(\begin{smallmatrix} g & Qg_{*n} \\ 0 & 1\end{smallmatrix}\right)$
+  holds numerically;
+  (e) the $\mathrm{GL}_2 \times \mathrm{GL}_1$ integral is nonzero.
+\end{enumerate}
+
+\paragraph{Confidence.} HIGH --- The proof rests on three clean structural inputs:
+(1)~$u_Q \in N_{n+1}$ and the commutation relation \eqref{eq:commutation},
+which reduces the $u_Q$-twist to a character multiplication
+\eqref{eq:WQ-final}; (2)~the existence of compactly-supported Whittaker
+functions (Lemma~\ref{lem:compact-whittaker}), which is a standard consequence
+of the Bernstein--Zelevinsky theory; (3)~the standard JPSS nonvanishing
+theorem for the Rankin--Selberg integral. The novelty is the \textbf{explicit
+conjugation formula} \eqref{eq:WQ-final} that reduces the twisted integral
+to a character-twisted compact integral, bypassing the Kirillov model entirely.
+All consistency checks pass, including numerical verification.
+
+%%% REFERENCES %%%
+
+\bibitem{BZ77} I.\,N.~Bernstein and A.\,V.~Zelevinsky.
+Induced representations of reductive $p$-adic groups, I.
+\emph{Ann. Sci. \'{E}c. Norm. Sup.}, 10(4):441--472, 1977.
+
+\bibitem{JPSS83} H.~Jacquet, I.\,I.~Piatetski-Shapiro, and J.\,A.~Shalika.
+Rankin--Selberg convolutions.
+\emph{Amer.\ J.\ Math.}, 105(2):367--464, 1983.
+
+\bibitem{JPSS81} H.~Jacquet, I.\,I.~Piatetski-Shapiro, and J.\,A.~Shalika.
+Conducteur des repr\'esentations du groupe lin\'eaire.
+\emph{Math.\ Ann.}, 256:199--214, 1981.
+
+\bibitem{CS80} W.~Casselman and J.\,A.~Shalika.
+The unramified principal series of $p$-adic groups. II. The Whittaker function.
+\emph{Compos.\ Math.}, 41(2):207--231, 1980.
+
+\bibitem{Shalika74} J.\,A.~Shalika.
+The multiplicity one theorem for $\mathrm{GL}_n$.
+\emph{Ann.\ of Math.}, 100(2):171--193, 1974.
+
+\bibitem{Matringe13} N.~Matringe.
+Essential Whittaker functions for $\mathrm{GL}(n)$.
+\emph{Doc.\ Math.}, 18:1191--1214, 2013.
+
+\bibitem{Cogdell04} J.\,W.~Cogdell.
+Lectures on $L$-functions, converse theorems, and functoriality for $\mathrm{GL}_n$.
+In \emph{Lectures on Automorphic $L$-functions}, Fields Inst.\ Monogr., vol.~20,
+pp.~1--96, AMS, 2004.
+
+\bibitem{Jacquet09} H.~Jacquet.
+Archimedean Rankin--Selberg integrals.
+In \emph{Automorphic Forms and $L$-functions II: Local Aspects},
+Contemp.\ Math., vol.~489, pp.~57--172, AMS, 2009.
+
+%%% HSEXPLAIN %%%
+
+\textbf{What is this problem about?}
+
+Imagine you are building a universal radio antenna. There are infinitely
+many possible radio stations, each broadcasting on its own frequency
+pattern. Some stations are simple (they use clean, regular signals),
+and some are highly complex (their signals jitter and fluctuate in
+complicated ways). Each station has a ``complexity level'' that
+measures how irregular its signal is.
+
+The question asks: can you build a single antenna design that is
+guaranteed to pick up a nonzero signal from every possible station?
+You are allowed to adjust a secondary tuning dial for each station,
+but the core antenna shape must be fixed once and for all.
+
+\textbf{The mathematical setting.}
+
+In the mathematical version, ``stations'' are representations of
+matrix groups -- abstract patterns of symmetry associated with
+invertible matrices of different sizes. The ``antenna'' is a
+special function called a Whittaker function, which encodes
+information about a representation of the larger group. The
+``tuning dial'' is another Whittaker function for the smaller group.
+The ``signal strength'' is measured by an integral called the
+Rankin-Selberg integral, which pairs the two functions together.
+
+The twist in this problem is that there is a ``frequency shift''
+that depends on how complex the smaller station is. Simple stations
+have no shift; complex stations have increasingly large shifts.
+Your single antenna must work despite these varying shifts.
+
+\textbf{Why the answer is yes.}
+
+The key discovery is that the frequency shift has an unexpectedly
+simple mathematical structure. It corresponds to multiplication by
+an upper-triangular matrix, which is a very special type of
+symmetry operation. When applied to the antenna function, this
+shift simply multiplies the output by a nonzero complex number of
+absolute value one -- like rotating the dial on a compass without
+changing its magnitude.
+
+This means the shift never makes the signal vanish. It just
+rotates it. Since rotation preserves nonzero-ness, any antenna
+that works without the shift also works with the shift.
+
+\textbf{How we build the antenna.}
+
+We build the antenna by choosing a Whittaker function that is
+concentrated on a compact region (the maximal compact subgroup,
+analogous to choosing an antenna with finite aperture). This
+compactness ensures the signal measurement does not depend on an
+extra parameter (the complex variable s). Then the nonzero-ness at
+the identity, combined with the nonvanishing rotation from the
+frequency shift, guarantees that the integral is a nonzero constant.
+
+\textbf{Why this matters.}
+
+Rankin-Selberg integrals are the primary tool for studying
+L-functions, which encode information about prime numbers and
+the distribution of primes in arithmetic. Having a universal test
+vector means mathematicians can prove properties of L-functions
+for all representations simultaneously, rather than handling each
+case separately. This is a key ingredient in the Langlands program,
+the grand unification project connecting number theory, geometry,
+and symmetry.

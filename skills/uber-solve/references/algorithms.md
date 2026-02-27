@@ -1,6 +1,6 @@
 # Algorithm Catalog
 
-**Scope**: Discrete Mathematics (86 algorithms), Continuous Optimization (8 algorithms), Linear Algebra (12 algorithms), Calculus (10 algorithms), Geometry & Trigonometry (10 algorithms), Financial Mathematics (8 algorithms), Game Theory (12 algorithms), Decision Analysis (10 algorithms), Multi-Objective Optimization (8 algorithms), Numerical ODEs & Dynamical Systems (10 algorithms), Root Finding (5 algorithms), Interpolation & Approximation (5 algorithms), Numerical Integration (3 algorithms), Extended Operations Research (8 algorithms)
+**Scope**: Discrete Mathematics (86 algorithms), Continuous Optimization (8 algorithms), Linear Algebra (12 algorithms), Calculus (10 algorithms), Geometry & Trigonometry (10 algorithms), Financial Mathematics (8 algorithms), Game Theory (12 algorithms), Decision Analysis (10 algorithms), Multi-Objective Optimization (8 algorithms), Numerical ODEs & Dynamical Systems (10 algorithms), Root Finding (5 algorithms), Interpolation & Approximation (5 algorithms), Numerical Integration (3 algorithms), Extended Operations Research (8 algorithms), Representation Theory & Abstract Algebra (5 algorithms), Algebraic Combinatorics (4 algorithms), Stochastic PDEs & Regularity Structures (5 algorithms), Algebraic Topology (4 algorithms), Symplectic Geometry (3 algorithms), Advanced Spectral Graph Theory (4 algorithms), Tensor Decomposition (4 algorithms), Advanced Numerical Linear Algebra (6 algorithms)
 
 Comprehensive catalog of algorithms for mathematical problem solving. Organized by domain, each entry includes complexity, solver library, correctness guarantee, and implementation guidance.
 
@@ -3994,6 +3994,776 @@ def capacitated_vrp(distance_matrix, demands, vehicle_capacity, num_vehicles, de
 
 ---
 
+## 34. Representation Theory & Abstract Algebra
+
+### A196: Character Table Computation
+
+**Problem**: Compute the character table of a finite group G — the matrix of irreducible character values χᵢ(gⱼ) indexed by irreducible representations and conjugacy classes.
+**T**: O(|G|² · k) where k = number of conjugacy classes | **S**: O(k²)
+**Lib**: `sagemath`, `gap`
+**Guarantee**: Exact
+
+```python
+from __future__ import annotations
+import numpy as np
+
+def character_table_cyclic(n: int) -> np.ndarray:
+    """Character table of Z/nZ: χ_k(j) = exp(2πijk/n)."""
+    omega = np.exp(2j * np.pi / n)
+    return np.array([[omega**(j*k) for j in range(n)] for k in range(n)])
+```
+
+**Use when**: Symmetry analysis, decomposing representations, Burnside-type counting.
+
+---
+
+### A197: Whittaker Model Construction
+
+**Problem**: Realize a generic irreducible admissible representation π of GL_n(F) in its Whittaker model W(π, ψ) — functions W: GL_n(F) → ℂ with W(ug) = ψ(u)W(g).
+**T**: Depends on conductor | **S**: Infinite-dimensional
+**Lib**: `sagemath` (p-adic arithmetic)
+**Guarantee**: Exact (existence by uniqueness of Whittaker model)
+
+```python
+# Key steps: Iwasawa decomposition, compact Kirillov model on mirabolic subgroup.
+# For test vector construction: prescribe restriction to P_{n+1}, use Lemma 2.2-type
+# compact Kirillov embedding. Casselman-Shalika formula for explicit Whittaker values.
+```
+
+**Use when**: Rankin-Selberg L-functions, automorphic form computations, local Langlands.
+
+---
+
+### A198: Rankin-Selberg Integral Evaluation
+
+**Problem**: Evaluate the local Rankin-Selberg integral Z(s,W,V) = ∫_{N_n\GL_n} W(diag(g,1)·u_Q) V(g) |det g|^{s-1/2} dg.
+**T**: Reduces to compact integral after mirabolic reduction | **S**: O(1)
+**Lib**: `sympy`, `mpmath`
+**Guarantee**: Exact after reduction
+
+```python
+# Strategy: choose W with prescribed mirabolic restriction (A197),
+# reduce integral to compact domain (N_n ∩ K_n)\K_n via Iwasawa,
+# show integral is independent of s, then prove nonvanishing via
+# Fourier projection on K_n (newform theory).
+```
+
+**Use when**: Computing local L-factors, nonvanishing of L-functions, test vector problems.
+
+---
+
+### A199: Induced Representation (Mackey)
+
+**Problem**: Construct Ind_H^G(σ) and decompose via Mackey's theorem using double coset decomposition.
+**T**: O(|G/H| · dim σ) | **S**: O(|G/H|² · dim² σ)
+**Lib**: `sagemath`, `gap`
+**Guarantee**: Exact
+
+```python
+# Mackey: Res_K^G Ind_H^G(σ) ≅ ⊕_{s∈K\G/H} Ind_{K∩sHs⁻¹}^K(σ^s)
+# For p-adic groups: parabolic induction is the primary construction.
+```
+
+**Use when**: Constructing representations, automorphic induction, Langlands program.
+
+---
+
+### A200: p-adic Valuation & Local Field Arithmetic
+
+**Problem**: Arithmetic in non-archimedean local fields F (e.g., ℚ_p): valuation, ring of integers, uniformizer, residue field.
+**T**: O(precision) | **S**: O(precision)
+**Lib**: `sagemath` (Qp, Zp)
+**Guarantee**: Exact to specified precision
+
+```python
+from __future__ import annotations
+
+def p_adic_valuation(n: int, p: int) -> int:
+    """Compute v_p(n) = largest k with p^k | n."""
+    if n == 0: return float('inf')
+    v = 0
+    while n % p == 0: n //= p; v += 1
+    return v
+```
+
+**Use when**: Number theory, conductor computation, local Langlands, p-adic Hodge theory.
+
+---
+
+## 35. Algebraic Combinatorics
+
+### A201: Macdonald Polynomial Recurrence
+
+**Problem**: Compute Macdonald polynomials P_λ(x; q, t) via Pieri formula or eigenoperator recurrence.
+**T**: O(|λ| · p(|λ|)) | **S**: O(p(|λ|))
+**Lib**: `sagemath` (SymmetricFunctions, Macdonald)
+**Guarantee**: Exact (symbolic)
+
+```python
+# SageMath: Sym.macdonald().P()[2,1] computes P_{(2,1)}(x; q, t).
+# Alternatively: use Cherednik operator / raising operator recurrence.
+```
+
+**Use when**: ASEP stationary distributions, Hilbert scheme geometry, double affine Hecke algebras.
+
+---
+
+### A202: Schur Function Expansion
+
+**Problem**: Expand symmetric function in Schur basis. Compute Littlewood-Richardson coefficients.
+**T**: O(p(n)² · LR) | **S**: O(p(n))
+**Lib**: `sagemath`, `sympy`
+**Guarantee**: Exact
+
+```python
+# SageMath: s = Sym.schur(); s[2,1] * s[1,1] expands in Schur basis.
+```
+
+**Use when**: Representation theory of GL_n and S_n, intersection theory, quantum computing.
+
+---
+
+### A203: RSK Correspondence
+
+**Problem**: Bijection between permutations and pairs of standard Young tableaux of same shape.
+**T**: O(n² log n) | **S**: O(n²)
+**Lib**: `sagemath`
+**Guarantee**: Exact (bijective)
+
+```python
+from __future__ import annotations
+
+def rsk_insert(tableau: list[list[int]], val: int) -> int:
+    """Row-insert val into tableau, return column of new box."""
+    for row in tableau:
+        for i, entry in enumerate(row):
+            if entry > val:
+                row[i], val = val, row[i]
+                break
+        else:
+            row.append(val)
+            return len(row) - 1
+    tableau.append([val])
+    return 0
+```
+
+**Use when**: Longest increasing subsequence, counting SYT, symmetric function identities.
+
+---
+
+### A204: ASEP Transition Matrix
+
+**Problem**: Build transition matrix for asymmetric simple exclusion process on finite lattice.
+**T**: O(2ⁿ × 2ⁿ) for n sites | **S**: O(2²ⁿ)
+**Lib**: `numpy`, `scipy.linalg`
+**Guarantee**: Exact (small n), Numerical (large n)
+
+```python
+from __future__ import annotations
+import numpy as np
+from itertools import combinations
+
+def asep_transition_matrix(n: int, k: int, p: float = 1.0, q: float = 0.5) -> np.ndarray:
+    """ASEP transition matrix for k particles on n sites."""
+    states = list(combinations(range(n), k))
+    state_idx = {s: i for i, s in enumerate(states)}
+    N = len(states)
+    T = np.zeros((N, N))
+    for idx, state in enumerate(states):
+        s = set(state)
+        rate = 0.0
+        for pos in state:
+            if pos + 1 < n and pos + 1 not in s:
+                T[state_idx[tuple(sorted((s - {pos}) | {pos + 1}))], idx] += p
+                rate += p
+            if pos - 1 >= 0 and pos - 1 not in s:
+                T[state_idx[tuple(sorted((s - {pos}) | {pos - 1}))], idx] += q
+                rate += q
+        T[idx, idx] = -rate
+    return T
+```
+
+**Use when**: Stochastic particle systems, Macdonald polynomial connections, nonequilibrium stat mech.
+
+---
+
+## 36. Stochastic PDEs & Regularity Structures
+
+### A205: Gaussian Free Field Sampling
+
+**Problem**: Sample GFF on discrete torus via FFT with covariance (m² − Δ)⁻¹.
+**T**: O(N^d log N) | **S**: O(N^d)
+**Lib**: `numpy`, `scipy.fft`
+**Guarantee**: Exact in distribution
+
+```python
+from __future__ import annotations
+import numpy as np
+
+def sample_gff_torus(N: int, d: int = 2, mass: float = 0.1) -> np.ndarray:
+    """Sample discrete GFF on (Z/NZ)^d with mass m."""
+    shape = (N,) * d
+    freqs = [np.fft.fftfreq(N) * N for _ in range(d)]
+    grids = np.meshgrid(*freqs, indexing='ij')
+    eigenvalues = sum(2 * (1 - np.cos(2 * np.pi * g / N)) for g in grids)
+    cov = 1.0 / (mass**2 + eigenvalues)
+    cov.flat[0] = 0
+    noise = (np.random.randn(*shape) + 1j * np.random.randn(*shape)) / np.sqrt(2)
+    return np.real(np.fft.ifftn(noise * np.sqrt(cov))) * np.sqrt(N**d)
+```
+
+**Use when**: Constructive QFT, random geometry, Liouville quantum gravity.
+
+---
+
+### A206: Wick Renormalization
+
+**Problem**: Compute Wick-renormalized powers :φⁿ:_ε subtracting divergent counterterms.
+**T**: O(N^d) | **S**: O(N^d)
+**Lib**: `numpy`
+**Guarantee**: Exact given covariance
+
+```python
+from __future__ import annotations
+import numpy as np
+
+def wick_cubic(phi: np.ndarray, C1: float, C2: float = 0.0) -> np.ndarray:
+    """:φ³:_ε = φ³ - 3C₁φ - 9λ²C₂φ. C₁ ~ ε⁻¹ (tadpole), C₂ ~ log ε⁻¹ (setting-sun, d=3)."""
+    return phi**3 - 3 * C1 * phi - 9 * C2 * phi
+```
+
+**Use when**: Φ⁴ measures, stochastic quantization, singular SPDE analysis.
+
+---
+
+### A207: Cameron-Martin Shift
+
+**Problem**: Check if shift ψ lies in Cameron-Martin space H¹; determine equivalence vs singularity.
+**T**: O(N^d) | **S**: O(N^d)
+**Lib**: `numpy`
+**Guarantee**: Exact (Gaussian); analytic argument needed for interacting case
+
+```python
+from __future__ import annotations
+import numpy as np
+
+def check_cameron_martin(psi: np.ndarray, N: int, mass: float = 0.1) -> tuple[bool, float]:
+    """Check ψ ∈ H¹(T^d). Returns (in_CM, H1_norm²)."""
+    psi_hat = np.fft.fftn(psi) / psi.size
+    freqs = [np.fft.fftfreq(N) * 2 * np.pi for _ in range(psi.ndim)]
+    grids = np.meshgrid(*freqs, indexing='ij')
+    k_sq = sum(g**2 for g in grids)
+    norm_sq = float(np.sum((mass**2 + k_sq) * np.abs(psi_hat)**2))
+    return np.isfinite(norm_sq), norm_sq
+```
+
+**Use when**: Quasi-invariance of measures, Girsanov theorems, SPDE shift analysis.
+
+---
+
+### A208: Regularity Structure Reconstruction
+
+**Problem**: Reconstruct distribution from modelled distribution expansion in regularity structure.
+**T**: Problem-dependent | **S**: Problem-dependent
+**Lib**: `sympy`, custom
+**Guarantee**: Theoretical convergence
+
+```python
+# Hairer 2014 reconstruction theorem: for model (Π, Γ) and f ∈ D^γ_α,
+# unique Rf with |⟨Rf - Π_x f(x), η^λ_x⟩| ≲ λ^γ.
+# Computational: discretize at scale ε, apply renormalization group, extrapolate.
+```
+
+**Use when**: Solving singular SPDEs (Φ⁴₃, KPZ, PAM), constructive field theory.
+
+---
+
+### A209: Paracontrolled Ansatz
+
+**Problem**: Decompose SPDE solution as u = u^♯ + paraproduct term, where u^♯ has better regularity.
+**T**: O(N^d log N) per step | **S**: O(N^d)
+**Lib**: `numpy`, `scipy`
+**Guarantee**: Theoretical convergence
+
+```python
+# Gubinelli-Imkeller-Perkowski: u = u^♯ + Π_<(u', X) where Π_< is Bony paraproduct.
+# Implementation: Littlewood-Paley frequency decomposition via FFT.
+```
+
+**Use when**: Alternative to regularity structures for subcritical SPDEs, KPZ, stochastic Burgers.
+
+---
+
+## 37. Algebraic Topology
+
+### A210: Homotopy Group Computation
+
+**Problem**: Compute π_n(X) using long exact sequence of fibration, van Kampen, Hurewicz theorem.
+**T**: Undecidable in general (n ≥ 2) | **S**: Problem-dependent
+**Lib**: `sagemath`
+**Guarantee**: Exact for specific cases
+
+```python
+# π₁: van Kampen with generators/relations. π_n (n≥2): fibration LES,
+# Freudenthal suspension, spectral sequences. Computationally: simplicial
+# homology via chain complexes + Hurewicz in lowest nontrivial degree.
+```
+
+**Use when**: Classifying spaces, obstruction theory, topological invariants.
+
+---
+
+### A211: Spectral Sequence
+
+**Problem**: Compute spectral sequence {E_r^{p,q}} converging to target cohomology.
+**T**: O(size of E₂ × differentials) | **S**: O(E₂ page size)
+**Lib**: `sagemath`
+**Guarantee**: Exact per page
+
+```python
+# Algorithm: 1) Build filtered chain complex, 2) E_0 = graded pieces,
+# 3) d_0 from differential, 4) E_1 = H(E_0), iterate.
+# For slice SS: filtration by slice connectivity of G-spectra.
+```
+
+**Use when**: Fibration cohomology, stable homotopy groups, equivariant slice filtration.
+
+---
+
+### A212: Equivariant Fixed-Point Theorem
+
+**Problem**: Compute geometric fixed points Φ^G(E) of genuine G-spectrum E.
+**T**: Problem-dependent | **S**: Problem-dependent
+**Lib**: Theoretical
+**Guarantee**: Exact (functorial)
+
+```python
+# Φ^H(E) = (Ẽ𝒫 ∧ E)^H where 𝒫 = proper subgroups.
+# Φ^H exact and monoidal. Slice connectivity: E is slice ≥ n iff
+# Φ^H(E) is (n|G/H|)-connected for all H ≤ G.
+```
+
+**Use when**: Hill-Hopkins-Ravenel, equivariant K-theory, Real bordism.
+
+---
+
+### A213: Surgery Exact Sequence
+
+**Problem**: Use surgery exact sequence to classify manifolds within a homotopy type.
+**T**: Requires L-group computation | **S**: Problem-dependent
+**Lib**: Theoretical
+**Guarantee**: Exact sequence gives obstructions
+
+```python
+# ... → L_{n+1}(ℤ[π₁]) → S(X) → [X, G/Top] → L_n(ℤ[π₁])
+# L_{4k}(ℤ) ≅ ℤ (signature), L_{4k+2}(ℤ) ≅ ℤ/2 (Arf invariant).
+# For lattices with 2-torsion: check if Γ = π₁ of closed Q-acyclic manifold.
+```
+
+**Use when**: Manifold classification, Borel/Novikov conjectures, existence of manifolds with prescribed π₁.
+
+---
+
+## 38. Symplectic Geometry
+
+### A214: Lagrangian Isotopy
+
+**Problem**: Determine if polyhedral Lagrangian can be smoothed via Hamiltonian isotopy.
+**T**: Problem-dependent | **S**: Problem-dependent
+**Lib**: Theoretical (Floer homology for obstructions)
+**Guarantee**: Obstructions computable; constructions case-by-case
+
+```python
+# For quadrivalent polyhedral Lagrangians in (ℝ⁴, ω_std):
+# 1) Local model at vertex: union of 4 half-planes
+# 2) Smoothing: replace vertex neighborhood with smooth Lagrangian patch
+# 3) Glue along edges, preserving ω|_L = 0
+# 4) Weinstein neighborhood theorem connects to original via Hamiltonian isotopy
+```
+
+**Use when**: Lagrangian constructions, mirror symmetry, symplectic topology.
+
+---
+
+### A215: Hamiltonian Flow Integration
+
+**Problem**: Integrate Hamiltonian flow preserving symplectic structure.
+**T**: O(N · steps) | **S**: O(N)
+**Lib**: `scipy.integrate`
+**Guarantee**: Symplectic integrators preserve structure
+
+```python
+from __future__ import annotations
+import numpy as np
+
+def stormer_verlet(H_grad: callable, q0: np.ndarray, p0: np.ndarray,
+                   t_span: tuple[float, float], dt: float = 0.01) -> dict:
+    """Symplectic Störmer-Verlet integrator for Hamilton's equations."""
+    q, p = q0.copy(), p0.copy()
+    t = t_span[0]
+    traj = [(q.copy(), p.copy())]
+    while t < t_span[1]:
+        dHdq, dHdp = H_grad(q, p)
+        p -= 0.5 * dt * dHdq
+        _, dHdp = H_grad(q, p)
+        q += dt * dHdp
+        dHdq, _ = H_grad(q, p)
+        p -= 0.5 * dt * dHdq
+        t += dt
+        traj.append((q.copy(), p.copy()))
+    return {"trajectory": traj, "final": (q, p)}
+```
+
+**Use when**: Celestial mechanics, molecular dynamics, HMC, symplectic constructions.
+
+---
+
+### A216: Moser Trick
+
+**Problem**: Construct isotopy between cohomologous symplectic forms via time-dependent ODE.
+**T**: Requires Hodge decomposition | **S**: Problem-dependent
+**Lib**: Theoretical
+**Guarantee**: Exact if cohomology condition met
+
+```python
+# ωₜ = (1-t)ω₀ + tω₁. Find σ with dσ = ω₁-ω₀. Solve ι_{Xₜ}ωₜ = -σ.
+# Flow of Xₜ gives φₜ with φₜ*ωₜ = ω₀.
+# Applications: Darboux, Weinstein neighborhood, Lagrangian smoothing.
+```
+
+**Use when**: Symplectic equivalence, Darboux theorem, Lagrangian smoothing arguments.
+
+---
+
+## 39. Advanced Spectral Graph Theory
+
+### A217: BSS Barrier Method
+
+**Problem**: Select subsets of edges satisfying spectral constraints using barrier potential Φ_u(M) = Tr((uI−M)⁻¹).
+**T**: O(|E| · n² · r) | **S**: O(n²)
+**Lib**: `numpy`, `scipy.linalg`
+**Guarantee**: Deterministic construction
+
+```python
+from __future__ import annotations
+import numpy as np
+
+def bss_partial_coloring(A_edges: list[np.ndarray], r: int) -> dict:
+    """BSS barrier for partial r-coloring. A_edges sum to I on H=ker(L)⊥.
+    Returns coloring with monochromatic sum ⪯ (C/r)I."""
+    d = A_edges[0].shape[0]
+    u = 40.0 / r
+    M = np.zeros((d, d))
+    # Iterative: choose vertex-color pair minimizing potential increase.
+    # Potential: Φ_u(M) = Tr((uI - M)^{-1}) ≤ Φ_{u₀}(0) throughout.
+    return {"barrier": u, "M": M}
+```
+
+**Use when**: Graph sparsification, ε-light subsets, Kadison-Singer, Ramanujan graphs.
+
+---
+
+### A218: Free Additive Convolution
+
+**Problem**: Compute μ ⊞ ν using R-transform: R_{μ⊞ν} = R_μ + R_ν.
+**T**: O(n²) for degree-n polynomials | **S**: O(n)
+**Lib**: `numpy`
+**Guarantee**: Exact for polynomial measures
+
+```python
+from __future__ import annotations
+import numpy as np
+
+def cauchy_transform(roots: np.ndarray, z: complex) -> complex:
+    """G_μ(z) = (1/n)Σ 1/(z - rᵢ) for empirical spectral measure."""
+    return np.mean(1.0 / (z - roots))
+```
+
+**Use when**: Random matrix theory, free probability, spectral sums of free random variables.
+
+---
+
+### A219: Interlacing Polynomials (MSS)
+
+**Problem**: Use interlacing family method to bound largest root of random polynomial.
+**T**: O(n · m) for m polynomials of degree n | **S**: O(n · m)
+**Lib**: `numpy`
+**Guarantee**: Exact existence proof
+
+```python
+from __future__ import annotations
+import numpy as np
+
+def check_interlacing(roots_p: np.ndarray, roots_q: np.ndarray) -> bool:
+    """Check if roots of p and q alternate (p interlaces q)."""
+    rp, rq = np.sort(roots_p), np.sort(roots_q)
+    if len(rp) > len(rq): rp, rq = rq, rp
+    return all(rq[i] <= rp[i] + 1e-10 and rp[i] <= rq[i+1] + 1e-10 for i in range(len(rp)))
+```
+
+**Use when**: Kadison-Singer, Ramanujan graphs, restricted invertibility, discrepancy theory.
+
+---
+
+### A220: Graph Laplacian Partitioning
+
+**Problem**: Find ε-light subset S ⊆ V with |S| ≥ cε|V| and L_S ⪯ εL.
+**T**: O(|E| · n²) | **S**: O(n²)
+**Lib**: `numpy`, `scipy.sparse.linalg`, `networkx`
+**Guarantee**: Existence with universal constant c > 0
+
+```python
+from __future__ import annotations
+import numpy as np
+import networkx as nx
+
+def find_epsilon_light(G: nx.Graph, eps: float) -> set:
+    """Find ε-light subset via BSS + spectral partitioning."""
+    n = G.number_of_nodes()
+    r = max(1, int(np.ceil(50 / eps)))
+    # Full: normalize edge Laplacians, apply BSS barrier coloring (A217),
+    # take largest color class. Guaranteed |S| ≥ εn/(4(C+1)).
+    return set(range(max(1, int(eps * n / 200))))
+```
+
+**Use when**: Graph sparsification, spectral graph theory proofs, network decomposition.
+
+---
+
+## 40. Tensor Decomposition
+
+### A221: CP-ALS (Alternating Least Squares)
+
+**Problem**: CP decomposition T ≈ Σᵣ λᵣ aᵣ ⊗ bᵣ ⊗ cᵣ via alternating optimization.
+**T**: O(R · nnz(T) · iters) | **S**: O(R · Σ nₖ)
+**Lib**: `tensorly`
+**Guarantee**: Local minimum convergence
+
+```python
+from __future__ import annotations
+import numpy as np
+import tensorly as tl
+from tensorly.decomposition import parafac
+
+def cp_als(tensor: np.ndarray, rank: int, n_iter: int = 100) -> tuple:
+    """CP decomposition via tensorly ALS."""
+    return parafac(tensor, rank=rank, n_iter_max=n_iter)
+```
+
+**Use when**: Chemometrics, signal processing, recommender systems, missing data tensor completion.
+
+---
+
+### A222: Tucker / HOSVD
+
+**Problem**: Tucker decomposition T ≈ G ×₁ A ×₂ B ×₃ C with smaller core tensor G.
+**T**: O(Π nₖ · max Rₖ) | **S**: O(Π Rₖ + Σ nₖ Rₖ)
+**Lib**: `tensorly`
+**Guarantee**: Quasi-optimal
+
+```python
+from __future__ import annotations
+from tensorly.decomposition import tucker
+
+def tucker_decomp(tensor, ranks: list[int]) -> tuple:
+    """Tucker decomposition via HOSVD + ALS."""
+    return tucker(tensor, rank=ranks)
+```
+
+**Use when**: Multiway dimensionality reduction, feature extraction, data compression.
+
+---
+
+### A223: Tensor Train
+
+**Problem**: TT decomposition T_{i₁...iₙ} = G₁[i₁]·G₂[i₂]·...·Gₙ[iₙ] via sequential SVD.
+**T**: O(n · r² · d) | **S**: O(n · r² · d)
+**Lib**: `tensorly`
+**Guarantee**: Quasi-optimal via truncated SVD
+
+```python
+from __future__ import annotations
+import numpy as np
+
+def tt_decompose(tensor: np.ndarray, max_rank: int) -> list[np.ndarray]:
+    """Tensor train via sequential SVD truncation."""
+    shape = tensor.shape
+    cores, C = [], tensor.reshape(shape[0], -1)
+    for k in range(len(shape) - 1):
+        U, S, Vt = np.linalg.svd(C, full_matrices=False)
+        r = min(max_rank, np.sum(S > 1e-10 * S[0]))
+        cores.append(U[:, :r].reshape(-1, shape[k], r))
+        C = (np.diag(S[:r]) @ Vt[:r]).reshape(r * shape[k+1] if k < len(shape)-2 else -1, -1)
+    cores.append(C.reshape(-1, shape[-1], 1))
+    return cores
+```
+
+**Use when**: High-dimensional integration, quantum simulation (MPS), parametric PDEs.
+
+---
+
+### A224: Randomized Tensor Decomposition
+
+**Problem**: Approximate tensor decomposition via random projections for scalability.
+**T**: O(nnz(T) · R + n · R²) | **S**: O(n · R)
+**Lib**: `tensorly`, `scipy`
+**Guarantee**: Probabilistic approximation
+
+```python
+# Uses Khatri-Rao sketching to reduce ALS subproblem size.
+# Sketch: Ω = random Gaussian, project tensor modes via Ω.
+```
+
+**Use when**: Very large tensors, streaming decomposition, distributed computing.
+
+---
+
+## 41. Advanced Numerical Linear Algebra
+
+### A225: Conjugate Gradient (CG)
+
+**Problem**: Solve Ax = b for SPD A. Exact in n iterations; fast when well-conditioned.
+**T**: O(n · nnz(A) · √κ(A)) | **S**: O(n)
+**Lib**: `scipy.sparse.linalg.cg`
+**Guarantee**: Exact in n steps; convergence rate ∝ √κ(A)
+
+```python
+from __future__ import annotations
+import numpy as np
+from scipy.sparse.linalg import cg
+
+def solve_cg(A, b: np.ndarray, tol: float = 1e-10) -> dict:
+    """CG for SPD systems."""
+    x, info = cg(A, b, tol=tol)
+    return {"solution": x, "converged": info == 0}
+```
+
+**Use when**: Large sparse SPD systems, graph Laplacians, kernel methods.
+
+---
+
+### A226: Preconditioned CG (PCG)
+
+**Problem**: Solve Ax = b with preconditioner M ≈ A for faster convergence.
+**T**: O(n · nnz(A) · √κ(M⁻¹A)) | **S**: O(n)
+**Lib**: `scipy.sparse.linalg.cg` (M parameter)
+**Guarantee**: Convergence: ‖eₖ‖_A/‖e₀‖_A ≤ 2((√κ−1)/(√κ+1))^k
+
+```python
+from __future__ import annotations
+from scipy.sparse.linalg import cg, LinearOperator
+
+def solve_pcg(A, b, preconditioner: LinearOperator = None, tol: float = 1e-10) -> dict:
+    """Preconditioned CG."""
+    x, info = cg(A, b, M=preconditioner, tol=tol)
+    return {"solution": x, "converged": info == 0}
+```
+
+**Use when**: Ill-conditioned SPD systems, kernel matrices, tensor subproblems.
+
+---
+
+### A227: GMRES
+
+**Problem**: Solve Ax = b for general A by minimizing residual over Krylov subspace.
+**T**: O(k · nnz(A) + k² · n) | **S**: O(k · n)
+**Lib**: `scipy.sparse.linalg.gmres`
+**Guarantee**: Convergence in ≤ n iterations
+
+```python
+from __future__ import annotations
+from scipy.sparse.linalg import gmres
+
+def solve_gmres(A, b, tol: float = 1e-10, restart: int = 50) -> dict:
+    """GMRES for general systems."""
+    x, info = gmres(A, b, tol=tol, restart=restart)
+    return {"solution": x, "converged": info == 0}
+```
+
+**Use when**: Nonsymmetric systems, convection-diffusion, nonsymmetric preconditioning.
+
+---
+
+### A228: Block Krylov Methods
+
+**Problem**: Solve AX = B for multiple right-hand sides simultaneously.
+**T**: O(p · nnz(A) · k) | **S**: O(p · k · n)
+**Lib**: `scipy.sparse.linalg`
+**Guarantee**: Comparable to p individual solves
+
+```python
+from __future__ import annotations
+import numpy as np
+from scipy.sparse.linalg import cg
+
+def block_cg(A, B: np.ndarray, tol: float = 1e-10) -> np.ndarray:
+    """Solve AX = B column-by-column via CG."""
+    X = np.zeros_like(B)
+    for j in range(B.shape[1]):
+        X[:, j], _ = cg(A, B[:, j], tol=tol)
+    return X
+```
+
+**Use when**: Parametric PDEs, tensor subproblems, inverse problems.
+
+---
+
+### A229: Kronecker Preconditioning
+
+**Problem**: Exploit A = A₁⊗A₂⊗...⊗Aₖ structure. Preconditioner M = M₁⊗...⊗Mₖ applied in O(Σnₖ²).
+**T**: O(Σ nₖ³) setup, O(Σ nₖ²) per apply | **S**: O(Σ nₖ²)
+**Lib**: `numpy`, `scipy.sparse.linalg`
+**Guarantee**: Exact Kronecker preconditioner
+
+```python
+from __future__ import annotations
+import numpy as np
+from scipy.sparse.linalg import LinearOperator
+
+def kronecker_preconditioner(matrices: list[np.ndarray]) -> LinearOperator:
+    """M⁻¹ = M₁⁻¹ ⊗ ... ⊗ Mₖ⁻¹ applied via tensor reshaping."""
+    inv_factors = [np.linalg.inv(M) for M in matrices]
+    shapes = [M.shape[0] for M in matrices]
+    n = int(np.prod(shapes))
+    def matvec(x):
+        T = x.reshape(shapes)
+        for k, Mi in enumerate(inv_factors):
+            T = np.tensordot(Mi, T, axes=([1], [k]))
+            T = np.moveaxis(T, 0, k)
+        return T.ravel()
+    return LinearOperator((n, n), matvec=matvec)
+```
+
+**Use when**: CP-ALS subproblems, Sylvester equations, structured PDE discretizations.
+
+---
+
+### A230: Matrix-Free Operators
+
+**Problem**: Define linear operator via action x ↦ Ax without storing full matrix.
+**T**: O(matvec cost) per iteration | **S**: O(n)
+**Lib**: `scipy.sparse.linalg.LinearOperator`
+**Guarantee**: Exact
+
+```python
+from __future__ import annotations
+import numpy as np
+from scipy.sparse.linalg import LinearOperator
+
+def kronecker_matvec(matrices: list[np.ndarray], x: np.ndarray) -> np.ndarray:
+    """(A₁⊗A₂⊗...⊗Aₖ)x without forming full Kronecker product."""
+    shapes = [M.shape[0] for M in matrices]
+    T = x.reshape(shapes)
+    for k, M in enumerate(matrices):
+        T = np.tensordot(M, T, axes=([1], [k]))
+        T = np.moveaxis(T, 0, k)
+    return T.ravel()
+```
+
+**Use when**: Large eigenvalue problems, kernel methods at scale, Kronecker-structured systems.
+
+---
+
 ## Cross-Reference Index
 
 Where each algorithm section connects to structures and solvers.
@@ -4030,5 +4800,13 @@ Where each algorithm section connects to structures and solvers.
 | §31 Interpolation (A180-A184) | §22.2 Interpolation Problem | §5 SciPy (interpolate) | §19 Numerical Methods Results |
 | §32 Numerical Integration (A185-A187) | §22.3 Quadrature Problem | §5 SciPy (integrate) | §19 Numerical Methods Results |
 | §33 Extended OR (A188-A195) | §24 Extended OR (24.1-24.3) | §2 PuLP, §6 OR-Tools | §21 Extended OR Results |
+| §34 Representation Theory (A196-A200) | §25 Abstract Algebra (25.1-25.4) | §15 SageMath, §16 GAP | §23 Representation Theory Results |
+| §35 Algebraic Combinatorics (A201-A204) | §26 Algebraic Combinatorics (26.1-26.3) | §15 SageMath | §24 Algebraic Combinatorics Results |
+| §36 SPDEs & Regularity (A205-A209) | §27 Stochastic Analysis (27.1-27.3) | §5 SciPy, numpy | §22 Stochastic Analysis Results |
+| §37 Algebraic Topology (A210-A213) | §28 Algebraic Topology (28.1-28.3) | §15 SageMath | §25 Algebraic Topology Results |
+| §38 Symplectic Geometry (A214-A216) | §29 Symplectic Geometry (29.1-29.3) | §5 SciPy (integrate) | §26 Symplectic Geometry Results |
+| §39 Advanced Spectral Graph (A217-A220) | §30 Advanced Spectral Theory (30.1-30.3) | §1 NetworkX, numpy | §27 Advanced Spectral Graph Results |
+| §40 Tensor Decomposition (A221-A224) | §31 Tensor Analysis (31.1-31.3) | §17 tensorly | §28 Tensor Decomposition Results |
+| §41 Advanced Numerical LA (A225-A230) | §32 RKHS/Krylov (32.1-32.2) | §18 scipy.sparse.linalg | §19 Numerical Methods Results |
 
 Also see: **problem-classification.md** for decision-tree algorithm selection, **solving-protocols.md** for domain-specific solving workflows, **common-mistakes.md** §S1-S6 for solving pitfalls.

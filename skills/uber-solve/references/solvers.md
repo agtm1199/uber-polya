@@ -827,6 +827,164 @@ print(f"Found {len(res.F)} Pareto-optimal points")
 
 ---
 
+## §15: SageMath — Algebra, Combinatorics, Number Theory
+
+**Install**: `pip install sagemath-standard` (or use SageMath distribution)
+**Import**: `from sage.all import *`
+
+**Core API**:
+
+| Function | What It Does | Example |
+|---|---|---|
+| `SymmetricFunctions(QQ).s()` | Schur function basis | `s = SymmetricFunctions(QQ).s(); s[3,2,1]` |
+| `MacdonaldPolynomialsP(q,t)` | Macdonald P-polynomials | `P = MacdonaldPolynomialsP(q,t); P[2,1]` |
+| `WeylGroup(['A',3])` | Weyl group of type A₃ | `W = WeylGroup(['A',3]); W.cardinality()` |
+| `Partitions(n)` | Integer partitions of n | `list(Partitions(5))` |
+| `SymmetricGroup(n)` | Symmetric group S_n | `G = SymmetricGroup(5); G.character_table()` |
+| `GF(p)` | Finite field of order p | `k = GF(7); k.multiplicative_generator()` |
+| `NumberField(x^2+1, 'i')` | Algebraic number field | `K = NumberField(x^2+1, 'i')` |
+
+**Key capabilities for advanced mathematics**:
+- **Algebraic combinatorics**: Symmetric functions (Schur, Macdonald, Hall-Littlewood), Young tableaux, RSK correspondence
+- **Representation theory**: Character tables, Weyl groups, root systems, highest-weight modules
+- **Number theory**: p-adic numbers (`Qp(p, prec)`), local fields, L-functions
+
+**Gotchas**:
+- SageMath has its own Python environment; may conflict with system Python
+- For standalone scripts, use `sage -python script.py`
+- Large character tables can exhaust memory; limit to rank ≤ 8
+
+---
+
+## §16: GAP — Computational Group Theory
+
+**Install**: `sudo apt-get install gap` or download from gap-system.org
+**Usage**: Interactive via `gap` shell, or scripts via `gap < script.g`
+
+**Core API**:
+
+| Function | What It Does | Example |
+|---|---|---|
+| `CharacterTable(G)` | Character table of group G | `ct := CharacterTable(SymmetricGroup(5));` |
+| `Irr(G)` | Irreducible characters | `irr := Irr(SymmetricGroup(4));` |
+| `InducedClassFunction(chi, G)` | Induced representation | `ind := InducedClassFunction(chi, G);` |
+| `IsomorphismGroups(G, H)` | Find isomorphism | `iso := IsomorphismGroups(G, H);` |
+| `FreeGroup(n)` | Free group on n generators | `F := FreeGroup(3);` |
+| `AutomorphismGroup(G)` | Automorphism group | `Aut := AutomorphismGroup(G);` |
+
+**Key capabilities**:
+- Fastest engine for finite group computations (orders up to 10^18)
+- Character theory: tables, decomposition, induction, restriction
+- Cohomology: group cohomology rings, extensions
+- Interface with SageMath via `libgap`
+
+**Gotchas**:
+- GAP uses 1-based indexing
+- Memory-intensive for large groups; use `IsomorphismPcGroup` for solvable groups
+- No native Python API; call via subprocess or SageMath's `libgap`
+
+---
+
+## §17: tensorly — Tensor Decomposition
+
+**Install**: `pip install tensorly`
+**Import**: `import tensorly as tl`
+
+**Core API**:
+
+| Function | What It Does | Example |
+|---|---|---|
+| `tl.decomposition.parafac(T, rank)` | CP decomposition | `factors = parafac(T, rank=5)` |
+| `tl.decomposition.tucker(T, rank)` | Tucker decomposition | `core, factors = tucker(T, rank=[3,4,2])` |
+| `tl.decomposition.tensor_train(T)` | Tensor-train (TT) decomposition | `tt = tensor_train(T, rank=[1,3,3,1])` |
+| `tl.tenalg.multi_mode_dot(T, mats)` | Multi-mode product | `result = multi_mode_dot(T, [A, B, C])` |
+| `tl.unfold(T, mode)` | Mode-n unfolding (matricization) | `T_0 = tl.unfold(T, 0)` |
+| `tl.tensor_to_vec(T)` | Vectorization | `v = tl.tensor_to_vec(T)` |
+
+**Typical workflow**:
+```python
+import tensorly as tl
+from tensorly.decomposition import parafac, tucker
+import numpy as np
+
+T = tl.tensor(np.random.random((10, 20, 30)))
+
+# CP decomposition
+weights, factors = parafac(T, rank=5, init='random', n_iter_max=200)
+T_approx = tl.cp_to_tensor((weights, factors))
+error = tl.norm(T - T_approx) / tl.norm(T)
+
+# Tucker decomposition
+core, factors = tucker(T, rank=[3, 4, 2])
+T_approx = tl.tucker_to_tensor((core, factors))
+```
+
+**Gotchas**:
+- CP decomposition is NP-hard in general; ALS may converge to local minimum
+- Always try multiple random initializations (`init='random'`, repeat 5-10 times)
+- Rank selection: use core consistency diagnostic or reconstruction error curve
+- Backend-agnostic: `tl.set_backend('pytorch')` for GPU acceleration
+
+---
+
+## §18: scipy.sparse.linalg — Krylov Methods & Sparse Linear Algebra
+
+**Install**: Included in SciPy (`pip install scipy`)
+**Import**: `from scipy.sparse.linalg import cg, gmres, LinearOperator, spilu`
+
+**Core API**:
+
+| Function | What It Does | Example |
+|---|---|---|
+| `cg(A, b)` | Conjugate Gradient (SPD systems) | `x, info = cg(A, b, tol=1e-10)` |
+| `gmres(A, b)` | GMRES (general non-symmetric) | `x, info = gmres(A, b, restart=50)` |
+| `minres(A, b)` | MINRES (symmetric indefinite) | `x, info = minres(A, b)` |
+| `spilu(A)` | Incomplete LU preconditioner | `ilu = spilu(A); M = LinearOperator(A.shape, ilu.solve)` |
+| `LinearOperator(shape, matvec)` | Matrix-free operator | `A = LinearOperator((n,n), matvec=my_func)` |
+| `eigsh(A, k)` | Largest/smallest eigenvalues (symmetric) | `vals, vecs = eigsh(A, k=6, which='SM')` |
+| `svds(A, k)` | Truncated SVD (sparse) | `u, s, vt = svds(A, k=10)` |
+
+**Typical workflow (preconditioned CG)**:
+```python
+from scipy.sparse import csc_matrix
+from scipy.sparse.linalg import cg, spilu, LinearOperator
+
+A = csc_matrix(...)  # SPD sparse matrix
+b = ...
+
+# Build ILU preconditioner
+ilu = spilu(A)
+M = LinearOperator(A.shape, matvec=ilu.solve)
+
+# Solve with preconditioned CG
+x, info = cg(A, b, M=M, tol=1e-12, maxiter=1000)
+assert info == 0, f"CG did not converge (info={info})"
+```
+
+**Matrix-free operators** (for Kronecker-structured problems):
+```python
+import numpy as np
+from scipy.sparse.linalg import LinearOperator, cg
+
+def kronecker_matvec(v, A_list):
+    """Apply Kronecker product A1 ⊗ A2 ⊗ ... without forming it."""
+    # Reshape v, apply each factor along corresponding mode
+    ...
+    return result
+
+n = A1.shape[0] * A2.shape[0]
+K = LinearOperator((n, n), matvec=lambda v: kronecker_matvec(v, [A1, A2]))
+x, info = cg(K, b, tol=1e-10)
+```
+
+**Gotchas**:
+- `cg` requires SPD matrix; for non-symmetric use `gmres` or `bicgstab`
+- `info > 0` means did not converge; increase `maxiter` or improve preconditioner
+- `spilu` requires CSC format; convert with `A.tocsc()`
+- For very large systems, matrix-free `LinearOperator` avoids O(n²) memory
+
+---
+
 ## Cross-Reference Index
 
 | Solver | Primary Structures (structures.md) | Key Algorithms (algorithms.md) |
@@ -845,7 +1003,11 @@ print(f"Found {len(res.F)} Pareto-optimal points")
 | §12 numpy-financial | §14 Financial Math (14.1) | §25 Financial Math (A127-A134) |
 | §13 nashpy | §15 Game Theory (15.1-15.2) | §26 Game Theory (A135-A137, A145) |
 | §14 pymoo | §17 Multi-Objective Opt (17.1-17.2) | §28 Multi-Objective Opt (A160-A161) |
+| §15 SageMath | §25 Abstract Algebra (25.1-25.4), §26 Algebraic Combinatorics (26.1-26.3) | §34 Representation Theory (A196-A200), §35 Algebraic Combinatorics (A201-A204) |
+| §16 GAP | §25 Abstract Algebra (25.1-25.4) | §34 Representation Theory (A196, A199) |
+| §17 tensorly | §31 Tensor Analysis (31.1-31.3) | §40 Tensor Decomposition (A221-A224) |
+| §18 scipy.sparse.linalg | §32 RKHS/Krylov (32.1-32.2), §11 Linear Algebra | §41 Advanced Numerical LA (A225-A230) |
 
-Note: numpy.linalg and scipy.linalg (used for §22 Linear Algebra, A95-A106) are submodules of numpy and scipy (§5, §8) — no separate install needed. SymPy (§4) handles §23 Calculus (A107-A116).
+Note: numpy.linalg and scipy.linalg (used for §22 Linear Algebra, A95-A106) are submodules of numpy and scipy (§5, §8) — no separate install needed. SymPy (§4) handles §23 Calculus (A107-A116). SageMath (§15) includes GAP (§16) via libgap — separate GAP install only needed for standalone usage.
 
 Also see: **solving-protocols.md** for solver usage within specific problem-type workflows, **optimization-hardening.md** for solver-specific performance tuning.

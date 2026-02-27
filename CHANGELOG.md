@@ -4,6 +4,18 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [1.2.0] - 2026-02-26
+
+### Added
+
+- **Research-level mathematics expansion**: 8 new domain sections covering advanced pure mathematics
+  - `structures.md` §25-§32: Abstract Algebra & Representation Theory, Algebraic Combinatorics, Stochastic Analysis & SPDEs, Algebraic Topology, Symplectic & Differential Geometry, Advanced Spectral Theory, Tensor Analysis, RKHS & Krylov Spaces (~25 new structures)
+  - `algorithms.md` §34-§41 (A196-A230): 35 new algorithms for representation theory, algebraic combinatorics, SPDEs/regularity structures, algebraic topology, symplectic geometry, advanced spectral graph theory, tensor decomposition, advanced numerical linear algebra
+  - `solvers.md` §15-§18: SageMath (algebra/combinatorics/number theory), GAP (computational group theory), tensorly (tensor decomposition), scipy.sparse.linalg (Krylov methods & sparse LA)
+  - `interpretation-patterns.md` §22-§28: Stochastic analysis, representation theory, algebraic combinatorics, algebraic topology, symplectic geometry, advanced spectral graph theory, tensor decomposition results
+  - `problem-classification.md`: New PROVE (research-level) / DECOMPOSE tensor / SOLVE sparse system decision tree branches and cross-reference entries
+- Totals: ~340 algorithms, ~116 structures, 32 domains, 30 solver libraries
+
 ## [1.1.0] - 2026-02-25
 
 ### Added

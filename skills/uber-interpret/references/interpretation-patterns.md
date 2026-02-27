@@ -1259,6 +1259,195 @@ For 95% variance: need [N] components out of [P] original features
 
 ---
 
+## 22. Stochastic Analysis Results
+
+### 22.1 SPDE / Regularity Structure Results
+
+**What to report**:
+- **Well-posedness**: Existence, uniqueness, and regularity of solutions
+- **Renormalization constants**: Explicit values or divergence rates of counterterms
+- **Singularity/absolute continuity**: Whether measures are mutually singular or absolutely continuous under shifts
+- **Cameron-Martin space**: Description of the space of admissible shifts
+- **Convergence rates**: Rate of convergence of regularized solutions as cutoff is removed
+
+**Audience adaptation**:
+- *Technical*: The measure μ is singular with respect to Tₕμ for h ∉ H_CM because the Radon-Nikodym density diverges under renormalization. The regularity exponent is α = [value] in Besov space B^α_{p,q}.
+- *Decision-maker*: The mathematical model shows that small perturbations fundamentally change the system's statistical behavior — the shifted and original distributions are completely incompatible.
+- *General*: Imagine a landscape of random shapes. Moving the entire landscape even slightly creates patterns so different that you could always tell if it had been moved.
+
+---
+
+### 22.2 Gaussian Free Field Results
+
+**What to report**:
+- **Covariance structure**: Green's function or covariance kernel
+- **Dimension and regularity**: In which function space the GFF lives
+- **Correlation decay**: Rate of decorrelation with distance
+- **Phase transitions**: Critical values of coupling constants
+
+**Audience adaptation**:
+- *Technical*: The GFF on T^d has covariance G(x,y) = (-Δ)^{-1}(x,y) and lives in H^{-ε}(T^d) for all ε > 0 but not in L^2.
+- *General*: Think of a random surface where nearby points tend to have similar heights, but distant points are independent — like a blurry TV screen.
+
+---
+
+## 23. Representation Theory Results
+
+### 23.1 Character & Representation Results
+
+**What to report**:
+- **Character table**: Complete table of irreducible characters
+- **Decomposition**: How a representation decomposes into irreducibles
+- **Dimensions**: Dimensions of irreducible representations
+- **Test vectors**: Explicit vectors in representation spaces satisfying specified conditions
+- **L-function values**: Special values of associated L-functions
+
+**Audience adaptation**:
+- *Technical*: The representation π decomposes as π ≅ ⊕ᵢ nᵢ·σᵢ where σᵢ are irreducible with characters χᵢ. The test vector v ∈ π satisfies ⟨Wᵥ, Wᵥ'⟩ = L(1/2, π × π')/ζ(1).
+- *Decision-maker*: The symmetry analysis reveals [N] fundamentally different patterns, with the most important pattern accounting for [X]% of the structure.
+- *General*: Just as white light splits into different colors through a prism, a complex symmetry can be split into simple, fundamental symmetry patterns.
+
+---
+
+### 23.2 p-adic & Local Field Results
+
+**What to report**:
+- **p-adic valuations**: Valuations of key quantities
+- **Local-global compatibility**: Whether local results are consistent with global conjectures
+- **Conductor**: Conductor of representations
+- **Epsilon factors**: Root numbers and epsilon factors
+
+**Audience adaptation**:
+- *Technical*: The local Rankin-Selberg integral evaluates to L(s, π × π')/ε(s, π × π', ψ) at the test vector, with conductor f(π) = p^n.
+- *General*: We analyze numbers using a different notion of "closeness" based on divisibility by a prime p, revealing hidden patterns invisible in ordinary arithmetic.
+
+---
+
+## 24. Algebraic Combinatorics Results
+
+### 24.1 Symmetric Function Results
+
+**What to report**:
+- **Basis expansion**: Expression in Schur / monomial / power-sum basis
+- **Kostka numbers**: Multiplicities in basis change
+- **Littlewood-Richardson coefficients**: Structure constants
+- **Transition matrices**: Between Macdonald parameters
+
+**Audience adaptation**:
+- *Technical*: The Macdonald polynomial P_λ(x; q,t) expands as P_λ = Σ_μ K_{λμ}(q,t) · s_μ where K_{λμ}(q,t) are (q,t)-Kostka polynomials.
+- *General*: Complex patterns can be built from simple building blocks. We found the exact recipe: how many of each building block you need to reconstruct the original pattern.
+
+---
+
+### 24.2 Markov Chain / ASEP Results
+
+**What to report**:
+- **Transition matrix**: Explicit transition probabilities
+- **Stationary distribution**: Steady-state probabilities
+- **Mixing time**: Time to reach near-equilibrium
+- **Connection to polynomials**: Relationship to Macdonald or other special polynomials
+
+**Audience adaptation**:
+- *Technical*: The Markov chain has transition matrix T_{σ,τ} = [formula]. Its stationary distribution is π(σ) ∝ P_λ(q,t)|_{specialized}, with mixing time O(n² log n).
+- *General*: Imagine particles randomly hopping on a line. After enough time, they settle into a predictable pattern — and that pattern is described by a beautiful mathematical formula.
+
+---
+
+## 25. Algebraic Topology Results
+
+### 25.1 Homotopy & Spectral Sequence Results
+
+**What to report**:
+- **Homotopy groups**: Computed groups π_n(X) with generators
+- **Spectral sequence pages**: E_r pages with differentials
+- **Extensions**: Whether extensions split
+- **Filtration**: Stages of the filtration with quotients
+
+**Audience adaptation**:
+- *Technical*: The E₂-page of the Adams spectral sequence gives Ext^{s,t}_{A}(H*(X), F_p). The differential d₃ on [class] is [value], yielding π_n(X) ≅ [group].
+- *General*: To understand a complex shape, we peel it apart layer by layer, like an onion. Each layer reveals more about what the shape truly looks like — how many holes it has, whether it can be untwisted, etc.
+
+---
+
+### 25.2 Equivariant & Surgery Results
+
+**What to report**:
+- **Fixed point data**: Geometric fixed-point spectra
+- **Surgery obstruction**: Whether surgery obstruction vanishes
+- **Classification**: Up to diffeomorphism / homeomorphism / homotopy equivalence
+- **N∞ operad structure**: Transfer systems and indexing categories
+
+**Audience adaptation**:
+- *Technical*: The surgery obstruction σ(f) ∈ L_n(π₁(M)) vanishes, so the normal map is bordant to a homotopy equivalence. The N∞ operad is classified by the transfer system T = {H ≤ G : transfer exists}.
+- *General*: We ask: can this shape be reshaped into a simpler one by cutting and re-gluing? The answer depends on certain algebraic obstacles that we compute explicitly.
+
+---
+
+## 26. Symplectic Geometry Results
+
+### 26.1 Lagrangian & Hamiltonian Results
+
+**What to report**:
+- **Lagrangian classification**: Up to Hamiltonian isotopy
+- **Smoothness/regularity**: Whether regularization is possible
+- **Intersection numbers**: Floer-theoretic intersection data
+- **Hamiltonian flow**: Explicit flow equations and conserved quantities
+
+**Audience adaptation**:
+- *Technical*: The Lagrangian L ⊂ (M, ω) is Hamiltonian isotopic to L' if and only if [condition]. The Maslov index μ(L) = [value]. The Floer cohomology HF(L, L') ≅ [group].
+- *General*: In the geometry of motion, certain surfaces represent states of a physical system where position and momentum are perfectly balanced. We determine when two such surfaces can be continuously deformed into each other.
+
+---
+
+## 27. Advanced Spectral Graph Theory Results
+
+### 27.1 Graph Laplacian & Spectral Results
+
+**What to report**:
+- **Eigenvalues**: Spectrum of graph Laplacian {λ₁ ≤ λ₂ ≤ ... ≤ λₙ}
+- **Spectral gap**: λ₂ (algebraic connectivity / Fiedler value)
+- **Cheeger constant**: Relationship between spectral gap and expansion
+- **Sparsifier quality**: Spectral approximation factor (1 ± ε)
+
+**Audience adaptation**:
+- *Technical*: The graph G has spectral gap λ₂(L) = [value], Cheeger constant h(G) ∈ [λ₂/2, √(2λ₂)]. The BSS sparsifier H has [m] edges and L_H ≈_{1±ε} L_G.
+- *Decision-maker*: The network is [well/poorly]-connected. We found a simpler network with only [m] connections that preserves all essential connectivity properties within [ε]%.
+- *General*: Imagine a network of roads. We found the minimum number of roads you need to keep so that traffic flow is almost the same as the original network.
+
+---
+
+### 27.2 Free Probability & Interlacing Results
+
+**What to report**:
+- **Free convolution**: Distribution of sum/product of free random variables
+- **Expected characteristic polynomial**: Roots of expected polynomial
+- **Interlacing family**: Whether a family of polynomials interlaces
+- **Barrier argument**: Potential function values and bounds
+
+**Audience adaptation**:
+- *Technical*: The expected characteristic polynomial E[det(xI - A)] has all real roots by the interlacing property. By the barrier method with potential Φ(x) = Σ 1/(x - λᵢ), we obtain the bound λ_max ≤ [value].
+- *General*: By cleverly averaging over random choices, we prove that at least one specific choice must be good — even without knowing which one.
+
+---
+
+## 28. Tensor Decomposition Results
+
+### 28.1 CP/Tucker Decomposition Results
+
+**What to report**:
+- **Rank**: CP rank or Tucker ranks (multilinear rank)
+- **Factors**: Factor matrices and core tensor (for Tucker)
+- **Reconstruction error**: Relative error ‖T - T̂‖/‖T‖
+- **Convergence**: Number of iterations, convergence flag
+- **Interpretation**: What each factor/component represents
+
+**Audience adaptation**:
+- *Technical*: The rank-R CP decomposition T ≈ Σᵣ λᵣ · a_r ⊗ b_r ⊗ c_r achieves relative error [ε]. Factor matrix A ∈ ℝ^{I×R} captures [interpretation].
+- *Decision-maker*: The multi-dimensional data can be summarized by [R] key patterns, each describing a combination of [dimension 1], [dimension 2], and [dimension 3] factors.
+- *General*: A complex 3D data table can be broken into [R] simple ingredients. Each ingredient is a simple pattern along each dimension that, when combined, approximately reconstructs the original data.
+
+---
+
 ## Cross-Reference Index
 
 Which visualization to use for each result type, and where results come from.
@@ -1316,5 +1505,17 @@ Which visualization to use for each result type, and where results come from.
 | §21.1 Inventory Policy | §37 Inventory Policy Chart | algorithms.md A188-A190 | §24.1 Inventory Model |
 | §21.2 Scheduling/Routing | §3 Gantt Chart | algorithms.md A191-A192, A195 | §24.3 Facility Location |
 | §21.3 Packing/Location | §20 Geometric Diagram | algorithms.md A193-A194 | §24.2-24.3 Packing/Location |
+| §22.1 SPDE/Regularity | (text-based / proof) | §36 SPDEs (A205-A209) | §27 Stochastic Analysis |
+| §22.2 Gaussian Free Field | (text-based / proof) | §36 SPDEs (A205) | §27.1 Gaussian Free Field |
+| §23.1 Characters/Representations | (text-based / proof) | §34 Representation Theory (A196-A200) | §25 Abstract Algebra |
+| §23.2 p-adic/Local Fields | (text-based / proof) | §34 Representation Theory (A200) | §25 Abstract Algebra |
+| §24.1 Symmetric Functions | (text-based / proof) | §35 Algebraic Combinatorics (A201-A203) | §26 Algebraic Combinatorics |
+| §24.2 Markov Chain/ASEP | (text-based / proof) | §35 Algebraic Combinatorics (A204) | §26 Algebraic Combinatorics |
+| §25.1 Homotopy/Spectral Seq | (text-based / proof) | §37 Algebraic Topology (A210-A211) | §28 Algebraic Topology |
+| §25.2 Equivariant/Surgery | (text-based / proof) | §37 Algebraic Topology (A212-A213) | §28 Algebraic Topology |
+| §26.1 Lagrangian/Hamiltonian | (text-based / proof) | §38 Symplectic Geometry (A214-A216) | §29 Symplectic Geometry |
+| §27.1 Graph Laplacian/Spectral | §18 Scree/Spectrum Plot | §39 Advanced Spectral Graph (A217-A220) | §30 Advanced Spectral Theory |
+| §27.2 Free Probability/Interlacing | (text-based / proof) | §39 Advanced Spectral Graph (A218-A219) | §30 Advanced Spectral Theory |
+| §28.1 CP/Tucker Decomposition | §6 Bar Chart (factor loadings) | §40 Tensor Decomposition (A221-A224) | §31 Tensor Analysis |
 
 Also see: **common-mistakes.md** §I1-I6 for interpretation pitfalls.

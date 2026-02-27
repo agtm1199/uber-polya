@@ -1,0 +1,632 @@
+% Title: Uniform Lattices with $2$-Torsion and $\mathbb{Q}$-Acyclic Universal Covers
+
+%%% PROBLEM STATEMENT %%%
+
+\noindent\textbf{Problem.}
+Suppose that $\Gamma$ is a uniform lattice in a real semisimple group, and that
+$\Gamma$ contains some $2$-torsion. Is it possible for $\Gamma$ to be the
+fundamental group of a compact manifold without boundary whose universal cover
+is acyclic over the rational numbers $\mathbb{Q}$?
+
+%%% SOLUTION %%%
+
+\bigskip
+\noindent\textbf{Answer.} \textit{No.} We prove that no such manifold can exist.
+
+\medskip
+\noindent\textbf{Strategy.}
+The proof combines three ingredients:
+(1)~the Cartan--Leray spectral sequence to identify
+$H_*(M;\mathbb{Q})$ with the group homology $H_*(\Gamma;\mathbb{Q})$;
+(2)~$L^2$-Betti numbers, the proportionality principle, and Brown's rational
+Euler characteristic to derive a parity constraint on~$\chi(M)$;
+(3)~a Bredon-cohomological fixed-point obstruction
+that captures information invisible to the Euler characteristic alone.
+
+% =========================================================================
+\section*{1.\ Notation and standing assumptions}
+\label{sec:p7-setup}
+% =========================================================================
+
+Let $G$ be a connected real semisimple Lie group with finite center and no
+compact factors, $K<G$ a maximal compact subgroup, and
+$X := G/K$ the associated Riemannian symmetric space of nonpositive curvature.
+Set $n := \dim X$.
+
+Let $\Gamma < G$ be a \emph{uniform} (cocompact) lattice, and let
+$\sigma\in\Gamma$ be an element of order~$2$.
+
+By Selberg's lemma \cite{Sel60}, $\Gamma$ contains a torsion-free normal
+subgroup $L\trianglelefteq\Gamma$ of finite index
+$m := [\Gamma:L]$, with $2\mid m$ (since $\sigma\notin L$).
+
+\begin{definition}[Brown's rational Euler characteristic {\cite[Ch.\,IX]{Brown}}]
+\label{def:p7-chi-Q}
+For a group $\Gamma$ of type VFL (virtually of type FL) with torsion-free
+subgroup $L$ of finite index~$m$,
+\[
+  \chi_\mathbb{Q}(\Gamma)
+  \;:=\;
+  \frac{\chi(L)}{m}
+  \;\in\;\mathbb{Q},
+\]
+where $\chi(L) = \sum_{i\ge 0}(-1)^i\dim_\mathbb{Q} H_i(L;\mathbb{Q})$.
+This is independent of the choice of~$L$.
+\end{definition}
+
+% =========================================================================
+\section*{2.\ Identifying $H_*(M;\mathbb{Q})$ via the spectral sequence}
+\label{sec:p7-ss}
+% =========================================================================
+
+\begin{proposition}
+\label{prop:p7-ss-collapse}
+Let $M$ be a closed connected manifold of dimension~$d$ with
+$\pi_1(M)\cong\Gamma$ and $\widetilde{M}$~$\mathbb{Q}$-acyclic. Then:
+\begin{enumerate}
+\item[(a)] $H_i(M;\mathbb{Q}) \cong H_i(\Gamma;\mathbb{Q})$ for every $i\ge 0$.
+\item[(b)] $\Gamma$ is a rational Poincar\'e duality group of dimension~$d$,
+so $d = \mathrm{cd}_\mathbb{Q}(\Gamma) = n$.
+\item[(c)] $\chi(M) = \chi_\mathbb{Q}(\Gamma) = \chi(L)/m$.
+\end{enumerate}
+\end{proposition}
+
+\begin{proof}
+The Cartan--Leray spectral sequence for the universal covering
+$\widetilde{M}\to M$ reads
+\[
+  E^2_{p,q} = H_p\bigl(\Gamma;\, H_q(\widetilde{M};\mathbb{Q})\bigr)
+  \;\Longrightarrow\;
+  H_{p+q}(M;\mathbb{Q}).
+\]
+Since $\widetilde{M}$ is $\mathbb{Q}$-acyclic,
+$H_q(\widetilde{M};\mathbb{Q})=0$ for $q\ge 1$, so $E^2_{p,q}=0$ whenever
+$q\ge 1$, and the spectral sequence collapses at~$E^2$. This gives~(a).
+
+For~(b): Poincar\'e duality for the closed orientable $d$-manifold~$M$ gives
+$H^i(M;\mathbb{Q})\cong H_{d-i}(M;\mathbb{Q})$ for all~$i$. Combining with~(a),
+$H^i(\Gamma;\mathbb{Q})\cong H_{d-i}(\Gamma;\mathbb{Q})$.
+The top class $H^d(\Gamma;\mathbb{Q})\cong H_0(\Gamma;\mathbb{Q})=\mathbb{Q}$,
+so $\mathrm{cd}_\mathbb{Q}(\Gamma)\ge d$.  Conversely, $H_i(M;\mathbb{Q})=0$
+for $i>d$ forces $\mathrm{cd}_\mathbb{Q}(\Gamma)\le d$, giving
+$\mathrm{cd}_\mathbb{Q}(\Gamma)=d$.
+
+For a uniform lattice in~$G$, the torsion-free subgroup $L$ acts freely and
+cocompactly on the contractible manifold $X=G/K$, so
+$\mathrm{cd}(L)=n$ and $\mathrm{cd}_\mathbb{Q}(\Gamma)
+=\mathrm{cd}_\mathbb{Q}(L)=n$ by Serre's theorem
+\cite[Ch.\,VIII, \S\,2]{Brown}. Hence $d=n$.
+
+For~(c): $\chi(M)=\sum(-1)^i\dim H_i(M;\mathbb{Q})
+=\sum(-1)^i\dim H_i(\Gamma;\mathbb{Q})
+=\chi_\mathbb{Q}(\Gamma)=\chi(L)/m$.
+\end{proof}
+
+% =========================================================================
+\section*{3.\ $L^2$-Betti numbers and the proportionality principle}
+\label{sec:p7-L2}
+% =========================================================================
+
+\begin{theorem}[L\"uck approximation {\cite{Luck94}}]
+\label{thm:p7-luck-approx}
+Let $\{\Gamma_j\}$ be a chain of finite-index normal subgroups of~$\Gamma$
+with $\bigcap \Gamma_j = \{1\}$. Then
+\[
+  \beta_i^{(2)}(\Gamma)
+  \;=\;
+  \lim_{j\to\infty}
+  \frac{b_i(\Gamma_j\backslash\widetilde{M};\mathbb{Q})}{[\Gamma:\Gamma_j]}.
+\]
+\end{theorem}
+
+When $\widetilde{M}$ is $\mathbb{Q}$-acyclic, each intermediate quotient
+$M_j := \Gamma_j\backslash\widetilde{M}$ satisfies
+$H_i(M_j;\mathbb{Q})\cong H_i(\Gamma_j;\mathbb{Q})$
+(by the same spectral-sequence argument), so
+
+\begin{equation}
+\label{eq:p7-L2-vanish}
+\beta_i^{(2)}(\Gamma)
+\;=\;
+\lim_{j\to\infty}
+\frac{\dim H_i(\Gamma_j;\mathbb{Q})}{[\Gamma:\Gamma_j]}.
+\end{equation}
+
+\begin{theorem}[Proportionality principle {\cite[Thm.\,3.183]{LuckBook}}]
+\label{thm:p7-proportionality}
+For $\Gamma$ a uniform lattice in a connected semisimple Lie group~$G$,
+\[
+  \beta_i^{(2)}(\Gamma)
+  \;=\;
+  \mathrm{covol}(\Gamma)\cdot h_i^{(2)}(X),
+\]
+where $h_i^{(2)}(X)$ are the $L^2$-Betti numbers of the symmetric space~$X$
+(depending only on~$G$, not on~$\Gamma$).
+\end{theorem}
+
+It is a classical result of Borel \cite{Bor85} that
+$h_i^{(2)}(X)\ne 0$ if and only if $i = n/2$ and $\mathrm{rank}_\mathbb{R}(G)
+= \mathrm{rank}_\mathbb{R}(K)$ (the \emph{equal-rank condition}).
+
+% =========================================================================
+\section*{4.\ The Euler-characteristic obstruction (equal-rank case)}
+\label{sec:p7-euler}
+% =========================================================================
+
+Suppose $\mathrm{rank}_\mathbb{R}(G)=\mathrm{rank}_\mathbb{R}(K)$
+(e.g.\ $G=\mathrm{SL}_2(\mathbb{R})$, $\mathrm{SU}(p,q)$, $\mathrm{SO}(2p,q)$
+with $q$ odd, $\mathrm{Sp}(2n,\mathbb{R})$, etc.).
+Then $n=\dim X$ is even and $\beta_{n/2}^{(2)}(\Gamma)>0$.
+
+By the generalized Gauss--Bonnet theorem for the locally symmetric manifold
+$N := L\backslash X$:
+\[
+  \chi(N) = \chi(L) = (-1)^{n/2}\,\mathrm{vol}(N)\cdot e(X),
+\]
+where $e(X)>0$ is the Euler density of the symmetric metric on~$X$.
+
+\begin{proposition}[Euler parity obstruction]
+\label{prop:p7-euler-parity}
+Let $\Gamma$ be a uniform lattice in an equal-rank semisimple group~$G$ that
+contains an element $\sigma$ of order~$2$. If $\chi(L)$ is odd (where $L$ is
+any torsion-free subgroup of index $m=[\Gamma:L]$ with $2\mid m$), then
+$\chi_\mathbb{Q}(\Gamma)=\chi(L)/m$ is not an integer, and there exists no
+closed manifold~$M$ with $\pi_1(M)\cong\Gamma$ and $\widetilde{M}$
+$\mathbb{Q}$-acyclic.
+\end{proposition}
+
+\begin{proof}
+By Proposition~\ref{prop:p7-ss-collapse}(c), such an $M$ would satisfy
+$\chi(M)=\chi(L)/m$. Since $\chi(M)\in\mathbb{Z}$ but $\chi(L)/m\notin\mathbb{Z}$,
+no such $M$ exists.
+\end{proof}
+
+\begin{remark}
+For many natural families of lattices, $\chi(L)$ is indeed odd. For instance,
+if $\Gamma$ is an arithmetic lattice in $\mathrm{SL}_2(\mathbb{R})$ defined by
+a quaternion algebra over~$\mathbb{Q}$ that is ramified at a single finite
+prime, then $L\backslash\mathbb{H}^2$ is a hyperbolic surface of genus~$g$
+with $\chi(L) = 2-2g$ odd when $g$ is even -- a condition achievable by
+choosing the arithmetic data appropriately. More generally, for cocompact
+arithmetic lattices in~$\mathrm{SO}(2p,1)$ with $p\ge 1$, number-theoretic
+considerations (Prasad's volume formula \cite{Prasad89}) show that $\chi(L)$
+can take odd values.
+\end{remark}
+
+% =========================================================================
+\section*{5.\ The Bredon-cohomological obstruction (general case)}
+\label{sec:p7-bredon}
+% =========================================================================
+
+We now give an obstruction that applies to \emph{every} uniform lattice with
+$2$-torsion, including non-equal-rank groups where $\chi_\mathbb{Q}(\Gamma)=0$.
+
+\begin{definition}[Classifying spaces for families {\cite{LuckSurvey05}}]
+\label{def:p7-efin}
+Let $\mathcal{F}\mathrm{in}$ denote the family of finite subgroups of $\Gamma$.
+A model for $\underline{E}\Gamma$ (also written $E_{\mathcal{F}\mathrm{in}}\Gamma$)
+is a $\Gamma$-CW complex~$Y$ such that
+$Y^H$ is contractible for every finite $H\le\Gamma$ and empty for infinite~$H$.
+The symmetric space $X=G/K$ is a model for $\underline{E}\Gamma$
+\cite{BorelSerre73, LuckSurvey05}.
+\end{definition}
+
+\begin{definition}
+A model for $E\Gamma$ (the \emph{universal free} $\Gamma$-CW complex) is a
+$\Gamma$-CW complex~$Z$ on which $\Gamma$ acts freely and $Z$ is contractible.
+\end{definition}
+
+If $M$ is a closed manifold with $\pi_1(M)\cong\Gamma$ and
+$\widetilde{M}$ $\mathbb{Q}$-acyclic, then $\widetilde{M}$ is a
+\emph{free} cocompact $\Gamma$-CW complex that is $\mathbb{Q}$-acyclic
+(a ``rational model for $E\Gamma$'' of dimension~$n$).
+
+\begin{theorem}[Equivariant obstruction]
+\label{thm:p7-bredon-obstruction}
+Let $\Gamma$ be a uniform lattice in~$G$ containing an element $\sigma$ of
+order~$2$. There is no free, cocompact, $n$-dimensional $\Gamma$-CW complex
+$Z$ that is $\mathbb{Q}$-acyclic.
+\end{theorem}
+
+\begin{proof}
+The proof proceeds through the Bredon cohomology of $\Gamma$ and the
+comparison between the proper and free classifying spaces.
+
+\textbf{Step 1.\ The Bredon homological algebra.}
+The chain complex $C_*(\widetilde{M};\mathbb{Q})$ is a complex of finitely
+generated free $\mathbb{Q}[\Gamma]$-modules concentrated in degrees~$0$
+through~$n$, with augmentation $C_0\to\mathbb{Q}\to 0$ that is a
+$\mathbb{Q}$-homology isomorphism (since $\widetilde{M}$ is
+$\mathbb{Q}$-acyclic).
+
+Define the \emph{$k$-th rational finiteness obstruction module} to be
+\[
+  \Omega_k
+  :=
+  \ker\bigl(C_{k-1}(\widetilde{M};\mathbb{Q})\to C_{k-2}(\widetilde{M};\mathbb{Q})\bigr)
+  \Big/
+  \mathrm{im}\bigl(C_k(\widetilde{M};\mathbb{Q})\to C_{k-1}(\widetilde{M};\mathbb{Q})\bigr).
+\]
+For a $\mathbb{Q}$-acyclic complex, $\Omega_k \cong H_{k-1}(\widetilde{M};\mathbb{Q})=0$
+for $2\le k\le n$. Thus the chain complex is a \emph{finite free}
+$\mathbb{Q}[\Gamma]$-resolution of the trivial module~$\mathbb{Q}$:
+\[
+  0 \to C_n \to C_{n-1} \to \cdots \to C_1 \to C_0 \to \mathbb{Q} \to 0.
+\]
+
+\textbf{Step 2.\ Restriction to the finite subgroup $\langle\sigma\rangle$.}
+Restrict the above resolution to the subgroup
+$H:=\langle\sigma\rangle\cong\mathbb{Z}/2$. Each $C_k$, viewed as a
+$\mathbb{Q}[H]$-module, decomposes as a direct sum of copies of the regular
+representation $\mathbb{Q}[H] = \mathbb{Q}^+\oplus\mathbb{Q}^-$, where
+$\mathbb{Q}^+$ is the trivial representation and $\mathbb{Q}^-$ the sign
+representation.
+
+The augmentation module $\mathbb{Q}$ is the trivial $\mathbb{Q}[H]$-module
+$\mathbb{Q}^+$. Over the semisimple ring $\mathbb{Q}[\mathbb{Z}/2]$ (since
+$\mathrm{char}(\mathbb{Q})\nmid 2$), every module is projective, and
+the resolution splits. The Euler characteristic in the representation ring
+$R_\mathbb{Q}(H) = \mathbb{Z}\oplus\mathbb{Z}$ (generated by
+$\mathbb{Q}^+$ and $\mathbb{Q}^-$) gives:
+\begin{equation}
+\label{eq:p7-rep-euler}
+[\mathbb{Q}^+]
+\;=\;
+\sum_{k=0}^n (-1)^k\, [C_k|_H]
+\;\in\; R_\mathbb{Q}(H).
+\end{equation}
+
+Write $C_k|_H \cong a_k\,\mathbb{Q}^+ \oplus b_k\,\mathbb{Q}^-$ and
+$r_k = a_k + b_k$ (the $\mathbb{Q}[\Gamma]$-rank of $C_k$). Then
+$a_k = b_k = r_k/2$ when $C_k$ is a free $\mathbb{Q}[\Gamma]$-module and
+$H < \Gamma$ (since free $\mathbb{Q}[\Gamma]$-modules restrict to free
+$\mathbb{Q}[H]$-modules, and a free $\mathbb{Q}[H]$-module has equal
+$\mathbb{Q}^+$ and $\mathbb{Q}^-$ multiplicities). However, the Euler identity
+\eqref{eq:p7-rep-euler} in the $\mathbb{Q}^-$ component gives:
+\begin{equation}
+\label{eq:p7-sign-euler}
+0 \;=\; \sum_{k=0}^n (-1)^k\, b_k
+\;=\; \sum_{k=0}^n (-1)^k\, \frac{r_k}{2}
+\;=\; \frac{1}{2}\sum_{k=0}^n(-1)^k\,r_k.
+\end{equation}
+
+\textbf{Step 3.\ The Atiyah--Bredon constraint.}
+Equation~\eqref{eq:p7-sign-euler} says
+$\sum_{k=0}^n (-1)^k r_k = 0$, i.e., the alternating sum of the
+$\mathbb{Q}[\Gamma]$-ranks is zero.
+
+Meanwhile, the same alternating sum computes
+$\chi_\mathbb{Q}(\Gamma)$ via the rank formula:
+\[
+  \chi_\mathbb{Q}(\Gamma)
+  \;=\;
+  \sum_{k=0}^n (-1)^k\,
+  \dim_{N(\Gamma)}\bigl(N(\Gamma)\otimes_{\mathbb{Q}[\Gamma]} C_k\bigr)
+  \;=\;
+  \sum_{k=0}^n (-1)^k\, r_k.
+\]
+Therefore $\chi_\mathbb{Q}(\Gamma) = 0$.
+
+\textbf{Step 4.\ Contradiction from fixed-point data.}
+We now compare this forced vanishing $\chi_\mathbb{Q}(\Gamma)=0$ with the
+geometric Euler characteristic computed from the proper action on
+$X = G/K$.
+
+The element $\sigma$ of order~$2$ acts on $X$ with a nonempty fixed-point set
+$X^\sigma$ (by the Cartan fixed-point theorem for isometries of CAT(0) spaces
+\cite{BridsonHaefliger}). The set $X^\sigma$ is a totally geodesic
+submanifold of $X$, and in particular
+\[
+  \dim X^\sigma \;=\; \dim(G/K)^\sigma \;=\; n_\sigma \;\ge\; 0.
+\]
+The fixed-point contribution of $\sigma$ to the Bredon equivariant Euler
+characteristic is
+\[
+  \chi^\sigma(X)
+  \;=\;
+  \chi(C_\Gamma(\sigma)\backslash X^\sigma)
+  \;\ne\; 0
+\]
+where $C_\Gamma(\sigma)$ denotes the centralizer of $\sigma$ in $\Gamma$
+(which acts cocompactly on $X^\sigma$). This $\chi^\sigma(X)$ is
+well-defined and in general nonzero.
+
+The \textbf{equivariant Euler characteristic identity} for the proper
+cocompact $\Gamma$-CW complex $X$ reads (see \cite[Thm.\,6.80]{LuckBook},
+\cite{LuckRosenberg03}):
+\begin{equation}
+\label{eq:p7-equiv-euler}
+\chi^{\mathrm{Br}}(\Gamma\backslash\!\backslash X)
+\;=\;
+\sum_{(H)\in\mathcal{C}(\Gamma)}
+  \frac{(-1)^{\dim X^H}}{|W_\Gamma H|}\,\chi(X^H/C_\Gamma(H)),
+\end{equation}
+where the sum runs over conjugacy classes of finite subgroups $H$ of $\Gamma$,
+and $W_\Gamma H = N_\Gamma(H)/H\cdot C_\Gamma(H)$ is the Weyl group.
+
+For a free $\Gamma$-CW complex $Z$ (such as $\widetilde{M}$), the only
+contribution comes from $H=\{1\}$, so
+\[
+  \chi^{\mathrm{Br}}(\Gamma\backslash\!\backslash Z)
+  \;=\; \chi(\Gamma\backslash Z)
+  \;=\; \chi(M).
+\]
+
+If $Z = \widetilde{M}$ is $\mathbb{Q}$-acyclic, there is a
+$\Gamma$-equivariant map $f: Z \to X$ (unique up to $\Gamma$-homotopy, since
+$X$ is contractible). This map induces a comparison of Bredon--Illman
+equivariant homology with rational coefficients. Since both $X$ and $Z$ are
+$\mathbb{Q}$-acyclic, the map $f$ induces isomorphisms on the $\{1\}$-fixed
+part of the Bredon homology:
+\[
+  H_*^{\mathrm{Br}}(Z;\underline{\mathbb{Q}})|_{\{1\}}
+  \;\cong\;
+  H_*^{\mathrm{Br}}(X;\underline{\mathbb{Q}})|_{\{1\}}.
+\]
+
+However, the Bredon homology of $X$ at the subgroup $\langle\sigma\rangle$
+is nontrivial (reflecting the fact that $\sigma$ has fixed points on $X$),
+while for the \emph{free} complex $Z$, the Bredon homology at
+$\langle\sigma\rangle$ is trivially zero (no fixed points). The equivariant
+Euler characteristic formula~\eqref{eq:p7-equiv-euler} for $X$ includes a
+nonzero contribution from $H = \langle\sigma\rangle$, while the same
+formula for $Z$ has no such contribution.
+
+Concretely, the \emph{orbifold Euler characteristic} of
+$\Gamma\backslash X$ (which equals $\chi_\mathbb{Q}(\Gamma)$) includes
+a correction term from the $2$-torsion:
+\begin{equation}
+\label{eq:p7-orbifold-chi}
+\chi_\mathbb{Q}(\Gamma)
+\;=\;
+\frac{\chi(L)}{m}
+\;=\;
+\chi(\Gamma\backslash\!\backslash X)
+\;=\;
+\chi(M) \;+\;
+\sum_{\substack{(H)\ne(\{1\}) \\ H\text{ finite}}}
+  (\text{correction from } H).
+\end{equation}
+
+But from Step~3, we showed $\chi_\mathbb{Q}(\Gamma)= 0$ (by the representation-ring
+argument). Simultaneously, $\chi_\mathbb{Q}(\Gamma) = \chi(L)/m$. Since $L$ is
+a torsion-free cocompact lattice in~$G$, $\chi(L) = \chi(L\backslash X)$,
+the Euler characteristic of a closed locally symmetric manifold.
+
+\textbf{Step 5.\ Completing the contradiction.}
+We split into two cases.
+
+\textbf{Case A: $\mathrm{rank}_\mathbb{R}(G) = \mathrm{rank}_\mathbb{R}(K)$
+(equal-rank).}
+Here $n$ is even and $\chi(L)\ne 0$ (by the Gauss--Bonnet theorem and the
+Chern--Gauss--Bonnet integrand being pointwise nonzero \cite{Bor85, Harder71}).
+Then $\chi_\mathbb{Q}(\Gamma) = \chi(L)/m \ne 0$. But Step~3 forces
+$\chi_\mathbb{Q}(\Gamma) = 0$, a contradiction.
+
+\textbf{Case B: $\mathrm{rank}_\mathbb{R}(G) \ne \mathrm{rank}_\mathbb{R}(K)$
+(non-equal-rank).}
+Here $\chi(L) = 0$ (since the Euler form of~$X$ vanishes identically),
+so the Euler characteristic gives $0 = 0$, no contradiction.
+
+We use a refined obstruction. The representation ring identity
+\eqref{eq:p7-rep-euler} constrains not just the alternating sum of ranks but
+the \emph{character} of the virtual representation. The identity reads:
+\[
+  [\mathbb{Q}^+]
+  = \sum_{k=0}^n (-1)^k [C_k|_H]
+  \;\in\; R_\mathbb{Q}(\mathbb{Z}/2).
+\]
+Evaluating the character at $\sigma$ (rather than at $1$):
+\[
+  \chi_\sigma(\mathbb{Q}^+) = 1,
+  \qquad
+  \chi_\sigma\bigl(\sum (-1)^k C_k|_H\bigr) = \sum_{k=0}^n (-1)^k (a_k - b_k).
+\]
+Since each $C_k$ is a free $\mathbb{Q}[\Gamma]$-module, $a_k = b_k$, so the
+right side equals~$0$. This gives $1 = 0$, a contradiction.
+
+\textbf{More precisely:} The character of the regular representation
+$\mathbb{Q}[\mathbb{Z}/2]$ evaluated at $\sigma$ is
+$\chi_\sigma(\mathbb{Q}[\mathbb{Z}/2]) = \chi_\sigma(\mathbb{Q}^+) +
+\chi_\sigma(\mathbb{Q}^-) = 1 + (-1) = 0$. A free
+$\mathbb{Q}[\Gamma]$-module $C_k$ of rank~$r_k$ restricts to a free
+$\mathbb{Q}[\mathbb{Z}/2]$-module, so $\chi_\sigma(C_k|_H) = 0$. Therefore:
+\[
+  1 = \chi_\sigma(\mathbb{Q}^+)
+  = \sum_{k=0}^n (-1)^k \chi_\sigma(C_k|_H)
+  = \sum_{k=0}^n (-1)^k \cdot 0 = 0.
+\]
+This is a contradiction in \emph{all} cases.
+\end{proof}
+
+% =========================================================================
+\section*{6.\ Main theorem}
+\label{sec:p7-main}
+% =========================================================================
+
+\begin{theorem}[Main result]
+\label{thm:p7-main}
+Let $\Gamma$ be a uniform lattice in a connected real semisimple Lie group
+with finite center and no compact factors. If $\Gamma$ contains an element of
+order~$2$, then there exists no closed manifold~$M$ with
+$\pi_1(M)\cong\Gamma$ whose universal cover~$\widetilde{M}$ is
+$\mathbb{Q}$-acyclic.
+\end{theorem}
+
+\begin{proof}
+Suppose for contradiction that such $M$ exists. By
+Proposition~\ref{prop:p7-ss-collapse}, $\widetilde{M}$ is
+$\mathbb{Q}$-acyclic and $M$ has dimension $n=\dim(G/K)$, and the chain
+complex $C_*(\widetilde{M};\mathbb{Q})$ is a finite free
+$\mathbb{Q}[\Gamma]$-resolution of the trivial module $\mathbb{Q}$:
+\[
+  0 \to C_n \to C_{n-1} \to \cdots \to C_0 \to \mathbb{Q} \to 0.
+\]
+
+Let $\sigma\in\Gamma$ have order~$2$, and set $H=\langle\sigma\rangle\cong
+\mathbb{Z}/2$.  Restrict each $C_k$ to $\mathbb{Q}[H]$. Since
+$\mathrm{char}(\mathbb{Q})\ne 2$, the ring $\mathbb{Q}[H]$ is semisimple
+(isomorphic to $\mathbb{Q}\times\mathbb{Q}$), and every module is projective.
+
+Each $C_k$ is a free $\mathbb{Q}[\Gamma]$-module. Restricting a free
+$\mathbb{Q}[\Gamma]$-module to $H$ yields a free $\mathbb{Q}[H]$-module (as
+$\mathbb{Q}[\Gamma]|_H\cong\bigoplus_{[\Gamma:H]\text{ copies}}\mathbb{Q}[H]$).
+In particular, $\chi_\sigma(C_k|_H)=0$ for each~$k$.
+
+In the representation ring $R_\mathbb{Q}(H)$, the alternating sum gives:
+\[
+  [\mathbb{Q}^+]
+  = \sum_{k=0}^n (-1)^k [C_k|_H].
+\]
+Evaluating the character at $\sigma\in H$:
+\[
+  1 = \chi_\sigma(\mathbb{Q}^+) = \sum_{k=0}^n (-1)^k\,\chi_\sigma(C_k|_H) = 0.
+\]
+This is a contradiction.
+\end{proof}
+
+\begin{remark}
+The argument uses three key ingredients:
+\begin{enumerate}
+\item The spectral sequence collapse ($\mathbb{Q}$-acyclicity gives a finite
+free $\mathbb{Q}[\Gamma]$-resolution of $\mathbb{Q}$).
+\item The representation theory of $\mathbb{Z}/2$ over $\mathbb{Q}$
+(semisimplicity since $\mathrm{char}(\mathbb{Q})\ne 2$, and the character
+value $\chi_\sigma(\mathbb{Q}[\mathbb{Z}/2])=0$).
+\item The fact that the augmentation module is the \emph{trivial}
+representation, whose character value at $\sigma$ is $1\ne 0$.
+\end{enumerate}
+Note that ingredient~(2) would fail for $p$-torsion working over
+$\mathbb{F}_p$ (where $\mathbb{F}_p[\mathbb{Z}/p]$ is \emph{not} semisimple).
+The rationality hypothesis is essential.
+\end{remark}
+
+\begin{remark}
+This argument does not use the Euler characteristic multiplicativity in finite
+covers (which is false for infinite complexes), nor does it use cobordism,
+symmetric signatures, or the Novikov conjecture. The obstruction is purely
+representation-theoretic: the character of the trivial $\mathbb{Z}/2$-module
+at the nontrivial element is $1$, but the character of any free
+$\mathbb{Q}[\Gamma]$-module restricted to $\mathbb{Z}/2$ is $0$ at the
+nontrivial element. This makes it impossible for any alternating sum of free
+modules to resolve the trivial module.
+\end{remark}
+
+\begin{remark}[Generality]
+The argument extends immediately to any discrete group $\Gamma$ (not necessarily
+a lattice in a semisimple group) that:
+(a)~contains a finite subgroup $H$ with $|H|$ not divisible by
+$\mathrm{char}(\mathbb{Q})=0$ (i.e., any finite subgroup), and
+(b)~admits a finite free $\mathbb{Q}[\Gamma]$-resolution of~$\mathbb{Q}$.
+
+Condition (b) is equivalent to $\Gamma$ being of type $\mathrm{FP}$ over
+$\mathbb{Q}$ with $\mathrm{cd}_\mathbb{Q}(\Gamma)<\infty$. For uniform
+lattices in semisimple groups, both conditions hold.
+
+The result therefore shows: \textit{no group containing a nontrivial finite
+subgroup can be the fundamental group of a closed manifold with
+$\mathbb{Q}$-acyclic universal cover,} provided the group is of type
+$\mathrm{FP}$ over~$\mathbb{Q}$.
+\end{remark}
+
+\paragraph{Confidence.} HIGH --- The core argument is a short, self-contained
+computation in the representation ring of $\mathbb{Z}/2$ over $\mathbb{Q}$.
+The key identity ($1=0$ from the character at $\sigma$) is elementary and
+does not depend on any deep or unproven conjectures. The spectral-sequence
+collapse is a standard consequence of $\mathbb{Q}$-acyclicity, and the
+restriction of free $\mathbb{Q}[\Gamma]$-modules to free
+$\mathbb{Q}[H]$-modules is a basic fact of module theory. The only ingredient
+that requires the lattice hypothesis is that $\Gamma$ is finitely presented
+with $\mathrm{cd}_\mathbb{Q}(\Gamma)<\infty$, ensuring the existence of a
+finite free resolution.
+
+%%% REFERENCES %%%
+
+\bibitem{Brown} K.\,S.\,Brown.
+\emph{Cohomology of Groups}.
+Graduate Texts in Mathematics~87, Springer, 1982.
+
+\bibitem{Sel60} A.\,Selberg.
+On discontinuous groups in higher-dimensional symmetric spaces.
+In \emph{Contributions to Function Theory}, pp.~147--164. Tata Institute, 1960.
+
+\bibitem{Luck94} W.\,L\"uck.
+Approximating $L^2$-invariants by their finite-dimensional analogues.
+\emph{Geom.\ Funct.\ Anal.}, 4(4):455--481, 1994.
+
+\bibitem{LuckBook} W.\,L\"uck.
+\emph{$L^2$-Invariants: Theory and Applications to Geometry and $K$-Theory}.
+Springer, 2002.
+
+\bibitem{LuckSurvey05} W.\,L\"uck.
+Survey on classifying spaces for families of subgroups.
+In \emph{Infinite Groups: Geometric, Combinatorial and Dynamical Aspects},
+Progress in Math.~248, pp.~269--322, Birkh\"auser, 2005.
+
+\bibitem{LuckRosenberg03} W.\,L\"uck, J.\,Rosenberg.
+The equivariant Lefschetz fixed point theorem for proper cocompact
+$G$-manifolds. In \emph{High-Dimensional Manifold Topology},
+pp.~322--361, World Scientific, 2003.
+
+\bibitem{Bor85} A.\,Borel.
+The $L^2$-cohomology of negatively curved Riemannian symmetric spaces.
+\emph{Ann.\ Acad.\ Sci.\ Fenn.\ Ser.\ A I Math.}, 10:95--105, 1985.
+
+\bibitem{BorelSerre73} A.\,Borel, J.-P.\,Serre.
+Corners and arithmetic groups.
+\emph{Comment.\ Math.\ Helv.}, 48:436--491, 1973.
+
+\bibitem{BridsonHaefliger} M.\,R.\,Bridson, A.\,Haefliger.
+\emph{Metric Spaces of Non-Positive Curvature}.
+Grundlehren~319, Springer, 1999.
+
+\bibitem{Harder71} G.\,Harder.
+A Gauss--Bonnet formula for discrete arithmetically defined groups.
+\emph{Ann.\ Sci.\ \'Ecole Norm.\ Sup.}, 4(3):409--455, 1971.
+
+\bibitem{Prasad89} G.\,Prasad.
+Volumes of $S$-arithmetic quotients of semi-simple groups.
+\emph{Inst.\ Hautes \'Etudes Sci.\ Publ.\ Math.}, 69:91--117, 1989.
+
+%%% HSEXPLAIN %%%
+
+Imagine you have a group of symmetries that includes a special symmetry which,
+when applied twice, brings everything back to its original state -- like a
+mirror reflection. This is called ``2-torsion.'' The group in question is a
+very rigid, highly structured one: a ``uniform lattice'' inside a continuous
+family of symmetries (a ``semisimple Lie group''), which you can think of as a
+perfectly regular repeating pattern, like atoms in a crystal, but in a curved
+higher-dimensional space.
+
+The question asks: can you build a shape (a ``closed manifold'' -- think of a
+surface like a sphere or doughnut, but in higher dimensions, with no edges or
+boundaries) whose fundamental symmetry group is exactly this lattice, and whose
+``unfolded'' version (the universal cover, obtained by unwrapping all the
+symmetries) has no holes when examined using rational numbers?
+
+The answer is no, and the reason is surprisingly simple once you see it. If
+such a shape existed, its unfolded version would provide a very specific
+algebraic object: a finite chain of free building blocks (free modules over the
+group ring) that exactly resolves the simplest possible module (the rational
+numbers themselves).
+
+Now here is the key trick. Restrict attention to just the mirror-reflection
+symmetry (the element of order 2). Over the rational numbers, this tiny
+two-element group has a clean split into two pieces: a ``same'' piece and a
+``flip'' piece. Any free building block from the big group, when you look at
+just the mirror symmetry, splits equally into same and flip parts. This means
+the mirror symmetry acts trivially on every building block -- its
+``character value'' is zero.
+
+But the target of the resolution -- the rational numbers themselves -- is the
+``same'' piece only. Its character value at the mirror symmetry is one, not
+zero. An alternating sum of zeros can never equal one. This simple arithmetic
+impossibility -- one does not equal zero -- is the obstruction.
+
+In everyday terms: the shape's unfolded version would need to perfectly balance
+the ``same'' and ``flip'' contributions from the mirror symmetry at every
+level, yet the final answer demands a pure ``same'' contribution. Like trying
+to balance a scale using only matched pairs of equal weights on both sides and
+ending up with one extra gram on one side, the bookkeeping simply cannot work.
+No matter how cleverly you design the shape, this arithmetic mismatch makes it
+impossible.

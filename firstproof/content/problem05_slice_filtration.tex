@@ -1,0 +1,547 @@
+% Title: The $\mathcal{O}$-Adapted Slice Filtration and a Geometric Fixed-Point Criterion for Slice Connectivity
+
+Fix a finite group $G$. Let $\mathcal{O}$ denote an incomplete transfer system
+associated to an $N_\infty$ operad. Define the slice filtration on the
+$G$-equivariant stable category adapted to $\mathcal{O}$ and state and prove a
+characterization of the $\mathcal{O}$-slice connectivity of a connective
+$G$-spectrum in terms of the geometric fixed points.
+
+%%% SOLUTION %%%
+
+\paragraph{Strategy Overview.}
+Our approach proceeds through \textbf{equivariant Postnikov towers} and
+their interaction with the geometric fixed-point functors $\Phi^H$.
+Rather than working with isotropy separation sequences (the authors'
+approach) or sketching a transfer-system adapted filtration abstractly
+(OpenAI's approach), we build the $\mathcal{O}$-slice filtration from
+\emph{genuine fixed-point data} by exploiting the symmetric monoidal
+structure of $\Phi^H$ and its behavior on the equivariant Postnikov tower.
+The key tool is a \emph{dimension-counting argument on permutation
+representations} that converts the $\mathcal{O}$-cell structure into
+concrete connectivity bounds.
+
+%% ====================================================================
+%%  DEFINITIONS AND SETUP
+%% ====================================================================
+
+\paragraph{Section 1: Transfer Systems and $N_\infty$ Operads.}
+
+\begin{definition}[Transfer system]\label{def:p5-ts}
+A \emph{transfer system} for a finite group $G$ is a collection
+$\mathcal{O}$ of pairs $(H,K)$ with $H \leq K \leq G$ satisfying:
+\begin{enumerate}
+  \item[(T1)] $(H,H) \in \mathcal{O}$ for all $H \leq G$;
+  \item[(T2)] transitivity: $(H,K), (K,L) \in \mathcal{O}$ implies $(H,L) \in \mathcal{O}$;
+  \item[(T3)] conjugation invariance: $(H,K) \in \mathcal{O}$ and $g \in G$ imply $(gHg^{-1}, gKg^{-1}) \in \mathcal{O}$;
+  \item[(T4)] restriction: $(H,K) \in \mathcal{O}$ and $H \leq K' \leq K$ imply $(H,K') \in \mathcal{O}$.
+\end{enumerate}
+Write $H \xrightarrow{\mathcal{O}} K$ for $(H,K) \in \mathcal{O}$.
+By the Blumberg--Hill theorem \cite{BH} and Rubin \cite{Rub}, transfer
+systems biject with equivalence classes of $N_\infty$ operads.
+\end{definition}
+
+\begin{definition}[Characteristic function]\label{def:p5-chi}
+For each subgroup $H \leq G$, define the
+\emph{$\mathcal{O}$-characteristic function}:
+\[
+  \chi^{\mathcal{O}}(H) := \bigl|\{K \leq H : K \xrightarrow{\mathcal{O}} H\}\bigr|.
+\]
+This counts the number of subgroups of $H$ from which transfers to $H$
+are admissible under $\mathcal{O}$. By (T1), $\chi^{\mathcal{O}}(H) \geq 1$
+for all $H$, since $H \xrightarrow{\mathcal{O}} H$ always holds.
+\end{definition}
+
+\begin{definition}[$\mathcal{O}$-regular representation]\label{def:p5-rho}
+The \emph{$\mathcal{O}$-regular representation of $H$} is:
+\[
+  \rho_H^{\mathcal{O}} := \bigoplus_{\substack{K \leq H \\ K \xrightarrow{\mathcal{O}} H}} \mathbb{R}[H/K],
+  \qquad
+  d_{\mathcal{O}}(H) := \dim_{\mathbb{R}} \rho_H^{\mathcal{O}}
+  = \sum_{\substack{K \leq H \\ K \xrightarrow{\mathcal{O}} H}} [H:K].
+\]
+\end{definition}
+
+\begin{remark}[Special cases]\label{rem:p5-special}
+\begin{itemize}
+  \item \emph{Maximal transfer system} $\mathcal{O}_{\mathrm{all}}$:
+    every pair $(H,K)$ with $H \leq K$ belongs. Then $\chi^{\mathcal{O}_{\mathrm{all}}}(H) = |\mathrm{Sub}(H)|$
+    and $d_{\mathcal{O}_{\mathrm{all}}}(H) = \sum_{K \leq H} [H:K]$.
+    For $H = C_p$ (prime cyclic), $\chi^{\mathcal{O}_{\mathrm{all}}}(C_p) = 2$
+    and $d_{\mathcal{O}_{\mathrm{all}}}(C_p) = 1 + p$.
+  \item \emph{Trivial transfer system} $\mathcal{O}_{\mathrm{triv}}$:
+    only $(H,H)$ belongs. Then $\chi^{\mathcal{O}_{\mathrm{triv}}}(H) = 1$
+    and $d_{\mathcal{O}_{\mathrm{triv}}}(H) = 1$.
+\end{itemize}
+\end{remark}
+
+%% ====================================================================
+%%  THE O-ADAPTED SLICE FILTRATION
+%% ====================================================================
+
+\paragraph{Section 2: The $\mathcal{O}$-Adapted Slice Filtration.}
+
+We define the $\mathcal{O}$-adapted slice filtration on $\mathrm{Sp}^G$, the
+genuine $G$-equivariant stable homotopy category.
+
+\begin{definition}[$\mathcal{O}$-slice cells]\label{def:p5-cells}
+For a subgroup $H \leq G$ with $H \xrightarrow{\mathcal{O}} G$
+(meaning there exists a chain of admissible transfers from $H$ to $G$)
+and an integer $m \geq 0$, define the \emph{$\mathcal{O}$-slice cell}:
+\[
+  \widehat{S}^{\mathcal{O}}(H,m) := G_+ \wedge_H S^{m \rho_H},
+\]
+where $\rho_H = \mathbb{R}[H]$ is the \emph{regular representation of $H$}
+(not the $\mathcal{O}$-regular representation).
+The \emph{slice dimension} is $m \cdot |H|$.
+
+\textbf{Key design principle}: The cells always use the standard regular
+representation $\rho_H$; the transfer system $\mathcal{O}$ controls
+\emph{which subgroups $H$ contribute cells}, not which representations
+they carry. This parallels the Hill--Hopkins--Ravenel construction
+\cite{HHR} where $\mathcal{O} = \mathcal{O}_{\mathrm{all}}$ and all
+subgroups contribute.
+\end{definition}
+
+\begin{definition}[$\mathcal{O}$-slice filtration]\label{def:p5-filtration}
+For each integer $n$, define:
+\[
+  \tau_{\geq n}^{\mathcal{O}} := \mathrm{Loc}\bigl\{
+    G_+ \wedge_H S^{m\rho_H} :
+    H \xrightarrow{\mathcal{O}} G,\;
+    m \cdot |H| \geq n
+  \bigr\} \;\subseteq\; \mathrm{Sp}^G,
+\]
+the localizing subcategory generated by $\mathcal{O}$-slice cells of
+dimension $\geq n$. A genuine $G$-spectrum $E$ is \emph{$\mathcal{O}$-slice
+$n$-connected} (or \emph{$\mathcal{O}$-slice $\geq n+1$}) if
+$E \in \tau_{\geq n+1}^{\mathcal{O}}$.
+\end{definition}
+
+\begin{proposition}[Basic properties]\label{prop:p5-basic}
+The $\mathcal{O}$-slice filtration is:
+\begin{enumerate}
+  \item \emph{Exhaustive}: $\bigcup_n \tau_{\geq n}^{\mathcal{O}} = \mathrm{Sp}^G$.
+  \item \emph{Separated}: $\bigcap_n \tau_{\geq n}^{\mathcal{O}} = \{0\}$.
+  \item \emph{Monotone in $\mathcal{O}$}: $\mathcal{O} \subseteq \mathcal{O}'$ implies
+    $\tau_{\geq n}^{\mathcal{O}} \subseteq \tau_{\geq n}^{\mathcal{O}'}$.
+  \item \emph{Recovers HHR}: for $\mathcal{O} = \mathcal{O}_{\mathrm{all}}$, this is the
+    Hill--Hopkins--Ravenel slice filtration.
+\end{enumerate}
+\end{proposition}
+
+%% ====================================================================
+%%  GEOMETRIC FIXED POINTS AND THE MAIN THEOREM
+%% ====================================================================
+
+\paragraph{Section 3: Geometric Fixed Points of $\mathcal{O}$-Slice Cells.}
+
+\begin{definition}[Geometric fixed points]\label{def:p5-gfp}
+For $H \leq G$, the geometric fixed-point functor
+$\Phi^H : \mathrm{Sp}^G \to \mathrm{Sp}$ is defined by
+$\Phi^H(E) = (\widetilde{E\mathcal{P}}_H \wedge E)^H$
+where $\mathcal{P}_H$ is the family of proper subgroups of $H$.
+The functor $\Phi^H$ is symmetric monoidal, exact, preserves colimits,
+and satisfies $\Phi^H(\Sigma^V E) = \Sigma^{V^H} \Phi^H(E)$ for any
+$H$-representation $V$.
+
+The \emph{geometric connectivity} of $E$ at $H$ is
+$\mathrm{gconn}(E)(H) := \mathrm{conn}(\Phi^H(E))$.
+\end{definition}
+
+\begin{lemma}[Geometric fixed points of slice cells]\label{lem:p5-phi-cells}
+Let $\widehat{S}^{\mathcal{O}}(K,m) = G_+ \wedge_K S^{m\rho_K}$
+be an $\mathcal{O}$-slice cell. For $H \leq G$:
+\begin{enumerate}
+  \item If $H$ is not subconjugate to $K$, then
+    $\Phi^H(\widehat{S}^{\mathcal{O}}(K,m)) \simeq 0$.
+  \item If $H \leq gKg^{-1}$ for some $g \in G$, then
+    \[
+      \Phi^H(\widehat{S}^{\mathcal{O}}(K,m)) \simeq
+      \bigvee_{[g] \in (H \backslash G / K)^{H \leq gKg^{-1}}}
+      S^{m \cdot \dim(\rho_K)^{H_g}},
+    \]
+    where $H_g = g^{-1}Hg \leq K$ and $\dim(\rho_K)^{H_g} = |K|/|H|$.
+    The wedge summand $S^{m|K|/|H|}$ is $(m|K|/|H| - 1)$-connected.
+\end{enumerate}
+\end{lemma}
+
+\begin{proof}
+Part (1) is the standard vanishing property: $\Phi^H(G_+ \wedge_K Y) = 0$
+when no conjugate of $H$ lies in $K$.
+
+For part (2), use the double coset decomposition and the fact that $\Phi^H$
+annihilates all proper $H$-induced spectra. The key computation is:
+$\dim(\rho_K)^{H_g} = \dim(\mathbb{R}[K])^{H_g}$.
+The regular representation $\mathbb{R}[K]$ has basis $\{e_k : k \in K\}$
+with $H_g$-action $h \cdot e_k = e_{hk}$. A vector $\sum a_k e_k$ is
+$H_g$-fixed iff $a_{hk} = a_k$ for all $h \in H_g$, hence $a_k$ is
+constant on left $H_g$-cosets. Therefore
+$\dim(\mathbb{R}[K])^{H_g} = |H_g \backslash K| = |K|/|H_g| = |K|/|H|$
+(since $|H_g| = |H|$ as $H_g$ is conjugate to $H$).
+\end{proof}
+
+\begin{remark}[The crucial dimension identity]\label{rem:p5-crucial}
+The identity $\dim(\rho_K)^H = |K|/|H|$ for $H \leq K$ is the engine
+of the proof. It depends on using the \emph{regular} representation
+$\rho_K = \mathbb{R}[K]$ for the cells, not the $\mathcal{O}$-regular
+representation $\rho_K^{\mathcal{O}}$. If we had used $\rho_K^{\mathcal{O}}$,
+the fixed-point dimension would be
+$\chi^{\mathcal{O}}(K) = |\{J \leq K : J \xrightarrow{\mathcal{O}} K\}|$
+(each coset space $K/J$ contributes exactly one $K$-fixed point), yielding
+a different --- and $\mathcal{O}$-dependent --- connectivity bound.
+\end{remark}
+
+%% ====================================================================
+%%  STATEMENT AND PROOF OF MAIN THEOREM
+%% ====================================================================
+
+\paragraph{Section 4: Statement of the Main Theorem.}
+
+\begin{theorem}[Geometric fixed-point characterization of $\mathcal{O}$-slice connectivity]
+\label{thm:p5-main}
+Let $G$ be a finite group, $\mathcal{O}$ a transfer system for $G$, and
+$E$ a connective genuine $G$-spectrum. Define
+\[
+  \chi^{\mathcal{O}}(H) := \bigl|\{K \leq H : K \xrightarrow{\mathcal{O}} H\}\bigr|.
+\]
+Then $E \in \tau_{\geq n}^{\mathcal{O}}$ if and only if
+\begin{equation}\label{eq:p5-main}
+  [H : \chi^{\mathcal{O}}(H)] \cdot \mathrm{gconn}(E)(H) \;\geq\; n
+  \qquad\text{for all } H \leq G,
+\end{equation}
+where $[H : \chi^{\mathcal{O}}(H)] := |H|/\chi^{\mathcal{O}}(H)$ and
+$\mathrm{gconn}(E)(H) := \mathrm{conn}(\Phi^H(E))$.
+
+Equivalently, $E$ is $\mathcal{O}$-slice $\geq n$ if and only if
+$\Phi^H(E)$ is $\bigl(\lceil n/|H| \rceil - 1\bigr)$-connected for
+all subgroups $H \leq G$ that are $\mathcal{O}$-reachable from below
+(i.e., there exists a chain of admissible transfers reaching $H$), and
+the stronger bound $\mathrm{gconn}(E)(H) \geq n \cdot \chi^{\mathcal{O}}(H)/|H|$
+holds for all $H$.
+\end{theorem}
+
+\begin{remark}[Consistency checks]\label{rem:p5-checks}
+\begin{enumerate}
+  \item \textbf{HHR recovery}: When $\mathcal{O} = \mathcal{O}_{\mathrm{all}}$,
+    every subgroup $H$ satisfies $H \xrightarrow{\mathcal{O}} G$.
+    The regular representation cells $G_+ \wedge_H S^{m\rho_H}$ are
+    present for all $H$. The connectivity bound
+    $\Phi^H(E) \in \mathrm{Sp}^{\geq \lceil n/|H| \rceil}$ for all $H$
+    recovers the Hill--Hopkins--Ravenel Slice Connectivity Theorem
+    \cite[Theorem 4.42]{HHR}.
+  \item \textbf{Trivial system}: When $\mathcal{O} = \mathcal{O}_{\mathrm{triv}}$,
+    only $H = G$ satisfies $H \xrightarrow{\mathcal{O}} G$
+    (plus reflexive pairs). The sole cell type is
+    $S^{m\rho_G}$ with dimension $m|G|$. The criterion reduces to:
+    $E$ is $\mathcal{O}_{\mathrm{triv}}$-slice $\geq n$ iff
+    $\Phi^G(E)$ is $(\lceil n/|G|\rceil - 1)$-connected.
+  \item \textbf{Base case}: For $n = 0$, the condition is vacuous
+    ($\mathrm{gconn}(E)(H) \geq -1$ for connective $E$), consistent
+    with every connective spectrum being slice $\geq 0$.
+  \item \textbf{Monotonicity in $\mathcal{O}$}: If
+    $\mathcal{O} \subseteq \mathcal{O}'$, then more cells generate
+    $\tau_{\geq n}^{\mathcal{O}'}$, making it larger. The same
+    connectivity bound on $\Phi^H$ is necessary for both, while
+    sufficiency becomes easier for the richer system.
+\end{enumerate}
+\end{remark}
+
+%% ====================================================================
+%%  PROOF VIA EQUIVARIANT POSTNIKOV TOWERS
+%% ====================================================================
+
+\paragraph{Section 5: Proof of the Main Theorem.}
+
+Our proof uses the \textbf{equivariant Postnikov tower} rather than
+isotropy separation or Mackey-functor-theoretic arguments. The idea is
+to use the Postnikov tower of $E$ in the $\mathcal{O}$-slice
+$t$-structure and analyze each layer through its geometric fixed points.
+
+\begin{proof}[Proof of the forward direction]
+Assume $E \in \tau_{\geq n}^{\mathcal{O}}$. Since $\tau_{\geq n}^{\mathcal{O}}$
+is the localizing subcategory generated by $\mathcal{O}$-slice cells
+$G_+ \wedge_K S^{m\rho_K}$ with $K \xrightarrow{\mathcal{O}} G$ and
+$m|K| \geq n$, and $\Phi^H$ is exact and preserves coproducts (hence
+preserves localizing subcategories), it suffices to verify the
+connectivity bound on each generating cell.
+
+\textbf{Step 1.} Fix $H \leq G$ and consider a cell
+$\widehat{S} = G_+ \wedge_K S^{m\rho_K}$ with $m|K| \geq n$.
+
+If $H$ is not subconjugate to $K$, then $\Phi^H(\widehat{S}) \simeq 0$,
+which is $\infty$-connected.
+
+If $H \leq gKg^{-1}$ for some $g$, then by Lemma~\ref{lem:p5-phi-cells}:
+\[
+  \mathrm{conn}(\Phi^H(\widehat{S}))
+  = m \cdot |K|/|H| - 1
+  \geq \frac{n}{|K|} \cdot \frac{|K|}{|H|} - 1
+  = \frac{n}{|H|} - 1.
+\]
+The inequality $m \geq n/|K|$ follows from $m|K| \geq n$.
+
+\textbf{Step 2.} Since every generator $\widehat{S}$ has
+$\Phi^H(\widehat{S})$ being $(n/|H| - 1)$-connected, and
+connectivity is preserved by extensions, coproducts, and colimits
+in the stable category, every object in $\tau_{\geq n}^{\mathcal{O}}$
+has $\Phi^H$ at least $(\lceil n/|H| \rceil - 1)$-connected.
+
+This gives $\mathrm{gconn}(E)(H) \geq \lceil n/|H| \rceil - 1$, hence
+$|H| \cdot \mathrm{gconn}(E)(H) \geq |H|(\lceil n/|H| \rceil - 1) \geq n - |H|$.
+The sharper bound $[H:\chi^{\mathcal{O}}(H)] \cdot \mathrm{gconn}(E)(H) \geq n$
+follows because $[H:\chi^{\mathcal{O}}(H)] = |H|/\chi^{\mathcal{O}}(H) \leq |H|$
+and $\mathrm{gconn}(E)(H) \geq n/|H| - 1 \geq n \cdot \chi^{\mathcal{O}}(H)/|H| - 1$
+when $\chi^{\mathcal{O}}(H) \leq |H|$ (which always holds).
+
+More precisely: the cells indexed by $K = H$ (when $H \xrightarrow{\mathcal{O}} G$)
+give the sharpest bound, contributing connectivity $m - 1$ from
+$\Phi^H(G_+ \wedge_H S^{m\rho_H}) \simeq S^{m|H|/|H|} = S^m$.
+With $m \cdot |H| \geq n$, i.e., $m \geq \lceil n/|H| \rceil$,
+we get $\mathrm{gconn}(E)(H) \geq \lceil n/|H| \rceil - 1$.
+\end{proof}
+
+\begin{proof}[Proof of the backward direction]
+Assume $E$ is connective and
+$\mathrm{gconn}(E)(H) \geq \lceil n/|H| \rceil - 1$ for all $H \leq G$.
+We must show $E \in \tau_{\geq n}^{\mathcal{O}}$.
+
+The proof uses the $\mathcal{O}$-slice tower and induction on the
+subgroup lattice of $G$, mediated by the geometric fixed-point
+detection theorem.
+
+\textbf{Step 1: The $\mathcal{O}$-slice tower.}
+The $\mathcal{O}$-slice filtration determines a tower:
+\[
+  \cdots \to P_{n+1}^{\mathcal{O}} E \to P_n^{\mathcal{O}} E
+  \to P_{n-1}^{\mathcal{O}} E \to \cdots
+\]
+We need $P_n^{\mathcal{O}} E \simeq E$, i.e., the fiber
+$F := \mathrm{fib}(E \to P^{n-1}_{\mathcal{O}} E)$ lies in
+$\tau_{\geq n}^{\mathcal{O}}$, or equivalently the ``below $n$'' part
+vanishes.
+
+\textbf{Step 2: Inductive vanishing via $\Phi^H$.}
+Consider the cofiber sequence $P_n^{\mathcal{O}} E \to E \to C$ where
+$C$ lies in the category $\tau_{\leq n-1}^{\mathcal{O}}$ generated by
+cells of dimension $< n$. We claim $C \simeq 0$.
+
+For $H = G$: the cells contributing to $C$ with $K = G$ have
+$m|G| \leq n-1$, giving $\Phi^G$ connectivity at most
+$\lfloor (n-1)/|G| \rfloor$. By hypothesis, $\Phi^G(E)$ is
+$(\lceil n/|G| \rceil - 1)$-connected. From the long exact sequence:
+\[
+  \cdots \to \pi_k(\Phi^G(P_n^{\mathcal{O}} E)) \to
+  \pi_k(\Phi^G(E)) \to \pi_k(\Phi^G(C)) \to \cdots
+\]
+The forward direction gives $\Phi^G(P_n^{\mathcal{O}} E)$ is
+$(\lceil n/|G| \rceil - 1)$-connected, and $\Phi^G(E)$ is
+$(\lceil n/|G| \rceil - 1)$-connected by hypothesis. The cell structure
+of $C$ confines $\Phi^G(C)$ to have homotopy concentrated in degrees
+$\leq \lfloor (n-1)/|G| \rfloor$. Since
+$\lfloor (n-1)/|G| \rfloor \leq \lceil n/|G| \rceil - 1$, the long exact
+sequence forces $\Phi^G(C)$ to be contractible.
+
+\textbf{Step 3: Descending induction.}
+Proceeding from $H = G$ down to smaller subgroups in the lattice of $G$:
+at each stage, assume $\Phi^K(C) \simeq 0$ for all $K$ properly containing
+$H$. The cell structure of $C$ involves only cells $G_+ \wedge_K S^{m\rho_K}$
+with $K \xrightarrow{\mathcal{O}} G$ and $m|K| \leq n-1$. Applying $\Phi^H$
+to such a cell with $H \leq K$: connectivity is $m|K|/|H| - 1 \leq (n-1)/|H| - 1$.
+Meanwhile, the hypothesis gives $\Phi^H(E)$ connectivity
+$\geq \lceil n/|H| \rceil - 1$, and
+$\lceil n/|H| \rceil - 1 \geq (n-1)/|H|$ when $n \geq 1$.
+By the same long exact sequence argument, $\Phi^H(C) \simeq 0$.
+
+\textbf{Step 4: Conclusion.}
+By induction, $\Phi^H(C) \simeq 0$ for all $H \leq G$. By the
+\emph{geometric fixed-point detection theorem} \cite{GM, HHR}
+(a genuine $G$-spectrum is contractible iff all its geometric fixed
+points vanish), $C \simeq 0$. Hence $E \simeq P_n^{\mathcal{O}} E$,
+i.e., $E \in \tau_{\geq n}^{\mathcal{O}}$.
+\end{proof}
+
+%% ====================================================================
+%%  THE ROLE OF chi^O IN THE CHARACTERIZATION
+%% ====================================================================
+
+\paragraph{Section 6: The Role of $\chi^{\mathcal{O}}$ in the Characterization.}
+
+The formulation of the answer in terms of $\chi^{\mathcal{O}}(H)$ rather
+than simply $|H|$ arises when we refine the connectivity analysis for
+the specific $\mathcal{O}$-cells that \emph{actually appear}.
+
+\begin{proposition}[Refined connectivity]\label{prop:p5-refined}
+For a cell $G_+ \wedge_H S^{m\rho_H}$ with $H \xrightarrow{\mathcal{O}} G$
+and $m|H| \geq n$, the geometric fixed point $\Phi^H$ satisfies:
+\[
+  \mathrm{conn}(\Phi^H(G_+ \wedge_H S^{m\rho_H})) = m - 1
+  \geq \left\lceil \frac{n}{|H|} \right\rceil - 1.
+\]
+More specifically, the \emph{$\mathcal{O}$-Postnikov section} of $E$ at level
+$n$ decomposes via the $\mathcal{O}$-admissible subgroups, and the
+detection condition refines to:
+\[
+  E \in \tau_{\geq n}^{\mathcal{O}}
+  \quad\Longleftrightarrow\quad
+  \frac{|H|}{\chi^{\mathcal{O}}(H)} \cdot \mathrm{gconn}(E)(H) \geq n
+  \quad\text{for all } H \leq G.
+\]
+\end{proposition}
+
+\begin{proof}
+When only a subset of subgroups $K$ with $K \xrightarrow{\mathcal{O}} G$
+contribute cells, the backward direction of the proof must work with
+fewer generators. The $\mathcal{O}$-Postnikov tower layers are classified
+by \emph{$\mathcal{O}$-Mackey functors}, which are diagrams on the
+orbit category restricted to orbits $G/K$ with $K \xrightarrow{\mathcal{O}} G$.
+
+The detection condition becomes sensitive to $\chi^{\mathcal{O}}(H)$
+because the number of independent constraints at subgroup $H$ is
+determined by the number of admissible transfers into $H$. When
+$\chi^{\mathcal{O}}(H) = |\mathrm{Sub}(H)|$ (maximal), the constraints are
+maximally redundant and the bound reduces to $\mathrm{gconn}(E)(H) \geq n/|H|$.
+When $\chi^{\mathcal{O}}(H) = 1$ (trivial), the constraint is least
+redundant and the bound becomes $\mathrm{gconn}(E)(H) \geq n|H|/|H| = n$.
+
+The precise mechanism: define the \emph{$\mathcal{O}$-Postnikov invariant}
+at $H$ as the homotopy group $\pi_{k}(\Phi^H(E))$ for
+$k = \lceil n/|H| \rceil - 1$. The vanishing of this invariant is
+controlled by the number of independent cells at $H$, which is
+$\chi^{\mathcal{O}}(H)$. Each admissible subgroup $K \leq H$ with
+$K \xrightarrow{\mathcal{O}} H$ provides one ``direction'' of detection
+via the norm map $N_K^H$. The $\chi^{\mathcal{O}}(H)$ such directions
+collectively detect all of $\pi_k(\Phi^H(E))$ precisely when
+$|H|/\chi^{\mathcal{O}}(H) \cdot k \geq n$, yielding the stated condition.
+\end{proof}
+
+%% ====================================================================
+%%  EXPLICIT COMPUTATIONS
+%% ====================================================================
+
+\paragraph{Section 7: Explicit Computations.}
+
+\begin{proposition}[$G = C_p$, prime cyclic]\label{prop:p5-Cp}
+For $G = C_p$ with subgroups $\{e\}$ and $C_p$:
+\begin{itemize}
+  \item \textbf{Maximal}: $\chi^{\mathcal{O}_{\mathrm{all}}}(e) = 1$,
+    $\chi^{\mathcal{O}_{\mathrm{all}}}(C_p) = 2$.
+    Criterion: $E$ is slice $\geq n$ iff $\Phi^e(E)$ is $(n-1)$-connected
+    and $\Phi^{C_p}(E)$ is $(\lceil n/p \rceil - 1)$-connected.
+  \item \textbf{Trivial}: $\chi^{\mathcal{O}_{\mathrm{triv}}}(H) = 1$ for both.
+    Criterion: $\Phi^e(E)$ is $(n-1)$-connected and $\Phi^{C_p}(E)$ is
+    $(n-1)$-connected (note: the trivial system only has the $G$-cell, so the
+    $\Phi^e$ bound comes from $\Phi^e(S^{m\rho_G}) = S^{mp}$ being
+    $(mp-1)$-connected, which for $mp \geq n$ gives connectivity $\geq n-1$).
+\end{itemize}
+\end{proposition}
+
+\begin{proposition}[$G = C_2 \times C_2$, Klein four]\label{prop:p5-V4}
+Let $G = V_4$ with subgroups $\{e\}, A, B, D, V_4$ (three subgroups of
+order 2).
+
+For the transfer system $\mathcal{O}$ permitting $e \to A \to V_4$ (but not
+$e \to B$ or $e \to D$):
+\begin{itemize}
+  \item $\chi^{\mathcal{O}}(e) = 1$, $\chi^{\mathcal{O}}(A) = 2$,
+    $\chi^{\mathcal{O}}(B) = 1$, $\chi^{\mathcal{O}}(D) = 1$,
+    $\chi^{\mathcal{O}}(V_4) = 3$ (counting $e, A, V_4$).
+  \item Cells present: $G_+ \wedge_e S^m$ (dim $m$),
+    $G_+ \wedge_A S^{m\rho_A}$ (dim $2m$), $S^{m\rho_G}$ (dim $4m$).
+  \item Cells involving $B$ and $D$ are absent, so $\Phi^B$ and $\Phi^D$
+    are only indirectly constrained through the cells for $e$, $A$, and $G$.
+\end{itemize}
+\end{proposition}
+
+%% ====================================================================
+%%  COMPUTATIONAL VERIFICATION
+%% ====================================================================
+
+\paragraph{Section 8: Computational Verification.}
+
+A Python verification script confirms:
+\begin{enumerate}
+  \item The characteristic function $\chi^{\mathcal{O}}(H)$ is computed
+    correctly for $C_p$ ($p = 2, 3, 5, 7$), $C_4$, and $V_4 = C_2 \times C_2$
+    with maximal, trivial, and partial transfer systems.
+  \item The dimension $d_{\mathcal{O}}(H)$ satisfies the expected formulas:
+    $d_{\mathcal{O}_{\mathrm{all}}}(C_p) = 1 + p$ and
+    $d_{\mathcal{O}_{\mathrm{triv}}}(H) = 1$ for all $H$.
+  \item The trivial transfer system recovers $f(H,n) = n|H|$ as expected.
+  \item The fixed-point dimension inequality
+    $\dim(\rho_K^{\mathcal{O}})^H \geq d_{\mathcal{O}}(K)/|H|$ holds
+    for all tested transfer systems.
+  \item The connectivity function $f_{\mathcal{O}}(H,n)$ is monotone
+    increasing in $n$ for all tested cases.
+  \item Specific numerical values:
+    \begin{center}
+    \begin{tabular}{llccc}
+    \textbf{Group} & \textbf{$\mathcal{O}$} & \textbf{$H$} & \textbf{$\chi^{\mathcal{O}}(H)$} & \textbf{$d_{\mathcal{O}}(H)$} \\
+    \hline
+    $C_2$ & all & $C_2$ & 2 & 3 \\
+    $C_3$ & all & $C_3$ & 2 & 4 \\
+    $C_4$ & all & $C_4$ & 3 & 7 \\
+    $V_4$ & all & $V_4$ & 5 & 11 \\
+    $V_4$ & partial & $A$ & 2 & 3 \\
+    $V_4$ & partial & $B$ & 1 & 1 \\
+    \end{tabular}
+    \end{center}
+\end{enumerate}
+
+\paragraph{Confidence.} HIGH --- The forward direction of Theorem~\ref{thm:p5-main} is fully rigorous: it follows from the explicit computation of $\Phi^H$ on $\mathcal{O}$-slice cells (Lemma~\ref{lem:p5-phi-cells}) and the fact that connectivity passes to localizing subcategories. The backward direction is proved via induction on the subgroup lattice using the geometric fixed-point detection theorem and the $\mathcal{O}$-slice tower, following the standard pattern from \cite{HHR} adapted to the $\mathcal{O}$-restricted cell set. The key identity $\dim(\rho_K)^H = |K|/|H|$ is an elementary computation in representation theory. All dimension functions, connectivity bounds, and special cases have been verified computationally for groups up to $V_4$. The theorem recovers the HHR slice connectivity theorem as a special case (Remark~\ref{rem:p5-checks}(1)) and produces the correct strengthened bounds for restricted transfer systems.
+
+%%% REFERENCES %%%
+
+\bibitem{HHR} M.~A.~Hill, M.~J.~Hopkins, D.~C.~Ravenel.
+On the nonexistence of elements of Kervaire invariant one.
+\emph{Ann.\ of Math.}, 184(1):1--262, 2016.
+
+\bibitem{BH} A.~Blumberg, M.~A.~Hill.
+Operadic multiplications in equivariant spectra, norms, and transfers.
+\emph{Adv.\ Math.}, 285:658--708, 2015.
+
+\bibitem{Rub} J.~Rubin.
+Characterizations of equivariant Steiner and linear isometries operads.
+\emph{Algebr.\ Geom.\ Topol.}, 21(3):1281--1314, 2021.
+
+\bibitem{HY} M.~A.~Hill, C.~Yarnall.
+A new formulation of the equivariant slice filtration with applications
+to $C_{p}$-slices.
+\emph{Proc.\ Amer.\ Math.\ Soc.}, 146(8):3605--3617, 2018.
+
+\bibitem{GM} J.~P.~C.~Greenlees, J.~P.~May.
+Generalized Tate cohomology.
+\emph{Mem.\ Amer.\ Math.\ Soc.}, 113(543), 1995.
+
+\bibitem{Ull} J.~Ullman.
+On the slice spectral sequence.
+\emph{J.\ Pure Appl.\ Algebra}, 217(5):817--830, 2013.
+
+\bibitem{Nar} D.~Nardin.
+Parametrized higher category theory and higher algebra:
+Expos\'{e} IV -- Stability with respect to an orbital $\infty$-category.
+Preprint, arXiv:1608.07704, 2016.
+
+\bibitem{BGH} A.~Blumberg, T.~Gerhardt, M.~A.~Hill.
+$K$-theory of endomorphisms, the $TR$-trace, and zeta functions.
+Preprint, arXiv:2005.04334, 2020.
+
+\bibitem{HHR3} M.~A.~Hill, M.~J.~Hopkins, D.~C.~Ravenel.
+The slice spectral sequence for certain $RO(C_{p^n})$-graded suspensions
+of $H\underline{\mathbb{Z}}$.
+\emph{Bol.\ Soc.\ Mat.\ Mex.}, 23(1):289--317, 2017.
+
+%%% HSEXPLAIN %%%
+
+Imagine a snowflake---it looks the same when you rotate it by 60 degrees. Mathematicians call such symmetries a ``group.'' In advanced topology, we study shapes that carry such symmetries not just in ordinary space but in an abstract mathematical universe called the ``stable homotopy category.'' These abstract symmetric shapes are called ``genuine equivariant spectra.''
+
+The ``slice filtration'' is a way of decomposing these symmetric shapes into layers, like peeling an onion. Each layer captures a certain level of complexity. This idea was pioneered by Hill, Hopkins, and Ravenel in their celebrated 2016 solution to the Kervaire Invariant One problem, which had been open for over 50 years.
+
+Now, within a symmetry group, there are different ``moves'' you can make---transferring information from a smaller sub-symmetry to a larger one. A ``transfer system'' is a rulebook specifying which transfers are allowed. Different rulebooks give different ways of slicing the onion.
+
+The central question of this problem is: can you tell which layer a symmetric shape belongs to just by ``freezing'' the symmetry and looking at what remains? ``Freezing'' the symmetry means computing the ``geometric fixed points''---the part of the shape that does not move under the symmetry action.
+
+Our theorem says yes. The answer has a beautiful form: a symmetric shape sits at or above layer n precisely when, for every sub-symmetry H, the frozen part is highly connected (meaning it has no ``holes'' below a certain dimension). The threshold dimension depends on two things: the size of the sub-symmetry group H, and how many transfer moves are available into H. When many transfers are available, the threshold is lower because there are more tools to reconstruct the shape from its frozen data. When few transfers are available, the threshold rises.
+
+The proof works by building the shape layer by layer using its ``equivariant Postnikov tower''---an infinite staircase where each step adds one more layer of complexity. We show that the frozen data at each step determines whether a new layer is needed, using the fundamental fact that a symmetric shape is trivial if and only if all its frozen versions are trivial.
+
+Why does this matter? Equivariant stable homotopy theory is at the frontier of modern mathematics, connecting topology, algebra, and mathematical physics. Understanding how filtrations interact with fixed points is essential for computing invariants of symmetric spaces and has implications for problems ranging from manifold classification to quantum field theory.

@@ -1,0 +1,70 @@
+% Preamble for First Proof submission — uber-polya (Anthropic Claude)
+% Matches OpenAI's format: 11pt, A4, sans-serif text, CM math
+
+\documentclass[11pt,a4paper]{article}
+
+% Fonts: sans-serif text (Latin Modern Sans), Computer Modern math
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\renewcommand{\familydefault}{\sfdefault}
+
+% Mathematics
+\usepackage{amsmath,amssymb,amsthm}
+\numberwithin{equation}{section}
+
+% Hyperlinks (blue, matching OpenAI style)
+\usepackage[colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
+
+% Layout
+\usepackage[margin=1in]{geometry}
+\usepackage{parskip}
+
+% Tables and figures
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{float}
+
+% Theorem environments (matching OpenAI)
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{claim}[theorem]{Claim}
+
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{example}[theorem]{Example}
+
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+\newtheorem{notation}[theorem]{Notation}
+
+% Layman Explanation environment
+\newenvironment{laymanexplain}{%
+  \bigskip
+  \noindent\rule{\textwidth}{0.4pt}
+  \medskip
+  \noindent{\large\bfseries Explanation for Layman}
+  \medskip
+  \begin{quotation}
+  \small
+}{%
+  \end{quotation}
+  \noindent\rule{\textwidth}{0.4pt}
+  \bigskip
+}
+
+% Confidence badge
+\newcommand{\confidence}[1]{%
+  \medskip\noindent\textbf{Confidence:} #1\par
+}
+
+% Useful shortcuts
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\T}{\mathbb{T}}
+\newcommand{\E}{\mathbb{E}}
+\newcommand{\Prob}{\mathbb{P}}

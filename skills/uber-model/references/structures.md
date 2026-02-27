@@ -1,6 +1,6 @@
 # Mathematical Structure Catalog
 
-**Scope**: Discrete Mathematics (32 structures), Continuous Optimization (5 structures), Statistical Inference (6 structures), Linear Algebra (4 structures), Calculus (3 structures), Geometry & Trigonometry (4 structures), Financial Mathematics (1 structure), Game Theory (3 structures), Decision Analysis (3 structures), Multi-Objective Optimization (3 structures), Time Series (3 structures), Stochastic Processes (3 structures), Machine Learning (5 structures), Simulation & ODEs (8 structures), Numerical Methods (3 structures), Causal Inference (2 structures), Extended OR (3 structures)
+**Scope**: Discrete Mathematics (32 structures), Continuous Optimization (5 structures), Statistical Inference (6 structures), Linear Algebra (4 structures), Calculus (3 structures), Geometry & Trigonometry (4 structures), Financial Mathematics (1 structure), Game Theory (3 structures), Decision Analysis (3 structures), Multi-Objective Optimization (3 structures), Time Series (3 structures), Stochastic Processes (3 structures), Machine Learning (5 structures), Simulation & ODEs (8 structures), Numerical Methods (3 structures), Causal Inference (2 structures), Extended OR (3 structures), Abstract Algebra & Representation Theory (4 structures), Algebraic Combinatorics (3 structures), Stochastic Analysis & SPDEs (3 structures), Algebraic Topology (3 structures), Symplectic & Differential Geometry (3 structures), Advanced Spectral Theory (3 structures), Tensor Analysis (3 structures), RKHS & Krylov Methods (2 structures)
 
 A catalog of mathematical structures organized by domain. Use this to match real-world problems to mathematical models during Phase 2 of the uber-model skill.
 
@@ -2217,6 +2217,593 @@ Objective: min Σᵢ Σⱼ wᵢ cᵢⱼ xᵢⱼ + Σⱼ Fⱼ yⱼ
 
 ---
 
+## 25. Abstract Algebra & Representation Theory
+
+### 25.1 Group Representation
+
+**Definition**: A homomorphism ρ: G → GL(V) from a group G to the group of invertible linear transformations on a vector space V, encoding group elements as matrices.
+
+**Indicators**: "symmetry group acts on," "representation of," "how a group transforms," "character theory," "decompose into irreducibles," "Fourier analysis on groups"
+
+**Template**:
+```
+Group: G (finite, compact, p-adic, Lie, ...)
+Vector space: V over field F (usually ℂ)
+Representation: ρ: G → GL(V)
+Character: χ_ρ(g) = Tr(ρ(g))
+Decomposition: V ≅ ⊕ᵢ nᵢ Vᵢ (irreducible decomposition)
+```
+
+**Examples**:
+- Molecular symmetry: G = symmetry group of molecule, V = space of atomic orbitals
+- Signal processing on groups: Fourier transform as representation decomposition
+- Particle physics: representations of SU(3) classify quarks and hadrons
+
+**Key problems**: Character table computation (A196), Induced representation (A199), Decomposition into irreducibles
+
+---
+
+### 25.2 Character / Trace
+
+**Definition**: The character of a representation ρ is the function χ: G → ℂ defined by χ(g) = Tr(ρ(g)). Characters determine representations up to isomorphism.
+
+**Indicators**: "trace of representation," "character table," "class function," "orthogonality relations," "multiplicity of irreducible"
+
+**Template**:
+```
+Character: χ: G → ℂ, χ(g) = Tr(ρ(g))
+Orthogonality: ⟨χᵢ, χⱼ⟩ = (1/|G|) Σ_{g∈G} χᵢ(g) χⱼ(g)* = δᵢⱼ
+Decomposition: ⟨χ_V, χᵢ⟩ = multiplicity of Vᵢ in V
+```
+
+**Examples**:
+- Counting orbits via Burnside's lemma (uses characters of permutation representation)
+- Determining molecular vibration modes via character tables
+- Constructing error-correcting codes from group characters
+
+**Key problems**: Character table computation (A196), Burnside/Polya counting (A69)
+
+---
+
+### 25.3 Module over Ring
+
+**Definition**: An abelian group M equipped with a scalar multiplication R × M → M satisfying ring-module axioms. Generalizes vector spaces (modules over fields) and representations (modules over group algebras).
+
+**Indicators**: "module structure," "ring action," "annihilator," "torsion," "free module," "projective module," "Whittaker model"
+
+**Template**:
+```
+Ring: R (commutative or noncommutative)
+Module: M (left R-module or right R-module)
+Structure maps: R × M → M satisfying r(m + m') = rm + rm', (r + s)m = rm + sm, etc.
+Special cases: R = k[G] gives G-representation; R = ℤ gives abelian group
+```
+
+**Examples**:
+- Whittaker models: module over p-adic group algebra with prescribed character on unipotent radical
+- Homology groups as modules over the group ring
+- Cryptographic lattices as ℤ-modules
+
+**Key problems**: Whittaker model construction (A197), Rankin-Selberg integral evaluation (A198)
+
+---
+
+### 25.4 Lie Group / Lie Algebra
+
+**Definition**: A Lie group G is a smooth manifold with compatible group structure. Its Lie algebra 𝔤 = T_e G is the tangent space at the identity with Lie bracket [·,·], encoding infinitesimal symmetries.
+
+**Indicators**: "continuous symmetry group," "Lie algebra," "root system," "Cartan subalgebra," "Weyl group," "semisimple," "lattice in Lie group"
+
+**Template**:
+```
+Lie group: G (e.g., GL_n(ℝ), SL_n(ℝ), SO(n), Sp(2n))
+Lie algebra: 𝔤 = T_e G with bracket [X, Y]
+Exponential map: exp: 𝔤 → G
+Root system: Φ ⊂ 𝔤* (for semisimple 𝔤)
+Lattice: Γ ⊂ G discrete, G/Γ has finite volume
+```
+
+**Examples**:
+- Rotation group SO(3) in physics: Lie algebra = angular momentum operators
+- Uniform lattices Γ in semisimple Lie groups (number theory, geometry)
+- Gauge theories: Lie group = gauge group, connections on principal bundles
+
+**Key problems**: p-adic valuation & local field arithmetic (A200), Surgery exact sequence (A213)
+
+---
+
+## 26. Algebraic Combinatorics
+
+### 26.1 Symmetric Function
+
+**Definition**: A formal power series f(x₁, x₂, ...) in infinitely many variables that is invariant under all permutations of variables. The ring Λ of symmetric functions has bases: monomial (m_λ), elementary (e_λ), homogeneous (h_λ), power sum (p_λ), Schur (s_λ).
+
+**Indicators**: "symmetric polynomial," "Schur function," "power sum," "partition into parts," "generating function for partitions," "Young diagram"
+
+**Template**:
+```
+Ring: Λ = lim_{←} ℤ[x₁,...,xₙ]^{S_n}
+Partition: λ = (λ₁ ≥ λ₂ ≥ ... ≥ λₖ > 0), |λ| = Σλᵢ
+Schur function: s_λ = det(h_{λᵢ - i + j})₁≤i,j≤k (Jacobi-Trudi)
+Inner product: ⟨s_λ, s_μ⟩ = δ_{λμ}
+```
+
+**Examples**:
+- Counting standard Young tableaux of given shape
+- Representation theory of S_n: irreducibles ↔ partitions ↔ Schur functions
+- Eigenvalue distributions of random matrices (Schur-Weyl duality)
+
+**Key problems**: Schur function expansion (A202), RSK correspondence (A203)
+
+---
+
+### 26.2 Young Tableau / Partition Function
+
+**Definition**: A Young diagram of shape λ is an array of boxes with λᵢ boxes in row i. A standard Young tableau (SYT) is a filling of the diagram with 1,...,n such that entries increase along rows and columns. A semistandard Young tableau (SSYT) allows repeated entries, increasing weakly in rows and strictly in columns.
+
+**Indicators**: "Young diagram," "Young tableau," "Robinson-Schensted," "hook length," "Kostka numbers," "Littlewood-Richardson"
+
+**Template**:
+```
+Shape: λ = (λ₁, ..., λₖ) partition of n
+SYT: T: boxes → {1,...,n} bijection, rows/columns increasing
+SSYT: T: boxes → ℕ, rows weakly increasing, columns strictly increasing
+Hook length: h(u) = arm(u) + leg(u) + 1 for box u
+Number of SYT: f^λ = n! / ∏_{u} h(u) (hook length formula)
+```
+
+**Examples**:
+- RSK correspondence: bijection between permutations and pairs of SYT
+- Representations of GL_n: highest weight ↔ partition ↔ SSYT
+- Schubert calculus: intersection numbers computed via Littlewood-Richardson rule
+
+**Key problems**: RSK correspondence (A203), Schur function expansion (A202)
+
+---
+
+### 26.3 Macdonald Polynomial
+
+**Definition**: Macdonald polynomials P_λ(x; q, t) are a two-parameter family of symmetric functions that specialize to Schur (q=t), Hall-Littlewood (q=0), Jack (t=qᵅ, q→1), and zonal polynomials. They are uniquely determined by triangularity with respect to the monomial basis and orthogonality with respect to a (q,t)-inner product.
+
+**Indicators**: "Macdonald polynomial," "q,t-analog," "interpolation polynomial," "ASEP," "Koornwinder," "double affine Hecke algebra"
+
+**Template**:
+```
+Parameters: q, t ∈ ℂ (or formal variables)
+Macdonald polynomial: P_λ(x; q, t) ∈ Λ_ℚ(q,t)
+Characterization: P_λ = m_λ + Σ_{μ<λ} c_{λμ} m_μ and ⟨P_λ, P_μ⟩_{q,t} = 0 for λ ≠ μ
+Specializations: P_λ(x; q, q) = s_λ(x), P_λ(x; 0, t) = P_λ(x; t) (Hall-Littlewood)
+ASEP connection: interpolation polynomials related to stationary measures of ASEP
+```
+
+**Examples**:
+- Stationary distributions of the asymmetric simple exclusion process (ASEP)
+- Hilbert schemes of points on surfaces (Haiman's theorem: n! conjecture)
+- Knot invariants via refined Chern-Simons theory
+
+**Key problems**: Macdonald polynomial recurrence (A201), ASEP transition matrix (A204)
+
+---
+
+## 27. Stochastic Analysis & SPDEs
+
+### 27.1 Gaussian Free Field
+
+**Definition**: The Gaussian free field (GFF) on a domain D ⊂ ℝᵈ is the centered Gaussian process with covariance given by the Green's function of the Laplacian: Cov(φ(x), φ(y)) = G_D(x, y). On a torus 𝕋ᵈ with mass m > 0, the covariance is (m² − Δ)⁻¹.
+
+**Indicators**: "Gaussian free field," "GFF," "random distribution," "log-correlated field," "quantum field theory," "Φ⁴ measure," "stochastic quantization"
+
+**Template**:
+```
+Domain: D = 𝕋ᵈ (torus) or bounded domain in ℝᵈ
+Covariance: C = (m² − Δ)⁻¹ (massive GFF) or G_D (Dirichlet GFF)
+Cameron-Martin space: H¹(D) (for massive GFF on 𝕋ᵈ)
+Regularity: φ ∈ C^{−d/2+1−ε}(D) a.s. (distributional for d ≥ 2)
+```
+
+**Examples**:
+- Statistical mechanics: scaling limit of discrete height functions
+- Constructive QFT: building block for Φ⁴ models
+- Random geometry: Liouville quantum gravity via exponential of GFF
+
+**Key problems**: Gaussian free field sampling (A205), Cameron-Martin shift (A207)
+
+---
+
+### 27.2 Regularity Structure / Paracontrolled Distribution
+
+**Definition**: Regularity structures (Hairer) and paracontrolled distributions (Gubinelli-Imkeller-Perkowski) are frameworks for giving meaning to and solving singular stochastic PDEs where products of distributions are ill-defined. They provide renormalization-compatible local descriptions of solution regularity.
+
+**Indicators**: "regularity structure," "paracontrolled," "singular SPDE," "subcritical," "renormalization," "Φ⁴₃," "KPZ equation," "stochastic quantization"
+
+**Template**:
+```
+SPDE: ∂_t u = Δu + F(u, ∇u) + ξ on D, where ξ is space-time white noise
+Regularity: u ∈ C^α for some α < 0 (distributional)
+Model: (A, T, G) = (index set, model space, structure group) for regularity structures
+Renormalization: subtract divergent counterterms C₁(ε), C₂(ε), ... as regularization ε → 0
+Fixed-point: u = K * (F(u) + ξ) in modelled distribution space D^γ
+```
+
+**Examples**:
+- Φ⁴₃ model: ∂_t u = Δu − u³ + ∞·u + ξ on 𝕋³ (requires Wick renormalization)
+- KPZ equation: ∂_t h = Δh + (∂_x h)² + ξ on 𝕋¹
+- Parabolic Anderson model: ∂_t u = Δu + u·ξ
+
+**Key problems**: Regularity structure reconstruction (A208), Paracontrolled ansatz (A209), Wick renormalization (A206)
+
+---
+
+### 27.3 Renormalization
+
+**Definition**: The process of systematically removing infinities from a quantum field theory or singular SPDE by adjusting (renormalizing) parameters and counterterms as a regularization cutoff is removed. In the SPDE context, counterterms are deterministic corrections to divergent products of random distributions.
+
+**Indicators**: "renormalization," "counterterm," "Wick ordering," "normal ordering," "mass renormalization," "setting-sun diagram," "BPHZ," "Feynman diagram"
+
+**Template**:
+```
+Regularized equation: ∂_t u_ε = Δu_ε − (u_ε³ − C₁(ε)u_ε − C₂(ε)u_ε) + ξ_ε
+Counterterms: C₁(ε) ~ c₁ε⁻¹ (tadpole), C₂(ε) ~ c₂ log(ε⁻¹) (setting-sun) for d=3
+Renormalized limit: u_ε → u as ε → 0 in appropriate topology
+Cameron-Martin theorem: shift by ψ ∈ H¹ preserves Gaussian measure equivalence
+Singularity under interaction: Φ⁴₃ measure ⊥ shifted measure for λ ≠ 0 and ψ ≠ 0
+```
+
+**Examples**:
+- Φ⁴₃ on 𝕋³: two counterterms (tadpole + logarithmic mass renormalization)
+- KPZ equation: one counterterm (Wick renormalization of gradient squared)
+- Dynamical sine-Gordon equation
+
+**Key problems**: Wick renormalization (A206), Cameron-Martin shift (A207), Regularity structure reconstruction (A208)
+
+---
+
+## 28. Algebraic Topology
+
+### 28.1 Homotopy Group / Spectrum
+
+**Definition**: The n-th homotopy group π_n(X, x₀) is the group of homotopy classes of based maps (Sⁿ, *) → (X, x₀). A spectrum E is a sequence of pointed spaces {Eₙ} with structure maps ΣEₙ → Eₙ₊₁, representing a generalized cohomology theory E*(X) = [X, E] in the stable homotopy category.
+
+**Indicators**: "homotopy group," "fundamental group," "higher homotopy," "spectrum," "stable homotopy," "cohomology theory," "Eilenberg-MacLane space"
+
+**Template**:
+```
+Space: X (CW complex or simplicial set)
+Homotopy groups: πₙ(X) = [Sⁿ, X] (based homotopy classes)
+Spectrum: E = {Eₙ, σₙ: ΣEₙ → Eₙ₊₁}
+Cohomology: Eⁿ(X) = [X, Eₙ] (represented by spectrum)
+Stable homotopy category: SH (triangulated, symmetric monoidal)
+```
+
+**Examples**:
+- π₁(X) classifies covering spaces of X
+- K-theory spectrum KU represents complex K-theory
+- Thom spectra represent cobordism theories
+
+**Key problems**: Homotopy group computation (A210), Spectral sequence (A211)
+
+---
+
+### 28.2 Operad
+
+**Definition**: An operad O is a collection {O(n)}_{n≥0} of objects (spaces, chain complexes, spectra) with composition maps encoding n-ary operations and their interactions. An N_∞ operad encodes multiplicative norms in equivariant homotopy theory, interpolating between naive and genuine commutativity.
+
+**Indicators**: "operad," "N-infinity operad," "multiplicative norm," "algebraic structure up to homotopy," "E-infinity," "A-infinity," "operadic algebra"
+
+**Template**:
+```
+Operad: O = {O(n)}_{n≥0} with Σₙ-action and composition maps
+γ: O(k) × O(n₁) × ... × O(nₖ) → O(n₁ + ... + nₖ)
+Algebra over O: space X with O(n) × X^n → X satisfying associativity/equivariance
+N_∞ operad: equivariant operad between N_∞ (additive) and E_∞ (fully commutative)
+Indexing system: specifies which transfers/norms exist for subgroups H ≤ G
+```
+
+**Examples**:
+- E_∞ operads: encode homotopy-commutative ring structures (e.g., on K-theory)
+- A_∞ operads: encode homotopy-associative (but not commutative) structures
+- N_∞ operads: classify equivariant commutative ring structures by indexing systems
+
+**Key problems**: Equivariant fixed-point theorem (A212), Spectral sequence (A211)
+
+---
+
+### 28.3 Equivariant Stable Category
+
+**Definition**: For a finite group G, the G-equivariant stable homotopy category SH_G is the stabilization of the category of G-spaces with respect to representation spheres S^V for all real G-representations V. Objects are genuine G-spectra, which support RO(G)-graded homotopy groups, geometric fixed points, and norm maps.
+
+**Indicators**: "equivariant spectrum," "genuine G-spectrum," "geometric fixed points," "slice filtration," "Hill-Hopkins-Ravenel," "norm map," "representation sphere"
+
+**Template**:
+```
+Group: G (finite)
+Category: SH_G (genuine G-spectra)
+Grading: RO(G)-graded homotopy groups π_V^G(E)
+Fixed points: E^G (categorical), Φ^G(E) (geometric)
+Slice filtration: ... ⊂ τ^G_{≥n+1} ⊂ τ^G_{≥n} ⊂ ... (stratification by "complexity")
+Norm: N_H^G: SH_H → SH_G (multiplicative induction)
+```
+
+**Examples**:
+- Hill-Hopkins-Ravenel solution of Kervaire invariant one problem uses slice filtration
+- Real K-theory KR as C₂-equivariant spectrum
+- Equivariant cobordism MU_G
+
+**Key problems**: Equivariant fixed-point theorem (A212), Spectral sequence (A211)
+
+---
+
+## 29. Symplectic & Differential Geometry
+
+### 29.1 Symplectic Manifold
+
+**Definition**: A symplectic manifold (M²ⁿ, ω) is an even-dimensional smooth manifold equipped with a closed nondegenerate 2-form ω (dω = 0, ωⁿ ≠ 0). By Darboux's theorem, locally (M, ω) looks like (ℝ²ⁿ, Σ dpᵢ ∧ dqᵢ).
+
+**Indicators**: "symplectic form," "phase space," "Hamiltonian system," "Darboux coordinates," "symplectomorphism," "area-preserving"
+
+**Template**:
+```
+Manifold: (M^{2n}, ω) with dω = 0 and ω^n ≠ 0
+Darboux coordinates: (p₁,...,pₙ, q₁,...,qₙ) with ω = Σ dpᵢ ∧ dqᵢ
+Hamiltonian vector field: X_H defined by ι_{X_H} ω = −dH
+Symplectomorphism: φ: (M, ω) → (M, ω) with φ*ω = ω
+```
+
+**Examples**:
+- Classical mechanics: phase space T*Q with canonical symplectic form
+- Kähler manifolds: complex manifolds with compatible symplectic structure
+- Coadjoint orbits of Lie groups carry natural symplectic structures
+
+**Key problems**: Hamiltonian flow integration (A215), Moser trick (A216)
+
+---
+
+### 29.2 Lagrangian Submanifold
+
+**Definition**: A Lagrangian submanifold L of a symplectic manifold (M²ⁿ, ω) is an n-dimensional submanifold such that ω|_L = 0 (the symplectic form restricts to zero on L). Lagrangian submanifolds are "half-dimensional" and maximally isotropic.
+
+**Indicators**: "Lagrangian submanifold," "Lagrangian torus," "special Lagrangian," "Lagrangian isotopy," "Lagrangian surgery," "Floer homology"
+
+**Template**:
+```
+Ambient: (M^{2n}, ω) symplectic
+Lagrangian: L^n ⊂ M with dim L = n and ω|_L = 0
+Polyhedral Lagrangian: piecewise-linear Lagrangian surface (in ℝ⁴ with standard ω)
+Smoothing: replace corners/edges by smooth patches preserving Lagrangian condition
+Maslov class: μ ∈ H¹(L; ℤ), obstruction to grading
+```
+
+**Examples**:
+- Zero section of T*Q is Lagrangian in (T*Q, ω_can)
+- Real locus ℝPⁿ ⊂ ℂPⁿ is Lagrangian
+- Polyhedral Lagrangians: PL surfaces in ℝ⁴ with ω = dp₁∧dq₁ + dp₂∧dq₂
+
+**Key problems**: Lagrangian isotopy (A214), Hamiltonian flow integration (A215)
+
+---
+
+### 29.3 Hamiltonian Isotopy
+
+**Definition**: A Hamiltonian isotopy is a smooth family of symplectomorphisms {φₜ}_{t∈[0,1]} generated by a (possibly time-dependent) Hamiltonian function H_t, meaning dφₜ/dt = X_{Hₜ} ∘ φₜ. Two Lagrangian submanifolds are Hamiltonian isotopic if one can be deformed to the other through Lagrangians via such a flow.
+
+**Indicators**: "Hamiltonian isotopy," "Hamiltonian diffeomorphism," "Lagrangian smoothing via isotopy," "smoothable Lagrangian," "Weinstein neighborhood"
+
+**Template**:
+```
+Flow: φₜ: M → M with φ₀ = id, generated by X_{Hₜ}
+Condition: φₜ*ω = ω for all t (symplectomorphisms)
+Lagrangian isotopy: L₀, L₁ Lagrangian with L₁ = φ₁(L₀)
+Smoothing: polyhedral Lagrangian L_PL → smooth Lagrangian L_smooth via Hamiltonian isotopy
+```
+
+**Examples**:
+- Smoothing polyhedral surfaces: replace corners by smooth patches, connected by Hamiltonian deformation
+- Arnold conjecture: Hamiltonian isotopies have at least as many fixed points as topology demands
+- Floer homology: invariant of Lagrangian pairs under Hamiltonian isotopy
+
+**Key problems**: Lagrangian isotopy (A214), Moser trick (A216)
+
+---
+
+## 30. Advanced Spectral Theory
+
+### 30.1 Graph Laplacian Spectrum
+
+**Definition**: For a graph G = (V, E) with edge weights w_e, the Laplacian L = Σ_{e={i,j}} w_e (eᵢ − eⱼ)(eᵢ − eⱼ)ᵀ is a positive semidefinite matrix. Its eigenvalues 0 = λ₁ ≤ λ₂ ≤ ... ≤ λₙ encode connectivity, expansion, mixing time, and partitioning properties.
+
+**Indicators**: "graph Laplacian," "spectral gap," "algebraic connectivity," "Fiedler vector," "Cheeger inequality," "ε-light," "spectral partitioning"
+
+**Template**:
+```
+Graph: G = (V, E) with weights wₑ ≥ 0
+Edge Laplacian: Lₑ = wₑ (eᵢ − eⱼ)(eᵢ − eⱼ)ᵀ
+Total Laplacian: L = Σₑ Lₑ, spectrum 0 = λ₁ ≤ ... ≤ λₙ
+Normalized: L̃ = D⁻¹/²LD⁻¹/² (normalized Laplacian)
+ε-light subset: S ⊆ V with L_S ⪯ εL (in Loewner order)
+```
+
+**Examples**:
+- Network partitioning: Fiedler vector (eigenvector for λ₂) gives bisection
+- Random walks: mixing time ∝ 1/λ₂
+- Graph sparsification: approximate L by sparse matrix L̃ with L̃ ≈ εL
+
+**Key problems**: BSS barrier method (A217), Graph Laplacian partitioning (A220)
+
+---
+
+### 30.2 Free Probability / Free Convolution
+
+**Definition**: Free probability (Voiculescu) is a noncommutative probability theory where the notion of independence is replaced by "freeness" (free independence). The free additive convolution μ ⊞ ν describes the spectral distribution of A + B when A, B are freely independent. The R-transform linearizes free additive convolution.
+
+**Indicators**: "free probability," "free convolution," "R-transform," "free independence," "random matrix," "free entropy," "Voiculescu"
+
+**Template**:
+```
+Noncommutative probability space: (A, φ) with φ: A → ℂ tracial
+Free independence: mixed moments factor through non-crossing partitions
+R-transform: R_μ(z) with G_μ(z) = 1/(z − R_μ(G_μ(z))) (Cauchy transform relation)
+Free additive convolution: R_{μ⊞ν} = R_μ + R_ν
+Free multiplicative convolution: S_{μ⊠ν} = S_μ · S_ν
+```
+
+**Examples**:
+- Wigner semicircle law: free CLT for freely independent random variables
+- Marchenko-Pastur law: free Poisson distribution (eigenvalues of sample covariance)
+- Additive free convolution of spectral distributions in random matrix theory
+
+**Key problems**: Free additive convolution (A218), Interlacing polynomials MSS (A219)
+
+---
+
+### 30.3 Interlacing Polynomial Family
+
+**Definition**: A family of real-rooted polynomials {fᵢ}ᵢ is an interlacing family if every convex combination Σ αᵢ fᵢ (αᵢ ≥ 0, Σαᵢ = 1) is real-rooted. By the barrier method of Marcus-Spielman-Srivastava (MSS), if the expected polynomial E[f] has largest root ≤ r, then at least one fᵢ has largest root ≤ r.
+
+**Indicators**: "interlacing polynomial," "real-rooted," "common interlacing," "MSS method," "Kadison-Singer," "restricted invertibility," "barrier function"
+
+**Template**:
+```
+Polynomial: p(x) = Σ aₖ xᵏ with all roots real
+Interlacing: p₁ ≺ p₂ if roots of p₁ and p₂ alternate
+Interlacing family: {f₁, ..., fₘ} with Σ αᵢ fᵢ real-rooted for all convex combinations
+Barrier function: Φᵤ(A) = Tr((uI − A)⁻¹) (resolvent potential)
+BSS argument: bound Φ, show max root of random matrix bounded by u
+```
+
+**Examples**:
+- Kadison-Singer problem (solved by MSS 2015): paving conjecture via interlacing
+- Ramanujan graph existence: random lifts have spectral gap via interlacing
+- Graph sparsification: thin subsets of edges approximate full Laplacian
+
+**Key problems**: Interlacing polynomials MSS (A219), BSS barrier method (A217)
+
+---
+
+## 31. Tensor Analysis
+
+### 31.1 Tensor Space / Multilinear Map
+
+**Definition**: A tensor of order k over vector spaces V₁, ..., Vₖ is an element of the tensor product V₁ ⊗ ... ⊗ Vₖ. Equivalently, a k-linear map V₁* × ... × Vₖ* → ℝ. In coordinates, T = Σ Tᵢ₁...ᵢₖ eᵢ₁ ⊗ ... ⊗ eᵢₖ.
+
+**Indicators**: "tensor," "multilinear," "tensor product," "contraction," "outer product," "tensor rank," "multiway array"
+
+**Template**:
+```
+Tensor: T ∈ V₁ ⊗ V₂ ⊗ ... ⊗ Vₖ (order k)
+Components: T_{i₁i₂...iₖ} ∈ ℝ (with respect to bases)
+Rank: minimum r such that T = Σⱼ₌₁ʳ v₁ⱼ ⊗ v₂ⱼ ⊗ ... ⊗ vₖⱼ
+Contraction: Σᵢ T_{...i...} S_{...i...} (summing over shared index)
+Flattenings: T_{(k)} = matricization along mode k
+```
+
+**Examples**:
+- Stress-energy tensor in physics: T_μν encodes energy/momentum density
+- Multiway data: users × items × time → ratings tensor
+- Moment tensors in statistics: E[x ⊗ x ⊗ x] captures third-order structure
+
+**Key problems**: CP-ALS (A221), Tucker/HOSVD (A222)
+
+---
+
+### 31.2 Tensor Decomposition (CP/Tucker)
+
+**Definition**: The CP (Canonical Polyadic) decomposition writes a tensor T as a sum of rank-1 terms: T ≈ Σᵣ λᵣ a_r ⊗ b_r ⊗ c_r. The Tucker decomposition writes T ≈ G ×₁ A ×₂ B ×₃ C where G is a smaller core tensor. ALS (Alternating Least Squares) solves each factor matrix while fixing others.
+
+**Indicators**: "CP decomposition," "PARAFAC," "Tucker decomposition," "HOSVD," "tensor rank," "tensor factorization," "alternating least squares," "missing data"
+
+**Template**:
+```
+CP: T ≈ Σᵣ₌₁ᴿ λᵣ aᵣ ⊗ bᵣ ⊗ cᵣ (minimize ||T − T̂||_F)
+Tucker: T ≈ G ×₁ A ×₂ B ×₃ C (core tensor G, factor matrices A, B, C)
+ALS subproblem: fix B, C → solve for A via least squares
+Missing data: mask Ω, minimize Σ_{(i,j,k)∈Ω} (T_{ijk} − T̂_{ijk})²
+Kernelized: replace finite-dimensional mode with RKHS, use kernel trick
+```
+
+**Examples**:
+- Chemometrics: decompose fluorescence spectra (samples × excitation × emission)
+- Recommender systems: users × items × context tensor factorization
+- Neuroimaging: voxels × time × subjects tensor decomposition
+
+**Key problems**: CP-ALS (A221), Tucker/HOSVD (A222), Tensor train (A223), Randomized decomposition (A224)
+
+---
+
+### 31.3 Tensor Network
+
+**Definition**: A tensor network is a graph where nodes represent tensors and edges represent index contractions. The full contraction of the network yields a scalar or lower-order tensor. Tensor networks generalize matrix multiplication and provide efficient representations of high-dimensional tensors.
+
+**Indicators**: "tensor network," "tensor train," "MPS," "DMRG," "contraction order," "bond dimension," "tree tensor network"
+
+**Template**:
+```
+Network: graph G = (V, E) with tensor Tᵥ at each vertex v
+Edges: e ∈ E represents contraction of shared index
+Bond dimension: max dimension along contracted edges
+Tensor train: T_{i₁...iₙ} = A₁[i₁] · A₂[i₂] · ... · Aₙ[iₙ] (matrix product)
+Contraction cost: depends on elimination order (NP-hard to optimize in general)
+```
+
+**Examples**:
+- Quantum many-body physics: matrix product states (MPS), DMRG
+- Machine learning: tensor network layers as structured linear maps
+- Quantum circuit simulation: tensor network contraction
+
+**Key problems**: Tensor train (A223), CP-ALS (A221)
+
+---
+
+## 32. Reproducing Kernel Hilbert Spaces & Krylov Methods
+
+### 32.1 RKHS / Kernel
+
+**Definition**: A reproducing kernel Hilbert space (RKHS) H_k on a set X is a Hilbert space of functions f: X → ℝ with a kernel k: X × X → ℝ such that f(x) = ⟨f, k(x, ·)⟩_H for all f ∈ H_k, x ∈ X (reproducing property). The kernel encodes the geometry of the function space.
+
+**Indicators**: "kernel method," "RKHS," "reproducing kernel," "Mercer's theorem," "kernel trick," "feature map," "Gaussian kernel," "Gram matrix"
+
+**Template**:
+```
+Kernel: k: X × X → ℝ, symmetric positive definite
+RKHS: H_k = closure of span{k(x, ·) : x ∈ X}
+Reproducing property: f(x) = ⟨f, k(x, ·)⟩
+Feature map: φ: X → H_k, φ(x) = k(x, ·), with k(x,y) = ⟨φ(x), φ(y)⟩
+Kernel trick: inner products in H_k computed via k without explicit φ
+Gram matrix: K_{ij} = k(xᵢ, xⱼ) for data points x₁, ..., xₙ
+```
+
+**Examples**:
+- Kernel SVM: classification in high-dimensional feature space via kernel
+- Gaussian processes: prior over functions defined by kernel
+- Kernelized tensor decomposition: infinite-dimensional modes via kernel trick
+
+**Key problems**: Preconditioned CG (A226), Kronecker preconditioning (A229)
+
+---
+
+### 32.2 Krylov Subspace
+
+**Definition**: For a matrix A and vector b, the k-th Krylov subspace is K_k(A, b) = span{b, Ab, A²b, ..., A^{k-1}b}. Krylov methods (CG, GMRES, Lanczos) find approximate solutions to Ax = b or eigenvalue problems by searching within K_k, requiring only matrix-vector products (matrix-free).
+
+**Indicators**: "Krylov subspace," "conjugate gradient," "GMRES," "Lanczos," "matrix-free," "preconditioner," "iterative solver," "sparse linear system"
+
+**Template**:
+```
+System: Ax = b (A ∈ ℝⁿˣⁿ, possibly sparse or available only as operator)
+Krylov subspace: K_k(A, b) = span{b, Ab, ..., A^{k-1}b}
+CG: for SPD A, minimizes ||x − x*||_A over x₀ + K_k(A, r₀)
+Preconditioner: M ≈ A with M⁻¹ cheap to apply; solve M⁻¹Ax = M⁻¹b
+PCG convergence: ||eₖ||_A / ||e₀||_A ≤ 2(√κ(M⁻¹A) − 1)/(√κ(M⁻¹A) + 1))^k
+```
+
+**Examples**:
+- Large sparse linear systems from FEM/PDE discretization
+- Eigenvalue computation for large matrices (Lanczos algorithm)
+- Kronecker-structured systems: (A₁ ⊗ A₂ ⊗ ... ⊗ Aₖ)x = b (exploit structure)
+
+**Key problems**: Conjugate gradient (A225), Preconditioned CG (A226), GMRES (A227), Block Krylov (A228), Kronecker preconditioning (A229), Matrix-free operators (A230)
+
+---
+
 ## Cross-Reference Index
 
 Where to go next after identifying a structure.
@@ -2247,5 +2834,13 @@ Where to go next after identifying a structure.
 | 22. Numerical Methods | algorithms.md §30-§32 (A175-A187) | scipy.optimize, scipy.interpolate, scipy.integrate | §19 Numerical Methods Results |
 | 23. Causal Inference | algorithms-statistics.md S104-S110 | scikit-learn, statsmodels, dowhy | §20 Causal Inference Results |
 | 24. Extended OR | algorithms.md §33 (A188-A195) | PuLP, OR-Tools, scipy | §21 Extended OR Results |
+| 25. Abstract Algebra & Representation Theory | §34 (A196-A200) | §15 SageMath, §16 GAP, §4 SymPy | §23 Representation Theory Results |
+| 26. Algebraic Combinatorics | §35 (A201-A204) | §15 SageMath, §4 SymPy | §24 Algebraic Combinatorics Results |
+| 27. Stochastic Analysis & SPDEs | §36 (A205-A209) | §5 SciPy, §4 SymPy | §22 Stochastic Analysis Results |
+| 28. Algebraic Topology | §37 (A210-A213) | §15 SageMath, §4 SymPy | §25 Algebraic Topology Results |
+| 29. Symplectic & Differential Geometry | §38 (A214-A216) | §5 SciPy, §4 SymPy | §26 Symplectic Geometry Results |
+| 30. Advanced Spectral Theory | §39 (A217-A220) | §1 NetworkX, §18 scipy.sparse.linalg | §27 Spectral Graph Theory Results |
+| 31. Tensor Analysis | §40 (A221-A224) | §17 tensorly, §8 numpy | §28 Tensor Decomposition Results |
+| 32. RKHS & Krylov Methods | §41 (A225-A230) | §18 scipy.sparse.linalg, §5 SciPy | §19 Numerical Methods Results |
 
 Also see: **problem-classification.md** for rapid pattern matching from natural language to structure, **common-mistakes.md** for modeling pitfalls by structure type.

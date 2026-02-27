@@ -273,8 +273,47 @@ What is the user trying to do?
 │  ├─ Different machine orders per job? ────────── Job Shop (A191) via CP-SAT
 │  └─ Same machine order for all? ─────────────── Flow Shop (A192, Johnson's rule)
 │
-└─ ROUTE VEHICLES with capacity
-   └─ Multiple vehicles, customer demands? ────── Capacitated VRP (A195) via OR-Tools
+├─ ROUTE VEHICLES with capacity
+│  └─ Multiple vehicles, customer demands? ────── Capacitated VRP (A195) via OR-Tools
+│
+├─ PROVE a statement (research-level mathematics)
+│  ├─ About measures / distributions on function spaces?
+│  │  ├─ Singularity vs. absolute continuity? ─── Cameron-Martin Shift (A207) / Wick Renormalization (A206)
+│  │  ├─ SPDE well-posedness? ─────────────────── Regularity Structure (A208) / Paracontrolled (A209)
+│  │  └─ Gaussian free field property? ────────── GFF Sampling (A205)
+│  ├─ About representations / automorphic forms?
+│  │  ├─ Test vector / Whittaker model? ────────── Whittaker Model (A197) / Rankin-Selberg (A198)
+│  │  ├─ Character computation? ────────────────── Character Table (A196)
+│  │  ├─ Induced representation? ──────────────── Mackey (A199)
+│  │  └─ p-adic / local field? ────────────────── p-adic Valuation (A200)
+│  ├─ About algebraic combinatorics / symmetric functions?
+│  │  ├─ Macdonald / Schur expansion? ──────────── Macdonald Recurrence (A201) / Schur (A202)
+│  │  ├─ Tableaux / RSK? ──────────────────────── RSK Correspondence (A203)
+│  │  └─ Particle system / ASEP? ──────────────── ASEP Transition Matrix (A204)
+│  ├─ About topological spaces / homotopy?
+│  │  ├─ Homotopy group computation? ──────────── Homotopy Group (A210) / Spectral Sequence (A211)
+│  │  ├─ Equivariant / G-spectrum? ────────────── Equivariant Fixed-Point (A212)
+│  │  └─ Surgery / manifold classification? ───── Surgery Exact Sequence (A213)
+│  ├─ About symplectic / Lagrangian geometry?
+│  │  ├─ Lagrangian smoothing / isotopy? ──────── Lagrangian Isotopy (A214)
+│  │  ├─ Hamiltonian flow? ────────────────────── Hamiltonian Flow (A215)
+│  │  └─ Deformation argument? ────────────────── Moser Trick (A216)
+│  └─ About graph spectra / spectral barriers?
+│     ├─ Spectral sparsification? ─────────────── BSS Barrier (A217)
+│     ├─ Free probability bound? ──────────────── Free Convolution (A218)
+│     └─ Interlacing argument? ────────────────── Interlacing Polynomials (A219)
+│
+├─ DECOMPOSE a tensor or multi-way array
+│  ├─ Find rank-R approximation? ──────────────── CP-ALS (A221)
+│  ├─ Multilinear rank reduction? ─────────────── Tucker/HOSVD (A222)
+│  ├─ Sequential / streaming decomposition? ───── Tensor Train (A223)
+│  └─ Large-scale / randomized? ──────────────── Randomized Tensor (A224)
+│
+└─ SOLVE a large sparse linear system
+   ├─ SPD matrix? ────────────────────────────── Conjugate Gradient (A225) / PCG (A226)
+   ├─ Non-symmetric? ─────────────────────────── GMRES (A227)
+   ├─ Block / Kronecker structure? ────────────── Block Krylov (A228) / Kronecker Preconditioning (A229)
+   └─ Matrix too large to store? ─────────────── Matrix-Free Operators (A230)
 ```
 
 ---
@@ -634,5 +673,13 @@ After identifying the problem type here, consult the corresponding reference fil
 | LOCATE FACILITIES | §24.3 Facility Location Model | algorithms.md A194 | (PuLP) |
 | SCHEDULE JOBS | §7.3 Scheduling Model | algorithms.md A191-A192 | (OR-Tools CP-SAT) |
 | ROUTE VEHICLES | §24.3 Facility Location Model | algorithms.md A195 | (OR-Tools) |
+| PROVE (stochastic analysis) | §27 Stochastic Analysis (27.1-27.3) | §36 SPDEs (A205-A209) | (SciPy / custom) |
+| PROVE (representation theory) | §25 Abstract Algebra (25.1-25.4) | §34 Representation Theory (A196-A200) | (SageMath / GAP) |
+| PROVE (algebraic combinatorics) | §26 Algebraic Combinatorics (26.1-26.3) | §35 Algebraic Combinatorics (A201-A204) | (SageMath) |
+| PROVE (algebraic topology) | §28 Algebraic Topology (28.1-28.3) | §37 Algebraic Topology (A210-A213) | (SageMath) |
+| PROVE (symplectic geometry) | §29 Symplectic Geometry (29.1-29.3) | §38 Symplectic Geometry (A214-A216) | (SciPy / custom) |
+| PROVE (spectral graph theory) | §30 Advanced Spectral Theory (30.1-30.3) | §39 Advanced Spectral Graph (A217-A220) | (NetworkX / numpy) |
+| DECOMPOSE tensor | §31 Tensor Analysis (31.1-31.3) | §40 Tensor Decomposition (A221-A224) | (tensorly) |
+| SOLVE sparse system | §32 RKHS/Krylov (32.1-32.2) | §41 Advanced Numerical LA (A225-A230) | (scipy.sparse.linalg) |
 
 Also see: **common-mistakes.md** for pitfalls specific to each problem category.
